@@ -1,0 +1,907 @@
+
+ Fujitsu Fortran Version 1.2.1  Thu Feb  7 03:14:20 2013
+
+ Compilation information
+   Current directory : /home/usr8/g70308a/mp5_3d/MACHIDA_MP5_NO_COOLING
+   Source file       : main.f90
+
+ Option information
+   Command line options : -Kident_mpi -f2004 -Kfast,optmsg=2,simd=2 -Qt -x- -c -I/opt/FJSVfxlang/1.2.1/include/mpi/fujitsu -I/opt/FJSVfxlang/1.2.1/lib64
+   Effective options    : -fi -AE -Free -O3 -Qp,t -X9
+                          -x-
+                          -KSPARC64IXfx -KFLTLD -Kadr44 -Knoauto
+                          -Knoautoobjstack -Knocalleralloc -Kdalign -Keval
+                          -Knofenv_access -Kfp_contract -Kfp_relaxed
+                          -Kfsimple -Kilfunc -Klargepage -Kloop_blocking
+                          -Kloop_fission -Kloop_nofission_if -Kloop_fusion
+                          -Kloop_interchange -Kns -Kmfunc=1 -Knoocl
+                          -Koptmsg=2 -Knopreex -Kprefetch_conditional
+                          -Kprefetch_noindirect -Kprefetch_sequential=auto
+                          -Kprefetch_nostride -Kprefetch_cache_level=all
+                          -Kprefetch_double_line_L2 -Kprefetch_noinfer
+                          -Kprefetch_nostrong -Kprefetch_strong_L2
+                          -Knoshortloop -Ksimd=2 -Knostriping -Kswp
+                          -Knotemparraystack -Kunroll -Knouxsimd -KNOXFILL
+                          -Knoopenmp -Knoordered_omp_reduction -Knothreadsafe
+                          -Knoparallel -Knoarray_private
+                          -Knodynamic_iteration -Knoreduction
+                          -Knoregion_extension
+                          -Nallextput -Nnoalloc_assign -Nnocompdisp
+                          -Nnocopyarg -Nfreealloc -Nf90move -Nnohook_func
+                          -Nnohook_time -Nline -Nnomallocfree -Nnoobsfun
+                          -Nquickdbg=noargchk -Nquickdbg=nosubchk
+                          -Nquickdbg=noundef -NRnotrap -Nnorecursive
+                          -Nrt_notune -Nnosave -Nuse_rodata
+
+ Main program "main"
+  (line-no.)(nest)(optimize)
+          1                     !
+          2                     ! $Log:
+          3                     !
+          4                     program main
+          5                       use mpi_domain_xz
+          6                       use openfile
+          7                     
+          8                       implicit none
+          9                       include 'mpif.h'
+         10                     
+         11                     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         12                      integer,parameter :: FLAG_ModAverage=0 !
+         13                     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         14                     
+         15                        integer,parameter :: margin = 3
+         16                     !   integer,parameter :: margin = 6
+         17                     
+         18                     !  integer,parameter :: ix = 25+2*margin,jx=32+2*margin,kx=30+2*margin
+         19                     !  integer,parameter :: ix = 200+2*margin,jx=32+2*margin,kx=8+2*margin
+         20                     
+         21                     !  integer,parameter :: ix = 256+2*margin,jx=64+2*margin,kx=4+2*margin
+         22                     
+         23                     
+         24                     
+         25                     
+         26                     !  integer,parameter :: ix = 32+2*margin,jx=64+2*margin,kx=16+2*margin
+         27                     !  integer,parameter :: ix = 16+2*margin,jx=64+2*margin,kx=8+2*margin
+         28                       integer,parameter :: ix = 8+2*margin,jx=64+2*margin,kx=8+2*margin
+         29                     
+         30                     
+         31                     
+         32                     
+         33                     !  integer,parameter :: ix = 256+2*margin,jx=64+2*margin,kx=4+2*margin
+         34                     !  integer,parameter :: ix = 100+2*margin,jx=32+2*margin,kx=4+2*margin
+         35                     
+         36                     !  integer,parameter :: ix = 100+2*margin,jx=32+2*margin,kx=100+2*margin
+         37                     !  integer,parameter :: ix = 50+2*margin,jx=32+2*margin,kx=1+2*margin
+         38                     
+         39                       integer :: igx,jgx,kgx
+         40                       integer :: ix0,jx0,kx0,nx0
+         41                     
+         42                       real(8),dimension(ix) :: x,dx
+         43                       real(8),dimension(jx) :: y,dy
+         44                       real(8),dimension(kx) :: z,dz
+         45                       real(8),dimension(5,2,ix) :: ccx
+         46                       real(8),dimension(5,2,jx) :: ccy
+         47                       real(8),dimension(5,2,kx) :: ccz
+         48                     
+         49                     ! cell center variables
+         50                       real(8),dimension(ix,jx,kx) :: ro,pr
+         51                       real(8),dimension(ix,jx,kx) :: vx,vy,vz
+         52                       real(8),dimension(ix,jx,kx) :: bx,by,bz,phi
+         53                       real(8),dimension(ix,jx,kx) :: eta
+         54                     
+         55                       real(8),dimension(ix,jx,kx) :: ro1,pr1
+         56                       real(8),dimension(ix,jx,kx) :: vx1,vy1,vz1
+         57                       real(8),dimension(ix,jx,kx) :: bx1,by1,bz1,phi1
+         58                     
+         59                     ! gravitation
+         60                       real(8),dimension(ix,jx,kx) :: gx,gy,gz
+         61                     
+         62                       real(8),dimension(ix,jx,kx) :: roi,pri
+         63                       real(8),dimension(ix,jx,kx) :: vxi,vyi,vzi
+         64                       real(8),dimension(ix,jx,kx) :: bxi,byi,bzi
+         65                     
+         66                       real(8) :: ch,cr
+         67                     
+         68                       real(8) :: gm ! specific heat retio
+         69                       real(8) :: eta0,vc
+         70                     
+         71                       real(8) :: floor ! minimum value
+         72                     
+         73                     ! MPI
+         74                       integer :: mpisize
+         75                       integer :: mpirank
+         76                     
+         77                     ! MPI type
+         78                       type(mpidomain) :: mpid
+         79                     
+         80                     ! test1028
+         81                       integer,parameter :: iCalNum = 5
+         82                       integer,parameter :: iInterNum = 6
+         83                       integer,parameter :: mf_calPhysValue = 401
+         84                     
+         85                       real(8),dimension(ix,jx,kx) :: pb,ee,am,rx,ry,rz
+         86                       real(8),dimension(iCalNum) :: avVal
+         87                       real(8),dimensioN(iInterNum) :: avInterVal
+         88                     
+         89                     !--av
+         90                       real(8) :: baseAV
+         91                       real(8) :: pbAV,prAV
+         92                       real(8) :: ebAV,roAv,eeAv,amAv
+         93                     
+         94                       real(8),parameter :: xmin_MAV=0.7d0
+         95                       real(8),parameter :: xmax_MAV=1.3d0
+         96                       real(8),parameter :: zmin_MAV=0.0d0
+         97                       real(8),parameter :: zmax_MAV=0.3d0
+         98                     !--tcr
+         99                       real(8),dimension(kx) :: baseTCR
+        100                     
+        101                       real(8),dimension(kx) :: bxTCR,byTCR,bzTCR
+        102                       real(8),dimension(kx) :: rxTCR,ryTCR,rzTCR
+        103                       real(8),dimension(kx) :: roTCR,pbTCR,prTCR
+        104                     
+        105                       real(8),parameter :: xObs1 = 0.3d0
+        106                       real(8),parameter :: xObs2 = 0.5d0
+        107                       real(8),parameter :: xObs3 = 0.75d0
+        108                       real(8),parameter :: xObs4 = 1.0d0
+        109                       real(8),parameter :: xObs5 = 1.5d0
+        110                     
+        111                     !--cooling
+        112                       real(8),parameter :: velocity_c = 2.9979d0*(10.0d0**10)                                       !cgs
+        113                       real(8),parameter :: mass_bh = 10.0d0                                                         !per mass_solar
+        114                       real(8),parameter :: mass_proton = 1.6726d0*(10.0d0**(-24))                                   !cgs
+        115                       real(8),parameter :: boltzmann_const = 1.3807d0*(10.0d0**(-16))                               !cgs
+        116                       real(8),parameter :: Navo = 6.0221d0*(10.0d0**23)                                             !Avogadro's constant
+        117                     !  real(8),parameter :: mmw = 0.62d0									!mean molecular weight
+        118                       real(8),parameter :: mmw = 1.0d0                                                              !mean molecular weight
+        119                       real(8),parameter :: rg = 3.0d0*(10.0d0**6)*(mass_bh/10.0d0)                                  !cgs Schwarzschild radius
+        120                     !  real(8),parameter :: rg_nrmlx = 1.0d0/50.0d0					         	!per nrmlx
+        121                       real(8),parameter :: rg_nrmlx = 1.0d0/10.0d0                                                  !per nrmlx
+        122                     !  real(8),parameter :: rg_nrmlx = 1.0d0/1000.0d0                                                  !per nrmlx
+        123                     
+        124                     
+        125                       real(8),parameter :: nrmlro = 0.29d0*8.3d0*(10.0d0**(-7))/(mass_bh/10.0d0)            !normalized ro
+        126                       real(8),parameter :: nrmlte = mass_proton*(velocity_c**2)/boltzmann_const             !normalized te
+        127                       real(8),parameter :: nrmlx = rg/rg_nrmlx                                              !normalized x
+        128                       real(8),parameter :: nrmlv = sqrt(0.5d0*rg_nrmlx/((1.0d0-rg_nrmlx)**2))*velocity_c    !normalized v
+        129                       real(8),parameter :: nrmlt = nrmlx/nrmlv                                              !normalized t
+        130                       real(8),parameter :: nrmlee = nrmlro*nrmlv*nrmlv                                      !normalized ee
+        131                     
+        132                       real(8),parameter :: RadCool = nrmlro*sqrt(nrmlte)*nrmlx/(nrmlv**3)*(6.2d0*(10.0d0**20))   !cooling factor
+        133                       real(8),parameter :: te_factor = mmw*(nrmlv**2)/Navo/mass_proton/(velocity_c**2)           !factor for te
+        134                     
+        135                       real(8),parameter :: rohalo = 1.0d-4
+        136                     !  real(8),parameter :: rohalo = 1.0d-6
+        137                     
+        138                     ! test1028
+        139                     
+        140                     !======================================================================|
+        141                     !     prologue
+        142                     !======================================================================|
+        143                     
+        144                       integer :: mcont,ndi
+        145                     
+        146                     !----------------------------------------------------------------------|
+        147                     !  initialize counters
+        148                     
+        149                       integer :: nd,ns,merr,ns1,ns2,nscount
+        150                       real(8) :: time,timep,swtch_t
+        151                     
+        152                     !----------------------------------------------------------------------|
+        153                     !   time control parameters
+        154                     !     nstop : number of total time steps for the run
+        155                     
+        156                       real(8) :: tend,dtout,dtout1
+        157                       integer :: nstop
+        158                     
+        159                       integer :: mwflag,mw,nt1,nt2,mw1
+        160                       integer :: nt3,nt4,nd1
+        161                     
+        162                       real(8) :: dt,hdt ! time step
+        163                       real(8) :: dtg
+        164                     
+        165                       real(8) :: safety ! CFL number
+        166                       real(8) :: dtmin ! minimum time step
+        167                     
+        168                       integer :: idf
+        169                     
+        170                       integer :: i,j,k,n
+        171                     
+        172                       integer :: mf_qq, err_flg,nanflg
+        173                     
+        174                       real(8) :: xin
+        175                       real(8) :: te_limit
+        176                     
+        177                       real(8) :: temp
+        178                     !======================================================================|
+        179                     !     prologue
+        180                     !======================================================================|
+        181                       floor = 1.d-6
+        182                     
+        183                       mcont=0
+        184                       ndi=1000
+        185                     
+        186                       nd = 1
+        187                       nd1 = 1
+        188                     
+        189                     !----------------------------------------------------------------------|
+        190                     !   for MPI
+        191                     !
+        192                       call mpi_init(merr)
+        193                       call mpi_comm_size(mpi_comm_world,mpisize,merr)
+        194                       call mpi_comm_rank(mpi_comm_world,mpirank,merr)
+        195                     
+        196                       mpid%mpirank = mpirank
+        197                       mpid%mpisize = mpisize
+        198                     
+        199                     !  mpid%mpisize_2d(1) = 8
+        200                     !  mpid%mpisize_2d(2) = 16
+        201                       mpid%mpisize_2d(1) = 32
+        202                       mpid%mpisize_2d(2) = 32
+        203                     !  mpid%mpisize_2d(1) = 2
+        204                     !  mpid%mpisize_2d(2) = 8
+        205                     
+        206                       igx = ix*mpid%mpisize_2d(1)-2*margin*(mpid%mpisize_2d(1)-1)
+        207                       jgx = jx
+        208                       kgx = kx*mpid%mpisize_2d(2)-2*margin*(mpid%mpisize_2d(2)-1)
+        209                     
+        210                     !----------------------
+        211                     ! determine mpid%mpirank_3d
+        212                     
+        213                       call setmy2drank(mpid,merr)
+        214                       call setmpiboundary(mpid)
+        215                     
+        216     1                 if (mpirank.eq.0) then
+        217     1                    write(6,*) 'igx=',igx,'kgx=',kgx
+        218     1                    write(*,*) 'mpirank',mpirank,'mpirank_2d',mpid%mpirank_2d
+        219     1                 endif
+        220                     
+        221                     !----------------------------------------------------------------------|
+        222                     !  initialize counters
+        223                     
+        224                       nd=1
+        225                       time  = 0.0d0
+        226                       timep = 0.0d0
+        227                       swtch_t=62.8d0
+        228                       ns    = 0
+        229                       merr  = 0
+        230                       nscount=0
+        231                     
+        232                     !----------------------------------------------------------------------|
+        233                     !   time control parameters
+        234                     !     nstop : number of total time steps for the run
+        235                     
+        236                     
+        237                     !  tend = 1.0d0
+        238                     !  tend = 0.4d0
+        239                       tend = 6.28d0*10.0d0
+        240                     !  tend = 6.28d0
+        241                     
+        242                     !  dtout = 0.5d0
+        243                     
+        244                     !  tend = 0.5d0
+        245                     !  dtout = 251.0d0/10.0d0
+        246                       dtout = tend/(100.0d0)
+        247                       dtout1 = dtout/10.0d0
+        248                     
+        249                     !  tend = 6.28d0*100.0d0
+        250                       tend = 6.28d0*20.0d0
+        251                     !  tend = 6.28d0*3.0d0
+        252                     
+        253                       dt = tend
+        254                     
+        255                       nstop = 2000000
+        256                     !nstop=10
+        257                     !  nstop = 100000
+        258                     !----------------------------------------------------------------------|
+        259                     !   setup numerical model (grid, initial conditions, etc.)
+        260                     !
+        261                     
+        262                       call model_machida(idf,mpid,igx,jgx,kgx,ix,jx,kx,margin &
+        263                            ,ro,pr,vx,vy,vz,bx,by,bz,phi,gm &
+        264                            ,x,dx,y,dy,z,dz &
+        265                            ,gx,gz,mf_params,dtout,tend,cr,eta0,vc,eta,xin &
+        266                            ,ccx,ccy,ccz,rg_nrmlx,rohalo,te_limit,te_factor,nrmlv &
+        267                            ,nrmlte,boltzmann_const,Navo,mmw)
+        268                     
+        269                       call exchangeMpixz2(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+        270                            ,phi,merr)
+        271                     
+        272                       call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
+        273                     
+        274                       call saveInit_3d(ix,jx,kx,ro,roi)
+        275                       call saveInit_3d(ix,jx,kx,pr,pri)
+        276                     
+        277                       call saveInit_3d(ix,jx,kx,vx,vxi)
+        278                       call saveInit_3d(ix,jx,kx,vy,vyi)
+        279                       call saveInit_3d(ix,jx,kx,vz,vzi)
+        280                     
+        281                       call saveInit_3d(ix,jx,kx,bx,bxi)
+        282                       call saveInit_3d(ix,jx,kx,by,byi)
+        283                     
+        284                     
+        285                     !----------------------------------------------------------------------|
+        286                     !  file open
+        287                     
+        288                       call openfileCor(nd,mpirank,ix,jx,kx)
+        289                       call openfileAll(nd,mpirank,ix,jx,kx)
+        290                     
+        291                       call dacputparamc(mf_params,'comment','model_machida,int_2')
+        292                       call dacputparamd(mf_params,'dtout',dtout)
+        293                       call dacputparamd(mf_params,'tend',tend)
+        294                       call dacputparami(mf_params,'ix',ix)
+        295                       call dacputparami(mf_params,'jx',jx)
+        296                       call dacputparami(mf_params,'kx',kx)
+        297                       call dacputparami(mf_params,'igx',igx)
+        298                       call dacputparami(mf_params,'jgx',jgx)
+        299                       call dacputparami(mf_params,'kgx',kgx)
+        300                       call dacputparami(mf_params,'margin',margin)
+        301                       call dacputparami(mf_params,'mpi',1)
+        302                       call dacputparami(mf_params,'mpisize',mpisize)
+        303                       call dacputparami(mf_params,'mpirank',mpirank)
+        304                       call dacputparami(mf_params,'mpix',mpid%mpisize_2d(1))
+        305                       call dacputparami(mf_params,'mpiz',mpid%mpisize_2d(2))
+        306                       call dacputparami(mf_params,'beta',100)
+        307                       call dacputparamd(mf_params,'nrmlro',nrmlro)
+        308                       call dacputparamd(mf_params,'nrmlte',nrmlte)
+        309                       call dacputparamd(mf_params,'nrmlx',nrmlx)
+        310                       call dacputparamd(mf_params,'nrmlv',nrmlv)
+        311                       call dacputparamd(mf_params,'nrmlt',nrmlt)
+        312                       call dacputparamd(mf_params,'nrmlee',nrmlee)
+        313                       call dacputparamd(mf_params,'mass_bh',mass_bh)
+        314                       call dacputparamd(mf_params,'rg',rg)
+        315                       call dacputparamd(mf_params,'rg_nrmlx',rg_nrmlx)
+        316                       call dacputparamd(mf_params,'RadCool',RadCool)
+        317                       call dacputparamd(mf_params,'te_factor',te_factor)
+        318                       call dacputparamd(mf_params,'rohalo',rohalo)
+        319                       call dacputparamd(mf_params,'eta0',eta0)
+        320                       call dacputparamd(mf_params,'vc',vc)
+        321                       call dacputparamd(mf_params,'x(1)',x(1))
+        322                       call dacputparamd(mf_params,'y(1)',y(1))
+        323                       call dacputparamd(mf_params,'z(1)',z(1))
+        324                       call dacputparamd(mf_params,'dx(1)',dx(1))
+        325                       call dacputparamd(mf_params,'dy(1)',dy(1))
+        326                       call dacputparamd(mf_params,'dz(1)',dz(1))
+        327                     !  call dacputparamd(mf_params,'te_limit',te_limit)
+        328                     
+        329                     
+        330                     
+        331                     !----------------------------------------------------------------------|
+        332                     !     ready
+        333                     !----------------------------------------------------------------------|
+        334                     
+        335                      	  write(mf_x) x
+        336                     	  write(mf_y) y
+        337                     	  write(mf_z) z
+        338                     
+        339                     	  call dacputparamd(mf_params,'gm',gm)
+        340                     
+        341                     	  write(mf_t) time
+        342                     	  write(mf_ro) ro
+        343                     	  write(mf_pr) pr
+        344                     	  write(mf_vx) vx
+        345                     	  write(mf_vy) vy
+        346                     	  write(mf_vz) vz
+        347                     	  write(mf_bx) bx
+        348                     	  write(mf_by) by
+        349                     	  write(mf_bz) bz
+        350                     
+        351                     	  write(mf_phi) phi
+        352                     	  write(mf_eta) eta
+        353                     
+        354                     	  write(mf_gx) gx
+        355                     	  write(mf_gz) gz
+        356                     
+        357     1               	  if(mpirank .eq. 0)then
+        358     1               	   	  write(6,913) ns,time,nd
+        359     1                  		  write(*,*) 'dt :: ',dt
+        360     1               	  endif
+        361                        call closefileAll()
+        362                        call closefileCor()
+        363                        close(mf_params)
+        364                     
+        365                     !----------------------------------------------------------------------|
+        366                     !  read-data
+        367                     
+        368                     
+        369                       ix0 = ix
+        370                       jx0 = jx
+        371                       kx0 = kx
+        372                       nx0 = nd
+        373                     
+        374                       open(100,file='readFileNumber.dat')
+        375                       read(100,*) nd
+        376                       close(100)
+        377     1                 if(nd .ne. 1)then
+        378     1                    call openReadFileAll(nd,mpirank,ix0,jx0,kx0,nx0)
+        379     1                    read(mfi_ro) ro
+        380     1                    read(mfi_pr) pr
+        381     1               
+        382     1                    read(mfi_vx) vx
+        383     1                    read(mfi_vy) vy
+        384     1                    read(mfi_vz) vz
+        385     1               
+        386     1                    read(mfi_bx) bx
+        387     1                    read(mfi_by) by
+        388     1                    read(mfi_bz) bz
+        389     1               
+        390     1                    read(mfi_phi) phi
+        391     1                    read(mfi_eta) eta
+        392     1                    time = real(nd-1)*dtout
+        393     2                    if(mpirank .eq. 0)then
+        394     2                       write(*,*) 'time :: ',time
+        395     2                    endif
+        396     1               
+        397     1                    call closeReadFileAll()
+        398     1               
+        399     1                 endif
+        400                       nd=nd+1
+        401                     
+        402                     
+        403                     
+        404                     ! test1028
+        405                     !if (FLAG_ModAverage .eq. 1) then
+        406                     !  call openfileModTCR(mpirank,margin,ix,kx,x,xObs1,xObs2,xObs3,xObs4,xObs5)
+        407                     !  call closefileModTCR()
+        408                     !  call open_CalPhysValue(mpirank,'averageVal',mf_calPhysValue)
+        409                     !end if
+        410                     ! test1028
+        411                     
+        412                     !======================================================================|
+        413                     !     time integration
+        414                     !======================================================================|
+        415                     1000  continue
+        416                       ns = ns+1
+        417                       nscount = nscount+1
+        418                       mwflag=0
+        419                     
+        420                     !----------------------------------------------------------------------|
+        421                     !     obtain time spacing
+        422                     
+        423                       safety=0.2d0
+        424                       dtmin=1.d-10
+        425                     
+        426                     !  call getNewdt_glmcyl_res_mpi(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
+        427                     !       ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
+        428                     !       ,dt,merr,ch,mpirank)
+        429                     
+        430                       temp=0.0d0
+        431                       call getNewdt_glmcyl_res_mpi(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
+        432                            ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
+        433                            ,dt,merr,ch,mpirank,temp)
+        434                     
+        435                       call mpi_allreduce(dt,dtg,1,mpi_double_precision,mpi_min &
+        436                            ,mpi_comm_world,merr)
+        437                     
+        438                       dt = dtg
+        439                       err_flg = 1 ! error flag
+        440                       if ( dt.lt.dtmin) goto 9999
+        441                       err_flg = 2 ! error flag
+        442                       if (merr.ne.0) goto 9999
+        443                       timep = time
+        444                       time = time+dt
+        445                     
+        446                       mw=0
+        447                       mw1=0
+        448                     !----- check output
+        449                     
+        450                     ! dtout
+        451                       nt1=int(timep/dtout)
+        452                       nt2=int(time/dtout)
+        453                       if (nt1.lt.nt2) mw=1
+        454                     
+        455                     ! hst
+        456                       nt3=int(timep/dtout1)
+        457                       nt4=int(time/dtout1)
+        458                       if (nt3.lt.nt4) mw1=1
+        459                     
+        460                     !---- integrate
+        461                     
+        462                     !!$!---1st
+        463                     !!$  call integrate_cyl_mp5_1(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+        464                     !!$       ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+        465                     !!$       ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
+        466                     !!$       ,eta0,vc,eta,ccx,ccy,ccz)
+        467                     !!$
+        468                     !!$  call exchangeMpixz2(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
+        469                     !!$       ,phi1,merr)
+        470                     !!$
+        471                     
+        472                     !!$  call bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x)
+        473                     !!$
+        474                     !!$  call bnd_absoub(ix,jx,kx,x,z,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+        475                     !!$       ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1)
+        476                     !!$
+        477                     !!$!---2nd
+        478                     !!$  call integrate_cyl_mp5_2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+        479                     !!$       ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+        480                     !!$       ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
+        481                     !!$       ,eta0,vc,eta,ccx,ccy,ccz)
+        482                     !!$
+        483                     !!$  call exchangeMpixz2(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
+        484                     !!$       ,phi1,merr)
+        485                     !!$
+        486                     !!$  call bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x)
+        487                     !!$
+        488                     !!$  call bnd_absoub(ix,jx,kx,x,z,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+        489                     !!$       ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1)
+        490                     !!$
+        491                     !!$!----3rd
+        492                     !!$  call integrate_cyl_mp5_3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+        493                     !!$       ,gx,gz,floor,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
+        494                     !!$       ,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+        495                     !!$       ,eta0,vc,eta,ccx,ccy,ccz)
+        496                     
+        497                     !------2stage version
+        498                     
+        499                       hdt = 0.5d0*dt
+        500                     
+        501                       call integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,hdt &
+        502                            ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+        503                            ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
+        504                            ,eta0,vc,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+        505                     
+        506                       call exchangeMpixz2(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
+        507                            ,phi1,merr)
+        508                     
+        509                       call bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x)
+        510                     
+        511                       call bnd_absoub(ix,jx,kx,x,z,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+        512                            ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1)
+        513                     
+        514                       call integrate_cyl_mp5_2nd(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+        515                            ,gx,gz,floor,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
+        516                            ,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+        517                            ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+        518                     
+        519                       call exchangeMpixz2(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+        520                            ,phi,merr)
+        521                     
+        522                       call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
+        523                     
+        524                       call bnd_absoub(ix,jx,kx,x,z,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+        525                            ,ro,pr,vx,vy,vz,bx,by,bz)
+        526                     
+        527                     !------2stage version
+        528                     !----------------------------------------------------------------------|
+        529                     !     data output
+        530                     
+        531                     
+        532     1                 if(mpirank .eq. 0)then
+        533     1               !   if(nscount .ge. 100)then
+        534     1                    print '(" step=",i8," time=",e10.5," dt=",e10.5)', ns, time, dt
+        535     1               !     nscount=0
+        536     1               !   endif
+        537     1                 end if
+        538                     
+        539                     !-----test1028----------------------
+        540                     !   ModAverage test
+        541                     
+        542                     !if (FLAG_ModAverage .eq. 1) then
+        543                     !  if (mw1.ne.0) then
+        544                     !     do k=1,kx
+        545                     !        do j=1,jx
+        546                     !           do i=1,ix
+        547                     !              pb(i,j,k) = 0.5d0*(bx(i,j,k)**2+by(i,j,k)**2+bz(i,j,k)**2)
+        548                     !              rx(i,j,k) = ro(i,j,k)*vx(i,j,k)
+        549                     !              ry(i,j,k) = ro(i,j,k)*vy(i,j,k)
+        550                     !              rz(i,j,k) = ro(i,j,k)*vz(i,j,k)
+        551                     !              am(i,j,k) = vy(i,j,k)*x(i)
+        552                     !              ee(i,j,k) = pb(i,j,k) &
+        553                     !                   +0.5d0*ro(i,j,k)*(vx(i,j,k)**2+vy(i,j,k)**2+vz(i,j,k)**2) &
+        554                     !                   +pr(i,j,k)/(gm-1.0d0)
+        555                     !           enddo
+        556                     !        enddo
+        557                     !     enddo
+        558                     !
+        559                     !     call calSumBase(margin,ix,jx,kx,x,y,z,xmin_MAV,xmax_MAV,zmin_MAV,zmax_MAV &
+        560                     !          ,baseAV)
+        561                     !
+        562                     !     call calSum(margin,ix,jx,kx,x,y,z,xmin_MAV,xmax_MAV,zmin_MAV,zmax_MAV &
+        563                     !          ,pb,pbAV)
+        564                     !     call calSum(margin,ix,jx,kx,x,y,z,xmin_MAV,xmax_MAV,zmin_MAV,zmax_MAV &
+        565                     !          ,pr,prAV)
+        566                     !     call calSum(margin,ix,jx,kx,x,y,z,xmin_MAV,xmax_MAV,zmin_MAV,zmax_MAV &
+        567                     !          ,ro,roAV)
+        568                     !     call calSum(margin,ix,jx,kx,x,y,z,xmin_MAV,xmax_MAV,zmin_MAV,zmax_MAV &
+        569                     !          ,ee,eeAV)
+        570                     !     call calSum(margin,ix,jx,kx,x,y,z,xmin_MAV,xmax_MAV,zmin_MAV,zmax_MAV &
+        571                     !          ,am,amAV)
+        572                     !
+        573                     !     avInterVal(1) = baseAv
+        574                     !     avInterVal(2) = pbAv
+        575                     !     avInterVal(3) = prAv
+        576                     !     avInterVal(4) = roAv
+        577                     !     avInterVal(5) = eeAv
+        578                     !     avInterVal(6) = amAv
+        579                     !
+        580                     !     call exchangeSumVal(mpirank,iInterNum,avInterVal)
+        581                     !
+        582                     !     if(mpirank == 0)then
+        583                     !        pbAv = avInterVal(2)/avInterVal(1)
+        584                     !        prAv = avInterVal(3)/avInterVal(1)
+        585                     !        roAv = avInterVal(4)/avInterVal(1)
+        586                     !        eeAv = avInterVal(5)/avInterVal(1)
+        587                     !        amAv = avInterVal(6)/avInterVal(1)
+        588                     !
+        589                     !        avVal(1) = pbAv
+        590                     !        avVal(2) = prAv
+        591                     !        avVal(3) = roAv
+        592                     !        avVal(4) = eeAv
+        593                     !        avVal(5) = amAv
+        594                     !
+        595                     !        call outputCalPhysValue(mpirank,iCalNum,avVal,ns,time &
+        596                     !             ,'averageVal',mf_calPhysValue)
+        597                     !     endif
+        598                     !!   TimeChnageav@Rad test
+        599                     !     call openfileModTCRsOld(mpirank,margin,ix,x,xObs1,xObs2,xObs3,xObs4,xObs5)
+        600                     !
+        601                     !     call TimeChangeVal(margin,ix,jx,kx,x,y,z,xObs1 &
+        602                     !          ,ro,pb,pr,rx,ry,rz,bx,by,bz &
+        603                     !          ,baseTCR,roTCR,pbTCR,prTCR,rxTCR,ryTCR,rzTCR,bxTCR,byTCR,bzTCR)
+        604                     !
+        605                     !     if(isInRadius(margin,ix,x,xObs1) == 1)then
+        606                     !        write(mtr1_bx) bxTCR
+        607                     !        write(mtr1_by) byTCR
+        608                     !        write(mtr1_bz) bzTCR
+        609                     !        write(mtr1_rx) rxTCR
+        610                     !        write(mtr1_ry) ryTCR
+        611                     !        write(mtr1_rz) rzTCR
+        612                     !        write(mtr1_ro) roTCR
+        613                     !        write(mtr1_pb) pbTCR
+        614                     !        write(mtr1_pr) prTCR
+        615                     !     end if
+        616                     !
+        617                     !     call TimeChangeVal(margin,ix,jx,kx,x,y,z,xObs2 &
+        618                     !          ,ro,pb,pr,rx,ry,rz,bx,by,bz &
+        619                     !          ,baseTCR,roTCR,pbTCR,prTCR,rxTCR,ryTCR,rzTCR,bxTCR,byTCR,bzTCR)
+        620                     !
+        621                     !     if(isInRadius(margin,ix,x,xObs2) == 1)then
+        622                     !        write(mtr2_bx) bxTCR
+        623                     !        write(mtr2_by) byTCR
+        624                     !        write(mtr2_bz) bzTCR
+        625                     !        write(mtr2_rx) rxTCR
+        626                     !        write(mtr2_ry) ryTCR
+        627                     !        write(mtr2_rz) rzTCR
+        628                     !        write(mtr2_ro) roTCR
+        629                     !        write(mtr2_pb) pbTCR
+        630                     !        write(mtr2_pr) prTCR
+        631                     !     end if
+        632                     !
+        633                     !     call TimeChangeVal(margin,ix,jx,kx,x,y,z,xObs3 &
+        634                     !          ,ro,pb,pr,rx,ry,rz,bx,by,bz &
+        635                     !          ,baseTCR,roTCR,pbTCR,prTCR,rxTCR,ryTCR,rzTCR,bxTCR,byTCR,bzTCR)
+        636                     !
+        637                     !     if(isInRadius(margin,ix,x,xObs3) == 1)then
+        638                     !        write(mtr3_bx) bxTCR
+        639                     !        write(mtr3_by) byTCR
+        640                     !        write(mtr3_bz) bzTCR
+        641                     !        write(mtr3_rx) rxTCR
+        642                     !        write(mtr3_ry) ryTCR
+        643                     !        write(mtr3_rz) rzTCR
+        644                     !        write(mtr3_ro) roTCR
+        645                     !        write(mtr3_pb) pbTCR
+        646                     !        write(mtr3_pr) prTCR
+        647                     !     end if
+        648                     !
+        649                     !     call TimeChangeVal(margin,ix,jx,kx,x,y,z,xObs4 &
+        650                     !          ,ro,pb,pr,rx,ry,rz,bx,by,bz &
+        651                     !          ,baseTCR,roTCR,pbTCR,prTCR,rxTCR,ryTCR,rzTCR,bxTCR,byTCR,bzTCR)
+        652                     !
+        653                     !     if(isInRadius(margin,ix,x,xObs4) == 1)then
+        654                     !        write(mtr4_bx) bxTCR
+        655                     !        write(mtr4_by) byTCR
+        656                     !        write(mtr4_bz) bzTCR
+        657                     !        write(mtr4_rx) rxTCR
+        658                     !        write(mtr4_ry) ryTCR
+        659                     !        write(mtr4_rz) rzTCR
+        660                     !        write(mtr4_ro) roTCR
+        661                     !        write(mtr4_pb) pbTCR
+        662                     !        write(mtr4_pr) prTCR
+        663                     !     end if
+        664                     !
+        665                     !     call TimeChangeVal(margin,ix,jx,kx,x,y,z,xObs5 &
+        666                     !          ,ro,pb,pr,rx,ry,rz,bx,by,bz &
+        667                     !          ,baseTCR,roTCR,pbTCR,prTCR,rxTCR,ryTCR,rzTCR,bxTCR,byTCR,bzTCR)
+        668                     !
+        669                     !     if(isInRadius(margin,ix,x,xObs5) == 1)then
+        670                     !        write(mtr5_bx) bxTCR
+        671                     !        write(mtr5_by) byTCR
+        672                     !        write(mtr5_bz) bzTCR
+        673                     !        write(mtr5_rx) rxTCR
+        674                     !        write(mtr5_ry) ryTCR
+        675                     !        write(mtr5_rz) rzTCR
+        676                     !        write(mtr5_ro) roTCR
+        677                     !        write(mtr5_pb) pbTCR
+        678                     !        write(mtr5_pr) prTCR
+        679                     !     end if
+        680                     !
+        681                     !     call closefileModTCR()
+        682                     !
+        683                     !     if(mpirank .eq. 0)then
+        684                     !        write(6,913) ns,time,nd1
+        685                     !        write(*,*) '[TCR][AV] dt :: ',dt
+        686                     !        write(*,*) 'nd1: ',nd1
+        687                     !     end if
+        688                     !     nd1 = nd1+1
+        689                     !  endif
+        690                     !
+        691                     !endif
+        692                     !-----test1028----------------------
+        693                     
+        694     1                 if (mw.ne.0) then
+        695     1                    call openfileAll(nd,mpirank,ix,jx,kx)
+        696     1               
+        697     1                    write(mf_t) time
+        698     1                    write(mf_ro) ro
+        699     1                    write(mf_pr) pr
+        700     1                    write(mf_vx) vx
+        701     1                    write(mf_vy) vy
+        702     1                    write(mf_vz) vz
+        703     1                    write(mf_bx) bx
+        704     1                    write(mf_by) by
+        705     1                    write(mf_bz) bz
+        706     1               
+        707     1                    write(mf_phi) phi
+        708     1                    write(mf_eta) eta
+        709     1               
+        710     1                    call closefileAll()
+        711     1               
+        712     2                    if(mpirank .eq. 0)then
+        713     2                       write(6,913) ns,time,nd
+        714     2                       write(*,*) '[NORMAL] dt :: ',dt
+        715     2                       write(*,*) 'nd: ',nd
+        716     2                    end if
+        717     1               
+        718     1                   open(100,file='readFileNumber.dat')
+        719     1                   write(100,*) nd
+        720     1                   close(100)
+        721     1               
+        722     1                    nd=nd+1
+        723     1                    mwflag=1
+        724     1                 endif
+        725                     !----------------------------------------------------------------------|
+        726                     !     loop test
+        727                     
+        728                       if (ns .lt. nstop .and. time .lt. tend ) goto 1000
+        729                     
+        730                     !======================================================================|
+        731                     !     epilogue
+        732                     !======================================================================|
+        733                     9999 continue
+        734     1                 if (merr .ne. 0) then
+        735     1                    write(6,*) '#### abnormal stop ####'
+        736     1                 endif
+        737                     !----------------------------------------------------------------------|
+        738                     !  data output
+        739     1                 if (mwflag.eq.0) then
+        740     2                    if(mpirank .eq. 0)then
+        741     2                       write(6,913) ns,time,nd
+        742     2                    end if
+        743     1               
+        744     1                    call openfileAll(nd,mpirank,ix,jx,kx)
+        745     1               
+        746     1                    write(mf_t) time
+        747     1                    write(mf_ro) ro
+        748     1                    write(mf_pr) pr
+        749     1                    write(mf_vx) vx
+        750     1                    write(mf_vy) vy
+        751     1                    write(mf_vz) vz
+        752     1                    write(mf_bx) bx
+        753     1                    write(mf_by) by
+        754     1                    write(mf_bz) bz
+        755     1               
+        756     1                    write(mf_phi) phi
+        757     1                    write(mf_eta) eta
+        758     1               
+        759     1                    call closefileAll()
+        760     1                 endif
+        761                     
+        762                     ! test1028
+        763                     !  call closefileModTCR()
+        764                     ! test1028
+        765                     !======================================================================|
+        766                     !        enddo
+        767                     !======================================================================|
+        768                     
+        769                       close(mf_t)
+        770                       call mpi_finalize(merr)
+        771                     
+        772                       write(6,915) ns,time
+        773     1                 if (merr.eq.0) then
+        774     1                    write(6,*) '  ### normal stop ###'
+        775     1                 else
+        776     1                    write(6,*) '  ### abnormal stop ###'
+        777     1                 endif
+        778                     
+        779                       stop
+        780                     
+        781                     913 format (1x,' write    ','step=',i8,' time=',e10.3,' nd =',i3)
+        782                     915 format (1x,' stop     ','step=',i8,' time=',e10.3)
+        783                     
+        784                     
+        785                     end program main
+
+ Diagnostic messages: program name(main)
+   jwd8220o-i  "main.f90", line 4: Optimizations performed in this program unit with possibility of side effects. See informational messages below to determine which such optimizations have been performed.
+   jwd2006i-i  "main.f90", line 60: 'gy' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 85: 'rz' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 85: 'ry' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 85: 'rx' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 85: 'am' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 85: 'ee' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 85: 'pb' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 86: 'avVal' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 87: 'avInterVal' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 90: 'baseAV' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 91: 'prAV' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 91: 'pbAV' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 92: 'amAv' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 92: 'eeAv' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 92: 'roAv' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 92: 'ebAV' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 99: 'baseTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 101: 'bzTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 101: 'byTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 101: 'bxTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 102: 'rzTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 102: 'ryTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 102: 'rxTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 103: 'prTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 103: 'pbTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 103: 'roTCR' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 149: 'ns2' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 149: 'ns1' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 170: 'n' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 170: 'k' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 170: 'j' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 170: 'i' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 172: 'nanflg' is declared but never referenced.
+   jwd2006i-i  "main.f90", line 172: 'mf_qq' is declared but never referenced.
+   jwd2450i-i  "main.f90", line 192: There is no procedure or module 'mpi_init' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 193: There is no procedure or module 'mpi_comm_size' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 194: There is no procedure or module 'mpi_comm_rank' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 213: There is no procedure or module 'mpi_domain_xz' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 214: There is no procedure or module 'mpi_domain_xz' specified for inline expansion.
+   jwd8206o-i  "main.f90", line 246: Division changed to multiplication by reciprocal.
+   jwd8206o-i  "main.f90", line 247: Division changed to multiplication by reciprocal.
+   jwd2450i-i  "main.f90", line 262: There is no procedure or module 'model_machida' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 282: There is no procedure or module 'saveInit_3d' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 288: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 289: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 291: There is no procedure or module 'dacputparamc' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 306: There is no procedure or module 'dacputparami' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 339: There is no procedure or module 'dacputparamd' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 361: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 362: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 378: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 397: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd6132s-i  "main.f90", line 415: SIMD conversion cannot be applied to loop of DO WHILE, DO UNTIL or IF/GO TO.
+   jwd2450i-i  "main.f90", line 431: There is no procedure or module 'getNewdt_glmcyl_res_mpi' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 435: There is no procedure or module 'mpi_allreduce' specified for inline expansion.
+   jwd8206o-i  "main.f90", line 456: Division changed to multiplication by reciprocal.
+   jwd8206o-i  "main.f90", line 457: Division changed to multiplication by reciprocal.
+   jwd2450i-i  "main.f90", line 501: There is no procedure or module 'integrate_cyl_mp5_1st' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 514: There is no procedure or module 'integrate_cyl_mp5_2nd' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 519: There is no procedure or module 'exchangeMpixz2' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 522: There is no procedure or module 'bnd' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 524: There is no procedure or module 'bnd_absoub' specified for inline expansion.
+   jwd1562i-i  "main.f90", line 534: Recommended relationship between field width 'W' and decimal part 'D' in E, D or Q edit descriptor: W>=D+7.
+   jwd2450i-i  "main.f90", line 695: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 710: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 744: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 759: There is no procedure or module 'openfile' specified for inline expansion.
+   jwd2450i-i  "main.f90", line 770: There is no procedure or module 'mpi_finalize' specified for inline expansion.
+
+ Procedure information
+   Lines      : 1520
+   Statements : 689
+   Stack(byte): 80
+   Prefetch num: 0
+
+ Total information
+   Procedures       : 1
+   Total lines      : 1520
+   Total statements : 689
+   Total stack(byte): 80
+   Total prefetch num: 0
+
