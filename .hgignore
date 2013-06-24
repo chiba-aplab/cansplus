@@ -1,0 +1,14 @@
+syntax: glob
+*.dat
+*.ps
+*.eps
+*.png
+*.jpg
+*.pdf
+*.svg
+*.o
+*.out
+*.mod
+*.a
+core*
+*~
