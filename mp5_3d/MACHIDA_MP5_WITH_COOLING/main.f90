@@ -500,8 +500,8 @@ program main
   call integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,hdt &
        ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
        ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
-       ,eta0,vc,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
-  
+       ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+
   call exchangeMpixz2(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
        ,phi1,merr)
 
