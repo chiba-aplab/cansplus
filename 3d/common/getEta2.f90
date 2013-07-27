@@ -32,7 +32,7 @@ subroutine getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
            tmp = max(ro(i,j,k),1.0)
            vd = cur_abs/ro(i,j,k)
 !           flag=max(sign(1,ro(i,j,k)-rohalo),0)
-           flag=max(sign(1,ro(i,j,k)-1.0d-2),0)
+           flag=max(sign(1.0d0,ro(i,j,k)-1.0d-2),0.0d0)
            eta(i,j,k) = flag*min(etamax,eta0*(max((vd/vc-1.0d0),0.0d0)**2))
 !           eta(i,j,k) = min(etamax,eta0*(max((vd/vc-1.0d0),0.0d0)**2))
         end do

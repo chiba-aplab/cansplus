@@ -75,9 +75,7 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   integer :: mdir
   integer :: i,j,k
 
-  real(8) :: inversex
-
-  real(8) :: pt
+  real(8) :: inversex             !1/x
 
   real(8) :: pi,hpi4,inhpi4
 
@@ -354,10 +352,10 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
            see = -0.5d0*(feexr(i,j,k)+feexr(i-1,j,k))*inversex &
                 +ro(i,j,k)*(vx(i,j,k)*gx(i,j,k)+vz(i,j,k)*gz(i,j,k))
 !           if (time .gt. swtch_t) then
-			  if (ro(i,j,k) .gt. rohalo) then
-		        te = te_factor*pr(i,j,k)/ro(i,j,k)
-		        see = see - RadCool*(ro(i,j,k)**2)*sqrt(te)
-			  endif
+           if (ro(i,j,k) .gt. rohalo) then
+           te = te_factor*pr(i,j,k)/ro(i,j,k)
+           see = see - RadCool*(ro(i,j,k)**2)*sqrt(te)
+           endif
 !           endif
            ee1(i,j,k) = ee1(i,j,k)+dt*see
 ! phi
