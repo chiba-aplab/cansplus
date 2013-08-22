@@ -110,12 +110,20 @@ contains
     real(8) :: qqr, qql
     real(8) :: minmod_limiter2
 
-    if(qqr > 0.0d0)then
-       minmod_limiter2 = max(0.0d0,min(qql,qqr))
-    else
-       minmod_limiter2 = min(0.0d0,max(qql,qqr))
-    endif
-       
+    real(8) :: signr,signlr
+
+    signr = sign(1.0d0,qqr)
+    signlr = sign(1.0d0,(qqr*qql))
+
+    minmod_limiter2 = max(signlr,0.0d0)*( &
+         max(signr,0.0d0)*max(0.0d0,min(qql,qqr)) &
+         -min(signr,0.0d0)*min(0.0d0,max(qql,qqr)))
+!!$    if(qqr > 0.0d0)then
+!!$       minmod_limiter2 = max(0.0d0,min(qql,qqr))
+!!$    else
+!!$       minmod_limiter2 = min(0.0d0,max(qql,qqr))
+!!$    endif
+
     return
   end function minmod_limiter2
   
@@ -126,10 +134,28 @@ contains
     real(8) :: minmod_lr
     real(8) :: MC_limiter
 
+    real(8) :: signlr,signMC
 !!$    minmod_lr = minmod_limiter(2.0d0*qql,2.0d0*qqr)
+!    MC_limiter = minmod_limiter2(0.5d0*qqc,minmod_lr)
+
     minmod_lr = minmod_limiter2(qql,qqr)
-    MC_limiter = minmod_limiter2(0.5d0*qqc,minmod_lr)
+
+    signlr = sign(1.0d0,(qqc*minmod_lr))
+    signMC = sign(1.0d0,(dabs(0.5d0*qqc)-dabs(2.0d0*minmod_lr)))
+
+    MC_limiter = max(signlr,0.0d0)*( &
+         max(signMC,0.0d0)*minmod_lr &
+         -min(signMC,0.0d0)*(0.5d0*qqc))
     
+!!$    if((qqc*minmod_lr) < 0.0d0)then
+!!$       MC_limiter = 0.0d0
+!!$    else
+!!$       if(dabs(0.5d0*qqc) < dabs(2.0d0*minmod_lr))then
+!!$          MC_limiter = 0.5d0*qqc
+!!$       else
+!!$          MC_limiter = minmod_lr
+!!$       endif
+!!$    endif
     return
   end function MC_limiter
 end subroutine lr_state_MC

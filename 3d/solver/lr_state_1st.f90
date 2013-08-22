@@ -1,4 +1,4 @@
-subroutine lr_state_1D(mdir,ix,jx,kx,qq &
+subroutine lr_state_1st(mdir,ix,jx,kx,qq &
      ,qqw)
   implicit none
 
@@ -44,4 +44,4 @@ subroutine lr_state_1D(mdir,ix,jx,kx,qq &
      end do
   endif
   return
-end subroutine lr_state_1D
+end subroutine lr_state_1st

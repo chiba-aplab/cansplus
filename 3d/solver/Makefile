@@ -6,10 +6,10 @@ FC = mpifrtpx -Kfast
 CANS_LIB_DIR = ..
 
 TARGET = $(CANS_LIB_DIR)/libcans2_3d.a
-OBJS =  hlld_flux.o hll_flux.o hlld_flux2.o hlld_flux3.o hlld_flux_org.o\
-	glm_flux.o cal_interface_BP.o hancock_diff.o hancock_Predictor.o\
-	hancock_diff_e.o lr_state_minmod.o lr_state_MC.o lr_state_1D.o \
-	lr_state_MC2.o lr_state_MC2_dxyz.o \
+OBJS =  hlld_flux.o hll_flux.o \
+	glm_flux.o cal_interface_BP.o \
+	lr_state_minmod.o lr_state_MC.o lr_state_1st.o \
+	lr_state_MC.o lr_state_MC_dxyz.o \
 
 
 '.update' : $(OBJS)

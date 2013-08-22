@@ -90,6 +90,12 @@ subroutine getNewdt_glm(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
                 + (dabs(v2)+sqrt(cfysq))/dy(j) &
                 + (dabs(v3)+sqrt(cfzsq))/dz(k)
            
+! diffusion velocity
+           temp2 = eta(i,j,k)/dx(i)**2 &
+                +eta(i,j,k)/dy(j)**2 &
+                +eta(i,j,k)/dz(k)**2
+
+           temp = max(temp,temp2)
            if ( temp > dtmaxi) then
               dtmaxi = temp
               imin = i

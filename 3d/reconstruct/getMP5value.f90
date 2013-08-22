@@ -9,7 +9,7 @@ function getMP5value(lr,qqm2,qqm1,qq0,qqp1,qqp2,qqor,Alpha)
 !----function
   real(8) :: minmod4,d1,d2,d3,d4
   real(8) :: minmod,x,y
-  real(8) :: median
+!  real(8) :: median
   
   real(8) :: djm1,dj,djp1,dm4jph,dm4jmh,djpp1,dm4jpph
   real(8) :: qqul,qqav,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1

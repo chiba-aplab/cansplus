@@ -1,7 +1,7 @@
 !
 ! calculate time step dt in resistive glmmhd @ cartesian grid
 ! 
-subroutine getNewdt_glmcyl_res(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
+subroutine getNewdt_glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
      ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
      ,dt,merr,ch)
 
@@ -130,4 +130,4 @@ subroutine getNewdt_glmcyl_res(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
      write(6,*) 'eta:: ',eta(imin,jmin,kmin)
   endif
   return
-end subroutine getNewdt_glmcyl_res
+end subroutine getNewdt_glmcyl
