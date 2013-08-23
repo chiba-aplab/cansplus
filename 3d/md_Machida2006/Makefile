@@ -9,7 +9,7 @@ OBJS =  convert.o openfile.o \
 	perturb.o absorb.o perturb2.o \
 	model_machida.o bnd.o bnd_absoub.o \
 	MC2.o MC2_dxyz.o switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
-	get_temperature.o getNewdt_glmcyl_res_mpi.o integrate.o main.o 
+	getNewdt_glmcyl_res_mpi.o integrate.o main.o 
 
 params.txt : a.out
 #	./a.out
