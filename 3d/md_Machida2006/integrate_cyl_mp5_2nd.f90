@@ -104,7 +104,7 @@ subroutine integrate_cyl_mp5_2nd(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   call getcurrent_cyl(bx1,by1,bz1,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
 
-  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction

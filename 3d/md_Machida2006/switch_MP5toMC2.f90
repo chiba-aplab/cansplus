@@ -48,7 +48,9 @@ subroutine switchMP5toMC2(mdir,ix,jx,kx,ro,qq &
      do k=2,kx-1
         do j=2,jx-1
            do i=4,ix-2
-            if(ro(i,j,k) < floor2 .or. ro(i-1,j,k) < floor2 .or. ro(i-2,j,k) < floor2 .or. ro(i+1,j,k) < floor2 .or. ro(i+2,j,k) < floor2 .or. x(i-3) .le. xin) then
+            if(ro(i,j,k) < floor2 .or. ro(i-1,j,k) < floor2 &
+                 .or. ro(i-2,j,k) < floor2 .or. ro(i+1,j,k) < floor2 &
+                 .or. ro(i+2,j,k) < floor2 .or. x(i-3) .le. xin) then
               dqqx = MC_limiter((qq(i+1,j,k)-qq(i-1,j,k)) &
                    ,(qq(i+1,j,k)-qq(i,j,k)) &
                    ,(qq(i,j,k)-qq(i-1,j,k)))
@@ -67,7 +69,9 @@ subroutine switchMP5toMC2(mdir,ix,jx,kx,ro,qq &
      do k=2,kx-1
         do j=3,jx-2
            do i=4,ix-1
-            if(ro(i,j,k) < floor2 .or. ro(i,j-1,k) < floor2 .or. ro(i,j-2,k) < floor2 .or. ro(i,j+1,k) < floor2 .or. ro(i,j+2,k) < floor2 .or. x(i-3) .le. xin) then
+            if(ro(i,j,k) < floor2 .or. ro(i,j-1,k) < floor2 &
+                 .or. ro(i,j-2,k) < floor2 .or. ro(i,j+1,k) < floor2 &
+                 .or. ro(i,j+2,k) < floor2 .or. x(i-3) .le. xin) then
               dqqy = MC_limiter((qq(i,j+1,k)-qq(i,j-1,k)) &
                    ,(qq(i,j+1,k)-qq(i,j,k)) &
                    ,(qq(i,j,k)-qq(i,j-1,k)))
@@ -86,7 +90,9 @@ subroutine switchMP5toMC2(mdir,ix,jx,kx,ro,qq &
      do k=3,kx-2
         do j=2,jx-1
            do i=4,ix-1
-            if(ro(i,j,k) < floor2 .or. ro(i,j,k-1) < floor2 .or. ro(i,j,k-2) < floor2 .or. ro(i,j,k+1) < floor2 .or. ro(i,j,k+2) < floor2 .or. x(i-3) .lt. xin) then
+            if(ro(i,j,k) < floor2 .or. ro(i,j,k-1) < floor2 &
+                 .or. ro(i,j,k-2) < floor2 .or. ro(i,j,k+1) < floor2 &
+                 .or. ro(i,j,k+2) < floor2 .or. x(i-3) .lt. xin) then
               dqqz = MC_limiter((qq(i,j,k+1)-qq(i,j,k-1)) &
                    ,(qq(i,j,k+1)-qq(i,j,k)) &
                    ,(qq(i,j,k)-qq(i,j,k-1)))

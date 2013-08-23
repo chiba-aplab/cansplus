@@ -176,27 +176,14 @@ program main
 !   time control parameters
 !     nstop : number of total time steps for the run
 
-  
-!  tend = 1.0d0
-!  tend = 0.4d0
   tend = 6.28d0*10.0d0
-!  tend = 6.28d0
-
-!  dtout = 0.5d0
-
-!  tend = 0.5d0
-!  dtout = 251.0d0/10.0d0
   dtout = tend/(100.0d0)
   dtout1 = dtout/10.0d0
-
-!  tend = 6.28d0*100.0d0
   tend = 6.28d0*40.0d0
-!  tend = 6.28d0*3.0d0
 
   dt = tend
 
   nstop = 2000000
-!  nstop = 10000
 
 !----------------------------------------------------------------------|
 !   setup numerical model (grid, initial conditions, etc.)
@@ -214,85 +201,21 @@ program main
 
   call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
 
-  call saveInit_3d(ix,jx,kx,ro,roi)
-  call saveInit_3d(ix,jx,kx,pr,pri)
-
-  call saveInit_3d(ix,jx,kx,vx,vxi)
-  call saveInit_3d(ix,jx,kx,vy,vyi)
-  call saveInit_3d(ix,jx,kx,vz,vzi)
-
-  call saveInit_3d(ix,jx,kx,bx,bxi)
-  call saveInit_3d(ix,jx,kx,by,byi)
-
 !----------------------------------------------------------------------|
 !  file open
 
   call openfileCor(nd,mpirank,ix,jx,kx)
   call openfileAll(nd,mpirank,ix,jx,kx)
- 
-  call dacputparamc(mf_params,'comment','model_machida,int_2')
-  call dacputparamd(mf_params,'dtout',dtout)
-  call dacputparamd(mf_params,'tend',tend)
-  call dacputparami(mf_params,'ix',ix)
-  call dacputparami(mf_params,'jx',jx)
-  call dacputparami(mf_params,'kx',kx)
-  call dacputparami(mf_params,'igx',igx)
-  call dacputparami(mf_params,'jgx',jgx)
-  call dacputparami(mf_params,'kgx',kgx)
-  call dacputparami(mf_params,'margin',margin)
-  call dacputparami(mf_params,'mpi',1)
-  call dacputparami(mf_params,'mpisize',mpisize)
-  call dacputparami(mf_params,'mpirank',mpirank)
-  call dacputparami(mf_params,'mpix',mpid%mpisize_2d(1))
-  call dacputparami(mf_params,'mpiz',mpid%mpisize_2d(2))
-  call dacputparami(mf_params,'beta',100)
-  call dacputparamd(mf_params,'nrmlro',nrmlro)
-  call dacputparamd(mf_params,'nrmlte',nrmlte)
-  call dacputparamd(mf_params,'nrmlx',nrmlx)
-  call dacputparamd(mf_params,'nrmlv',nrmlv)
-  call dacputparamd(mf_params,'nrmlt',nrmlt)
-  call dacputparamd(mf_params,'nrmlee',nrmlee)
-  call dacputparamd(mf_params,'mass_bh',mass_bh)
-  call dacputparamd(mf_params,'rg',rg)
-  call dacputparamd(mf_params,'rg_nrmlx',rg_nrmlx)
-  call dacputparamd(mf_params,'RadCool',RadCool)
-  call dacputparamd(mf_params,'te_factor',te_factor)
-  call dacputparamd(mf_params,'rohalo',rohalo)
-  call dacputparamd(mf_params,'eta0',eta0)
-  call dacputparamd(mf_params,'vc',vc)
-  call dacputparamd(mf_params,'x(1)',x(1))
-  call dacputparamd(mf_params,'y(1)',y(1))
-  call dacputparamd(mf_params,'z(1)',z(1))
-  call dacputparamd(mf_params,'dx(1)',dx(1))
-  call dacputparamd(mf_params,'dy(1)',dy(1))
-  call dacputparamd(mf_params,'dz(1)',dz(1))
-!  call dacputparamd(mf_params,'te_limit',te_limit)
 
 !----------------------------------------------------------------------|
 !     ready
 !----------------------------------------------------------------------|
 
-    write(mf_x) x
-    write(mf_y) y
-    write(mf_z) z
-  
-    call dacputparamd(mf_params,'gm',gm)
-  
-    write(mf_t) time
-    write(mf_ro) ro
-    write(mf_pr) pr
-    write(mf_vx) vx
-    write(mf_vy) vy
-    write(mf_vz) vz
-    write(mf_bx) bx
-    write(mf_by) by
-    write(mf_bz) bz
+    call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
+    call file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpisize &
+       ,mpirank,mpid,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee,mass_bh,rg,rg_nrmlx &
+       ,RadCool,te_factor,rohalo,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
 
-    write(mf_phi) phi
-    write(mf_eta) eta
-
-    write(mf_gx) gx
-    write(mf_gz) gz
 
     if(mpirank .eq. 0)then
          write(6,913) ns,time,nd
@@ -316,19 +239,8 @@ program main
   close(100)
   if(nd .ne. 1)then
      call openReadFileAll(nd,mpirank,ix0,jx0,kx0,nx0)
-     read(mfi_ro) ro
-     read(mfi_pr) pr
+     call file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
 
-     read(mfi_vx) vx
-     read(mfi_vy) vy
-     read(mfi_vz) vz
-     
-     read(mfi_bx) bx
-     read(mfi_by) by
-     read(mfi_bz) bz
-
-     read(mfi_phi) phi
-     read(mfi_eta) eta
      time = real(nd-1)*dtout
      if(mpirank .eq. 0)then
         write(*,*) 'time :: ',time
@@ -411,20 +323,7 @@ program main
 
   if (mw.ne.0) then
      call openfileAll(nd,mpirank,ix,jx,kx)
-
-     write(mf_t) time
-     write(mf_ro) ro
-     write(mf_pr) pr
-     write(mf_vx) vx
-     write(mf_vy) vy
-     write(mf_vz) vz
-     write(mf_bx) bx
-     write(mf_by) by
-     write(mf_bz) bz
-
-     write(mf_phi) phi
-     write(mf_eta) eta
-
+     call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
      call closefileAll()
 
      if(mpirank .eq. 0)then
@@ -460,20 +359,7 @@ program main
      end if
 
      call openfileAll(nd,mpirank,ix,jx,kx)
-
-     write(mf_t) time
-     write(mf_ro) ro
-     write(mf_pr) pr
-     write(mf_vx) vx
-     write(mf_vy) vy
-     write(mf_vz) vz
-     write(mf_bx) bx
-     write(mf_by) by
-     write(mf_bz) bz
-
-     write(mf_phi) phi
-     write(mf_eta) eta
-
+     call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
      call closefileAll()
   endif
 

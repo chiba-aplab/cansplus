@@ -21,26 +21,26 @@ subroutine MC2_dxyz(ix,jx,kx,x,dx,y,dy,z,dz &
   integer :: mdir
 
 
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,ro &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,ro &
        ,row)
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,pr &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,pr &
        ,prw)
 
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,vx &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,vx &
        ,vxw)
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,vy &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,vy &
        ,vyw)
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,vz &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,vz &
        ,vzw)
 
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,bx &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,bx &
        ,bxw)
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,by &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,by &
        ,byw)
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,bz &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,bz &
        ,bzw)
 
-  call lr_state_MC2_dxyz(mdir,ix,jx,kx,dx,dy,dz,phi &
+  call lr_state_MC_dxyz(mdir,ix,jx,kx,dx,dy,dz,phi &
        ,phiw)
 
 

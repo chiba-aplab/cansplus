@@ -460,7 +460,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   call perturb2(1,mpid,ix,jx,kx,bx,by,bz,x,dx,dy,dz,bbAbsMax)
   call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
-  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
 
   return
 end subroutine model_machida

@@ -1,6 +1,5 @@
 subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
      ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
-     ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
      ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
   use convert
   implicit none
@@ -101,7 +100,7 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
 
-  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
 
 
 !-----Step 1a.---------------------------------------------------------|
@@ -110,7 +109,6 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 1
 
-! if (time .gt. swtch_t) then
   call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
@@ -120,28 +118,6 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
  
-!  call MP5toMC2_2(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir,floor,limit)
-!
-!
-! else
-!  call MC2_dxyz(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-!
-!  call MC2(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-! endif
-!  call 1D(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-
   call cal_interface_BP(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
   call glm_flux(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
@@ -161,7 +137,6 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 2
 
-! if (time .gt. swtch_t) then
   call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
@@ -170,29 +145,6 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
-
-!  call MP5toMC2_2(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir,floor,limit)
-!
-! else
-!  call MC2_dxyz(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-!
-!  call MC2(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-! endif
-!  call 1D(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-
-
 
   call cal_interface_BP(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -213,9 +165,7 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 ! set L/R state at z-direction
 !
   mdir = 3
-
   
-! if (time .gt. swtch_t) then
   call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
@@ -224,27 +174,6 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
-
-!  call MP5toMC2_2(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir,floor,limit)
-
-! else
-!  call MC2_dxyz(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-!
-!  call MC2(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
-! endif
-!  call 1D(ix,jx,kx,x,dx,y,dy,z,dz &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-!       ,mdir)
 
   call cal_interface_BP(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
@@ -267,7 +196,10 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
      do j=3,jx-2
         do i=3,ix-2
            dtodx = dt/dx(i)
+           dtody = dt/(x(i)*dy(j))
+           dtodz = dt/dz(k)
            ro1(i,j,k) = ro(i,j,k)+dtodx*(frox(i-1,j,k)-frox(i,j,k))
+
            ee1(i,j,k) = ee(i,j,k)+dtodx*(feexr(i-1,j,k)-feexr(i,j,k))
            rx1(i,j,k) = rx(i,j,k)+dtodx*(frxx(i-1,j,k)-frxx(i,j,k))
            ry1(i,j,k) = ry(i,j,k)+dtodx*(fryx(i-1,j,k)-fryx(i,j,k))
@@ -287,7 +219,7 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   do k=3,kx-2
      do j=3,jx-2
         do i=3,ix-2
-           dtody = dt/(x(i)*dy(j))
+
            ro1(i,j,k) = ro1(i,j,k)+dtody*(froy(i,j-1,k)-froy(i,j,k))
            ee1(i,j,k) = ee1(i,j,k)+dtody*(feeyr(i,j-1,k)-feeyr(i,j,k))
            rx1(i,j,k) = rx1(i,j,k)+dtody*(frxy(i,j-1,k)-frxy(i,j,k))
@@ -308,7 +240,7 @@ subroutine integrate_cyl_mp5_1st(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   do k=3,kx-2
      do j=3,jx-2
         do i=3,ix-2
-           dtodz = dt/dz(k)
+
            ro1(i,j,k) = ro1(i,j,k)+dtodz*(froz(i,j,k-1)-froz(i,j,k))
            ee1(i,j,k) = ee1(i,j,k)+dtodz*(feezr(i,j,k-1)-feezr(i,j,k))
            rx1(i,j,k) = rx1(i,j,k)+dtodz*(frxz(i,j,k-1)-frxz(i,j,k))

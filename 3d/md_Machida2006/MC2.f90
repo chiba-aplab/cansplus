@@ -21,26 +21,26 @@ subroutine MC2(ix,jx,kx,x,dx,y,dy,z,dz &
   integer :: mdir
 
 
-  call lr_state_MC2(mdir,ix,jx,kx,ro &
+  call lr_state_MC(mdir,ix,jx,kx,ro &
        ,row)
-  call lr_state_MC2(mdir,ix,jx,kx,pr &
+  call lr_state_MC(mdir,ix,jx,kx,pr &
        ,prw)
 
-  call lr_state_MC2(mdir,ix,jx,kx,vx &
+  call lr_state_MC(mdir,ix,jx,kx,vx &
        ,vxw)
-  call lr_state_MC2(mdir,ix,jx,kx,vy &
+  call lr_state_MC(mdir,ix,jx,kx,vy &
        ,vyw)
-  call lr_state_MC2(mdir,ix,jx,kx,vz &
+  call lr_state_MC(mdir,ix,jx,kx,vz &
        ,vzw)
 
-  call lr_state_MC2(mdir,ix,jx,kx,bx &
+  call lr_state_MC(mdir,ix,jx,kx,bx &
        ,bxw)
-  call lr_state_MC2(mdir,ix,jx,kx,by &
+  call lr_state_MC(mdir,ix,jx,kx,by &
        ,byw)
-  call lr_state_MC2(mdir,ix,jx,kx,bz &
+  call lr_state_MC(mdir,ix,jx,kx,bz &
        ,bzw)
 
-  call lr_state_MC2(mdir,ix,jx,kx,phi &
+  call lr_state_MC(mdir,ix,jx,kx,phi &
        ,phiw)
 
 
