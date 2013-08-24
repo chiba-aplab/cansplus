@@ -15,7 +15,6 @@ program main
    integer,parameter :: margin = 3
 !   integer,parameter :: margin = 6
 
-!  integer,parameter :: ix = 32+2*margin,jx=64+2*margin,kx=16+2*margin
   integer,parameter :: ix = 8+2*margin,jx=64+2*margin,kx=8+2*margin
 !  integer,parameter :: ix = 256+2*margin,jx=64+2*margin,kx=4+2*margin
 
@@ -89,8 +88,6 @@ program main
 !     prologue
 !======================================================================|
 
-  integer :: mcont,ndi
-
 !----------------------------------------------------------------------|
 !  initialize counters
 
@@ -101,11 +98,10 @@ program main
 !   time control parameters
 !     nstop : number of total time steps for the run
 
-  real(8) :: tend,dtout,dtout1
+  real(8) :: tend,dtout 
   integer :: nstop
 
-  integer :: mwflag,mw,nt1,nt2,mw1
-  integer :: nt3,nt4,nd1
+  integer :: mwflag,mw,nt1,nt2 
 
   real(8) :: dt,hdt ! time step
   real(8) :: dtg
@@ -113,11 +109,9 @@ program main
   real(8) :: safety ! CFL number
   real(8) :: dtmin ! minimum time step
 
-  integer :: idf
-
   integer :: i,j,k,n
 
-  integer :: mf_qq, err_flg,nanflg
+  integer :: mf_qq, err_flg   
 
   real(8) :: xin
   real(8) :: te_limit
@@ -128,12 +122,7 @@ program main
 !======================================================================|
   floor = 1.d-6
 
-  mcont=0
-  ndi=1000
-
   nd = 1
-  nd1 = 1
-
 !----------------------------------------------------------------------|
 !   for MPI
 !  
@@ -178,7 +167,6 @@ program main
 
   tend = 6.28d0*10.0d0
   dtout = tend/(100.0d0)
-  dtout1 = dtout/10.0d0
   tend = 6.28d0*40.0d0
 
   dt = tend
@@ -190,11 +178,12 @@ program main
 !
 
   call model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
-       ,ro,pr,vx,vy,vz,bx,by,bz,phi,gm &
-       ,x,dx,y,dy,z,dz &
-       ,gx,gz,mf_params,dtout,tend,cr,eta0,vc,eta,xin &
-       ,ccx,ccy,ccz,rg_nrmlx,rohalo,te_limit,te_factor,nrmlv &
-       ,nrmlte,boltzmann_const,Navo,mmw)
+      ,ro,pr,vx,vy,vz,bx,by,bz,phi,gm &
+      ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+      ,x,dx,y,dy,z,dz &
+      ,gx,gz,mf_params,dtout,tend,cr,eta0,vc,eta,xin &
+      ,ccx,ccy,ccz,rg_nrmlx,rohalo,te_factor,nrmlv &
+      ,nrmlte,boltzmann_const,Navo,mmw) 
 
   call exchangeMpixz2(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
        ,phi,merr)
@@ -234,10 +223,10 @@ program main
   kx0 = kx
   nx0 = nd
 
+  if(nd .ne. 1)then
   open(100,file='readFileNumber.dat')
   read(100,*) nd
   close(100)
-  if(nd .ne. 1)then
      call openReadFileAll(nd,mpirank,ix0,jx0,kx0,nx0)
      call file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
 
@@ -267,10 +256,6 @@ program main
   safety=0.2d0
   dtmin=1.d-10
   
-!  call getNewdt_glmcyl_res_mpi(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
-!       ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-!       ,dt,merr,ch,mpirank)
-
   temp=0.0d0
   call getNewdt_glmcyl_res_mpi(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
@@ -289,7 +274,6 @@ program main
   hdt = 0.5d0*dt
 
   mw=0
-  mw1=0
 !----- check output
 
 ! dtout
@@ -297,14 +281,9 @@ program main
   nt2=int(time/dtout)
   if (nt1.lt.nt2) mw=1
 
-! hst
-  nt3=int(timep/dtout1)
-  nt4=int(time/dtout1)
-  if (nt3.lt.nt4) mw1=1
-
 !---- integrate
 
-  call integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+  call integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)

@@ -1,7 +1,8 @@
 subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
        ,ro,pr,vx,vy,vz,bx,by,bz,phi,gm &
+       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,y,dy,z,dz &
-       ,gx,gz,mf_params,dtout,tend,cr,eta0,vc,eta,xin&
+       ,gx,gz,mf_params,dtout,tend,cr,eta0,vc,eta,xin &
        ,ccx,ccy,ccz,rg_nrmlx,rohalo,te_factor,nrmlv &
        ,nrmlte,boltzmann_const,Navo,mmw)
   use mpi_domain_xz
@@ -17,9 +18,10 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   
   type(mpidomain) :: mpid
 
-  real(8) :: tend,dtout             !いらない
+  integer :: idf
+  real(8) :: tend,dtout
 
-  real(8) :: gm,cr,eta0,vc
+  real(8) :: gm,cr,eta0,vc,xin
   real(8) :: pi,pi2,pi4,hpi4
 
 !---Input & Output
@@ -33,7 +35,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   real(8),dimension(5,2,jx) :: ccy
   real(8),dimension(5,2,kx) :: ccz
 
-  real(8),intent(in) :: rg_nrmlx,rohalo,te_factor
+  real(8),intent(in) :: rg_nrmlx,rohalo,te_factor!,te_limit
   real(8),intent(in) :: nrmlv,nrmlte,boltzmann_const,Navo,mmw
 
   real(8),dimension(igx) :: xg,dxg,dxmg
@@ -48,13 +50,17 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
 
   real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(inout) :: eta,phi
-  real(8),dimension(ix,jx,kx) :: curx,cury,curz
 
   real(8),dimension(ix,jx,kx),intent(inout) :: gx,gz
   real(8),dimension(ix,jx,kx) :: gpot
   real(8),dimension(igx,jgx,kgx) :: gxg,gzg,gpotg
 
+  real(8),dimension(ix,jx,kx) :: roi,pri
+  real(8),dimension(ix,jx,kx) :: vxi,vyi,vzi
+  real(8),dimension(ix,jx,kx) :: bxi,byi,bzi
 !---Temp coordinate
+  real(8),dimension(ix,jx,kx) :: curx,cury,curz
+
   real(8) :: dxg0,dyg0,dzg0
 
   real(8) :: xmin,ymin,zmin
@@ -64,7 +70,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
 
   integer :: izero,jzero,kzero
 
-  real(8) :: ratio_x,ratio_z
+  real(8) :: ratio_x, ratio_z
 
 !-------Temp phys
   real(8) :: grav, sseps, ss, ssg
@@ -73,13 +79,10 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   integer :: ig,jg,kg
 
 ! machida
-  real(8) :: kk, ll, beta0, hh,tmp,tmp2   !ll いらないかも
+  real(8) :: kk, ll, beta0, hh,tmp
 
   real(8) :: psi0, pot0, tec0
 
-  real(8) :: xin
-
-  ! torus & disk compornents
   real(8) :: roc,prc,vyc
   real(8) :: rod,prd,vyd,byd
 
@@ -102,49 +105,42 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   pi = acos(-1.0d0)
   gm=5.0d0/3.0d0
   pi2 = 2.0d0*pi
-  cr = 0.18d0             !here modelでは使用されない
+  cr = 0.18d0
 !  pi4 = 4.0d0*pi
 !  hpi4 = sqrt(pi4)
 
-  !
-  ratio_x = 1.05d0
-  ratio_z = 1.07d0
-
-  ! magnetic resistivity
+!  eta0=0.0005d0
   eta0=4.0d0*pi*0.0001d0
 !  eta0=1.0d-3
 !  eta0=5.0d-3
 
-  !  gravity
-  ssg=rg_nrmlx
-  sseps = 0.2d0
-  xin = 0.2d0 ! 2rg
-
-  !  tec0 = 1.0d0
+!  tec0 = 1.0d0
   tec0 = 5.0d-1
 !  tec0 = 1.0d-2
 !  tec0 = 1.0d-3
 
-  !  pressure ratio
   beta0 = 100.0d0
-  ll = 1.0d0 
-  !  angular  
-  aa=0.2d0 
+!  beta0 = 1.0d10
+!  kk = 0.05d0
   kk = 0.05d0
 !  kk = /nrmlv/nrmlv
+  ll = 1.0d0 
+  aa=0.2d0 
   hh = 2.0d0*kk/beta0
   
-  bbAbsMax = 0.0d0
-
 !---Step 1.--------------------------------------------------------------|
 ! set grid
 !
   dxg0 = 0.01d0
   dzg0 = 0.01d0
+!  dxg0 = 0.02d0
+!  dzg0 = 0.02d0
 
   xmin = 0.0d0
+!  xmin = 1.6d0
   ymin = 0.0d0
   ymax = pi2
+!  ymax = 1000
   zmin = 0.0d0
 
 !---Step 1a.-------------------------------------------------------------|
@@ -153,11 +149,21 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   
 
   dxmax = 10.0d0*dxg0
+  ratio_x = 1.05d0
+
+
+!  do i=margin+1,2*margin
+!	dxg(i) = 4.0d0*dxg0
+!  enddo
+!
+!  do i=2*margin+1,2*margin+19
+!    dxg(i) = dxg0
+!  enddo
 
   dxg(margin+1)=4.0d0*dxg0
 
   do i=margin+2,margin+96
-  dxg(i) = dxg0
+     dxg(i) = dxg0
   enddo
 
   do i=margin+97,igx-margin
@@ -225,9 +231,11 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
 !
 
   dzmax = 10.0d0*dzg0
+!  ratio = 1.05d0
+  ratio_z = 1.07d0
 
   do,k=1,kgx
-  dzg = dzg0
+     dzg = dzg0
   enddo
 
   do k=int(kgx/2)+45,kgx
@@ -332,9 +340,12 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
      enddo
   enddo
 
-!---Step 3b.----------------------------------------------------------|
-! gravity
+!----------------------------------------------------------------------|
+  ssg=rg_nrmlx
+  sseps = 0.2d0
   grav = (1.0d0-ssg)**2
+!  xin = sseps
+  xin = 0.2d0   !2rg
 
   do k=1,kgx
      do j=1,jgx
@@ -360,7 +371,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
         end do
      end do
   end do
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 !---g y
   call bd_pery(margin,gpotg,igx,jgx,kgx)
@@ -385,7 +396,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   call bd_frez(1,margin,gxg,igx,jgx,kgx)
   call bd_consz(1,margin,0.0d0,gzg,igx,jgx,kgx)  
 
-!---Step 3c.----------------------------------------------------------|
+!---Step 3a.----------------------------------------------------------|
 ! set individual gravitation
 
   do k=1,kx
@@ -403,10 +414,10 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
 
   
 !----------------------------------------------------------------------|
-! set initial model
+! set initial mocel
 ! 
-!----------------------------------------------------------------------|
 
+  bbAbsMax = 0.0d0
 !  pot0=-1.0d0
   pot0=-grav/(1.0d0-ssg)
 !  psi0 = pot0+0.5d0*ll**2+gm*kk/(gm-1.0d0)+0.5d0*hh*gm/(gm-1.0)
@@ -414,13 +425,13 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   do k=1,kx
      do j=1,jx
         do i=1,ix
-           !!----- set corona--------------------------
+           !---- set corona ---------------------
            ss = sqrt(x(i)**2+z(k)**2)
 !           roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
            roc = rohalo*exp(-(gpot(i,j,k)-pot0)/(factorc*tec0))
            prc = tec0*roc/te_factor
 
-           !!------set torus--------------------------
+           !---- set torus ----------------------
            rod = 0.0d0
            prd = 0.0d0
            vyd = 0.0d0
@@ -443,8 +454,8 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
            endif
 
 
-           ro(i,j,k) = roc+rod
-           pr(i,j,k) = prc+prd
+           ro(i,j,k) = rod+roc
+           pr(i,j,k) = prd+prc
            vx(i,j,k) = 0.0d0
            vy(i,j,k) = vyd
            vz(i,j,k) = 0.0d0
@@ -452,12 +463,22 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
            by(i,j,k) = byd
            bz(i,j,k) = 0.0d0
            phi(i,j,k) = 0.0d0
+
            eta(i,j,k) = 0.0d0
         enddo
      enddo
+   write(6,*) ro(5,5,k),k
   enddo
+           roi = ro
+           pri = pr
+           vxi = 0.0d0
+           vyi = 0.0d0 
+           vzi = 0.0d0
+           bxi = 0.0d0
+           byi = byd
+           bzi = 0.0d0
 
-  call perturb2(1,mpid,ix,jx,kx,bx,by,bz,x,dx,dy,dz,bbAbsMax)
+  call perturb(1,mpid,ix,jx,kx,bx,by,bz,x,dx,dy,dz,bbAbsMax)
   call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
   call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)

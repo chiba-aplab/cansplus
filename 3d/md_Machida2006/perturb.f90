@@ -1,6 +1,3 @@
-!
-! $Log: $
-!
 subroutine perturb(iperturb,mpid,ix,jx,kx,vx,vy,vz,x,dx,dy,dz,v0)
 ! perturbation
   use mpi_domain_xz
@@ -59,11 +56,13 @@ subroutine perturb(iperturb,mpid,ix,jx,kx,vx,vy,vz,x,dx,dy,dz,v0)
 
      dvxmax = 0.0d0
      do k=2,kx-1
-        do j=1,jx
+        do j=2,jx-1
            do i=1,ix
               if(vy(i,j,k) .ne. 0.0d0)then
                  dtodz = 1.0d0/dz(k)
-                 dvx(i,j,k) = dvx(i,j,k)-dtodz*(day(i,j,k-1)-day(i,j,k))
+                 dtody = 1.0d0/(x(i)*dy(j))
+                 dvx(i,j,k) = dvx(i,j,k)-dtodz*(day(i,j,k-1)-day(i,j,k))&
+                      -dtody*(daz(i,j,k)-daz(i,j-1,k))
                  temp = dabs(dvx(i,j,k))
                  if(temp > dvxmax)then
                     dvxmax = temp
@@ -93,13 +92,16 @@ subroutine perturb(iperturb,mpid,ix,jx,kx,vx,vy,vz,x,dx,dy,dz,v0)
 
      dvzmax = 0.0d0
      do k=1,kx
-        do j=1,jx
+        do j=2,jx-1
            do i=2,ix-1
               if(vy(i,j,k) .ne. 0.0d0)then
                  line1 = dabs(x(i)+0.5d0*dx(i))
                  line2 = dabs(x(i)-0.5d0*dx(i))
                  dtodx = 1.0d0/(x(i)*dx(i))
-                 dvz(i,j,k) = dvz(i,j,k)-(dtodx)*(line1*day(i,j,k)-line2*day(i-1,j,k))
+                 dtody = 1.0d0/(x(i)*dy(j))
+                 dvz(i,j,k) = dvz(i,j,k)-(dtodx) &
+                      *(line1*day(i,j,k)-line2*day(i-1,j,k)) & 
+                      -dtody*(dax(i,j-1,k)-dax(i,j,k))
                  temp = dabs(dvz(i,j,k))
                  if(temp > dvzmax)then
                     dvzmax = temp
@@ -131,19 +133,19 @@ subroutine perturb(iperturb,mpid,ix,jx,kx,vx,vy,vz,x,dx,dy,dz,v0)
         enddo
      enddo
 
-     do k=1,kx-1
-        do j=1,jx-1
-           do i=1,ix-1
+     do k=2,kx-1
+        do j=2,jx-1
+           do i=2,ix-1
               dvxc(i,j,k) = 0.5d0*(dvx(i,j,k)+dvx(i-1,j,k))
-              dvyc(i,j,k) = dvy(i,j,k)
+              dvyc(i,j,k) = 0.5d0*(dvy(i,j,k)+dvy(i,j-1,k))
               dvzc(i,j,k) = 0.5d0*(dvz(i,j,k)+dvz(i,j,k-1))
            enddo
         enddo
      enddo
 
-     do k=1,kx-1
-        do j=1,jx-1
-           do i=1,ix-1
+     do k=2,kx-1
+        do j=2,jx-1
+           do i=2,ix-1
               vx(i,j,k) = vx(i,j,k) + dvxc(i,j,k)
               vy(i,j,k) = vy(i,j,k) + dvyc(i,j,k)
               vz(i,j,k) = vz(i,j,k) + dvzc(i,j,k)

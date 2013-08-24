@@ -7,7 +7,7 @@ OBJS =  convert.o getEta2.o\
 	mpi_domain_xz.o openfile.o exchangeMpixz_res.o exchangeMpixz2.o \
 	integrate_cyl_mp5_1.o integrate_cyl_mp5_2.o integrate_cyl_mp5_3.o \
 	integrate_cyl.o\
-	perturb.o absorb.o perturb2.o \
+	perturb.o absorb.o \
 	model_machida.o bnd.o bnd_absoub.o \
 	MC2.o MC2_dxyz.o switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
 	getNewdt_glmcyl_res_mpi.o main.o 
