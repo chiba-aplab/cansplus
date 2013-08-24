@@ -1,4 +1,4 @@
-subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
+subroutine lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
      ,vx,vy,vz,bx,by,bz,phi &
      ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
   implicit none
@@ -30,13 +30,25 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
   real(8),parameter :: Epsm = 0.0000000001d0
 
 !----function
-  real(8) :: median
-  real(8) :: getMP5value
-
-
   integer :: flag
 
   integer :: i,j,k,l,m,n
+
+!----function
+  real(8) :: minmod4,d1,d2,d3,d4
+  real(8) :: minmod,x,y
+  real(8) :: median
+  
+  real(8) :: djm1,dj,djp1,dm4jph,dm4jmh,djpp1,dm4jpph
+  real(8) :: qqul,qqav,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
+  real(8) :: djp2,qqlr
+
+  minmod4(d1,d2,d3,d4) = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2))* &
+       dabs((sign(1.0d0,d1) + sign(1.0d0,d3))* &
+       (sign(1.0d0,d1)+sign(1.0d0,d4))) &
+       *min(dabs(d1),dabs(d2),dabs(d3),dabs(d4))
+
+  minmod(x,y) = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(dabs(x),dabs(y))
 
   if(mdir .eq. 1)then
      do k=3,kx-2
@@ -94,7 +106,24 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
                  wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
-                 wwc_w(n) = getMP5value(1,wwc(n,1),wwc(n,2),wwc(n,3),wwc(n,4),wwc(n,5),wwor,Alpha)
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+                 
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
+                 
+                 qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
+                 qqmd = qqav - 0.5d0*dm4jph
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -111,7 +140,25 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
                  wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
                       + ccx(3,1,i-1)*wwc(n,3) + ccx(2,1,i-1)*wwc(n,2) &
                       + ccx(1,1,i-1)*wwc(n,1))
-                 wwc_w(n) = getMP5value(2,wwc(n,1),wwc(n,2),wwc(n,3),wwc(n,4),wwc(n,5),wwor,Alpha)
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+                 
+                 qqul = wwc(n,2)+Alpha*(wwc(n,2)-wwc(n,1))
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 
+                 qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
+                 qqmd = qqav - 0.5d0*dm4jmh
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -248,7 +295,25 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
                  wwor = B1*(ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
                       + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
                       + ccy(5,2,j)*wwc(n,5))
-                 wwc_w(n) = getMP5value(1,wwc(n,1),wwc(n,2),wwc(n,3),wwc(n,4),wwc(n,5),wwor,Alpha)
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+                 
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
+                 
+                 qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
+                 qqmd = qqav - 0.5d0*dm4jph
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
               end do
               
               ! characteristic to primitive
@@ -264,7 +329,24 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
                  wwor = B1*(ccy(5,1,j-1)*wwc(n,5)+ccy(4,1,j-1)*wwc(n,4) &
                       + ccy(3,1,j-1)*wwc(n,3) + ccy(2,1,j-1)*wwc(n,2) &
                       + ccy(1,1,j-1)*wwc(n,1))
-                 wwc_w(n) = getMP5value(2,wwc(n,1),wwc(n,2),wwc(n,3),wwc(n,4),wwc(n,5),wwor,Alpha)
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+                 
+                 qqul = wwc(n,2)+Alpha*(wwc(n,2)-wwc(n,1))
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 
+                 qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
+                 qqmd = qqav - 0.5d0*dm4jmh
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -401,7 +483,24 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
                  wwor = B1*(ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
                       + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
                       + ccz(5,2,k)*wwc(n,5))
-                 wwc_w(n) = getMP5value(1,wwc(n,1),wwc(n,2),wwc(n,3),wwc(n,4),wwc(n,5),wwor,Alpha)
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+                 
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
+                 
+                 qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
+                 qqmd = qqav - 0.5d0*dm4jph
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -417,7 +516,24 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
                  wwor = B1*(ccz(5,1,k-1)*wwc(n,5)+ccz(4,1,k-1)*wwc(n,4) &
                       + ccz(3,1,k-1)*wwc(n,3) + ccz(2,1,k-1)*wwc(n,2) &
                       + ccz(1,1,k-1)*wwc(n,1))
-                 wwc_w(n) = getMP5value(2,wwc(n,1),wwc(n,2),wwc(n,3),wwc(n,4),wwc(n,5),wwor,Alpha)
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+                 
+                 qqul = wwc(n,2)+Alpha*(wwc(n,2)-wwc(n,1))
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 
+                 qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
+                 qqmd = qqav - 0.5d0*dm4jmh
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -500,4 +616,4 @@ subroutine MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
      end do
   end if
   return
-end subroutine MP5_reconstruction_charGlmMhd
+end subroutine lr_state_MP5_2

@@ -185,10 +185,11 @@ program main
       ,ccx,ccy,ccz,rg_nrmlx,rohalo,te_factor,nrmlv &
       ,nrmlte,boltzmann_const,Navo,mmw) 
 
-  call exchangeMpixz2(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+  call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
        ,phi,merr)
 
-  call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
+  call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
 !----------------------------------------------------------------------|
 !  file open

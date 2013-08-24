@@ -113,7 +113,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 1
 
-  call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro,pr &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
@@ -141,7 +141,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 2
 
-  call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro,pr &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
@@ -170,7 +170,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 3
   
-  call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro,pr &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
@@ -277,13 +277,11 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   call convert_ctop_m(ix,jx,kx,gm,ro1,ee1,rx1,ry1,rz1,bx1,by1,bz1,floor &
        ,vx1,vy1,vz1,pr1)
 
-  call exchangeMpixz2(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
+  call exchangeMpixz(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
        ,phi1,merr)
 
-  call  bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x)
-
-  call  bnd_absoub(ix,jx,kx,x,z,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi  &
-        ,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1)
+  call  bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x,z &
+             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 !
 ! end half time step
 !-----Step 0.----------------------------------------------------------|                      ! start full time step
@@ -299,7 +297,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 1
 
-  call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro1,pr1 &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
        ,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
@@ -328,7 +326,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 2
 
-  call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro1,pr1 &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
        ,vy1,vz1,vx1,by1,bz1,bx1,phi1 &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
@@ -358,7 +356,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 3
 
-  call MP5_reconstruction_charGlmMhd2(mdir,ix,jx,kx,ro1,pr1 &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
        ,vz1,vx1,vy1,bz1,bx1,by1,phi1 &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
@@ -465,13 +463,11 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   call convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
        ,vx,vy,vz,pr)
 
-  call exchangeMpixz2(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+  call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
        ,phi,merr)
 
-  call  bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
-
-  call  bnd_absoub(ix,jx,kx,x,z,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi  &
-        ,ro,pr,vx,vy,vz,bx,by,bz)
+  call  bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 !
 ! end full time step
 

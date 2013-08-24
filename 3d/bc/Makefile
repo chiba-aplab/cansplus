@@ -13,7 +13,7 @@ OBJS =  bd_frex.o bd_frez.o bd_frey.o \
 	bd_synpx.o bd_synnx.o \
 	bd_synpx_car.o bd_synnx_car.o \
 	bd_synpy_car.o bd_synny_car.o \
-	bd_synpz_car.o bd_synnz_car.o
+	bd_synpz_car.o bd_synnz_car.o \
 
 '.update' : $(OBJS)
 	$ ar -r $(TARGET) $(OBJS)

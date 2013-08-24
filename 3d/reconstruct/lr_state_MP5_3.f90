@@ -1,4 +1,4 @@
-subroutine MP5_reconstruction_charGlmMhd3(mdir,ix,jx,kx,ro,pr &
+subroutine lr_state_MP5_3(mdir,ix,jx,kx,ro,pr &
      ,vx,vy,vz,bx,by,bz,phi &
      ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
   implicit none
@@ -1338,4 +1338,4 @@ subroutine MP5_reconstruction_charGlmMhd3(mdir,ix,jx,kx,ro,pr &
      end do
   end if
   return
-end subroutine MP5_reconstruction_charGlmMhd3
+end subroutine lr_state_MP5_3

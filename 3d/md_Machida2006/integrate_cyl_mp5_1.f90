@@ -99,7 +99,7 @@ subroutine integrate_cyl_mp5_1(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 1
 
-  call MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
+  call lr_state_MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
@@ -121,7 +121,7 @@ subroutine integrate_cyl_mp5_1(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 2
 
-  call MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
+  call lr_state_MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
@@ -144,7 +144,7 @@ subroutine integrate_cyl_mp5_1(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 3
 
-  call MP5_reconstruction_charGlmMhd(mdir,ix,jx,kx,ro,pr &
+  call lr_state_MP5(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 

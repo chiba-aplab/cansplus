@@ -35,7 +35,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   real(8),dimension(5,2,jx) :: ccy
   real(8),dimension(5,2,kx) :: ccz
 
-  real(8),intent(in) :: rg_nrmlx,rohalo,te_factor!,te_limit
+  real(8),intent(in) :: rg_nrmlx,rohalo,te_factor
   real(8),intent(in) :: nrmlv,nrmlte,boltzmann_const,Navo,mmw
 
   real(8),dimension(igx) :: xg,dxg,dxmg
@@ -467,7 +467,6 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
            eta(i,j,k) = 0.0d0
         enddo
      enddo
-   write(6,*) ro(5,5,k),k
   enddo
            roi = ro
            pri = pr
