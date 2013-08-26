@@ -76,7 +76,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   real(8) :: dtodx,dtody,dtodz,hdt
 
   integer :: mdir
-  integer :: i,j,k
+  integer :: i,j,k,n
 
   real(8) :: inversex             !1/x
 
@@ -101,11 +101,25 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   call convert_ptoc_m(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
-  call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
+  ro1=ro
+  rx1=vx
+  ry1=vy
+  rz1=vz
+  bx1=bx
+  by1=by
+  bz1=bz
+  ee1=ee
+  vx1=vx
+  vy1=vy
+  vz1=vz
+  pr1=pr
+  phi1=phi
+
+do n=1,2
+  call getcurrent_cyl(bx1,by1,bz1,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
 
-  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
-
+  call getEta2(ix,jx,kx,ro1,curx,cury,curz,eta0,vc,eta,rohalo)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -113,12 +127,12 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 1
 
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
-       ,vx,vy,vz,bx,by,bz,phi &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
+       ,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
   call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,ro1,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
  
@@ -133,7 +147,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,fbyxr)
   call cal_resflux(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
        ,fbzxr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
+  call cal_resflux_fee(mdir,ix,jx,kx,feex,curx,cury,curz,bx1,by1,bz1,eta &
        ,feexr)
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
@@ -141,12 +155,12 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 2
 
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
-       ,vy,vz,vx,by,bz,bx,phi &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
+       ,vy1,vz1,vx1,by1,bz1,bx1,phi1 &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
   call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,ro1,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
 
@@ -162,7 +176,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,fbzyr)
   call cal_resflux(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
        ,fbxyr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
+  call cal_resflux_fee(mdir,ix,jx,kx,feey,curx,cury,curz,bx1,by1,bz1,eta &
        ,feeyr)
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
@@ -170,12 +184,12 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
   mdir = 3
   
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
-       ,vz,vx,vy,bz,bx,by,phi &
+  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
+       ,vz1,vx1,vy1,bz1,bx1,by1,phi1 &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
   call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,ro1,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
 
@@ -191,38 +205,39 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,fbxzr)
   call cal_resflux(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
        ,fbyzr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
+  call cal_resflux_fee(mdir,ix,jx,kx,feez,curx,cury,curz,bx1,by1,bz1,eta &
        ,feezr)
+
 !-----Step 2.---------------------------------------------------------|
 ! half time step update cell center variables using flux
 !
-  hdt=dt*0.5d0
-  do k=3,kx-2
-     do j=3,jx-2
-        do i=3,ix-2
+  hdt=dt*0.5d0*(n-1)
+  do k=margin+1,kx-margin
+     do j=margin+1,jx-margin
+        do i=margin+1,ix-margin
 
            inversex = 1.0d0/x(i)
 ! source term
 ! density
            sro = -0.5d0*(frox(i,j,k)+frox(i-1,j,k))*inversex
 ! x-momentum
-           srx = -(ro(i,j,k)*(vx(i,j,k)**2-vy(i,j,k)**2) &
-                +(by(i,j,k)**2-bx(i,j,k)**2))*inversex &
-                +ro(i,j,k)*gx(i,j,k)
+           srx = -(ro1(i,j,k)*(vx1(i,j,k)**2-vy1(i,j,k)**2) &
+                +(by1(i,j,k)**2-bx1(i,j,k)**2))*inversex &
+                +ro1(i,j,k)*gx(i,j,k)
 ! y-momentum
            sry = -(fryx(i,j,k)+fryx(i-1,j,k))*inversex
 ! z-momentum
            srz = -0.5d0*(frzx(i,j,k)+frzx(i-1,j,k))*inversex &
-                + ro(i,j,k)*gz(i,j,k)
+                + ro1(i,j,k)*gz(i,j,k)
 ! z-magnetic
            sbz = -0.5d0*(fbzxr(i-1,j,k)+fbzxr(i,j,k))*inversex
 ! energy
            see = -0.5d0*(feexr(i,j,k)+feexr(i-1,j,k))*inversex &
-                +ro(i,j,k)*(vx(i,j,k)*gx(i,j,k)+vz(i,j,k)*gz(i,j,k))
+                +ro1(i,j,k)*(vx1(i,j,k)*gx(i,j,k)+vz1(i,j,k)*gz(i,j,k))
 !           if (time .gt. swtch_t) then
-           if (ro(i,j,k) .gt. rohalo) then
-           te = te_factor*pr(i,j,k)/ro(i,j,k)
-           see = see - RadCool*(ro(i,j,k)**2)*sqrt(te)
+           if (ro1(i,j,k) .gt. rohalo) then
+           te = te_factor*pr1(i,j,k)/ro1(i,j,k)
+           see = see - RadCool*(ro1(i,j,k)**2)*sqrt(te)
            endif
 !           endif
 ! phi
@@ -280,196 +295,19 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   call exchangeMpixz(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1 &
        ,phi1,merr)
 
-  call  bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x,z &
+  call bnd(mpid,margin,ix,jx,kx,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,eta,x,z &
              ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
-!
-! end half time step
-!-----Step 0.----------------------------------------------------------|                      ! start full time step
-!                     
-  call getcurrent_cyl(bx1,by1,bz1,ix,jx,kx,x,dx,dy,dz &
-       ,curx,cury,curz)
+enddo
 
-  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+ro=ro1
+vx=vx1
+vy=vy1
+vz=vz1
+bx=bx1
+by=by1
+bz=bz1
+pr=pr1
+phi=phi1
 
-!-----Step 1a.---------------------------------------------------------|
-! Compute flux in x-direction
-! set L/R state at x-direction
-!
-  mdir = 1
-
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
-       ,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
-       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
-
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
-
-  call cal_interface_BP(ix,jx,kx,bxw,phiw &
-       ,bx_m,phi_m,ch)
-  call glm_flux(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
-
-  call hlld_flux(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
-       ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
-
-  call cal_resflux(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
-       ,fbyxr)
-  call cal_resflux(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
-       ,fbzxr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
-       ,feexr)
-
-!-----Step 1b.---------------------------------------------------------|
-! compute flux at y-direction
-! set L/R state at y-direction
-!
-  mdir = 2
-
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
-       ,vy1,vz1,vx1,by1,bz1,bx1,phi1 &
-       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
-
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
-
-  call cal_interface_BP(ix,jx,kx,byw,phiw &
-       ,by_m,phi_m,ch)
-
-  call glm_flux(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
-
-  call hlld_flux(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
-       ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
-
-  call cal_resflux(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
-       ,fbzyr)
-  call cal_resflux(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
-       ,fbxyr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
-       ,feeyr)
-
-!-----Step 1c.---------------------------------------------------------|
-! compute flux at z-direction
-! set L/R state at z-direction
-!
-  mdir = 3
-
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro1,pr1 &
-       ,vz1,vx1,vy1,bz1,bx1,by1,phi1 &
-       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
-
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1 &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
-
-  call cal_interface_BP(ix,jx,kx,bzw,phiw &
-       ,bz_m,phi_m,ch)
-
-  call glm_flux(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
-
-  call hlld_flux(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
-       ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
-
-  call cal_resflux(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
-       ,fbxzr)
-  call cal_resflux(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
-       ,fbyzr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
-       ,feezr)
-
-!-----Step 2.---------------------------------------------------------|
-! full time step update cell center variables using flux
-!
-  do k=3,kx-2
-     do j=3,jx-2
-        do i=3,ix-2
-
-           inversex = 1.0d0/x(i)
-! source term
-! density
-           sro = -0.5d0*(frox(i,j,k)+frox(i-1,j,k))*inversex
-! x-momentum
-           srx = -(ro1(i,j,k)*(vx1(i,j,k)**2-vy1(i,j,k)**2) &
-                +(by1(i,j,k)**2-bx1(i,j,k)**2))*inversex &
-                +ro1(i,j,k)*gx(i,j,k)
-! y-momentum
-           sry = -(fryx(i,j,k)+fryx(i-1,j,k))*inversex
-! z-momentum
-           srz = -0.5d0*(frzx(i,j,k)+frzx(i-1,j,k))*inversex &
-                + ro1(i,j,k)*gz(i,j,k)
-! z-magnetic
-           sbz = -0.5d0*(fbzxr(i-1,j,k)+fbzxr(i,j,k))*inversex
-! energy
-           see = -0.5d0*(feexr(i,j,k)+feexr(i-1,j,k))*inversex &
-                +ro1(i,j,k)*(vx1(i,j,k)*gx(i,j,k)+vz1(i,j,k)*gz(i,j,k))
-!           if (time .gt. swtch_t) then
-           if (ro1(i,j,k) .gt. rohalo) then
-           te = te_factor*pr1(i,j,k)/ro1(i,j,k)
-           see = see - RadCool*(ro1(i,j,k)**2)*sqrt(te)
-           endif
-!           endif
-! phi
-           sphi = -0.5d0*(fphix(i,j,k)+fphix(i-1,j,k))*inversex
-
-! update
-           dtodx = dt/dx(i)
-           dtody = dt/(x(i)*dy(j))
-           dtodz = dt/dz(k)
-
-           ro(i,j,k) = ro(i,j,k)+dtodx*(frox(i-1,j,k)-frox(i,j,k)) &
-                +dtody*(froy(i,j-1,k)-froy(i,j,k)) &
-                +dtodz*(froz(i,j,k-1)-froz(i,j,k)) &
-                +dt*sro
-           ee(i,j,k) = ee(i,j,k)+dtodx*(feexr(i-1,j,k)-feexr(i,j,k)) &
-                +dtody*(feeyr(i,j-1,k)-feeyr(i,j,k)) &
-                +dtodz*(feezr(i,j,k-1)-feezr(i,j,k)) &
-                +dt*see
-           rx(i,j,k) = rx(i,j,k)+dtodx*(frxx(i-1,j,k)-frxx(i,j,k)) &
-                +dtody*(frxy(i,j-1,k)-frxy(i,j,k)) &
-                +dtodz*(frxz(i,j,k-1)-frxz(i,j,k)) &
-                +dt*srx
-           ry(i,j,k) = ry(i,j,k)+dtodx*(fryx(i-1,j,k)-fryx(i,j,k)) &
-                +dtody*(fryy(i,j-1,k)-fryy(i,j,k)) &
-                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k)) &
-                +dt*sry
-           rz(i,j,k) = rz(i,j,k)+dtodx*(frzx(i-1,j,k)-frzx(i,j,k)) &
-                +dtody*(frzy(i,j-1,k)-frzy(i,j,k)) &
-                +dtodz*(frzz(i,j,k-1)-frzz(i,j,k)) &
-                +dt*srz
-           bx(i,j,k) = bx(i,j,k)+dtodx*(fbxx(i-1,j,k)-fbxx(i,j,k)) &
-                +dtody*(fbxyr(i,j-1,k)-fbxyr(i,j,k)) &
-                +dtodz*(fbxzr(i,j,k-1)-fbxzr(i,j,k))
-           by(i,j,k) = by(i,j,k)+dtodx*(fbyxr(i-1,j,k)-fbyxr(i,j,k)) &
-                +dtody*(fbyy(i,j-1,k)-fbyy(i,j,k)) &
-                +dtodz*(fbyzr(i,j,k-1)-fbyzr(i,j,k))
-           bz(i,j,k) = bz(i,j,k)+dtodx*(fbzxr(i-1,j,k)-fbzxr(i,j,k)) &
-                +dtody*(fbzyr(i,j-1,k)-fbzyr(i,j,k)) &
-                +dtodz*(fbzz(i,j,k-1)-fbzz(i,j,k)) &
-                +dt*sbz
-           phi(i,j,k) = (phi(i,j,k)+dtodx*(fphix(i-1,j,k)-fphix(i,j,k)) &
-                +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k)) &
-                +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k)) &
-                +dt*sphi)*exp(-dt*ch**2/cp**2)
-        enddo
-     enddo
-  enddo
-
-!-----Step 3.----------------------------------------------------------|
-! conserved to primitive
-!
-  call convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
-
-  call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
-       ,phi,merr)
-
-  call  bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
-!
-! end full time step
-
-  return
+return
 end subroutine integrate_cyl

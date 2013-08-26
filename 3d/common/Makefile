@@ -8,7 +8,6 @@ CANS_LIB_DIR = ..
 TARGET = $(CANS_LIB_DIR)/libcans2_3d.a
 OBJS =  getcurrent.o getcurrent_cyl.o getEta.o cal_resflux.o cal_resflux_fee.o \
 	getNewdt_glm.o getNewdt_glmcyl.o  
-	
 
 '.update' : $(OBJS)
 	$ ar -r $(TARGET) $(OBJS)

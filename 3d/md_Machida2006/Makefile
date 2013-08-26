@@ -5,9 +5,8 @@ FC = mpif90
 LIB_DIR1 = ..
 OBJS =  getEta2.o perturb.o openfile.o convert.o \
 	mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
-	integrate_cyl_mp5_1.o integrate_cyl_mp5_2.o integrate_cyl_mp5_3.o \
 	integrate_cyl.o\
-	MC2.o MC2_dxyz.o switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
+	switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
 	model_machida.o bnd.o main.o 
 
 params.txt : a.out
