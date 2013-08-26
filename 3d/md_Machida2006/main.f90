@@ -213,7 +213,6 @@ program main
     endif
    call closefileAll()
    call closefileCor()
-   close(mf_params)
 
 !----------------------------------------------------------------------|
 !  read-data
@@ -258,9 +257,9 @@ program main
   dtmin=1.d-10
   
   temp=0.0d0
-  call getNewdt_glmcyl_res_mpi(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
+  call getNewdt_glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-       ,dt,merr,ch,mpirank,temp)
+       ,dt,merr,ch)
 
   call mpi_allreduce(dt,dtg,1,mpi_double_precision,mpi_min &
        ,mpi_comm_world,merr)

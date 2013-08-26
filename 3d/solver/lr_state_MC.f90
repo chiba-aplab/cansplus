@@ -1,4 +1,4 @@
-subroutine lr_state_MC(mdir,ix,jx,kx,qq &
+subroutine lr_state_MC(mdir,ix,jx,kx,dx,dy,dz,qq &
      ,qqw)
 !======================================================================
 ! Name :: lr_state_minmod
@@ -18,6 +18,10 @@ subroutine lr_state_MC(mdir,ix,jx,kx,qq &
   integer,intent(in) :: mdir
   integer,intent(in) :: ix,jx,kx
 
+  real(8),dimension(ix),intent(in) :: dx
+  real(8),dimension(jx),intent(in) :: dy
+  real(8),dimension(kx),intent(in) :: dz
+  
   real(8),dimension(ix,jx,kx) :: qq
 
 !---Output
@@ -25,6 +29,12 @@ subroutine lr_state_MC(mdir,ix,jx,kx,qq &
 
 !---Temporary
   real(8) :: dqqx,dqqy,dqqz
+
+  real(8) :: dqc,dql,dqr
+
+  real(8) :: dxc,dxl,dxr
+  real(8) :: dyc,dyl,dyr
+  real(8) :: dzc,dzl,dzr
 
   real(8) :: temp
 
@@ -41,13 +51,20 @@ subroutine lr_state_MC(mdir,ix,jx,kx,qq &
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              dqqx = MC_limiter((qq(i+1,j,k)-qq(i-1,j,k)) &
-                   ,(qq(i+1,j,k)-qq(i,j,k)) &
-                   ,(qq(i,j,k)-qq(i-1,j,k)))
               
-              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqx
+              dxl = 0.5d0*(dx(i)+dx(i-1))
+              dxr = 0.5d0*(dx(i+1)+dx(i))
+              dxc = dxl+dxr
+
+              dql = (qq(i,j,k)-qq(i-1,j,k))/dxl
+              dqr = (qq(i+1,j,k)-qq(i,j,k))/dxr
+              dqc = (qq(i+1,j,k)-qq(i-1,j,k))/dxc
+
+              dqqx = MC_limiter(dqc,dqr,dql)
               
-              qqw(i-1,j,k,2) = qq(i,j,k) - 0.5d0*dqqx
+              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqx*dx(i)
+              
+              qqw(i-1,j,k,2) = qq(i,j,k) - 0.5d0*dqqx*dx(i)
               
            enddo
         enddo
@@ -59,9 +76,11 @@ subroutine lr_state_MC(mdir,ix,jx,kx,qq &
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              dqqy = MC_limiter((qq(i,j+1,k)-qq(i,j-1,k)) &
-                   ,(qq(i,j+1,k)-qq(i,j,k)) &
-                   ,(qq(i,j,k)-qq(i,j-1,k)))
+              dql = qq(i,j,k)-qq(i,j-1,k)
+              dqr = qq(i,j+1,k)-qq(i,j,k)
+              dqc = 0.5d0*(qq(i,j+1,k)-qq(i,j-1,k))
+
+              dqqy = MC_limiter(dqc,dqr,dql)
               
               qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqy
               
@@ -77,16 +96,21 @@ subroutine lr_state_MC(mdir,ix,jx,kx,qq &
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              dqqz = MC_limiter((qq(i,j,k+1)-qq(i,j,k-1)) &
-                   ,(qq(i,j,k+1)-qq(i,j,k)) &
-                   ,(qq(i,j,k)-qq(i,j,k-1)))
+
+              dzl = 0.5d0*(dz(k)+dz(k-1))
+              dzr = 0.5d0*(dz(k+1)+dz(k))
+              dzc = dzl+dzr
+
+              dql = (qq(i,j,k)-qq(i,j,k-1))/dzl
+              dqr = (qq(i,j,k+1)-qq(i,j,k))/dzr
+              dqc = (qq(i,j,k+1)-qq(i,j,k-1))/dzc
+
+
+              dqqz = MC_limiter(dqc,dqr,dql)
            
-!-----Step 3b.-------------------------------------------------|
-! mdir = 3 :: z-direction
-!
-              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqz
+              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqz*dz(k)
               
-              qqw(i,j,k-1,2) = qq(i,j,k) - 0.5d0*dqqz
+              qqw(i,j,k-1,2) = qq(i,j,k) - 0.5d0*dqqz*dz(k)
            end do
         end do
      end do
@@ -141,11 +165,11 @@ contains
     minmod_lr = minmod_limiter2(qql,qqr)
 
     signlr = sign(1.0d0,(qqc*minmod_lr))
-    signMC = sign(1.0d0,(dabs(0.5d0*qqc)-dabs(2.0d0*minmod_lr)))
+    signMC = sign(1.0d0,(dabs(qqc)-dabs(2.0d0*minmod_lr)))
 
     MC_limiter = max(signlr,0.0d0)*( &
          max(signMC,0.0d0)*minmod_lr &
-         -min(signMC,0.0d0)*(0.5d0*qqc))
+         -min(signMC,0.0d0)*(qqc))
     
 !!$    if((qqc*minmod_lr) < 0.0d0)then
 !!$       MC_limiter = 0.0d0

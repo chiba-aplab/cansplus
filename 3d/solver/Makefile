@@ -8,8 +8,7 @@ CANS_LIB_DIR = ..
 TARGET = $(CANS_LIB_DIR)/libcans2_3d.a
 OBJS =  hlld_flux.o hll_flux.o \
 	glm_flux.o cal_interface_BP.o \
-	lr_state_minmod.o lr_state_MC.o lr_state_1st.o \
-	lr_state_MC.o lr_state_MC_dxyz.o \
+	lr_state_minmod.o lr_state_MC.o lr_state_1st.o 
 
 
 '.update' : $(OBJS)

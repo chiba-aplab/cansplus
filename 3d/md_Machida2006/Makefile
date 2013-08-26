@@ -23,4 +23,4 @@ a.out : $(OBJS) $(LIB_DIR1)/libcans2_3d.a
 	$(FC) -c $<
 
 clean:
-	rm -f params.txt *.o *.mod *.oo *.dac.* a.out $(OBJS)
+	rm -f params.txt* *.o *.mod *.oo *.dac.* a.out $(OBJS)

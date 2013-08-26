@@ -301,13 +301,14 @@ mt=6
     call dacputparamd(mf_params,'dy(1)',dy(1))
     call dacputparamd(mf_params,'dz(1)',dz(1))
     call dacputparamd(mf_params,'gm',gm)
+
     write(mf_x) x
     write(mf_y) y
     write(mf_z) z
     
     write(mf_gx) gx
     write(mf_gz) gz
-    
+    close(mf_params)
   end subroutine file_output_param
 
 end module openfile

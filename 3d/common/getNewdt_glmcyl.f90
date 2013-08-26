@@ -86,14 +86,14 @@ subroutine getNewdt_glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
                 + 4.0d0*cssq*(b1*b1 + b2*b2)*roinverse))
            
 ! absolute wave velocity
-           temp = (dabs(v1)+sqrt(cfxsq))/dx(i) &
-                + (dabs(v2)+sqrt(cfysq))/(x(i)*dy(j)) &
-                + (dabs(v3)+sqrt(cfzsq))/dz(k)
+           temp = max((dabs(v1)+sqrt(cfxsq))/dx(i) &
+                ,(dabs(v2)+sqrt(cfysq))/(x(i)*dy(j)) &
+                ,(dabs(v3)+sqrt(cfzsq))/dz(k))
            
 ! diffusion velocity
-           temp2 = eta(i,j,k)/dx(i)**2 &
-                +eta(i,j,k)/(x(i)*dy(j))**2 &
-                +eta(i,j,k)/dz(k)**2
+           temp2 = max(eta(i,j,k)/dx(i)**2 &
+                ,eta(i,j,k)/(x(i)*dy(j))**2 &
+                ,eta(i,j,k)/dz(k)**2)
 
            temp = max(temp,temp2)
            if ( temp > dtmaxi) then
