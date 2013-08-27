@@ -211,7 +211,7 @@ do n=1,2
 !-----Step 2.---------------------------------------------------------|
 ! half time step update cell center variables using flux
 !
-  hdt=dt*0.5d0*(n-1)
+  hdt=dt*0.5d0*n
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
         do i=margin+1,ix-margin

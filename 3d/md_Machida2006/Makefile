@@ -3,8 +3,8 @@
 #FC = mpifrtpx -Kfast,optmsg=2,simd=2 -Qt -x-
 FC = mpif90
 LIB_DIR1 = ..
-OBJS =  getEta2.o perturb.o openfile.o convert.o \
-	mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
+OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
+	getEta2.o perturb.o openfile.o convert.o \
 	integrate_cyl.o\
 	switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
 	model_machida.o bnd.o main.o 

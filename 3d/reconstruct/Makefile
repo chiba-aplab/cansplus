@@ -6,7 +6,7 @@ FC = mpifrtpx -Kfast
 CANS_LIB_DIR = ..
 
 TARGET = $(CANS_LIB_DIR)/libcans2_3d.a
-OBJS =  esystem_glmmhd.o getMP5value.o reconstructionConstant.o \
+OBJS =  esystem_glmmhd.o reconstructionConstant.o \
 	lr_state_MP5_2.o lr_state_MP5_3.o
 
 '.update' : $(OBJS)
