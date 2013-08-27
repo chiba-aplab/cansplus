@@ -1,6 +1,6 @@
 #FC = ftn -O2 -Minline
 #FC = ftn -fastsse -Mipa=fast -O2 -Minline -Minfo=all
-FC = mpifrtpx -Kfast
+#FC = mpifrtpx -Kfast
 #FC = ifort -parallel -inline
 #FC = gfortran
 CANS_LIB_DIR = ..

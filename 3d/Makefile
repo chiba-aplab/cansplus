@@ -1,3 +1,4 @@
+export FC=mpif90
 target : 
 	cd cansnc; make
 	cd bc; make

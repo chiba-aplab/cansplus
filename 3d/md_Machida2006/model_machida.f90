@@ -6,6 +6,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
        ,ccx,ccy,ccz,rg_nrmlx,rohalo,te_factor,nrmlv &
        ,nrmlte,boltzmann_const,Navo,mmw)
   use mpi_domain_xz
+  use boundary
 
   implicit none
   include 'mpif.h'

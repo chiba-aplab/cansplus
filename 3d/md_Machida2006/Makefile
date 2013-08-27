@@ -1,7 +1,7 @@
 #FC = ftn -fastsse -Mipa=fast -O2 -Minline -Minfo=all
 #FC = mpifrtpx -Kfast
 #FC = mpifrtpx -Kfast,optmsg=2,simd=2 -Qt -x-
-FC = mpif90
+FC = mpif90 -I ../bc
 LIB_DIR1 = ..
 OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
 	getEta2.o perturb.o openfile.o convert.o \

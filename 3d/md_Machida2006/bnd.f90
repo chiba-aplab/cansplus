@@ -2,6 +2,7 @@ subroutine bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
            ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   use mpi_domain_xz
+  use boundary
   implicit none
 
   integer,intent(in) :: margin,ix,jx,kx
