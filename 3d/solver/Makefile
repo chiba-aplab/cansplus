@@ -1,10 +1,5 @@
-#FC = ftn -O2 -Minline
-#FC = ftn -fastsse -Mipa=fast -O2 -Minline -Minfo=all
-#FC = mpifrtpx -Kfast
-#FC = ifort -parallel -inline
-#FC = gfortran
 CANS_LIB_DIR = ..
-
+include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = $(CANS_LIB_DIR)/libcans2_3d.a
 OBJS =  hlld_flux.o hll_flux.o \
 	glm_flux.o cal_interface_BP.o \
@@ -15,10 +10,13 @@ OBJS =  hlld_flux.o hll_flux.o \
 	$ ar -r $(TARGET) $(OBJS)
 	touch .update
 
-.SUFFIXES:.f90
+.PHONY : all 
+.PHONY : clean
+.SUFFIXES :
+.SUFFIXES : .o .f90
 
 .f90.o:
-	$(FC) -c $<
+	$(FC) $(FFLAGS) -c $<
 
 clean :
 	rm -f $(OBJS)

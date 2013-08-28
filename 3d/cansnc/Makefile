@@ -1,10 +1,5 @@
-#FC = ftn -O2 -Minline
-#FC = ftn -fastsse -Mipa=fast -O2 -Minline -Minfo=all
-#FC = mpifrtpx -Kfast
-#FC = ifort -parallel -inline
-#FC = gfortran
 CANS_LIB_DIR = ..
-
+include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = $(CANS_LIB_DIR)/libcansnc.a
 OBJS =  ncopn1d.o ncopn2d.o ncopn3d.o \
         ncgetattc.o ncputattc.o \

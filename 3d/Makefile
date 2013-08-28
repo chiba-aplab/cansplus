@@ -1,4 +1,3 @@
-export FC=mpif90
 target : 
 	cd cansnc; make
 	cd bc; make
@@ -11,5 +10,5 @@ clean :
 	cd common; make clean
 	cd solver; make clean
 	cd reconstruct; make clean
-#	cd md_AccretionDisk; make clean
+	cd md_Machida2006; make clean
 	rm -f *.a
