@@ -10,7 +10,6 @@ OBJS =  esystem_glmmhd.o reconstructionConstant.o \
 
 .PHONY : all 
 .PHONY : clean
-.SUFFIXES :
 .SUFFIXES : .o .f90
 
 .f90.o:

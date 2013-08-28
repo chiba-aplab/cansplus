@@ -9,7 +9,6 @@ OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
 
 .PHONY : all 
 .PHONY : clean
-.SUFFIXES :
 .SUFFIXES : .o .f90
 
 all: $(TARGET)
