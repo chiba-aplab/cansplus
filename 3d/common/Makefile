@@ -10,6 +10,7 @@ OBJS =  getcurrent.o getcurrent_cyl.o getEta.o cal_resflux.o cal_resflux_fee.o \
 
 .PHONY : all 
 .PHONY : clean
+.SUFFIXES :
 .SUFFIXES : .o .f90
 
 .f90.o:
