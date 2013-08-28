@@ -1,5 +1,16 @@
 module boundary
+
+  implicit none
+  private
+
+  public :: bd_consx, bd_consy, bd_consz, bd_frex, bd_frey, bd_frez, &
+            bd_inix, bd_iniy, bd_iniz, bd_perx, bd_pery, bd_perz,    &
+            bd_synnx_car, bd_synny_car, bd_synnz_car, bd_synnx,      &
+            bd_synpx_car, bd_synpy_car, bd_synpz_car, bd_synpx
+
+
 contains
+
 
 !=====================================================================
 ! INPUT
