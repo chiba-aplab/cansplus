@@ -176,7 +176,7 @@ subroutine model_machida(mpid,igx,jgx,kgx,ix,jx,kx,margin &
   enddo
 
   do i=0,margin-1
-     dxg(margin-i) = dxg(margin-i+1)
+     dxg(margin-i) = dxg(margin+i+1)
   enddo
 
   izero = margin+1
