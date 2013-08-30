@@ -249,8 +249,7 @@ mt=6
   end subroutine file_output
 
   subroutine file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpisize &
-       ,mpirank,mpid,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee,mass_bh,rg,rg_nrmlx &
-       ,RadCool,te_factor,rohalo,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
+       ,mpirank,mpid,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
     
     use mpi_domain_xz
     implicit none
@@ -261,12 +260,10 @@ mt=6
     real(8),intent(in),dimension(jx) :: y,dy
     real(8),intent(in),dimension(kx) :: z,dz
     real(8),intent(in),dimension(ix,jx,kx) :: gx,gz
-    real(8),intent(in) :: dtout,tend,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee
-    real(8),intent(in) :: mass_bh,rg,rg_nrmlx,RadCool,te_factor,rohalo,eta0,vc,gm
+    real(8),intent(in) :: dtout,tend
+    real(8),intent(in) :: eta0,vc,gm
     
     call dacputparamc(mf_params,'comment','model_machida,int_2')
-    call dacputparamd(mf_params,'dtout',dtout)
-    call dacputparamd(mf_params,'tend',tend)
     call dacputparami(mf_params,'ix',ix)
     call dacputparami(mf_params,'jx',jx)
     call dacputparami(mf_params,'kx',kx)
@@ -274,24 +271,14 @@ mt=6
     call dacputparami(mf_params,'jgx',jgx)
     call dacputparami(mf_params,'kgx',kgx)
     call dacputparami(mf_params,'margin',margin)
+    call dacputparamd(mf_params,'tend',tend)
     call dacputparami(mf_params,'mpi',1)
+    call dacputparamd(mf_params,'dtout',dtout)
     call dacputparami(mf_params,'mpisize',mpisize)
     call dacputparami(mf_params,'mpirank',mpirank)
     call dacputparami(mf_params,'mpix',mpid%mpisize_2d(1))
     call dacputparami(mf_params,'mpiz',mpid%mpisize_2d(2))
     call dacputparami(mf_params,'beta',100)
-    call dacputparamd(mf_params,'nrmlro',nrmlro)
-    call dacputparamd(mf_params,'nrmlte',nrmlte)
-    call dacputparamd(mf_params,'nrmlx',nrmlx)
-    call dacputparamd(mf_params,'nrmlv',nrmlv)
-    call dacputparamd(mf_params,'nrmlt',nrmlt)
-    call dacputparamd(mf_params,'nrmlee',nrmlee)
-    call dacputparamd(mf_params,'mass_bh',mass_bh)
-    call dacputparamd(mf_params,'rg',rg)
-    call dacputparamd(mf_params,'rg_nrmlx',rg_nrmlx)
-    call dacputparamd(mf_params,'RadCool',RadCool)
-    call dacputparamd(mf_params,'te_factor',te_factor)
-    call dacputparamd(mf_params,'rohalo',rohalo)
     call dacputparamd(mf_params,'eta0',eta0)
     call dacputparamd(mf_params,'vc',vc)
     call dacputparamd(mf_params,'x(1)',x(1))

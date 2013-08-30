@@ -1,7 +1,7 @@
 subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
      ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
      ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-     ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+     ,eta0,vc,eta,ccx,ccy,ccz,xin)
   use convert
   use mpi_domain_xz
   implicit none
@@ -16,7 +16,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8) :: dts
 
-  real(8),intent(in) :: floor
+  real(8),intent(in) :: floor,xin
 
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
@@ -25,7 +25,6 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   real(8),dimension(5,2,jx),intent(in) :: ccy
   real(8),dimension(5,2,kx),intent(in) :: ccz
 
-  real(8),intent(in) :: RadCool,te_factor,time,rohalo,swtch_t,xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
@@ -94,7 +93,6 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 !
 
   cp = sqrt(ch*cr)
-  pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
@@ -115,7 +113,7 @@ do n=1,2
   call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
 
-  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -231,10 +229,10 @@ do n=1,2
            see = -0.5d0*(feexr(i,j,k)+feexr(i-1,j,k))*inversex &
                 +ro(i,j,k)*(vx(i,j,k)*gx(i,j,k)+vz(i,j,k)*gz(i,j,k))
 !           if (time .gt. swtch_t) then
-           if (ro(i,j,k) .gt. rohalo) then
-           te = te_factor*pr(i,j,k)/ro(i,j,k)
-           see = see - RadCool*(ro(i,j,k)**2)*sqrt(te)
-           endif
+!           if (ro(i,j,k) .gt. rohalo) then
+!           te = te_factor*pr(i,j,k)/ro(i,j,k)
+!           see = see - RadCool*(ro(i,j,k)**2)*sqrt(te)
+!           endif
 !           endif
 ! phi
            sphi = -0.5d0*(fphix(i,j,k)+fphix(i-1,j,k))*inversex
@@ -291,8 +289,7 @@ do n=1,2
   call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
        ,phi,merr)
 
-  call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd( )
 enddo
 
 return
