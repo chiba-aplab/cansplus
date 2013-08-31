@@ -2,10 +2,10 @@ CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = a.out
 OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
-	getEta2.o perturb.o openfile.o convert.o \
+	getEta2.o openfile.o convert.o const.o init.o model.o\
 	integrate_cyl.o\
 	switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
-	model_machida.o bnd.o main.o 
+	bnd.o main.o 
 
 .PHONY : all 
 .PHONY : clean
@@ -28,14 +28,14 @@ $(CANS_LIB_DIR)/libcansnc.a :
 
 #Dependencies
 params.txt : a.out
-model_machida.o : $(CANS_LIB_DIR)/libcans2_3d.a
+init.o : const.o mpi_domain_xz.o bnd.o
+model.o : $(CANS_LIB_DIR)/libcans2_3d.a const.o mpi_domain_xz.o
 bnd.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o
 exchangeMpixz.o : mpi_domain_xz.o
 exchangeMpixz_res.o : mpi_domain_xz.o
 integrate_cyl.o : convert.o mpi_domain_xz.o
-main.o : mpi_domain_xz.o openfile.o
+main.o : init.o const.o mpi_domain_xz.o openfile.o
 openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_domain_xz.o 
-perturb.o : mpi_domain_xz.o
 
 clean:
 	rm -f params.txt* *.o *.mod *.oo *.dac.* a.out $(OBJS)
