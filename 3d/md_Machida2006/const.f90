@@ -19,7 +19,12 @@ module const
 !--------------------------------------------------------------------------
 !  MPI
   integer,parameter :: mpisize_x=1
+  integer,parameter :: mpisize_y=1                  ! unimplement for mpi
   integer,parameter :: mpisize_z=16
+  integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
+  integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
+  integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)
+
 !--------------------------------------------------------------------------
 !   time control parameters
   real(8),parameter :: tend  = 0.01d0
@@ -37,10 +42,6 @@ module const
 
 
 ! model parameter
-  ! set uniform grid
-  real(8),parameter :: dxg0 = 0.01d0
-!  real(8),parameter :: dyg0 = 0.0d0
-  real(8),parameter :: dzg0 = 0.01d0
 
   !  size 
   real(8),parameter :: xmin = 0.0d0
@@ -49,6 +50,11 @@ module const
   real(8),parameter :: ymax = pi2
   real(8),parameter :: zmin = 0.0d0  
 !  real(8),parameter :: zmax = 0.0d0  
+
+  ! set uniform grid
+  real(8),parameter :: dxg0 = 0.01d0
+  real(8),parameter :: dyg0 = (ymax-ymin)/real(jgx-margin*2)
+  real(8),parameter :: dzg0 = 0.01d0
 
   ! set global non-uniform grid  
   real(8),parameter :: dxmax = 10.0d0*dxg0

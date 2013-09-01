@@ -1,45 +1,23 @@
 module  model
-
+  use mpi_domain_xz
+  use const
   implicit none
   private
-
   public :: model_machida
 
 contains
 
-subroutine  model_machida(igx,jgx,kgx&
-       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
+subroutine  model_machida(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,y,dy,z,dz &
-       ,gx,gz,mf_params,eta &
-       ,ccx,ccy,ccz )
+       ,gx,gz,eta,ccx,ccy,ccz )
 
-
-  use mpi_domain_xz
-  use const
   use boundary
 
   implicit none
 
-! const
-!  integer,intent(in) :: ix,jx,kx
-  integer,intent(in) :: mf_params
-
-! const
-!  integer,intent(in) :: margin
-  integer,intent(in) :: igx,jgx,kgx
-
   type(mpidomain) :: mpid
   integer :: merr 
-
-!  here
-!  integer :: idf
-!  real(8) :: tend,dtout
-
-! const
-!  real(8) :: gm,cr,eta0,vc,xin
-! const  
-!real(8) :: pi,pi2,pi4,hpi4
 
 !---Input & Output
   real(8),dimension(ix) :: x,dx,dxm,xx
@@ -51,9 +29,6 @@ subroutine  model_machida(igx,jgx,kgx&
   real(8),dimension(5,2,ix) :: ccx
   real(8),dimension(5,2,jx) :: ccy
   real(8),dimension(5,2,kx) :: ccz
-
-!  real(8),intent(in) :: rg_nrmlx,rohalo,te_factor
-!  real(8),intent(in) :: nrmlv,nrmlte,boltzmann_const,Navo,mmw
 
   real(8),dimension(igx) :: xg,dxg,dxmg
   real(8),dimension(0:igx) :: xmg
@@ -78,94 +53,29 @@ subroutine  model_machida(igx,jgx,kgx&
 !---Temp coordinate
   real(8),dimension(ix,jx,kx) :: curx,cury,curz
 
-! const  here
-  real(8) :: dyg0
-
-! const
-!  real(8) :: xmin,ymin,zmin
-!  real(8) :: xmax,ymax,zmax
-
-!  const
-!  real(8) :: dxmax,dymax,dzmax
-!  integer :: ugrid_xmax, ugrid_zmax
-
   integer :: izero,jzero,kzero
 
-!  const
-!  real(8) :: ratio_x, ratio_z
-
 !-------Temp phys
-  real(8) :: ss!grav,sseps, ssg   const
+  real(8) :: ss
 
   integer :: i,j,k
   integer :: ig,jg,kg
 
 ! machida
-  real(8) :: tmp !kk,beta0    const
+  real(8) :: tmp 
 
-  real(8) :: psi0, pot0 !, tec0  const
-
+  real(8) :: psi0, pot0 
   real(8) :: roc,prc,vyc
   real(8) :: rod,prd,vyd,byd
 
   real(8) :: bbAbsMax
 
-!add
-!  cons
-!  real(8) :: factorc
-!  const
-!  real(8) :: aa
-
 !---Step 0.--------------------------------------------------------------|
 ! set parameter
 !
-
-!  const
-!  factorc=boltzmann_const*Navo/mmw*nrmlte/nrmlv/nrmlv
-
-!  const
-!  vc=0.9d0*2.998d10/nrmlv
-!  vc=0.2d0*2.998d10/nrmlv
-!  vc=0.5d0*2.998d10/nrmlv
-
-!  const
-!  pi = acos(-1.0d0)
-!  gm=5.0d0/3.0d0
-!  pi2 = 2.0d0*pi
-!  cr = 0.18d0
-!  pi4 = 4.0d0*pi
-!  hpi4 = sqrt(pi4)
-
-! const
-!  eta0=4.0d0*pi*0.0001d0
-
-!   const
-!  tec0 = 5.0d-1
-!  const
-!  beta0 = 100.0d0
-!  kk = 0.05d0
-!  aa=0.2d0
-
-!---Step 1.--------------------------------------------------------------|
-! set grid
-
-! const
-!  dxg0 = 0.01d0
-!  dzg0 = 0.01d0
-
-!  xmin = 0.0d0
-!  ymin = 0.0d0
-!  ymax = pi2
-!  zmin = 0.0d0
-
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
 !
-
-!  const
-!  dxmax = 10.0d0*dxg0
-!  ratio_x = 1.05d0
-!  ugrid_max = 96
 
 !  do i=margin+1,2*margin
 !       dxg(i) = 4.0d0*dxg0
@@ -177,7 +87,9 @@ subroutine  model_machida(igx,jgx,kgx&
 
 
 !  here
-  dxg(margin+1)=4.0d0*dxg0
+  do i=1,margin
+  dxg(margin+i)=4.0d0*dxg0
+  enddo
 
 !  do i=margin+2,margin+96
   do i=margin+2,margin+ugrid_xmax
@@ -195,6 +107,10 @@ subroutine  model_machida(igx,jgx,kgx&
 
   do i=0,margin-1
      dxg(margin-i) = dxg(margin-i+1)
+  enddo
+
+  do i=1,igx-1
+    dxmg(i) = 0.5d0*(dxg(i+1)+dxg(i))
   enddo
 
   izero = margin+1
@@ -218,9 +134,6 @@ subroutine  model_machida(igx,jgx,kgx&
 !---Step 1b.-------------------------------------------------------------|
 ! set global y-grid
 !
-
-  dyg0 = (ymax-ymin)/real(jgx-margin*2)
-
   do j=1,jgx
      dyg(j) = dyg0
   enddo
@@ -248,11 +161,6 @@ subroutine  model_machida(igx,jgx,kgx&
 !---Step 1c.-------------------------------------------------------------|
 ! set global z-grid
 !
-
-!  const
-!  dzmax = 10.0d0*dzg0
-!  ratio_z = 1.07d0
-!  ugrid_zmax=45
 
   do,k=1,kgx
      dzg = dzg0
@@ -363,14 +271,6 @@ subroutine  model_machida(igx,jgx,kgx&
   enddo
 
 !----------------------------------------------------------------------|
-! const 
-!  ssg=rg_nrmlx
-!  sseps = 0.2d0
-!  grav = (1.0d0-ssg)**2
-
-!  const
-!  xin = sseps
-!  xin = 0.2d0   !2rg
 
   do k=1,kgx
      do j=1,jgx
@@ -448,7 +348,6 @@ subroutine  model_machida(igx,jgx,kgx&
         do i=1,ix
            !---- set corona ---------------------
            ss = sqrt(x(i)**2+z(k)**2)
-!           roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
            roc = rohalo*exp(-(gpot(i,j,k)-pot0)/(factorc*tec0))
            prc = tec0*roc/te_factor
 
@@ -506,12 +405,8 @@ end subroutine model_machida
 
 subroutine perturb(iperturb,mpid,vx,vy,vz,x,dx,dy,dz,v0)
 ! perturbation
-  use mpi_domain_xz
-  use const
   implicit none
 
-!  const
-!  integer,intent(in) :: ix,jx,kx
   integer,intent(in) :: iperturb
 
   type(mpidomain) :: mpid
@@ -636,9 +531,9 @@ subroutine perturb(iperturb,mpid,vx,vy,vz,x,dx,dy,dz,v0)
         enddo
      enddo
 
-     do k=1,kx-1
+     do k=2,kx-1
         do j=1,jx-1
-           do i=1,ix-1
+           do i=2,ix-1
               dvxc(i,j,k) = 0.5d0*(dvx(i,j,k)+dvx(i-1,j,k))
               dvyc(i,j,k) = dvy(i,j,k)
               dvzc(i,j,k) = 0.5d0*(dvz(i,j,k)+dvz(i,j,k-1))
@@ -646,9 +541,9 @@ subroutine perturb(iperturb,mpid,vx,vy,vz,x,dx,dy,dz,v0)
         enddo
      enddo
 
-     do k=1,kx-1
-        do j=1,jx-1
-           do i=1,ix-1
+     do k=2,kx-1
+        do j=2,jx-1
+           do i=2,ix-1
               vx(i,j,k) = vx(i,j,k) + dvxc(i,j,k)
               vy(i,j,k) = vy(i,j,k) + dvyc(i,j,k)
               vz(i,j,k) = vz(i,j,k) + dvzc(i,j,k)
