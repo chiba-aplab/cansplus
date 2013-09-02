@@ -30,7 +30,7 @@ module mpi_domain_xz
 
   public :: mpi_setup
 
-  type, public :: mpidomain
+  type :: mpidomain
      integer :: mpisize
      integer :: mpirank
      integer, dimension(2) :: mpisize_2d
@@ -41,17 +41,18 @@ module mpi_domain_xz
      integer :: tl,tr,dl,dr
   end type mpidomain
 
+  type(mpidomain), public :: mpid
+
 
 contains
 
 
-subroutine mpi_setup(mpid,mpisize_x,mpisize_z)
+subroutine mpi_setup(mpisize_x,mpisize_z)
 
   include 'mpif.h'
 
   integer, intent(in) :: mpisize_x, mpisize_z
   integer :: mpisize, mpirank, merr
-  type(mpidomain), intent(out) :: mpid
 
   call mpi_init(merr)
   call mpi_comm_size(mpi_comm_world,mpisize,merr)

@@ -1,14 +1,14 @@
-subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
      ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
      ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
      ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+
   use convert
   use mpi_domain_xz
   implicit none
 
 !--Input
   integer,intent(in) :: ix,jx,kx,margin
-  type(mpidomain) :: mpid
   integer :: merr
   real(8),intent(in) :: ch,cr
   real(8) :: cp

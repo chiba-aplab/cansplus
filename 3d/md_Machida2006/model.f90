@@ -1,7 +1,7 @@
 module  model
 
-  use mpi_domain_xz
   use const
+  use mpi_domain_xz, only : mpid
 
   implicit none
   private
@@ -15,9 +15,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,gx,gz,eta)
 
   implicit none
-
-  type(mpidomain) :: mpid
-  integer :: merr 
 
 !---Input & Output
   real(8),dimension(ix) :: x,dx,xx
@@ -343,22 +340,18 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
            byi = by
            bzi = 0.0d0
 
-  call perturb(1,mpid,bx,by,bz,x,dx,dy,dz,bbAbsMax)
+  call perturb(1,bx,by,bz,x,dx,dy,dz,bbAbsMax)
        
 end subroutine model_setup
 
-!
 !----------------------------------------------------------------
-!
-
-subroutine perturb(iperturb,mpid,vx,vy,vz,x,dx,dy,dz,v0)
 ! perturbation
+!----------------------------------------------------------------
+subroutine perturb(iperturb,vx,vy,vz,x,dx,dy,dz,v0)
+
   implicit none
 
   integer,intent(in) :: iperturb
-
-  type(mpidomain) :: mpid
-
   real(8),intent(in) :: v0
 
   real(8),dimension(ix) :: x,dx

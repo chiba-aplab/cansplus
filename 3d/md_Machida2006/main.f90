@@ -36,7 +36,7 @@ program main
        ,RadCool,te_factor,rohalo,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
 
 
-    if(mpid%mpirank .eq. 0)then
+    if(mpid%mpirank == 0)then
          write(6,913) ns,time,nd
          write(*,*) 'dt :: ',dt
     endif
@@ -55,7 +55,7 @@ program main
      call file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
 
      time = real(nd-1)*dtout
-     if(mpid%mpirank .eq. 0)then
+     if(mpid%mpirank == 0)then
         write(*,*) 'time :: ',time
      endif
      
@@ -69,9 +69,8 @@ program main
 !======================================================================|
 !     time integration 
 !======================================================================|
-1000  continue  
-  ns = ns+1
-  nscount = nscount+1
+  loop: do ns=1,nstop
+
   mwflag=0
 
 !----------------------------------------------------------------------|
@@ -84,8 +83,8 @@ program main
        ,mpi_comm_world,merr)
 
   dt = dtg
-  if ( dt.lt.dtmin) goto 9999
-  if (merr.ne.0) goto 9999
+  if (dt < dtmin .or. merr /= 0) exit loop
+
   timep = time
   time = time+dt
 
@@ -99,8 +98,8 @@ program main
   
 !----------------------------------------------------------------------|
 !     data output 
-  if(mpid%mpirank .eq. 0)then
-   if(mod(nscount,100) == 0)then
+  if(mpid%mpirank == 0)then
+   if(mod(ns,100) == 0)then
      print '(" step=",i8," time=",e10.5," dt=",e10.5)', ns, time, dt
    endif
   end if
@@ -111,13 +110,13 @@ program main
 ! dtout
   nt1=int(timep/dtout)
   nt2=int(time/dtout)
-  if (nt1.lt.nt2) mw=1
-  if (mw.ne.0) then
+  if (nt1 < nt2) mw=1
+  if (mw /= 0) then
      call openfileAll(nd,mpid%mpirank,ix,jx,kx)
      call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
      call closefileAll()
 
-     if(mpid%mpirank .eq. 0)then
+     if(mpid%mpirank == 0)then
         write(6,913) ns,time,nd
         write(*,*) '[NORMAL] dt :: ',dt
         write(*,*) 'nd: ',nd
@@ -133,19 +132,20 @@ program main
 !----------------------------------------------------------------------|
 !     loop test
 
-  if (ns .lt. nstop .and. time .lt. tend ) goto 1000
+  if (time < tend ) exit loop
 
 !======================================================================|
 !     epilogue
 !======================================================================|
-9999 continue
+  enddo loop
+
   if (merr .ne. 0) then
      write(6,*) '#### abnormal stop ####'
   endif
 !----------------------------------------------------------------------|
 !  data output
-  if (mwflag.eq.0) then
-     if(mpid%mpirank .eq. 0)then
+  if (mwflag == 0) then
+     if(mpid%mpirank == 0)then
         write(6,913) ns,time,nd
      end if
 
@@ -162,7 +162,7 @@ program main
   call mpi_finalize(merr)
 
   write(6,915) ns,time
-  if (merr.eq.0) then
+  if (merr == 0) then
      write(6,*) '  ### normal stop ###'
   else
      write(6,*) '  ### abnormal stop ###'

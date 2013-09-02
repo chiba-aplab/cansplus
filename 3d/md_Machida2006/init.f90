@@ -1,7 +1,6 @@
 module init
 
   use const
-  use mpi_domain_xz
 
   implicit none
   private
@@ -48,10 +47,6 @@ module init
   real(8), public :: dtg
 !-----------------------------------------------------------  
 
-!----------------------------------------------------------------------|
-! MPI variable
-  type(mpidomain), public :: mpid
-
 
 contains
 
@@ -59,6 +54,7 @@ contains
 subroutine initialize
 
   use model, only : model_setup
+  use mpi_domain_xz
 
   implicit none
   real(8),dimension(0:ix) :: xm
@@ -67,7 +63,7 @@ subroutine initialize
 !----------------------------------------------------------------------|
 !   for MPI
 !  
-  call mpi_setup(mpid,mpisize_x,mpisize_z)
+  call mpi_setup(mpisize_x,mpisize_z)
 
 !----------------------------------------------------------------------|
 !   setup numerical model (grid, initial conditions, etc.)
@@ -77,10 +73,10 @@ subroutine initialize
        ,x,dx,xm,y,dy,ym,z,dz,zm &
        ,gx,gz,eta ) 
 
-  call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
          ,phi,merr)
-  call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-               ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+           ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 !-----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5
   call reconstructionConstant(margin,ix,x,xm,dx,ccx)

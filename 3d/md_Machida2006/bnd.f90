@@ -1,4 +1,4 @@
-subroutine bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+subroutine bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
            ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   use mpi_domain_xz
@@ -6,8 +6,6 @@ subroutine bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
   implicit none
 
   integer,intent(in) :: margin,ix,jx,kx
-  type(mpidomain) :: mpid
-
   real(8),dimension(ix),intent(in) :: x
   real(8),dimension(kx),intent(in) :: z
 
