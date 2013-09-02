@@ -27,6 +27,9 @@ module const
 
 !--------------------------------------------------------------------------
 !   time control parameters
+
+  logical :: restart = .false.     ! if ".true." then restart 
+  
   real(8),parameter :: tend  = 0.01d0
   real(8),parameter :: dtout = tend/(5.0d0)
   integer,parameter :: nstop = 20            !number of total time steps for the run

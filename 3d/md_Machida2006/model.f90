@@ -11,11 +11,8 @@ contains
 
 subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-       ,x,dx,y,dy,z,dz &
-       ,gx,gz,eta,ccx,ccy,ccz )
-  use boundary , only   :bd_synpx,bd_synnx, bd_frex,bd_consx  ! x
-  use boundary , only   :bd_pery                              ! y
-  use boundary , only   :bd_frez,bd_consz                     ! z
+       ,x,dx,xm,y,dy,ym,z,dz,zm &
+       ,gx,gz,eta)
 
   implicit none
 
@@ -23,21 +20,18 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
   integer :: merr 
 
 !---Input & Output
-  real(8),dimension(ix) :: x,dx,dxm,xx
+  real(8),dimension(ix) :: x,dx,xx
   real(8),dimension(0:ix) :: xm
-  real(8),dimension(jx) :: y,dy,dym
+  real(8),dimension(jx) :: y,dy
   real(8),dimension(0:jx) :: ym
-  real(8),dimension(kx) :: z,dz,dzm
+  real(8),dimension(kx) :: z,dz
   real(8),dimension(0:kx) :: zm
-  real(8),dimension(5,2,ix) :: ccx
-  real(8),dimension(5,2,jx) :: ccy
-  real(8),dimension(5,2,kx) :: ccz
 
-  real(8),dimension(igx) :: xg,dxg,dxmg
+  real(8),dimension(igx) :: xg,dxg
   real(8),dimension(0:igx) :: xmg
-  real(8),dimension(jgx) :: yg,dyg,dymg
+  real(8),dimension(jgx) :: yg,dyg
   real(8),dimension(0:jgx) :: ymg
-  real(8),dimension(kgx) :: zg,dzg,dzmg
+  real(8),dimension(kgx) :: zg,dzg
   real(8),dimension(0:kgx) :: zmg
 
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
@@ -112,10 +106,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      dxg(margin-i) = dxg(margin-i+1)
   enddo
 
-  do i=1,igx-1
-    dxmg(i) = 0.5d0*(dxg(i+1)+dxg(i))
-  enddo
-
   izero = margin+1
 
 ! X origin
@@ -140,11 +130,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
   do j=1,jgx
      dyg(j) = dyg0
   enddo
-
-  do j=1,jgx-1
-     dymg(j) = dyg(j+1)
-  enddo
-  dymg(jgx)=dymg(jgx-1)
 
   jzero = margin+1
   ymg(jzero) = ymin+0.5d0*dyg(jzero)
@@ -187,12 +172,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      dzg(k) = dzg(k+1)
   enddo
 
-  do k=1,kgx-1
-     dzmg(k) = 0.5d0*(dzg(k+1)+dzg(k))
-  enddo
-
-  dzmg(kgx)=dzmg(kgx-1)
-
 ! Z origin
 
   kzero = kgx/2
@@ -220,7 +199,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      ig = mpid%mpirank_2d(1)*(ix-2*margin)+i
      x(i)=xg(ig)
      dx(i) = dxg(ig)
-     dxm(i) = dxmg(ig)
   enddo
   do i=0,ix
      ig = mpid%mpirank_2d(1)*(ix-2*margin)+i
@@ -234,7 +212,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      jg = j
      y(j) = yg(jg)
      dy(j) = dyg(jg)
-     dym(j) = dymg(jg)
   enddo
 
   do j=0,jx
@@ -248,17 +225,11 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      kg=mpid%mpirank_2d(2)*(kx-2*margin)+k
      z(k) = zg(kg)
      dz(k) = dzg(kg)
-     dzm(k) = dzmg(kg)
-
   enddo
   do k=0,kx
      kg=mpid%mpirank_2d(2)*(kx-2*margin)+k
      zm(k) = zmg(kg)
   end do
-
-  call reconstructionConstant(margin,ix,x,xm,dx,ccx)
-  call reconstructionConstant(margin,jx,y,ym,dy,ccy)
-  call reconstructionConstant(margin,kx,z,zm,dz,ccz)
 
 !---Step 3a.----------------------------------------------------------|
 ! set gravitation
@@ -272,8 +243,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
         enddo
      enddo
   enddo
-
-!----------------------------------------------------------------------|
 
   do k=1,kgx
      do j=1,jgx
@@ -297,32 +266,8 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
         end do
      end do
   end do
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-!---g y
-  call bd_pery(margin,gpotg,igx,jgx,kgx)
-  call bd_pery(margin,gxg,igx,jgx,kgx)
-  call bd_pery(margin,gzg,igx,jgx,kgx)
-
-!---g x
-  call bd_synpx(0,margin,gpotg,igx,jgx,kgx)
-  call bd_synnx(0,margin,gxg,igx,jgx,kgx)
-  call bd_synpx(0,margin,gzg,igx,jgx,kgx)
-
-  call bd_frex(1,margin,gpotg,igx,jgx,kgx)
-  call bd_consx(1,margin,0.0d0,gxg,igx,jgx,kgx)
-  call bd_frex(1,margin,gzg,igx,jgx,kgx)
-
-!---g z
-  call bd_frez(0,margin,gpotg,igx,jgx,kgx)
-  call bd_frez(0,margin,gxg,igx,jgx,kgx)
-  call bd_consz(0,margin,0.0d0,gzg,igx,jgx,kgx)
-
-  call bd_frez(1,margin,gpotg,igx,jgx,kgx)
-  call bd_frez(1,margin,gxg,igx,jgx,kgx)
-  call bd_consz(1,margin,0.0d0,gzg,igx,jgx,kgx)
-
-!---Step 3a.----------------------------------------------------------|
+!---Step 3b.----------------------------------------------------------|
 ! set individual gravitation
 
   do k=1,kx

@@ -61,7 +61,9 @@ subroutine initialize
   use model, only : model_setup
 
   implicit none
-
+  real(8),dimension(0:ix) :: xm
+  real(8),dimension(0:jx) :: ym
+  real(8),dimension(0:kx) :: zm
 !----------------------------------------------------------------------|
 !   for MPI
 !  
@@ -72,14 +74,18 @@ subroutine initialize
 !
   call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-       ,x,dx,y,dy,z,dz &
-       ,gx,gz,eta,ccx,ccy,ccz ) 
+       ,x,dx,xm,y,dy,ym,z,dz,zm &
+       ,gx,gz,eta ) 
 
   call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
          ,phi,merr)
   call bnd(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
-
+!-----------------------------------------------------------------------|
+!  cal reconstruction constant for MP5
+  call reconstructionConstant(margin,ix,x,xm,dx,ccx)
+  call reconstructionConstant(margin,jx,y,ym,dy,ccy)
+  call reconstructionConstant(margin,kx,z,zm,dz,ccz)
 !----------------------------------------------------------------------|
 !  initialize counters
 

@@ -47,7 +47,7 @@ program main
 !  read-data
 
 
-  if(nd .ne. 1)then
+  if(restart)then
   open(91,file='readFileNumber.dat')
   read(91,*) nd
   close(91)
