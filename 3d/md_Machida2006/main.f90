@@ -4,9 +4,8 @@
 program main
   use mpi_domain_xz
   use openfile
-  use init
   use const
-  use model
+  use init
 
   implicit none
   include 'mpif.h'
@@ -15,18 +14,6 @@ program main
 !     prologue
 !======================================================================|
 
-!----------------------------------------------------------------------|
-!  initialize counters
-
-  nd=1
-  time  = 0.0d0
-  timep = 0.0d0
-
-  ns    = 0
-  merr  = 0
-  nscount=0  
-
-  dt = tend
   call initial()
 
 !----------------------------------------------------------------------|

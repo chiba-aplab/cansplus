@@ -70,7 +70,7 @@ subroutine initial()
 !----------------------------------------------------------------------|
 !   for MPI
 !  
-  call  mpi_hoge(mpid,merr)
+  call  mpi_hoge()
 !----------------------------------------------------------------------|
 !   setup numerical model (grid, initial conditions, etc.)
 !
@@ -100,15 +100,13 @@ subroutine initial()
 end subroutine initial
 
 
-subroutine mpi_hoge(mpid,merr)
-  use const
-  use mpi_domain_xz
+subroutine mpi_hoge()
   implicit none
   include 'mpif.h'
 
-  integer :: merr
+!  integer :: merr
 ! MPI type
-  type(mpidomain) :: mpid
+!  type(mpidomain) :: mpid
 !----------------------------------------------------------------------|
 !   for MPI
 !  

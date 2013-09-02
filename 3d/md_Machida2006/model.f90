@@ -11,8 +11,9 @@ subroutine  model_machida(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,y,dy,z,dz &
        ,gx,gz,eta,ccx,ccy,ccz )
-
-  use boundary
+  use boundary , only   :bd_synpx,bd_synnx, bd_frex,bd_consx  ! x
+  use boundary , only   :bd_pery                              ! y
+  use boundary , only   :bd_frez,bd_consz                     ! z
 
   implicit none
 
