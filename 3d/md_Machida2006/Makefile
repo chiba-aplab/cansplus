@@ -27,8 +27,8 @@ $(CANS_LIB_DIR)/libcansnc.a :
 	cd $(CANS_LIB_DIR)/cansnc; make
 
 #Dependencies
-params.txt : a.out
-init.o : const.o mpi_domain_xz.o bnd.o model.o
+params.txt : $(TARGET)
+init.o : const.o mpi_domain_xz.o model.o
 model.o : $(CANS_LIB_DIR)/libcans2_3d.a const.o mpi_domain_xz.o
 bnd.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o
 exchangeMpixz.o : mpi_domain_xz.o

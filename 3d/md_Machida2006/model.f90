@@ -1,13 +1,15 @@
 module  model
+
   use mpi_domain_xz
   use const
+
   implicit none
   private
-  public :: model_machida
+  public :: model_setup
 
 contains
 
-subroutine  model_machida(ro,pr,vx,vy,vz,bx,by,bz,phi &
+subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,y,dy,z,dz &
        ,gx,gz,eta,ccx,ccy,ccz )
@@ -398,7 +400,7 @@ subroutine  model_machida(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
   call perturb(1,mpid,bx,by,bz,x,dx,dy,dz,bbAbsMax)
        
-end subroutine model_machida
+end subroutine model_setup
 
 !
 !----------------------------------------------------------------

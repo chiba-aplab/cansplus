@@ -1,4 +1,5 @@
 module mpi_domain_xz
+
 !======================================================================
 ! example ::
 !
@@ -25,18 +26,51 @@ module mpi_domain_xz
 !======================================================================
 
   implicit none
+  private
 
-  type mpidomain
+  public :: mpi_setup
+
+  type, public :: mpidomain
      integer :: mpisize
      integer :: mpirank
-     integer,dimension(2) :: mpisize_2d
-     integer,dimension(2) :: mpirank_2d
+     integer, dimension(2) :: mpisize_2d
+     integer, dimension(2) :: mpirank_2d
 
      integer :: l,r,t,d
 
      integer :: tl,tr,dl,dr
   end type mpidomain
+
+
 contains
+
+
+subroutine mpi_setup(mpid,mpisize_x,mpisize_z)
+
+  include 'mpif.h'
+
+  integer, intent(in) :: mpisize_x, mpisize_z
+  integer :: mpisize, mpirank, merr
+  type(mpidomain), intent(out) :: mpid
+
+  call mpi_init(merr)
+  call mpi_comm_size(mpi_comm_world,mpisize,merr)
+  call mpi_comm_rank(mpi_comm_world,mpirank,merr)
+  
+  mpid%mpirank = mpirank
+  mpid%mpisize = mpisize
+  
+  ! Core Numbers, 1: r(i)-direction, 2: z(k)-direction
+  mpid%mpisize_2d(1) = mpisize_x !1
+  mpid%mpisize_2d(2) = mpisize_z !16
+  
+  ! determine mpid%mpirank_3d
+  call setmy2drank(mpid,merr)
+  call setmpiboundary(mpid)
+
+end subroutine mpi_setup
+
+
 !======================================================================
   subroutine setmy2drank(mpid,merr)
 !======================================================================
@@ -208,7 +242,9 @@ contains
 
     mpid%dl = neighbor
     
-  contains
+
+  end subroutine setmpiboundary
+
 !======================================================================
     subroutine sectorank(mpid,rank_2d,rank)
 !======================================================================
@@ -260,5 +296,6 @@ contains
 
       return
     end subroutine chkrank
-  end subroutine setmpiboundary
+
+
 end module mpi_domain_xz

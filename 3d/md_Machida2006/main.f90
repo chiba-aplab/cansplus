@@ -14,25 +14,29 @@ program main
 !     prologue
 !======================================================================|
 
-  call initial()
+!----------------------------------------------------------------------|
+!  initialize
+
+  call initialize
 
 !----------------------------------------------------------------------|
 !  file open
 
-  call openfileCor(nd,mpirank,ix,jx,kx)
-  call openfileAll(nd,mpirank,ix,jx,kx)
+  call openfileCor(nd,mpid%mpirank,ix,jx,kx)
+  call openfileAll(nd,mpid%mpisize,ix,jx,kx)
 
 !----------------------------------------------------------------------|
 !     ready
 !----------------------------------------------------------------------|
 
     call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
-    call file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpisize &
-       ,mpirank,mpid,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee,mass_bh,rg,rg_nrmlx &
+    call file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpid%mpisize &
+       ,mpid%mpirank,mpisize_x,mpisize_z,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee &
+       ,mass_bh,rg,rg_nrmlx &
        ,RadCool,te_factor,rohalo,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
 
 
-    if(mpirank .eq. 0)then
+    if(mpid%mpirank .eq. 0)then
          write(6,913) ns,time,nd
          write(*,*) 'dt :: ',dt
     endif
@@ -43,20 +47,15 @@ program main
 !  read-data
 
 
-  ix0 = ix
-  jx0 = jx
-  kx0 = kx
-  nx0 = nd
-
   if(nd .ne. 1)then
   open(91,file='readFileNumber.dat')
   read(91,*) nd
   close(91)
-     call openReadFileAll(nd,mpirank,ix0,jx0,kx0,nx0)
+     call openReadFileAll(nd,mpid%mpirank,ix,jx,kx,nd)
      call file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
 
      time = real(nd-1)*dtout
-     if(mpirank .eq. 0)then
+     if(mpid%mpirank .eq. 0)then
         write(*,*) 'time :: ',time
      endif
      
@@ -85,9 +84,7 @@ program main
        ,mpi_comm_world,merr)
 
   dt = dtg
-  err_flg = 1 ! error flag
   if ( dt.lt.dtmin) goto 9999
-  err_flg = 2 ! error flag
   if (merr.ne.0) goto 9999
   timep = time
   time = time+dt
@@ -102,13 +99,10 @@ program main
   
 !----------------------------------------------------------------------|
 !     data output 
-
-  
-  if(mpirank .eq. 0)then
-!   if(nscount .ge. 100)then
+  if(mpid%mpirank .eq. 0)then
+   if(mod(nscount,100) == 0)then
      print '(" step=",i8," time=",e10.5," dt=",e10.5)', ns, time, dt
-!     nscount=0
-!   endif
+   endif
   end if
 
   mw=0
@@ -119,11 +113,11 @@ program main
   nt2=int(time/dtout)
   if (nt1.lt.nt2) mw=1
   if (mw.ne.0) then
-     call openfileAll(nd,mpirank,ix,jx,kx)
+     call openfileAll(nd,mpid%mpirank,ix,jx,kx)
      call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
      call closefileAll()
 
-     if(mpirank .eq. 0)then
+     if(mpid%mpirank .eq. 0)then
         write(6,913) ns,time,nd
         write(*,*) '[NORMAL] dt :: ',dt
         write(*,*) 'nd: ',nd
@@ -151,11 +145,11 @@ program main
 !----------------------------------------------------------------------|
 !  data output
   if (mwflag.eq.0) then
-     if(mpirank .eq. 0)then
+     if(mpid%mpirank .eq. 0)then
         write(6,913) ns,time,nd
      end if
 
-     call openfileAll(nd,mpirank,ix,jx,kx)
+     call openfileAll(nd,mpid%mpirank,ix,jx,kx)
      call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
      call closefileAll()
   endif

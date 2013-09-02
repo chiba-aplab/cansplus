@@ -249,14 +249,13 @@ mt=6
   end subroutine file_output
 
   subroutine file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpisize &
-       ,mpirank,mpid,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee,mass_bh,rg,rg_nrmlx &
+       ,mpirank,mpisize_x,mpisize_z,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee &
+       ,mass_bh,rg,rg_nrmlx &
        ,RadCool,te_factor,rohalo,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
     
-    use mpi_domain_xz
     implicit none
 
-    integer,intent(in) :: ix,jx,kx,igx,jgx,kgx,margin,mpisize,mpirank
-    type(mpidomain) :: mpid
+    integer,intent(in) :: ix,jx,kx,igx,jgx,kgx,margin,mpisize,mpirank,mpisize_x,mpisize_z
     real(8),intent(in),dimension(ix) :: x,dx
     real(8),intent(in),dimension(jx) :: y,dy
     real(8),intent(in),dimension(kx) :: z,dz
@@ -277,8 +276,8 @@ mt=6
     call dacputparami(mf_params,'mpi',1)
     call dacputparami(mf_params,'mpisize',mpisize)
     call dacputparami(mf_params,'mpirank',mpirank)
-    call dacputparami(mf_params,'mpix',mpid%mpisize_2d(1))
-    call dacputparami(mf_params,'mpiz',mpid%mpisize_2d(2))
+    call dacputparami(mf_params,'mpix',mpisize_x)
+    call dacputparami(mf_params,'mpiz',mpisize_z)
     call dacputparami(mf_params,'beta',100)
     call dacputparamd(mf_params,'nrmlro',nrmlro)
     call dacputparamd(mf_params,'nrmlte',nrmlte)
