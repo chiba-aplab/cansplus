@@ -88,10 +88,9 @@ subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 
   real(8) ::te
 
-  real(8) :: ratio,limit
+  real(8) :: ratio   ! here -> const.f90
 
-  ratio=10000.0d0
-  limit=0.0d0
+  ratio=10000.0d0    ! here -> const.f90
 
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve

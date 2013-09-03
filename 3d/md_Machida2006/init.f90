@@ -35,16 +35,15 @@ module init
 
 !----------------------------------------------------------------------|
 !  initialize counters
-  integer, public :: nd,ns,merr,ns1,ns2,nscount
+  integer, public :: nd,ns,merr,ns1,ns2
   real(8), public :: time,timep
 
 !----------------------------------------------------------------------|
 !   time control parameters
 !     nstop : number of total time steps for the run
-  integer, public :: mwflag,mw,nt1,nt2
+  integer, public :: mwflag,mw
 
-  real(8), public :: dt,hdt
-  real(8), public :: dtg
+  real(8), public :: dt,dtg
 !-----------------------------------------------------------  
 
 
@@ -96,7 +95,6 @@ contains
 
   ns    = 0
   merr  = 0
-  nscount=0
 
   dt = tend
                

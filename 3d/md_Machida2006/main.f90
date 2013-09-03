@@ -56,6 +56,7 @@ program main
   loop: do ns=1,nstop
 
   mwflag=0
+  mw=0
 
 !----------------------------------------------------------------------|
 !     obtain time spacing
@@ -87,7 +88,6 @@ program main
    endif
   endif
 
-  mw=0
 
 !----- check output
 ! dtout
@@ -120,10 +120,6 @@ program main
 !======================================================================|
 !  end of time integration 
 !======================================================================|
-
-  if(merr /= 0)then
-     write(6,*) '#### abnormal stop ####'
-  endif
 
 !  data output
   if(mwflag == 0)then
