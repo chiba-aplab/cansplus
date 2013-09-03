@@ -18,7 +18,7 @@ $(TARGET) : $(OBJS)
 	$(FC) $(FFLAGS) -o $(TARGET) $(OBJS) -L$(CANS_LIB_DIR) -lcans2_3d -lcansnc
 
 .f90.o:
-	$(FC) $(FFLAGS) -L$(CANS_LIB_DIR) -I$(CANS_LIB_DIR)/bc -c $< -lcans2_3d -lcansnc
+	$(FC) $(FFLAGS) -L$(CANS_LIB_DIR) -I$(CANS_LIB_DIR)/common -c $< -lcans2_3d -lcansnc
 
 $(CANS_LIB_DIR)/libcans2_3d.a : 
 	cd $(CANS_LIB_DIR); make
@@ -38,4 +38,4 @@ main.o : $(CANS_LIB_DIR)/libcans2_3d.a init.o const.o mpi_domain_xz.o openfile.o
 openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_domain_xz.o 
 
 clean:
-	rm -f params.txt* *.o *.mod *.oo *.dac.* a.out $(OBJS)
+	rm -f params.txt* *.o *.mod *.oo *.dac.* $(TARGET) $(OBJS)

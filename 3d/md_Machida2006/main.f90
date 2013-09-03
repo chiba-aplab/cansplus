@@ -1,11 +1,10 @@
-!
-! $Log: 
-!
 program main
+
   use mpi_domain_xz
   use openfile
   use const
   use init
+  use getNewdt
 
   implicit none
   include 'mpif.h'
@@ -75,7 +74,7 @@ program main
 
 !----------------------------------------------------------------------|
 !     obtain time spacing
-  call getNewdt_glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
+  call getNewdt__glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
        ,dt,ch)
 

@@ -5,6 +5,10 @@ subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 
   use convert
   use mpi_domain_xz
+  use lr_state
+  use flux_calc
+  use getcurrent
+  
   implicit none
 
 !--Input
@@ -112,7 +116,7 @@ subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   phi1=phi
 
 do n=1,2
-  call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
+  call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
 
   call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
@@ -123,7 +127,7 @@ do n=1,2
 !
   mdir = 1
 
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
@@ -132,18 +136,18 @@ do n=1,2
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
  
-  call cal_interface_BP(ix,jx,kx,bxw,phiw &
+  call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
-  call glm_flux(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
+  call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call hlld_flux(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
-  call cal_resflux(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
        ,fbyxr)
-  call cal_resflux(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
        ,fbzxr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
        ,feexr)
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
@@ -151,7 +155,7 @@ do n=1,2
 !
   mdir = 2
 
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
@@ -160,19 +164,19 @@ do n=1,2
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
 
-  call cal_interface_BP(ix,jx,kx,byw,phiw &
+  call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
 
-  call glm_flux(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
+  call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call hlld_flux(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-  call cal_resflux(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
        ,fbzyr)
-  call cal_resflux(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
        ,fbxyr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
@@ -180,7 +184,7 @@ do n=1,2
 !
   mdir = 3
   
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
@@ -189,19 +193,19 @@ do n=1,2
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
 
-  call cal_interface_BP(ix,jx,kx,bzw,phiw &
+  call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
 
-  call glm_flux(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
+  call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call hlld_flux(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
-  call cal_resflux(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
        ,fbxzr)
-  call cal_resflux(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
        ,fbyzr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|

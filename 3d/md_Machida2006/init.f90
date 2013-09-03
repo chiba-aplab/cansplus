@@ -51,12 +51,12 @@ module init
 contains
 
 
-subroutine initialize
+  subroutine initialize
 
+  use lr_state, only : reconstructionConstant
   use model, only : model_setup
   use mpi_domain_xz
 
-  implicit none
   real(8),dimension(0:ix) :: xm
   real(8),dimension(0:jx) :: ym
   real(8),dimension(0:kx) :: zm
@@ -95,7 +95,7 @@ subroutine initialize
 
   dt = tend
                
-end subroutine initialize
+  end subroutine initialize
 
 
 end module init
