@@ -77,13 +77,13 @@ program main
 !     obtain time spacing
   call getNewdt_glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-       ,dt,merr,ch)
+       ,dt,ch)
 
   call mpi_allreduce(dt,dtg,1,mpi_double_precision,mpi_min &
        ,mpi_comm_world,merr)
 
   dt = dtg
-  if (dt < dtmin .or. merr /= 0) exit loop
+  if (merr /= 0) exit loop
 
   timep = time
   time = time+dt

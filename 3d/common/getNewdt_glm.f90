@@ -3,7 +3,7 @@
 !
 subroutine getNewdt_glm(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
      ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-     ,dt,merr,ch)
+     ,dt,ch)
 
   implicit none
 
@@ -28,7 +28,6 @@ subroutine getNewdt_glm(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
 ! OUTPUT
 !===================
   real(8) :: dt
-  integer :: merr
 
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.
@@ -111,12 +110,9 @@ subroutine getNewdt_glm(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
   dt = min(2.0d0*beforedt,safety/dtmaxi)
   ch = safety*min_dx/dt
 
-  merr=0
- 
 ! Exception print
 
- if (dt.lt.dtmin) then
-     merr=9001
+ if (dt < dtmin) then
      write(6,*) '  ### stop due to small dt, less than dtmin ###'
      write(6,*) dt,dtmin,imin,jmin,kmin
 620  format('   dt = ',1pe10.3,'  < ',1pe10.3,' @ i =',i5 &
