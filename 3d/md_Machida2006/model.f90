@@ -5,64 +5,52 @@ module  model
 
   implicit none
   private
+
   public :: model_setup
+
 
 contains
 
-subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-       ,x,dx,xm,y,dy,ym,z,dz,zm &
-       ,gx,gz,eta)
 
-  implicit none
+  subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
+                         ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+                         ,x,dx,xm,y,dy,ym,z,dz,zm &
+                         ,gx,gz,eta)
 
 !---Input & Output
-  real(8),dimension(ix) :: x,dx,xx
-  real(8),dimension(0:ix) :: xm
-  real(8),dimension(jx) :: y,dy
-  real(8),dimension(0:jx) :: ym
-  real(8),dimension(kx) :: z,dz
-  real(8),dimension(0:kx) :: zm
+  real(8),dimension(ix),      intent(out) :: x,dx
+  real(8),dimension(0:ix),    intent(out) :: xm
+  real(8),dimension(jx),      intent(out) :: y,dy
+  real(8),dimension(0:jx),    intent(out) :: ym
+  real(8),dimension(kx),      intent(out) :: z,dz
+  real(8),dimension(0:kx),    intent(out) :: zm
+  real(8),dimension(ix,jx,kx),intent(out) :: ro,pr
+  real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
+  real(8),dimension(ix,jx,kx),intent(out) :: bx,by,bz
+  real(8),dimension(ix,jx,kx),intent(out) :: eta,phi
+  real(8),dimension(ix,jx,kx),intent(out) :: gx,gz
+  real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
+  real(8),dimension(ix,jx,kx),intent(out) :: vxi,vyi,vzi
+  real(8),dimension(ix,jx,kx),intent(out) :: bxi,byi,bzi
 
+  integer :: i,j,k
+  integer :: ig,jg,kg
+  integer :: izero,jzero,kzero
+  real(8) :: ss
+  real(8) :: tmp 
+  real(8) :: psi0, pot0 
+  real(8) :: roc,prc,vyc
+  real(8) :: rod,prd,vyd,byd
+  real(8) :: bbAbsMax
+  real(8),dimension(ix,jx,kx) :: curx,cury,curz
   real(8),dimension(igx) :: xg,dxg
   real(8),dimension(0:igx) :: xmg
   real(8),dimension(jgx) :: yg,dyg
   real(8),dimension(0:jgx) :: ymg
   real(8),dimension(kgx) :: zg,dzg
   real(8),dimension(0:kgx) :: zmg
-
-  real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
-  real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
-
-  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
-  real(8),dimension(ix,jx,kx),intent(inout) :: eta,phi
-
-  real(8),dimension(ix,jx,kx),intent(inout) :: gx,gz
   real(8),dimension(ix,jx,kx) :: gpot
   real(8),dimension(igx,jgx,kgx) :: gxg,gzg,gpotg
-
-  real(8),dimension(ix,jx,kx) :: roi,pri
-  real(8),dimension(ix,jx,kx) :: vxi,vyi,vzi
-  real(8),dimension(ix,jx,kx) :: bxi,byi,bzi
-!---Temp coordinate
-  real(8),dimension(ix,jx,kx) :: curx,cury,curz
-
-  integer :: izero,jzero,kzero
-
-!-------Temp phys
-  real(8) :: ss
-
-  integer :: i,j,k
-  integer :: ig,jg,kg
-
-! machida
-  real(8) :: tmp 
-
-  real(8) :: psi0, pot0 
-  real(8) :: roc,prc,vyc
-  real(8) :: rod,prd,vyd,byd
-
-  real(8) :: bbAbsMax
 
 !---Step 0.--------------------------------------------------------------|
 ! set parameter
@@ -82,7 +70,7 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
 !  here
   do i=1,margin
-  dxg(margin+i)=4.0d0*dxg0
+     dxg(margin+i)=4.0d0*dxg0
   enddo
 
 !  do i=margin+2,margin+96
@@ -98,7 +86,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
   do i=igx-margin+1,igx
      dxg(i)=dxg(igx-margin)
   enddo
-
   do i=0,margin-1
      dxg(margin-i) = dxg(margin-i+1)
   enddo
@@ -106,24 +93,19 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
   izero = margin+1
 
 ! X origin
-
   xmg(izero) = xmin + dxg(izero)
-
   do i=izero,igx-1
      xmg(i+1) = xmg(i)+dxg(i+1)
   enddo
-
   do i=izero-1,0,-1
      xmg(i) = xmg(i+1)-dxg(i+1)
   enddo
-
   do i=1,igx
      xg(i) = 0.5d0*(xmg(i)+xmg(i-1))
   enddo
 
 !---Step 1b.-------------------------------------------------------------|
 ! set global y-grid
-!
   do j=1,jgx
      dyg(j) = dyg0
   enddo
@@ -145,8 +127,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
 !---Step 1c.-------------------------------------------------------------|
 ! set global z-grid
-!
-
   do,k=1,kgx
      dzg = dzg0
   enddo
@@ -170,9 +150,7 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
   enddo
 
 ! Z origin
-
   kzero = kgx/2
-
   zmg(kzero) = zmin + dzg(kzero)
 
   do k=kzero,kgx-1
@@ -191,7 +169,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
 !---Step 2a.-------------------------------------------------------------|
 ! set individual x-grid 
-!
   do i=1,ix
      ig = mpid%mpirank_2d(1)*(ix-2*margin)+i
      x(i)=xg(ig)
@@ -204,7 +181,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
 !---Step 2b.-------------------------------------------------------------|
 ! set individual y-grid 
-!
   do j=1,jx
      jg = j
      y(j) = yg(jg)
@@ -215,9 +191,9 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      jg = j
      ym(j) = ymg(jg)
   end do
+
 !---Step 2c.-------------------------------------------------------------|
 ! set individual z-grid 
-!
   do k=1,kx
      kg=mpid%mpirank_2d(2)*(kx-2*margin)+k
      z(k) = zg(kg)
@@ -230,7 +206,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
 !---Step 3a.----------------------------------------------------------|
 ! set gravitation
-
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -266,7 +241,6 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 
 !---Step 3b.----------------------------------------------------------|
 ! set individual gravitation
-
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -280,11 +254,8 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
      enddo
   enddo
 
-
 !----------------------------------------------------------------------|
 ! set initial mocel
-! 
-
   bbAbsMax = 0.0d0
   pot0=-grav/(1.0d0-ssg)
   psi0 = pot0+1.0d0/(2.0d0-2.0d0*aa)+gm*kk/(gm-1.0d0)*(1+1.d0/beta0)
@@ -331,50 +302,45 @@ subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
         enddo
      enddo
   enddo
-           roi = ro
-           pri = pr
-           vxi = 0.0d0
-           vyi = 0.0d0
-           vzi = 0.0d0
-           bxi = 0.0d0
-           byi = by
-           bzi = 0.0d0
+
+  roi = ro
+  pri = pr
+  vxi = 0.0d0
+  vyi = 0.0d0
+  vzi = 0.0d0
+  bxi = 0.0d0
+  byi = by
+  bzi = 0.0d0
 
   call perturb(1,bx,by,bz,x,dx,dy,dz,bbAbsMax)
        
-end subroutine model_setup
+  end subroutine model_setup
+
 
 !----------------------------------------------------------------
 ! perturbation
 !----------------------------------------------------------------
-subroutine perturb(iperturb,vx,vy,vz,x,dx,dy,dz,v0)
-
-  implicit none
+  subroutine perturb(iperturb,vx,vy,vz,x,dx,dy,dz,v0)
 
   integer,intent(in) :: iperturb
   real(8),intent(in) :: v0
+  real(8),dimension(ix),intent(in) :: x,dx
+  real(8),dimension(jx),intent(in) :: dy
+  real(8),dimension(kx),intent(in) :: dz
+  real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
 
-  real(8),dimension(ix) :: x,dx
-  real(8),dimension(jx) :: dy
-  real(8),dimension(kx) :: dz
-
-  real(8),dimension(ix,jx,kx) :: vx,vy,vz
-
-  real(8),dimension(ix,jx,kx) :: dax,day,daz
-  real(8),dimension(ix,jx,kx) :: dvx,dvy,dvz
-  real(8),dimension(ix,jx,kx) :: dvxc,dvyc,dvzc
-
+  integer :: i,j,k
   integer :: n
   integer,dimension(:),allocatable :: seed
-
   real(8) :: amp
   real(8) :: dtody,dtodz,dtodx
   real(8) :: line1,line2
   real(8) :: temp
   real(8) :: dvxmax,dvymax,dvzmax
   real(8) :: vmax
-
-  integer :: i,j,k
+  real(8),dimension(ix,jx,kx) :: dax,day,daz
+  real(8),dimension(ix,jx,kx) :: dvx,dvy,dvz
+  real(8),dimension(ix,jx,kx) :: dvxc,dvyc,dvzc
 
   amp = 0.01d0*v0
 
@@ -515,7 +481,7 @@ subroutine perturb(iperturb,vx,vy,vz,x,dx,dy,dz,v0)
      enddo
   endif
 
-  return
-end subroutine perturb
+  end subroutine perturb
+
 
 end module model

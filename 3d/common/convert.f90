@@ -1,7 +1,16 @@
 module convert
+
+  implicit none
+  private
+
+  public :: convert__ptoc, convert__ctop
+
+
 contains
-subroutine convert_ptoc_m(ix,jx,kx,gm,ro,pr,vx,vy,vz,bxc,byc,bzc &
-     ,rx,ry,rz,ee)
+
+
+  subroutine convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bxc,byc,bzc &
+                          ,rx,ry,rz,ee)
 !======================================================================
 ! Name :: convert_ptoc
 !         convert to conserved
@@ -14,22 +23,15 @@ subroutine convert_ptoc_m(ix,jx,kx,gm,ro,pr,vx,vy,vz,bxc,byc,bzc &
 !          rx,ry,rz,ee :: conserved varialbles
 !
 !======================================================================
-  implicit none
-
-!---Input
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: gm
-
   real(8),dimension(ix,jx,kx),intent(in) :: ro,pr
   real(8),dimension(ix,jx,kx),intent(in) :: vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(in) :: bxc,byc,bzc
+  real(8),dimension(ix,jx,kx),intent(out) :: rx,ry,rz,ee
 
-!---Output
-  real(8),dimension(ix,jx,kx) :: rx,ry,rz,ee
-
-!---Temp
-  real(8) :: vsq,pb
   integer :: i,j,k
+  real(8) :: vsq,pb
 
   do k=1,kx
      do j=1,jx
@@ -46,11 +48,11 @@ subroutine convert_ptoc_m(ix,jx,kx,gm,ro,pr,vx,vy,vz,bxc,byc,bzc &
      enddo
   end do
 
-  return
-end subroutine convert_ptoc_m
+  end subroutine convert__ptoc
 
-subroutine convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bxc,byc,bzc,floor &
-     ,vx,vy,vz,pr)
+
+  subroutine convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bxc,byc,bzc,floor &
+                          ,vx,vy,vz,pr)
 !======================================================================
 ! Name :: convert_ctop
 !         convert to primitive
@@ -63,27 +65,17 @@ subroutine convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bxc,byc,bzc,floor &
 ! Output :: 
 !           vx,vy,vz,pr :: primitive variable
 !======================================================================
-  implicit none
-
-!---Input
-
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: gm
   real(8),intent(in) :: floor
-
-  real(8),dimension(ix,jx,kx) :: ro,ee
-  real(8),dimension(ix,jx,kx) :: rx,ry,rz
-  real(8),dimension(ix,jx,kx) :: bxc,byc,bzc
-
-!---Output
-  real(8),dimension(ix,jx,kx) :: vx,vy,vz,pr
-
-!---Temp
-  real(8) :: rsq,pb,roinverse,vsq
+  real(8),dimension(ix,jx,kx),intent(inout) :: ro
+  real(8),dimension(ix,jx,kx),intent(in) :: ee
+  real(8),dimension(ix,jx,kx),intent(in) :: rx,ry,rz
+  real(8),dimension(ix,jx,kx),intent(in) :: bxc,byc,bzc
+  real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz,pr
 
   integer :: i,j,k
-
-! no if
+  real(8) :: rsq,pb,roinverse,vsq
   real(8) :: sign1,sign2,sign3
   real(8) :: temp1,temp2
 
@@ -145,7 +137,7 @@ subroutine convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bxc,byc,bzc,floor &
      enddo
   end do
 
-  return
-end subroutine convert_ctop_m
+  end subroutine convert__ctop
+
 
 end module convert

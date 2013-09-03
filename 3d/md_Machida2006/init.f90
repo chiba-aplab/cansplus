@@ -60,14 +60,15 @@ contains
   real(8),dimension(0:ix) :: xm
   real(8),dimension(0:jx) :: ym
   real(8),dimension(0:kx) :: zm
+
 !----------------------------------------------------------------------|
 !   for MPI
-!  
   call mpi_setup(mpisize_x,mpisize_z)
+!----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|
 !   setup numerical model (grid, initial conditions, etc.)
-!
+!----------------------------------------------------------------------|
   call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,xm,y,dy,ym,z,dz,zm &
@@ -77,14 +78,18 @@ contains
          ,phi,merr)
   call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
            ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+
 !-----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5
+!----------------------------------------------------------------------|
   call reconstructionConstant(margin,ix,x,xm,dx,ccx)
   call reconstructionConstant(margin,jx,y,ym,dy,ccy)
   call reconstructionConstant(margin,kx,z,zm,dz,ccz)
 !----------------------------------------------------------------------|
-!  initialize counters
 
+!----------------------------------------------------------------------|
+!  initialize counters
+!----------------------------------------------------------------------|
   nd=1
   time  = 0.0d0
   timep = 0.0d0

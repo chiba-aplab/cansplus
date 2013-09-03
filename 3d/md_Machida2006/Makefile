@@ -2,7 +2,7 @@ CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = a.out
 OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
-	getEta2.o openfile.o convert.o const.o model.o init.o \
+	getEta2.o openfile.o const.o model.o init.o \
 	integrate_cyl.o\
 	switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
 	bnd.o main.o 
@@ -33,7 +33,7 @@ model.o : const.o mpi_domain_xz.o
 bnd.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o
 exchangeMpixz.o : mpi_domain_xz.o
 exchangeMpixz_res.o : mpi_domain_xz.o
-integrate_cyl.o : $(CANS_LIB_DIR)/libcans2_3d.a convert.o mpi_domain_xz.o
+integrate_cyl.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o
 main.o : $(CANS_LIB_DIR)/libcans2_3d.a init.o const.o mpi_domain_xz.o openfile.o
 openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_domain_xz.o 
 

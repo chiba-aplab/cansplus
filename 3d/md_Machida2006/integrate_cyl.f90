@@ -4,10 +4,10 @@ subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
      ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
 
   use convert
-  use mpi_domain_xz
-  use lr_state
+  use mpi_domain_xz, only : mpid
+  use lr_state, only : lr_state__MP5
   use flux_calc
-  use getcurrent
+  use getcurrent, only : getcurrent__cyl
   
   implicit none
 
@@ -102,7 +102,7 @@ subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
-  call convert_ptoc_m(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
+  call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
   ro1=ro
@@ -289,7 +289,7 @@ do n=1,2
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
 !
-  call convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
        ,vx,vy,vz,pr)
 
   call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &

@@ -1,7 +1,7 @@
 CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = $(CANS_LIB_DIR)/libcans2_3d.a
-OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o
+OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o convert.o
 
 '.update' : $(OBJS)
 	$ ar -r $(TARGET) $(OBJS)
