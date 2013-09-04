@@ -41,7 +41,7 @@ module init
 !----------------------------------------------------------------------|
 !   time control parameters
 !     nstop : number of total time steps for the run
-  integer, public :: mwflag,mw
+  integer, public :: mwflag,mw,nt1,nt2
 
   real(8), public :: dt,dtg
 !-----------------------------------------------------------  
