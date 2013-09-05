@@ -1,4 +1,4 @@
-subroutine exchangeMpixz_res(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+subroutine exchangeMpixz_res(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
      ,phi,eta,merr)
 !======================================================================
 ! example ::
@@ -30,8 +30,6 @@ subroutine exchangeMpixz_res(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
   include 'mpif.h'
 
   integer,intent(in) :: ix,jx,kx,margin
-
-  type(mpidomain),intent(in) :: mpid
 
   integer,dimension(mpi_status_size) :: mstatus
 
