@@ -13,8 +13,12 @@ module const
   real(8),parameter :: eta0 = 4.0d0*pi*1d-4, vc = 0.2d0
 
   real(8),parameter :: floor = 1d-6 ! minimum value
-
   real(8),parameter :: safety = 0.3d0 ! CFL number
+  real(8),parameter :: limit=0d0, ratio=1d4
+
+
+! time control parameters
+  logical :: restart = .false.     ! if ".true." then start from restart data
   real(8),parameter :: tend = 6.28d0*40.0d0, dtout = tend/100d0
   integer, parameter :: nstop = 1000
   real(8),parameter :: dtmin = 1d-10! minimum time step
@@ -46,6 +50,7 @@ module const
   real(8),parameter :: bx_jet = 0d0
   real(8),parameter :: by_jet = sqrt(2d0*pr_jet*1d-2)
   real(8),parameter :: bz_jet = 0d0
+  real(8),parameter :: r_jet = 1d0
   
 ! ambient parameter
   real(8),parameter :: ro_am = 1d0

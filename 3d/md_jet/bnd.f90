@@ -1,10 +1,27 @@
-subroutine bnd( )
+subroutine bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+           ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   use mpi_domain_xz
-  use const
-  use init
+  use const, only : r_jet,ro_jet,pr_jet,vx_jet,vy_jet,vz_jet,bx_jet,by_jet,bz_jet
   use boundary
   implicit none
+
+  integer,intent(in) :: margin,ix,jx,kx
+
+  real(8),dimension(ix),intent(in) :: x
+  real(8),dimension(kx),intent(in) :: z
+
+  real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
+  real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
+  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
+  real(8),dimension(ix,jx,kx),intent(inout) :: phi,eta
+
+  real(8),dimension(ix,jx,kx),intent(in) :: roi,pri
+  real(8),dimension(ix,jx,kx),intent(in) :: vxi,vyi,vzi
+  real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
+
+  integer :: i,j,k
+
 
   call bd_pery(margin,ro,ix,jx,kx)
   call bd_pery(margin,pr,ix,jx,kx)
@@ -103,7 +120,7 @@ subroutine bnd( )
   do k=1,margin
      do j=1,jx
         do i=1,ix
-           if (x(i).le.1d0)then
+           if (x(i).le.r_jet)then
               ro(i,j,k) = ro_jet
               pr(i,j,k) = pr_jet
               vx(i,j,k) = vx_jet

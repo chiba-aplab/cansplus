@@ -1,14 +1,18 @@
-subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+subroutine integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
      ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
      ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
      ,eta0,vc,eta,ccx,ccy,ccz,xin)
+
   use convert
-  use mpi_domain_xz
+  use mpi_domain_xz, only : mpid
+  use lr_state, only : lr_state__MP5
+  use flux_calc
+  use getcurrent, only : getcurrent__cyl
+  
   implicit none
 
 !--Input
   integer,intent(in) :: ix,jx,kx,margin
-  type(mpidomain) :: mpid
   integer :: merr
   real(8),intent(in) :: ch,cr
   real(8) :: cp
@@ -16,7 +20,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8) :: dts
 
-  real(8),intent(in) :: floor,xin
+  real(8),intent(in) :: floor
 
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
@@ -25,6 +29,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   real(8),dimension(5,2,jx),intent(in) :: ccy
   real(8),dimension(5,2,kx),intent(in) :: ccz
 
+  real(8),intent(in) :: xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
@@ -83,20 +88,20 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
 
   real(8) ::te
 
-  real(8) :: ratio,limit
+  real(8) :: ratio   ! here -> const.f90
 
-  ratio=10000.0d0
-  limit=0.0d0
+  ratio=10000.0d0    ! here -> const.f90
 
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
 !
 
   cp = sqrt(ch*cr)
+  pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
-  call convert_ptoc_m(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
+  call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
   ro1=ro
@@ -110,7 +115,7 @@ subroutine integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
   phi1=phi
 
 do n=1,2
-  call getcurrent_cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
+  call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
        ,curx,cury,curz)
 
   call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta)
@@ -121,7 +126,7 @@ do n=1,2
 !
   mdir = 1
 
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
@@ -130,18 +135,18 @@ do n=1,2
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
  
-  call cal_interface_BP(ix,jx,kx,bxw,phiw &
+  call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
-  call glm_flux(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
+  call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call hlld_flux(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
-  call cal_resflux(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
        ,fbyxr)
-  call cal_resflux(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
        ,fbzxr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
        ,feexr)
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
@@ -149,7 +154,7 @@ do n=1,2
 !
   mdir = 2
 
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
@@ -158,19 +163,19 @@ do n=1,2
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
 
-  call cal_interface_BP(ix,jx,kx,byw,phiw &
+  call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
 
-  call glm_flux(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
+  call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call hlld_flux(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-  call cal_resflux(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
        ,fbzyr)
-  call cal_resflux(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
        ,fbxyr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
@@ -178,7 +183,7 @@ do n=1,2
 !
   mdir = 3
   
-  call lr_state_MP5_2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
@@ -187,19 +192,19 @@ do n=1,2
        ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
        ,mdir,floor,ratio,xin)
 
-  call cal_interface_BP(ix,jx,kx,bzw,phiw &
+  call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
 
-  call glm_flux(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
+  call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call hlld_flux(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
-  call cal_resflux(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
        ,fbxzr)
-  call cal_resflux(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
        ,fbyzr)
-  call cal_resflux_fee(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
@@ -283,13 +288,14 @@ do n=1,2
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
 !
-  call convert_ctop_m(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
        ,vx,vy,vz,pr)
 
-  call exchangeMpixz(mpid,margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
+  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
        ,phi,merr)
 
-  call bnd( )
+  call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 enddo
 
 return
