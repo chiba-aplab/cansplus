@@ -35,7 +35,7 @@ module init
 
 !----------------------------------------------------------------------|
 !  initialize counters
-  integer, public :: nd,ns,merr,ns1,ns2
+  integer, public :: nd,ns,merr
   real(8), public :: time,timep
 
 !----------------------------------------------------------------------|

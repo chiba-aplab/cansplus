@@ -17,7 +17,7 @@ program main
 !----------------------------------------------------------------------|
 !  file open
   call openfileCor(nd,mpid%mpirank,ix,jx,kx)
-  call openfileAll(nd,mpid%mpisize,ix,jx,kx)
+  call openfileAll(nd,mpid%mpirank,ix,jx,kx)
   call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
   call file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpid%mpisize &
        ,mpid%mpirank,mpisize_x,mpisize_z,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee &
@@ -42,7 +42,7 @@ program main
 
      time = real(nd-1)*dtout
      if(mpid%mpirank == 0)then
-        write(*,*) 'time :: ',time
+        write(*,*) 'restart -> time :: ',time,' nd ::'
      endif
      
      call closeReadFileAll()
@@ -75,7 +75,7 @@ program main
   time = time+dt
 
 !---- integrate--------------------------------------------------------|
-  call integrate_cyl(mpid,margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+  call integrate_cyl(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
        ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
@@ -114,7 +114,7 @@ program main
   endif
 
 ! loop test
-  if(time < tend ) exit loop
+  if(time > tend ) exit loop
 
   enddo loop
 !======================================================================|
