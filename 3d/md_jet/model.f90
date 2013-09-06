@@ -105,14 +105,14 @@ subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
 ! set global z-grid
   dzmax = 10.0d0*dzg0
   do,k=1,kgx
-     dzg = dzg0
+     dzg(k) = dzg0
   enddo
   do k=margin+1,kgx
      dzg(k) = dzg(k-1)*ratio_z
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
   enddo
   do k=kgx-margin,kgx
-     dzg(k)=dzg(kx-margin)
+     dzg(k)=dzg(kgx-margin)
   enddo
   do k=margin,1,-1
      dzg(k) = dzg(k+1)

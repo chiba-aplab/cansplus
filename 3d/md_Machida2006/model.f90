@@ -128,7 +128,7 @@ contains
 !---Step 1c.-------------------------------------------------------------|
 ! set global z-grid
   do,k=1,kgx
-     dzg = dzg0
+     dzg(k) = dzg0
   enddo
 
 !  do k=int(kgx/2)+45,kgx
@@ -137,7 +137,7 @@ contains
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
   enddo
   do k=kgx-margin,kgx
-     dzg(k)=dzg(kx-margin)
+     dzg(k)=dzg(kgx-margin)
   enddo
 
 !  do k=int(kgx/2)-44,margin,-1
@@ -265,7 +265,7 @@ contains
            !---- set corona ---------------------
            ss = sqrt(x(i)**2+z(k)**2)
            roc = rohalo*exp(-(gpot(i,j,k)-pot0)/(factorc*tec0))
-           prc = tec0*roc/te_factor
+           prc = tec0*roc
 
            !---- set torus ----------------------
            rod = 0.0d0

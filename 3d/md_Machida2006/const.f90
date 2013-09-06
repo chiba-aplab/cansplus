@@ -89,7 +89,6 @@ module const
   real(8),parameter :: te_factor =mmw*(nrmlv**2)/Navo/mass_proton/(velocity_c**2)         !factor for te
 
 
-
   real(8),parameter :: xin = 0.2d0   ! inner boundary
   ! resistivity
   real(8),parameter :: eta0 = 4.0d0*pi*1.0d-4      ! upper limit of resistivity

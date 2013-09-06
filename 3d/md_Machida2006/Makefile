@@ -33,7 +33,7 @@ model.o : const.o mpi_domain_xz.o
 bnd.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o
 exchangeMpixz.o : mpi_domain_xz.o
 exchangeMpixz_res.o : mpi_domain_xz.o
-integrate_cyl.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o
+integrate_cyl.o : $(CANS_LIB_DIR)/libcans2_3d.a mpi_domain_xz.o bnd.o exchangeMpixz.o exchangeMpixz_res.o
 main.o : $(CANS_LIB_DIR)/libcans2_3d.a init.o const.o mpi_domain_xz.o openfile.o
 openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_domain_xz.o 
 
