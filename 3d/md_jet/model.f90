@@ -10,10 +10,10 @@ module model
 
 contains
   
-subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
+subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz         &
                       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                       ,x,dx,xm,y,dy,ym,z,dz,zm &
-                      ,gx,gz,eta)
+                      ,gx,gz)
 
   implicit none
 
@@ -27,7 +27,6 @@ subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
   real(8),dimension(ix,jx,kx),intent(out) :: ro,pr
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(out) :: bx,by,bz
-  real(8),dimension(ix,jx,kx),intent(out) :: eta,phi
   real(8),dimension(ix,jx,kx),intent(out) :: gx,gz
   real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
   real(8),dimension(ix,jx,kx),intent(out) :: vxi,vyi,vzi

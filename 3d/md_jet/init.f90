@@ -59,9 +59,9 @@ contains
 !----------------------------------------------------------------------|
 !   setup numerical model (grid, initial conditions, etc.)
 !----------------------------------------------------------------------|
-  call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
+  call model_setup(ro,pr,vx,vy,vz,bx,by,bz &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-       ,x,dx,xm,y,dy,ym,z,dz,zm,gx,gz,eta) 
+       ,x,dx,xm,y,dy,ym,z,dz,zm,gx,gz) 
 
   call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
          ,phi,merr)
