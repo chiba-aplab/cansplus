@@ -88,13 +88,13 @@ contains
   real(8) :: ratio   ! here -> const.f90
   ratio=10000.0d0    ! here -> const.f90
 
-!-----Step 0.----------------------------------------------------------|
-! primitive to conserve
   cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
+!-----Step 0.----------------------------------------------------------|
+! primitive to conserve
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
@@ -108,6 +108,7 @@ contains
   ee1=ee
   phi1=phi
 
+!------RK substeps--------!
   do n=1,2
 
   call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
@@ -308,25 +309,20 @@ contains
   use flux_calc
   use getcurrent, only : getcurrent__cyl
 
-!--Input
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cr
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
-
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
   real(8),dimension(kx),intent(in) :: z,dz
   real(8),dimension(5,2,ix),intent(in) :: ccx
   real(8),dimension(5,2,jx),intent(in) :: ccy
   real(8),dimension(5,2,kx),intent(in) :: ccz
-
   real(8),intent(in) :: RadCool,te_factor,time,rohalo,swtch_t,xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
-
-!-- Input & output
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr,vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(inout) :: phi
@@ -370,20 +366,20 @@ contains
   real(8) :: see,sphi,sbz
   real(8) :: cp
   real(8) :: dts
-  real(8) :: dtodx,dtody,dtodz,hdt,k1,k2
+  real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
   real(8) :: ratio   ! here -> const.f90
   ratio=10000.0d0    ! here -> const.f90
 
-!-----Step 0.----------------------------------------------------------|
-! primitive to conserve
   cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
+!-----Step 0.----------------------------------------------------------|
+! primitive to conserve
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
@@ -397,6 +393,7 @@ contains
   ee1=ee
   phi1=phi
 
+!------RK substeps-----!
   do n=1,3
 
   call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
@@ -407,7 +404,6 @@ contains
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
 ! set L/R state at x-direction
-!
   mdir = 1
 
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
@@ -432,10 +428,10 @@ contains
        ,fbzxr)
   call flux_calc__feres(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
        ,feexr)
+
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
 ! set L/R state at y-direction
-!
   mdir = 2
 
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
@@ -461,10 +457,10 @@ contains
        ,fbxyr)
   call flux_calc__feres(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
+
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
 ! set L/R state at z-direction
-!
   mdir = 3
   
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
@@ -492,11 +488,9 @@ contains
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
-! half time step update cell center variables using flux
-!
-  k1 = fac*(-n*n+13.D0)
-  k2 = fac*(n*n-1.D0)
-  hdt = dt*fac*(7.D0*n*n-30.D0*n+35.D0)
+! TVDRK substep
+  k1 = fac*(-7.D0*n*n+30.D0*n-23.D0)
+  k2 = fac*(+7.D0*n*n-30.D0*n+35.D0)
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
         do i=margin+1,ix-margin
@@ -529,60 +523,59 @@ contains
            sphi = -0.5d0*(fphix(i,j,k)+fphix(i-1,j,k))*inversex
 
 ! update
-           dtodx = hdt/dx(i)
-           dtody = hdt/(x(i)*dy(j))
-           dtodz = hdt/dz(k)
+           dtodx = dt/dx(i)
+           dtody = dt/(x(i)*dy(j))
+           dtodz = dt/dz(k)
 
-           ro(i,j,k) = k1*ro1(i,j,k)+k2*ro(i,j,k)  &
-                +dtodx*(frox(i-1,j,k)-frox(i,j,k)) &
-                +dtody*(froy(i,j-1,k)-froy(i,j,k)) &
-                +dtodz*(froz(i,j,k-1)-froz(i,j,k)) &
-                +hdt*sro
-           ee(i,j,k) = k1*ee1(i,j,k)+k2*ee(i,j,k)    &
+           ro(i,j,k) = k1*ro1(i,j,k)+k2*(+ro(i,j,k) &
+                +dtodx*(frox(i-1,j,k)-frox(i,j,k))  &
+                +dtody*(froy(i,j-1,k)-froy(i,j,k))  &
+                +dtodz*(froz(i,j,k-1)-froz(i,j,k))  &
+                +dt*sro)
+           ee(i,j,k) = k1*ee1(i,j,k)+k2*(+ee(i,j,k)  &
                 +dtodx*(feexr(i-1,j,k)-feexr(i,j,k)) &
                 +dtody*(feeyr(i,j-1,k)-feeyr(i,j,k)) &
                 +dtodz*(feezr(i,j,k-1)-feezr(i,j,k)) &
-                +hdt*see
-           rx(i,j,k) = k1*rx1(i,j,k)+k2*rx(i,j,k)  &
-                +dtodx*(frxx(i-1,j,k)-frxx(i,j,k)) &
-                +dtody*(frxy(i,j-1,k)-frxy(i,j,k)) &
-                +dtodz*(frxz(i,j,k-1)-frxz(i,j,k)) &
-                +hdt*srx
-           ry(i,j,k) = k1*ry1(i,j,k)+k2*ry(i,j,k)  &
-                +dtodx*(fryx(i-1,j,k)-fryx(i,j,k)) &
-                +dtody*(fryy(i,j-1,k)-fryy(i,j,k)) &
-                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k)) &
-                +hdt*sry
-           rz(i,j,k) = k1*rz1(i,j,k)+k2*rz(i,j,k)  &
-                +dtodx*(frzx(i-1,j,k)-frzx(i,j,k)) &
-                +dtody*(frzy(i,j-1,k)-frzy(i,j,k)) &
-                +dtodz*(frzz(i,j,k-1)-frzz(i,j,k)) &
-                +hdt*srz
-           bx(i,j,k) = k1*bx1(i,j,k)+k2*bx(i,j,k)    &
+                +dt*see)
+           rx(i,j,k) = k1*rx1(i,j,k)+k2*(+rx(i,j,k) &
+                +dtodx*(frxx(i-1,j,k)-frxx(i,j,k))  &
+                +dtody*(frxy(i,j-1,k)-frxy(i,j,k))  &
+                +dtodz*(frxz(i,j,k-1)-frxz(i,j,k))  &
+                +dt*srx)
+           ry(i,j,k) = k1*ry1(i,j,k)+k2*(+ry(i,j,k) &
+                +dtodx*(fryx(i-1,j,k)-fryx(i,j,k))  &
+                +dtody*(fryy(i,j-1,k)-fryy(i,j,k))  &
+                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k))  &
+                +dt*sry)
+           rz(i,j,k) = k1*rz1(i,j,k)+k2*(+rz(i,j,k) &
+                +dtodx*(frzx(i-1,j,k)-frzx(i,j,k))  &
+                +dtody*(frzy(i,j-1,k)-frzy(i,j,k))  &
+                +dtodz*(frzz(i,j,k-1)-frzz(i,j,k))  &
+                +dt*srz)
+           bx(i,j,k) = k1*bx1(i,j,k)+k2*(+bx(i,j,k)  &
                 +dtodx*(fbxx(i-1,j,k)-fbxx(i,j,k))   &
                 +dtody*(fbxyr(i,j-1,k)-fbxyr(i,j,k)) &
-                +dtodz*(fbxzr(i,j,k-1)-fbxzr(i,j,k))
-           by(i,j,k) = k1*by1(i,j,k)+k2*by(i,j,k)    &
+                +dtodz*(fbxzr(i,j,k-1)-fbxzr(i,j,k)) )
+           by(i,j,k) = k1*by1(i,j,k)+k2*(+by(i,j,k)  &
                 +dtodx*(fbyxr(i-1,j,k)-fbyxr(i,j,k)) &
                 +dtody*(fbyy(i,j-1,k)-fbyy(i,j,k))   &
-                +dtodz*(fbyzr(i,j,k-1)-fbyzr(i,j,k))
-           bz(i,j,k) = k1*bz1(i,j,k)+k2*bz(i,j,k)    &
+                +dtodz*(fbyzr(i,j,k-1)-fbyzr(i,j,k)) )
+           bz(i,j,k) = k1*bz1(i,j,k)+k2*(+bz(i,j,k)  &
                 +dtodx*(fbzxr(i-1,j,k)-fbzxr(i,j,k)) &
                 +dtody*(fbzyr(i,j-1,k)-fbzyr(i,j,k)) &
                 +dtodz*(fbzz(i,j,k-1)-fbzz(i,j,k))   &
-                +hdt*sbz
-           phi(i,j,k) = (k1*phi1(i,j,k)+k2*phi(i,j,k) &
-                +dtodx*(fphix(i-1,j,k)-fphix(i,j,k)) &
-                +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k)) &
-                +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k)) &
-                +hdt*sphi)*exp(-hdt*ch**2/cp**2)
+                +dt*sbz)
+           phi(i,j,k) = k1*phi1(i,j,k)+k2*(+phi(i,j,k) &
+                +dtodx*(fphix(i-1,j,k)-fphix(i,j,k))   &
+                +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k))   &
+                +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k))   &
+                +dt*sphi)*exp(-dt*ch**2/cp**2)
         enddo
      enddo
   enddo
 
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
-!
   call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
        ,vx,vy,vz,pr)
 

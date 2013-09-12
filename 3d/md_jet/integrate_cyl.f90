@@ -353,7 +353,7 @@ contains
   real(8) :: dts
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
-  real(8) :: dtodx,dtody,dtodz,hdt,k1,k2
+  real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
@@ -478,11 +478,9 @@ contains
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
-! half time step update cell center variables using flux
-!
-  k1 = fac*(-n*n+13.D0)
-  k2 = fac*(n*n-1.D0)
-  hdt = dt*fac*(7.D0*n*n-30.D0*n+35.D0)
+! TVDRK substep
+  k1 = fac*(-7.D0*n*n+30.D0*n-23.D0)
+  k2 = fac*(+7.D0*n*n-30.D0*n+35.D0)
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
         do i=margin+1,ix-margin
@@ -515,53 +513,53 @@ contains
            sphi = -0.5d0*(fphix(i,j,k)+fphix(i-1,j,k))*inversex
 
 ! update
-           dtodx = hdt/dx(i)
-           dtody = hdt/(x(i)*dy(j))
-           dtodz = hdt/dz(k)
+           dtodx = dt/dx(i)
+           dtody = dt/(x(i)*dy(j))
+           dtodz = dt/dz(k)
 
-           ro(i,j,k) = k1*ro1(i,j,k)+k2*ro(i,j,k)  &
-                +dtodx*(frox(i-1,j,k)-frox(i,j,k)) &
-                +dtody*(froy(i,j-1,k)-froy(i,j,k)) &
-                +dtodz*(froz(i,j,k-1)-froz(i,j,k)) &
-                +hdt*sro
-           ee(i,j,k) = k1*ee1(i,j,k)+k2*ee(i,j,k)    &
+           ro(i,j,k) = k1*ro1(i,j,k)+k2*(+ro(i,j,k) &
+                +dtodx*(frox(i-1,j,k)-frox(i,j,k))  &
+                +dtody*(froy(i,j-1,k)-froy(i,j,k))  &
+                +dtodz*(froz(i,j,k-1)-froz(i,j,k))  &
+                +dt*sro)
+           ee(i,j,k) = k1*ee1(i,j,k)+k2*(+ee(i,j,k)  &
                 +dtodx*(feexr(i-1,j,k)-feexr(i,j,k)) &
                 +dtody*(feeyr(i,j-1,k)-feeyr(i,j,k)) &
                 +dtodz*(feezr(i,j,k-1)-feezr(i,j,k)) &
-                +hdt*see
-           rx(i,j,k) = k1*rx1(i,j,k)+k2*rx(i,j,k)  &
-                +dtodx*(frxx(i-1,j,k)-frxx(i,j,k)) &
-                +dtody*(frxy(i,j-1,k)-frxy(i,j,k)) &
-                +dtodz*(frxz(i,j,k-1)-frxz(i,j,k)) &
-                +hdt*srx
-           ry(i,j,k) = k1*ry1(i,j,k)+k2*ry(i,j,k)  &
-                +dtodx*(fryx(i-1,j,k)-fryx(i,j,k)) &
-                +dtody*(fryy(i,j-1,k)-fryy(i,j,k)) &
-                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k)) &
-                +hdt*sry
-           rz(i,j,k) = k1*rz1(i,j,k)+k2*rz(i,j,k)  &
-                +dtodx*(frzx(i-1,j,k)-frzx(i,j,k)) &
-                +dtody*(frzy(i,j-1,k)-frzy(i,j,k)) &
-                +dtodz*(frzz(i,j,k-1)-frzz(i,j,k)) &
-                +hdt*srz
-           bx(i,j,k) = k1*bx1(i,j,k)+k2*bx(i,j,k)    &
+                +dt*see)
+           rx(i,j,k) = k1*rx1(i,j,k)+k2*(+rx(i,j,k) &
+                +dtodx*(frxx(i-1,j,k)-frxx(i,j,k))  &
+                +dtody*(frxy(i,j-1,k)-frxy(i,j,k))  &
+                +dtodz*(frxz(i,j,k-1)-frxz(i,j,k))  &
+                +dt*srx)
+           ry(i,j,k) = k1*ry1(i,j,k)+k2*(+ry(i,j,k) &
+                +dtodx*(fryx(i-1,j,k)-fryx(i,j,k))  &
+                +dtody*(fryy(i,j-1,k)-fryy(i,j,k))  &
+                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k))  &
+                +dt*sry)
+           rz(i,j,k) = k1*rz1(i,j,k)+k2*(+rz(i,j,k) &
+                +dtodx*(frzx(i-1,j,k)-frzx(i,j,k))  &
+                +dtody*(frzy(i,j-1,k)-frzy(i,j,k))  &
+                +dtodz*(frzz(i,j,k-1)-frzz(i,j,k))  &
+                +dt*srz)
+           bx(i,j,k) = k1*bx1(i,j,k)+k2*(+bx(i,j,k)  &
                 +dtodx*(fbxx(i-1,j,k)-fbxx(i,j,k))   &
                 +dtody*(fbxyr(i,j-1,k)-fbxyr(i,j,k)) &
-                +dtodz*(fbxzr(i,j,k-1)-fbxzr(i,j,k))
-           by(i,j,k) = k1*by1(i,j,k)+k2*by(i,j,k)    &
+                +dtodz*(fbxzr(i,j,k-1)-fbxzr(i,j,k)) )
+           by(i,j,k) = k1*by1(i,j,k)+k2*(+by(i,j,k)  &
                 +dtodx*(fbyxr(i-1,j,k)-fbyxr(i,j,k)) &
                 +dtody*(fbyy(i,j-1,k)-fbyy(i,j,k))   &
-                +dtodz*(fbyzr(i,j,k-1)-fbyzr(i,j,k))
-           bz(i,j,k) = k1*bz1(i,j,k)+k2*bz(i,j,k)    &
+                +dtodz*(fbyzr(i,j,k-1)-fbyzr(i,j,k)) )
+           bz(i,j,k) = k1*bz1(i,j,k)+k2*(+bz(i,j,k)  &
                 +dtodx*(fbzxr(i-1,j,k)-fbzxr(i,j,k)) &
                 +dtody*(fbzyr(i,j-1,k)-fbzyr(i,j,k)) &
                 +dtodz*(fbzz(i,j,k-1)-fbzz(i,j,k))   &
-                +hdt*sbz
-           phi(i,j,k) = (k1*phi1(i,j,k)+k2*phi(i,j,k) &
-                +dtodx*(fphix(i-1,j,k)-fphix(i,j,k)) &
-                +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k)) &
-                +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k)) &
-                +hdt*sphi)*exp(-hdt*ch**2/cp**2)
+                +dt*sbz)
+           phi(i,j,k) = k1*phi1(i,j,k)+k2*(+phi(i,j,k) &
+                +dtodx*(fphix(i-1,j,k)-fphix(i,j,k))   &
+                +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k))   &
+                +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k))   &
+                +dt*sphi)*exp(-dt*ch**2/cp**2)
         enddo
      enddo
   enddo

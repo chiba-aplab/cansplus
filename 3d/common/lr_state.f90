@@ -176,7 +176,6 @@ contains
   real(8),parameter :: Epsm = 0.0000000001d0
 
 !----function
-  integer :: flag
   integer :: i,j,k,l,m,n
   real(8) :: minmod4,d1,d2,d3,d4
   real(8) :: minmod,x,y
@@ -196,6 +195,7 @@ contains
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
+
               do n=1,5
                  ww(1,n) = ro(i-3+n,j,k)
                  ww(2,n) = vx(i-3+n,j,k)
@@ -207,10 +207,6 @@ contains
                  ww(8,n) = bz(i-3+n,j,k)
                  ww(9,n) = phi(i-3+n,j,k)
               end do
-              ! left state
-              
-              ! primitive ro characteristic
-              
               ro1 = ro(i,j,k)
               pr1 = pr(i,j,k)
               vx1 = vx(i,j,k)
@@ -221,8 +217,8 @@ contains
               bz1 = bz(i,j,k)
               phi1 = phi(i,j,k)
 
+              ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
-
               do l=1,5
                  do n=1,nwave
                     wwc(n,l) = lem(n,1)*ww(1,l)
@@ -232,6 +228,7 @@ contains
                  enddo
               end do
               
+              ! left state
               ! mp5
               do n=1,nwave
                  wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
@@ -374,6 +371,7 @@ contains
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
+
               do n=1,5
                  ww(1,n) = ro(i,j-3+n,k)
                  ww(2,n) = vx(i,j-3+n,k)
@@ -385,9 +383,6 @@ contains
                  ww(8,n) = bz(i,j-3+n,k)
                  ww(9,n) = phi(i,j-3+n,k)
               end do
-              ! left state
-              
-              ! primitive ro characteristic
               ro1 = ro(i,j,k)
               pr1 = pr(i,j,k)
               vx1 = vx(i,j,k)
@@ -398,8 +393,8 @@ contains
               bz1 = bz(i,j,k)
               phi1 = phi(i,j,k)
               
+              ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
-              
               do l=1,5
                  do n=1,nwave
                     wwc(n,l) = lem(n,1)*ww(1,l)
@@ -409,6 +404,7 @@ contains
                  enddo
               end do
               
+              ! left state
               ! mp5
               do n=1,nwave
                  wwor = B1*(ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
@@ -442,6 +438,7 @@ contains
                     qqr(n) = qqr(n)+wwc_w(m)*rem(n,m)
                  enddo
               enddo
+
               ! right state
               ! mp5
               do n=1,nwave
@@ -550,6 +547,7 @@ contains
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
+
               do n=1,5
                  ww(1,n) = ro(i,j,k-3+n)
                  ww(2,n) = vx(i,j,k-3+n)
@@ -561,10 +559,6 @@ contains
                  ww(8,n) = bz(i,j,k-3+n)
                  ww(9,n) = phi(i,j,k-3+n)
               end do
-              ! left state
-              
-              ! primitive ro characteristic
-              
               ro1 = ro(i,j,k)
               pr1 = pr(i,j,k)
               vx1 = vx(i,j,k)
@@ -575,8 +569,8 @@ contains
               bz1 = bz(i,j,k)
               phi1 = phi(i,j,k)
               
+              ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
-              
               do l=1,5
                  do n=1,nwave
                     wwc(n,l) = lem(n,1)*ww(1,l)
@@ -586,6 +580,7 @@ contains
                  enddo
               end do
               
+              ! left state
               ! mp5
               do n=1,nwave
                  wwor = B1*(ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
@@ -618,6 +613,7 @@ contains
                     qqr(n) = qqr(n)+wwc_w(m)*rem(n,m)
                  enddo
               enddo
+
               ! right state
               ! mp5
               do n=1,nwave
@@ -783,7 +779,6 @@ contains
   real(8),intent(in) :: gm,ch
   real(8),intent(in) :: ro,pr,vx,vy,vz
   real(8),intent(in) :: bx,by,bz,phi
-
   real(8),dimension(9,9),intent(out) :: lem,rem
 
   real(8) :: roi,btsq,vaxsq,asq
@@ -791,14 +786,10 @@ contains
   real(8) :: cfsq,cf,cssq,cs
   real(8) :: bt,bet2,bet3
   real(8) :: alpha_f,alpha_s
-
   real(8) :: na,qf,qs,af_prm,as_prm
-
   real(8) :: sqrtro,s,a,af,as
-
   real(8) :: temp,ich
 
-  integer :: flag
   roi = 1.0d0/ro
   btsq = by**2+bz**2
   vaxsq = (bx**2)*roi
@@ -809,15 +800,12 @@ contains
   tsum = vaxsq + ct2 + asq
   tdif = vaxsq + ct2 - asq
   cf2_cs2 = sqrt(tdif**2 + 4.0d0*asq*ct2)
-
   cfsq = 0.5d0*(tsum + cf2_cs2)
   cf = sqrt(cfsq)
-
   cssq = asq*vaxsq/cfsq
   cs = sqrt(cssq)
 
 ! compute beta
-
   bt = sqrt(btsq)
   if ( bt == 0.0d0) then
      bet2 = 1.0d0/sqrt(2.0d0)
@@ -828,7 +816,6 @@ contains
   endif
 
 ! compute alpha
-
   if(cf2_cs2 == 0.0d0) then
      alpha_f = 1.0d0
      alpha_s = 0.0d0
@@ -844,7 +831,6 @@ contains
   endif
 
 ! compute Q(s),A(s)
-
   sqrtro = sqrt(ro)
   s = sign(1.0d0,bx)
   a = sqrt(asq)
@@ -855,7 +841,6 @@ contains
 
 ! Right-eigenvector
 !  ich = 1.0d0/(ch)
-
   rem(1,1) = ro*alpha_f
   rem(1,2) = 0.0d0
   rem(1,3) = ro*alpha_s
@@ -916,7 +901,6 @@ contains
   rem(6,8) = 0.0d0
   rem(6,9) = 1.0d0
 
-
   rem(7,1) = as*bet2
   rem(7,2) = -bet3*s*sqrtro
   rem(7,3) = -af*bet2
@@ -948,7 +932,6 @@ contains
   rem(9,9) = ch
 
 ! Left eigenvector
-
   na = 0.5d0/asq
   qf = na*qf
   qs = na*qs
@@ -1048,20 +1031,9 @@ contains
   end subroutine esystem_glmmhd
 
 
-  function minmod_limiter(qqr,qql)
-    implicit none
-    
-    real(8) :: qqr,qql
-    real(8) :: minmod_limiter
-
-    minmod_limiter = max(0.0d0, min(dabs(qqr),qql*sign(1.0d0,qqr)))*sign(1.0d0,qqr)
-
-  end function minmod_limiter
-
-
   function minmod_limiter2(qqr,qql)
 
-    real(8) :: qqr, qql
+    real(8), intent(in) :: qqr, qql
     real(8) :: minmod_limiter2
     real(8) :: signr,signlr
 
@@ -1077,10 +1049,11 @@ contains
 
   function MC_limiter(qqc,qql,qqr)
 
-    real(8) :: qqr,qql,qqc
+    real(8), intent(in) :: qqr,qql,qqc
     real(8) :: minmod_lr
     real(8) :: MC_limiter
     real(8) :: signlr,signMC
+
     minmod_lr = minmod_limiter2(qql,qqr)
 
     signlr = sign(1.0d0,(qqc*minmod_lr))
@@ -1089,6 +1062,7 @@ contains
     MC_limiter = max(signlr,0.0d0)*( &
          max(signMC,0.0d0)*minmod_lr &
          -min(signMC,0.0d0)*(qqc))
+
   end function MC_limiter
 
 
