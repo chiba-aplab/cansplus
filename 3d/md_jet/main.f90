@@ -36,14 +36,12 @@ program main
        read(91,*) nd
        close(91)
 
-       call openReadFileAll(nd,mpid%mpirank,ix,jx,kx,nd)
-       call file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
+       call file_input(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
+            ,ix,jx,kx)
        time = real(nd-1)*dtout
        if(mpid%mpirank == 0)then
           write(*,*) 'time :: ',time
        endif
-       
-       call closeReadFileAll()
     endif
     nd=nd+1
 !----------------------------------------------------------------------|
@@ -141,6 +139,5 @@ enddo loop
   
 913 format (1x,' write    ','step=',i8,' time=',e10.3,' nd =',i3)
 915 format (1x,' stop     ','step=',i8,' time=',e10.3)
-
 
 end program main

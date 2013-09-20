@@ -32,78 +32,66 @@ module openfile
 
 contains
 
-  subroutine openReadFileAll(nd,mpirank,ix0,jx0,kx0,nx0)
+  subroutine file_input(nd,mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
     implicit none
 
     integer,intent(in) :: nd,mpirank
-    integer :: ix0,jx0,kx0,nx0
-    integer :: mt
-    mt=6
-    
-    write(cnond,'(i4.4)') nd
-    write(cno,'(i4.4)') mpirank
-    mfi_ro=70
-    call dacopnr3s(mfi_ro,'ro.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_pr=71
-    call dacopnr3s(mfi_pr,'pr.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_vx=72
-    call dacopnr3s(mfi_vx,'vx.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_vy=73
-    call dacopnr3s(mfi_vy,'vy.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_vz=74
-    call dacopnr3s(mfi_vz,'vz.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_bx=75
-    call dacopnr3s(mfi_bx,'bx.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_by=76
-    call dacopnr3s(mfi_by,'by.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_bz=77
-    call dacopnr3s(mfi_bz,'bz.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-
-    mfi_phi=78
-    call dacopnr3s(mfi_phi,'phi.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    mfi_eta=79
-    call dacopnr3s(mfi_eta,'eta.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
-    
-  end subroutine openReadFileAll
-
-  subroutine closeReadFileAll()
-    implicit none
-
-    close(mfi_ro)
-    close(mfi_pr)
-
-    close(mfi_vx)
-    close(mfi_vy)
-    close(mfi_vz)
-
-    close(mfi_bx)
-    close(mfi_by)
-    close(mfi_bz)
-
-    close(mfi_eta)
-    close(mfi_phi)
-
-  end subroutine closeReadFileAll
-
-  subroutine file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
-    implicit none
-
     integer,intent(in) :: ix,jx,kx
     real(8),intent(out),dimension(ix,jx,kx) :: ro,pr,vx,vy,vz,bx,by,bz,phi,eta
 
+    mt=6
+    write(cnond,'(i4.4)') nd
+    write(cno,'(i4.4)') mpirank
+
+    mfi_ro=70
+    call dacopnr3s(mfi_ro,'ro.dac.'//cnond//'.'//cno,mt,ix,jx,kx,nx0)
     read(mfi_ro) ro
+    close(mfi_ro)
+
+    mfi_pr=71
+    call dacopnr3s(mfi_pr,'pr.dac.'//cnond//'.'//cno,mt,ix,jx,kx,nx0)
     read(mfi_pr) pr
-    
+    close(mfi_pr)
+
+    mfi_vx=72
+    call dacopnr3s(mfi_vx,'vx.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_vx) vx
+    close(mfi_vx)
+
+    mfi_vy=73
+    call dacopnr3s(mfi_vy,'vy.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_vy) vy
+    close(mfi_vy)
+
+    mfi_vz=74
+    call dacopnr3s(mfi_vz,'vz.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_vz) vz
-    
+    close(mfi_vz)
+
+    mfi_bx=75
+    call dacopnr3s(mfi_bx,'bx.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_bx) bx
+    close(mfi_bx)
+
+    mfi_by=76
+    call dacopnr3s(mfi_by,'by.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_by) by
+    close(mfi_by)
+
+    mfi_bz=77
+    call dacopnr3s(mfi_bz,'bz.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_bz) bz
-    
+    close(mfi_bz)
+
+    mfi_phi=78
+    call dacopnr3s(mfi_phi,'phi.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_phi) phi
+    close(mfi_phi)
+
+    mfi_eta=79
+    call dacopnr3s(mfi_eta,'eta.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_eta) eta
+    close(mfi_eta)
      
   end subroutine file_input
 
@@ -217,7 +205,6 @@ contains
     call dacputparamd(mf_params,'gm',gm)
     close(mf_params)
 
-
     mf_x=11
     call dacdef1d(mf_x,'x.dac.'//cno,6,ix)
     write(mf_x) x
@@ -251,4 +238,3 @@ contains
   end subroutine file_output_param
 
 end module openfile
-    
