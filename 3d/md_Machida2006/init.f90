@@ -35,7 +35,7 @@ module init
 
 !----------------------------------------------------------------------|
 !  initialize counters
-  integer, public :: nd,ns,merr
+  integer, public :: nd,ns
   real(8), public :: time,timep
 
 !----------------------------------------------------------------------|
@@ -54,7 +54,7 @@ contains
 
   use lr_state, only : reconstructionConstant
   use model, only : model_setup
-  use mpi_domain_xz
+  use mpi_setup
 
   real(8),dimension(0:ix) :: xm
   real(8),dimension(0:jx) :: ym
@@ -62,7 +62,7 @@ contains
 
 !----------------------------------------------------------------------|
 !   for MPI
-  call mpi_setup(mpisize_x,mpisize_z)
+  call mpi_setup__init(mpisize_x,mpisize_y,mpisize_z)
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|
@@ -73,8 +73,7 @@ contains
        ,x,dx,xm,y,dy,ym,z,dz,zm &
        ,gx,gz,eta ) 
 
-  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
-         ,phi,merr)
+  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
   call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
            ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
@@ -92,10 +91,7 @@ contains
   nd=1
   time  = 0.0d0
   timep = 0.0d0
-
   ns    = 0
-  merr  = 0
-
   dt = tend
                
   end subroutine initialize

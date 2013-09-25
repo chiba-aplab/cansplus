@@ -1,6 +1,6 @@
 program main
 
-  use mpi_domain_xz
+  use mpi_setup
   use openfile
   use const
   use init
@@ -8,7 +8,6 @@ program main
   use integrate_cyl, only : integrate_cyl__TVDRK3
 
   implicit none
-  include 'mpif.h'
 
 !----------------------------------------------------------------------|
 !  initialize
@@ -66,8 +65,7 @@ program main
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
        ,dt,ch)
 
-  call mpi_allreduce(dt,dtg,1,mpi_double_precision,mpi_min &
-       ,mpi_comm_world,merr)
+  call mpi_allreduce(dt,dtg,1,mdp,mmin,mcomw,merr)
 
   dt = dtg
   if(merr /= 0) exit loop

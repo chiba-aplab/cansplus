@@ -1,7 +1,7 @@
 module  model
 
   use const
-  use mpi_domain_xz, only : mpid
+  use mpi_setup, only : mpid
 
   implicit none
   private
@@ -81,7 +81,7 @@ contains
 !  do i=margin+97,igx-margin
   do i=margin+1+ugrid_xmax,igx-margin
      dxg(i) = dxg(i-1)*ratio_x
-     if(dxg(i).gt.dxmax) dxg(i)=dxmax
+     if(dxg(i) > dxmax) dxg(i)=dxmax
   enddo
   do i=igx-margin+1,igx
      dxg(i)=dxg(igx-margin)
@@ -170,37 +170,46 @@ contains
 !---Step 2a.-------------------------------------------------------------|
 ! set individual x-grid 
   do i=1,ix
-     ig = mpid%mpirank_2d(1)*(ix-2*margin)+i
+     ig = mpid%mpirank_3d(1)*(ix-2*margin)+i
      x(i)=xg(ig)
      dx(i) = dxg(ig)
   enddo
   do i=0,ix
-     ig = mpid%mpirank_2d(1)*(ix-2*margin)+i
+     ig = mpid%mpirank_3d(1)*(ix-2*margin)+i
+     xm(i) = xmg(ig)
+  end do
+
+!---Step 2b.-------------------------------------------------------------|
+! set individual x-grid 
+  do j=1,jx
+     y(j)=yg(jg)
+     dy(j) = dyg(jg)
+  enddo
+  do i=0,ix
      xm(i) = xmg(ig)
   end do
 
 !---Step 2b.-------------------------------------------------------------|
 ! set individual y-grid 
   do j=1,jx
-     jg = j
+     jg = mpid%mpirank_3d(2)*(jx-2*margin)+j
      y(j) = yg(jg)
      dy(j) = dyg(jg)
   enddo
-
   do j=0,jx
-     jg = j
+     jg = mpid%mpirank_3d(2)*(jx-2*margin)+j
      ym(j) = ymg(jg)
   end do
 
 !---Step 2c.-------------------------------------------------------------|
 ! set individual z-grid 
   do k=1,kx
-     kg=mpid%mpirank_2d(2)*(kx-2*margin)+k
+     kg=mpid%mpirank_3d(3)*(kx-2*margin)+k
      z(k) = zg(kg)
      dz(k) = dzg(kg)
   enddo
   do k=0,kx
-     kg=mpid%mpirank_2d(2)*(kx-2*margin)+k
+     kg=mpid%mpirank_3d(3)*(kx-2*margin)+k
      zm(k) = zmg(kg)
   end do
 
@@ -244,9 +253,9 @@ contains
   do k=1,kx
      do j=1,jx
         do i=1,ix
-           ig = mpid%mpirank_2d(1)*(ix-2*margin)+i
-           jg = j
-           kg = mpid%mpirank_2d(2)*(kx-2*margin)+k
+           ig = mpid%mpirank_3d(1)*(ix-2*margin)+i
+           jg = mpid%mpirank_3d(2)*(jx-2*margin)+j
+           kg = mpid%mpirank_3d(3)*(kx-2*margin)+k
            gpot(i,j,k) = gpotg(ig,jg,kg)
            gx(i,j,k) = gxg(ig,jg,kg)
            gz(i,j,k) = gzg(ig,jg,kg)
@@ -287,7 +296,6 @@ contains
               endif
            endif
 
-
            ro(i,j,k) = rod+roc
            pr(i,j,k) = prd+prc
            vx(i,j,k) = 0.0d0
@@ -297,7 +305,6 @@ contains
            by(i,j,k) = byd
            bz(i,j,k) = 0.0d0
            phi(i,j,k) = 0.0d0
-
            eta(i,j,k) = 0.0d0
         enddo
      enddo

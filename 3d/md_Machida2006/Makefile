@@ -1,7 +1,7 @@
 CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = a.out
-OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
+OBJS = mpi_setup.o exchangeMpixz.o \
 	getEta2.o openfile.o const.o model.o init.o \
 	integrate_cyl.o\
 	switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
@@ -28,14 +28,13 @@ $(CANS_LIB_DIR)/libcansnc.a :
 
 #Dependencies
 params.txt : $(TARGET)
-init.o : $(CANS_LIB_DIR)/libcans3d.a const.o mpi_domain_xz.o model.o
-model.o : const.o mpi_domain_xz.o
-bnd.o : $(CANS_LIB_DIR)/libcans3d.a mpi_domain_xz.o
-exchangeMpixz.o : mpi_domain_xz.o
-exchangeMpixz_res.o : mpi_domain_xz.o
-integrate_cyl.o : $(CANS_LIB_DIR)/libcans3d.a mpi_domain_xz.o bnd.o exchangeMpixz.o exchangeMpixz_res.o
-main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o mpi_domain_xz.o openfile.o
-openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_domain_xz.o 
+init.o : $(CANS_LIB_DIR)/libcans3d.a const.o mpi_setup.o model.o
+model.o : const.o mpi_setup.o
+bnd.o : $(CANS_LIB_DIR)/libcans3d.a mpi_setup.o
+exchangeMpixz.o : mpi_setup.o
+integrate_cyl.o : $(CANS_LIB_DIR)/libcans3d.a bnd.o exchangeMpixz.o
+main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o mpi_setup.o openfile.o
+openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_setup.o 
 
 clean:
 	rm -f params.txt* *.o *.mod *.oo *.dac.* $(TARGET) $(OBJS)
