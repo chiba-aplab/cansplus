@@ -37,4 +37,4 @@ main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o mpi_setup.o openfile.o
 openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_setup.o 
 
 clean:
-	rm -f params.txt* *.o *.mod *.oo *.dac.* $(TARGET) $(OBJS)
+	rm -f params.txt* *.o *.mod *.oo *.dac.* *.dat $(TARGET) $(OBJS)

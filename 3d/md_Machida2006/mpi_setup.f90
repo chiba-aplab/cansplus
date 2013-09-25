@@ -53,9 +53,9 @@ contains
     enddo
     enddo
     irank = 0
-    do i=0,mpisize_x-1
-    do j=0,mpisize_y-1
     do k=0,mpisize_z-1
+    do j=0,mpisize_y-1
+    do i=0,mpisize_x-1
        ptable(i,j,k) = irank
        if(mpirank == irank)then
           mpid%mpirank_3d(1) = i
