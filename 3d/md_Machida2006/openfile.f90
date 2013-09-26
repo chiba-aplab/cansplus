@@ -42,7 +42,7 @@ contains
     write(cno,'(i4.4)') mpirank
 
     mf_params=9
-    call dacdefparam(mf_params,'params.txt.'//cno)
+    open (mf_params,file='params.txt.'//cno,form='formatted')
     mf_t =10
     call dacdef0s(mf_t,'t.dac.'//cno,6)
     mf_x=11

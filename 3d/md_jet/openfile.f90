@@ -5,6 +5,7 @@ module openfile
 !         file open
 !
 !======================================================================
+  use dac_header
   implicit none
 
   integer,public :: mf_params
@@ -35,21 +36,21 @@ contains
   subroutine file_input(nd,mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
     implicit none
 
-    integer,intent(in) :: nd,mpirank
-    integer,intent(in) :: ix,jx,kx
-    real(8),intent(out),dimension(ix,jx,kx) :: ro,pr,vx,vy,vz,bx,by,bz,phi,eta
+    integer,intent(in) :: nd,mpirank,ix,jx,kx
+    real(8),intent(inout),dimension(ix,jx,kx) :: ro,pr,vx,vy,vz,bx,by,bz,phi,eta
+    integer :: mt,nx0,ix0,jx0,kx0
 
     mt=6
     write(cnond,'(i4.4)') nd
     write(cno,'(i4.4)') mpirank
 
     mfi_ro=70
-    call dacopnr3s(mfi_ro,'ro.dac.'//cnond//'.'//cno,mt,ix,jx,kx,nx0)
+    call dacopnr3s(mfi_ro,'ro.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_ro) ro
     close(mfi_ro)
 
     mfi_pr=71
-    call dacopnr3s(mfi_pr,'pr.dac.'//cnond//'.'//cno,mt,ix,jx,kx,nx0)
+    call dacopnr3s(mfi_pr,'pr.dac.'//cnond//'.'//cno,mt,ix0,jx0,kx0,nx0)
     read(mfi_pr) pr
     close(mfi_pr)
 
@@ -95,17 +96,14 @@ contains
      
   end subroutine file_input
 
-  subroutine file_output(nd,mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
+  subroutine file_output(nd,mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
     implicit none
 
-    integer,intent(in) :: ix,jx,kx,nd,mpirank
+    integer,intent(in) :: nd,mpirank,ix,jx,kx
     real(8),intent(in),dimension(ix,jx,kx) :: ro,pr,vx,vy,vz,bx,by,bz,phi,eta
-    real(8),intent(in) :: time
 
     write(cnond,'(i4.4)') nd
     write(cno,'(i4.4)') mpirank
-
-    write(mf_t) time
 
     mf_ro=20
     call dacdef3s(mf_ro,'ro.dac.'//cnond//'.'//cno,6,ix,jx,kx)
@@ -177,7 +175,7 @@ contains
     write(cno,'(i4.4)') mpirank
 
     mf_params=9
-    call dacdefparam(mf_params,'params.txt.'//cno)
+    open (mf_params,file='params.txt.'//cno,form='formatted')
     
     call dacputparamc(mf_params,'comment','model_machida,int_2')
     call dacputparami(mf_params,'ix',ix)
@@ -231,9 +229,6 @@ contains
     call dacdef3s(mf_gz,'gz.dac.'//cno,6,ix,jx,kx)
     write(mf_gz) gz
     close(mf_gz)
-
-    mf_t =10
-    call dacdef0s(mf_t,'t.dac.'//cno,6)
 
   end subroutine file_output_param
 

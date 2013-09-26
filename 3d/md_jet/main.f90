@@ -21,7 +21,7 @@ program main
          ,mpid%mpisize,mpid%mpirank,mpisize_x,mpisize_z,eta0,vc,gm &
          ,x,y,z,dx,dy,dz,gx,gz)
     call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
-         ,time,ix,jx,kx)
+         ,ix,jx,kx)
 
     if(mpid%mpirank == 0)then
          write(6,913) ns,time,nd
@@ -90,7 +90,7 @@ program main
   if(nt1 < nt2) mw=1
   if(mw /= 0) then
      call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
-          ,time,ix,jx,kx)
+          ,ix,jx,kx)
 
      if(mpid%mpirank == 0)then
         write(6,913) ns,time,nd
@@ -106,7 +106,7 @@ program main
      mwflag=1
   endif
 ! loop test
-  if(time < tend) exit loop
+  if(time > tend) exit loop
 
 enddo loop
 !======================================================================|
@@ -124,10 +124,9 @@ enddo loop
      endif
 
      call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
-          ,time,ix,jx,kx)
+          ,ix,jx,kx)
   endif
 
-  close(mf_t)
   call mpi_finalize(merr)
 
   write(6,915) ns,time

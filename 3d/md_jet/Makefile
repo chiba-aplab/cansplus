@@ -15,16 +15,13 @@ OBJS = mpi_domain_xz.o exchangeMpixz_res.o exchangeMpixz.o \
 all: $(TARGET)
 
 $(TARGET) : $(OBJS)
-	$(FC) $(FFLAGS) -o $(TARGET) $(OBJS) -L$(CANS_LIB_DIR) -lcans3d -lcansnc
+	$(FC) $(FFLAGS) -o $(TARGET) $(OBJS) -L$(CANS_LIB_DIR) -lcans3d
 
 .f90.o:
-	$(FC) $(FFLAGS) -L$(CANS_LIB_DIR) -I$(CANS_LIB_DIR)/common -c $< -lcans3d -lcansnc
+	$(FC) $(FFLAGS) -L$(CANS_LIB_DIR) -I$(CANS_LIB_DIR)/common -c $< -lcans3d
 
 $(CANS_LIB_DIR)/libcans3d.a : 
 	cd $(CANS_LIB_DIR)/common; make
-
-$(CANS_LIB_DIR)/libcansnc.a : 
-	cd $(CANS_LIB_DIR)/cansnc; make
 
 #Dependencies
 params.txt : $(TARGET)
@@ -35,7 +32,7 @@ exchangeMpixz.o : mpi_domain_xz.o
 exchangeMpixz_res.o : mpi_domain_xz.o
 integrate_cyl.o : $(CANS_LIB_DIR)/libcans3d.a mpi_domain_xz.o bnd.o exchangeMpixz.o exchangeMpixz_res.o
 main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o mpi_domain_xz.o openfile.o
-openfile.o : $(CANS_LIB_DIR)/libcansnc.a mpi_domain_xz.o 
+openfile.o : $(CANS_LIB_DIR)/libcans3d.a mpi_domain_xz.o 
 
 clean:
 	rm -f params.txt* *.o *.mod *.oo *.dac.* *.dat $(TARGET) $(OBJS)
