@@ -55,6 +55,7 @@ contains
   use lr_state, only : reconstructionConstant
   use model, only : model_setup
   use mpi_setup
+  use bnd
 
   real(8),dimension(0:ix) :: xm
   real(8),dimension(0:jx) :: ym
@@ -62,7 +63,7 @@ contains
 
 !----------------------------------------------------------------------|
 !   for MPI
-  call mpi_setup__init(mpisize_x,mpisize_y,mpisize_z)
+  call mpi_setup__init(mpisize_x,mpisize_y,mpisize_z,pbcheck)
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|
@@ -73,9 +74,8 @@ contains
        ,x,dx,xm,y,dy,ym,z,dz,zm &
        ,gx,gz,eta ) 
 
-  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
-  call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-           ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+                ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
 !-----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5

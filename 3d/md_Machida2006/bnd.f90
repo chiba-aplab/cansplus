@@ -1,10 +1,19 @@
-subroutine bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-           ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+module bnd
+
+  implicit none
+  private
+
+  public :: bnd__exec
+
+
+contains
+
+
+  subroutine bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+                      ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   use mpi_setup, only : mpid, mnull
   use boundary
-
-  implicit none
 
   integer,intent(in) :: margin,ix,jx,kx
   real(8),dimension(ix),intent(in) :: x
@@ -17,7 +26,11 @@ subroutine bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
   real(8),dimension(ix,jx,kx),intent(in) :: vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
   real(8),intent(in) :: xin
-  
+
+!======================================================================
+! inter-process communication by MPI
+  call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+
 !======================================================================
 ! inner x-boundary
   if(mpid%l == mnull)then
@@ -89,10 +102,10 @@ subroutine bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
   call absorb(ix,jx,kx,x,z,xin,by,byi)
   call absorb(ix,jx,kx,x,z,xin,bz,bzi)
 
-end subroutine bnd
+  end subroutine bnd__exec
 
 
-subroutine absorb(ix,jx,kx,x,z,xin,qq,qqi)
+  subroutine absorb(ix,jx,kx,x,z,xin,qq,qqi)
 
   implicit none
 
@@ -117,5 +130,8 @@ subroutine absorb(ix,jx,kx,x,z,xin,qq,qqi)
       enddo
     enddo
   enddo
-end subroutine absorb
 
+  end subroutine absorb
+
+
+end module bnd

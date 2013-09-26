@@ -1,6 +1,6 @@
 module const
 
- implicit none
+  implicit none
  
   integer,parameter :: margin=3
   integer,parameter :: ix = 256+2*margin,jx=64+2*margin,kx=16+2*margin
@@ -24,7 +24,8 @@ module const
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)
-
+  !TRUE if periodic boundary condition is applied. (1:x, 2:y, 3:z)
+  logical,parameter :: pbcheck(3) = (/.false., .true., .false./) 
 !--------------------------------------------------------------------------
 !   time control parameters
 

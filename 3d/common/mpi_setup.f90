@@ -8,8 +8,7 @@ module mpi_setup
   public :: mpi_setup__init
 
   type :: mpivars
-     integer :: mpisize
-     integer :: mpirank
+     integer :: mpisize, mpirank
      integer, dimension(3) :: mpirank_3d
      integer :: l,r,f,b,t,d
   end type mpivars
@@ -24,8 +23,9 @@ module mpi_setup
 contains
 
 
-  subroutine mpi_setup__init(mpisize_x,mpisize_y,mpisize_z)
+  subroutine mpi_setup__init(mpisize_x,mpisize_y,mpisize_z,pbcheck)
 
+    logical, intent(in) :: pbcheck(3)
     integer, intent(in) :: mpisize_x, mpisize_y, mpisize_z
     integer :: ptable(-1:mpisize_x,-1:mpisize_y,-1:mpisize_z)
     integer :: mpisize, mpirank
@@ -67,9 +67,19 @@ contains
     enddo
     enddo
 
-    !Periodic boundary condition in y
-    ptable(-1:mpisize_x,-1,-1:mpisize_z) = ptable(-1:mpisize_x,mpisize_y-1,-1:mpisize_z)
-    ptable(-1:mpisize_x,mpisize_y,-1:mpisize_z) = ptable(-1:mpisize_x,0,-1:mpisize_z)
+    !Periodic boundary condition if pbcheck=true
+    if(pbcheck(1))then
+       ptable(-1,-1:mpisize_y,-1:mpisize_z) = ptable(mpisize_x-1,-1:mpisize_y,-1:mpisize_z)
+       ptable(mpisize_x,-1:mpisize_y,-1:mpisize_z) = ptable(0,-1:mpisize_y,-1:mpisize_z)
+    endif
+    if(pbcheck(2))then
+       ptable(-1:mpisize_x,-1,-1:mpisize_z) = ptable(-1:mpisize_x,mpisize_y-1,-1:mpisize_z)
+       ptable(-1:mpisize_x,mpisize_y,-1:mpisize_z) = ptable(-1:mpisize_x,0,-1:mpisize_z)
+    endif
+    if(pbcheck(3))then
+       ptable(-1:mpisize_x,-1:mpisize_y,-1) = ptable(-1:mpisize_x,-1:mpisize_y,mpisize_z-1)
+       ptable(-1:mpisize_x,-1:mpisize_y,mpisize_z) = ptable(-1:mpisize_x,-1:mpisize_y,0)
+    endif
 
     !For MPI_SENDRECV
     mpid%r = ptable(mpid%mpirank_3d(1)+1,mpid%mpirank_3d(2),  mpid%mpirank_3d(3)  )

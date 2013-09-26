@@ -21,7 +21,7 @@ $(TARGET) : $(OBJS)
 	$(FC) $(FFLAGS) -L$(CANS_LIB_DIR) -I$(CANS_LIB_DIR)/common -c $< -lcans3d -lcansnc
 
 $(CANS_LIB_DIR)/libcans3d.a : 
-	cd $(CANS_LIB_DIR); make
+	cd $(CANS_LIB_DIR)/common; make
 
 $(CANS_LIB_DIR)/libcansnc.a : 
 	cd $(CANS_LIB_DIR)/cansnc; make

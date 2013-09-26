@@ -1,7 +1,7 @@
 CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = $(CANS_LIB_DIR)/libcans3d.a
-OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o convert.o
+OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o convert.o mpi_setup.o
 
 '.update' : $(OBJS)
 	$ ar -r $(TARGET) $(OBJS)
@@ -14,6 +14,9 @@ OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o conve
 
 .f90.o:
 	$(FC) $(FFLAGS) -c $<
+
+#Dependencies
+boundary.o : mpi_setup.o
 
 clean :
 	rm -f $(OBJS) *.mod
