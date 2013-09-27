@@ -6,8 +6,11 @@ module openfile
 !
 !======================================================================
   use dac_header
+
   implicit none
   private
+
+  public :: file_input, file_output, file_output_param
 
   integer,public :: mf_params
   integer,public :: mf_t,mf_x,mf_y,mf_z
