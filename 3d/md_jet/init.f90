@@ -30,22 +30,23 @@ module init
 !----------------------------------------------------------------------|
 !  initialize counters
 
-  integer,public :: nd,ns,merr,ns1,ns2
+  integer,public :: nd,ns,ns1,ns2
   real(8),public :: time,timep
 
 !----------------------------------------------------------------------|
 !   time control parameters
-!     nstop : number of total time steps for the run
-
   integer,public :: mwflag,mw,nt1,nt2
   real(8),public :: dt,dtg
 
+
 contains
+
 
   subroutine initialize
   use lr_state, only : reconstructionConstant
   use model, only : model_setup
-  use mpi_domain_xz
+  use mpi_setup
+  use bnd
 
   real(8),dimension(0:ix) :: xm
   real(8),dimension(0:jx) :: ym
@@ -53,19 +54,17 @@ contains
 
 !----------------------------------------------------------------------|
 !   for MPI
-  call mpi_setup(mpisize_x,mpisize_z)
+  call mpi_setup__init(mpisize_x,mpisize_y,mpisize_z,pbcheck)
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|
 !   setup numerical model (grid, initial conditions, etc.)
 !----------------------------------------------------------------------|
-  call model_setup(ro,pr,vx,vy,vz,bx,by,bz &
+  call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-       ,x,dx,xm,y,dy,ym,z,dz,zm,gx,gz) 
+       ,x,dx,xm,y,dy,ym,z,dz,zm,gx,gz,eta) 
 
-  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
-         ,phi,merr)
-  call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
 !----------------------------------------------------------------------|

@@ -1,6 +1,6 @@
 program main
 
-  use mpi_domain_xz
+  use mpi_setup
   use openfile
   use const
   use init
@@ -18,7 +18,7 @@ program main
 !----------------------------------------------------------------------|
 !  output data
     call file_output_param(nd,dtout,tend,ix,jx,kx,igx,jgx,kgx,margin &
-         ,mpid%mpisize,mpid%mpirank,mpisize_x,mpisize_z,eta0,vc,gm &
+         ,mpid%mpisize,mpid%mpirank,mpisize_x,mpisize_y,mpisize_z,eta0,vc,gm &
          ,x,y,z,dx,dy,dz,gx,gz)
     call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
          ,ix,jx,kx)
@@ -60,8 +60,7 @@ program main
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
        ,dt,ch)
 
-  call mpi_allreduce(dt,dtg,1,mpi_double_precision,mpi_min &
-       ,mpi_comm_world,merr)
+  call mpi_allreduce(dt,dtg,1,mdp,mmin,mcomw,merr)
 
   dt = dtg
   if(merr /= 0) exit loop

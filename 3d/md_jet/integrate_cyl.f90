@@ -15,10 +15,10 @@ contains
                                ,eta0,vc,eta,ccx,ccy,ccz,xin)
 
   use convert
-  use mpi_domain_xz, only : mpid
   use lr_state, only : lr_state__MP5
   use flux_calc
   use getcurrent, only : getcurrent__cyl
+  use bnd
   
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cr
@@ -278,12 +278,8 @@ contains
 !
   call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
        ,vx,vy,vz,pr)
-
-  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
-       ,phi,merr)
-
-  call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+             ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   enddo
 
@@ -296,11 +292,11 @@ contains
                                   ,eta0,vc,eta,ccx,ccy,ccz,xin)
 
   use convert
-  use mpi_domain_xz, only : mpid
   use lr_state, only : lr_state__MP5
   use flux_calc
   use getcurrent, only : getcurrent__cyl
-  
+  use bnd
+
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cr
   real(8),intent(in) :: dt,gm,eta0,vc
@@ -569,12 +565,8 @@ contains
 !
   call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
        ,vx,vy,vz,pr)
-
-  call exchangeMpixz(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz &
-       ,phi,merr)
-
-  call bnd(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-             ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
+             ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   enddo
 

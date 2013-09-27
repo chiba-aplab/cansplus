@@ -158,12 +158,12 @@ contains
   end subroutine file_output
 
   subroutine file_output_param(nd,dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpisize &
-       ,mpirank,mpisize_x,mpisize_z,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
+       ,mpirank,mpisize_x,mpisize_y,mpisize_z,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
     
     implicit none
 
     integer,intent(in) :: nd,ix,jx,kx,igx,jgx,kgx,margin,mpisize,mpirank
-    integer,intent(in) :: mpisize_x,mpisize_z
+    integer,intent(in) :: mpisize_x,mpisize_y,mpisize_z
     real(8),intent(in),dimension(ix) :: x,dx
     real(8),intent(in),dimension(jx) :: y,dy
     real(8),intent(in),dimension(kx) :: z,dz
@@ -191,6 +191,7 @@ contains
     call dacputparami(mf_params,'mpisize',mpisize)
     call dacputparami(mf_params,'mpirank',mpirank)
     call dacputparami(mf_params,'mpix',mpisize_x)
+    call dacputparami(mf_params,'mpiy',mpisize_y)
     call dacputparami(mf_params,'mpiz',mpisize_z)
     call dacputparamd(mf_params,'eta0',eta0)
     call dacputparamd(mf_params,'vc',vc)

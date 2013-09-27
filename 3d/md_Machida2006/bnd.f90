@@ -63,7 +63,7 @@ contains
 
 !----------------------------------------------------------------------|
 ! inner z-boundary
-  if(mpid%b == mnull)then
+  if(mpid%d == mnull)then
      call bd_frez(0,margin,ro,ix,jx,kx)
      call bd_frez(0,margin,pr,ix,jx,kx)
      call bd_frez(0,margin,vx,ix,jx,kx)
