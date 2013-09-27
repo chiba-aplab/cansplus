@@ -96,7 +96,7 @@ contains
   end do
 
   dtg = min(2.0d0*beforedt,safety/dtmaxi)
-  call mpi_allreduce(dt,dtg,1,mdp,mmin,mcomw,merr)
+  call mpi_allreduce(dtg,dt,1,mdp,mmin,mcomw,merr)
   ch = safety*min_dx/dt
 
 ! Exception print

@@ -7,6 +7,7 @@ module openfile
 !======================================================================
   use dac_header
   implicit none
+  private
 
   integer,public :: mf_params
   integer,public :: mf_t,mf_x,mf_y,mf_z
@@ -34,7 +35,6 @@ module openfile
 contains
 
   subroutine file_input(nd,mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
-    implicit none
 
     integer,intent(in) :: nd,mpirank,ix,jx,kx
     real(8),intent(inout),dimension(ix,jx,kx) :: ro,pr,vx,vy,vz,bx,by,bz,phi,eta
@@ -160,8 +160,6 @@ contains
   subroutine file_output_param(nd,dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpisize &
        ,mpirank,mpisize_x,mpisize_y,mpisize_z,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
     
-    implicit none
-
     integer,intent(in) :: nd,ix,jx,kx,igx,jgx,kgx,margin,mpisize,mpirank
     integer,intent(in) :: mpisize_x,mpisize_y,mpisize_z
     real(8),intent(in),dimension(ix) :: x,dx

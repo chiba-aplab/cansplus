@@ -13,24 +13,20 @@ module init
   real(8),public,dimension(5,2,ix) :: ccx
   real(8),public,dimension(5,2,jx) :: ccy
   real(8),public,dimension(5,2,kx) :: ccz
-
 ! cell center variables
   real(8),public,dimension(ix,jx,kx) :: ro,pr
   real(8),public,dimension(ix,jx,kx) :: vx,vy,vz
   real(8),public,dimension(ix,jx,kx) :: bx,by,bz,phi
   real(8),public,dimension(ix,jx,kx) :: eta
-
   real(8),public,dimension(ix,jx,kx) :: ro1,pr1
   real(8),public,dimension(ix,jx,kx) :: vx1,vy1,vz1
   real(8),public,dimension(ix,jx,kx) :: bx1,by1,bz1,phi1
-
 ! gravitation
   real(8),public,dimension(ix,jx,kx) :: gx,gy,gz
 ! initial variables
   real(8),public,dimension(ix,jx,kx) :: roi,pri
   real(8),public,dimension(ix,jx,kx) :: vxi,vyi,vzi
   real(8),public,dimension(ix,jx,kx) :: bxi,byi,bzi
-
   real(8), public :: ch,min_dx
 
 !----------------------------------------------------------------------|
@@ -42,7 +38,6 @@ module init
 !   time control parameters
 !     nstop : number of total time steps for the run
   integer, public :: mwflag,mw,nt1,nt2
-
   real(8), public :: dt,dtg
 !-----------------------------------------------------------  
 
@@ -54,7 +49,7 @@ contains
 
   use lr_state, only : reconstructionConstant
   use model, only : model_setup
-  use mpi_setup
+  use mpi_setup, only : mpi_setup__init
   use bnd
 
   real(8),dimension(0:ix) :: xm
