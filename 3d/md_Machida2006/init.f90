@@ -31,7 +31,7 @@ module init
   real(8),public,dimension(ix,jx,kx) :: vxi,vyi,vzi
   real(8),public,dimension(ix,jx,kx) :: bxi,byi,bzi
 
-  real(8), public :: ch
+  real(8), public :: ch,min_dx
 
 !----------------------------------------------------------------------|
 !  initialize counters
@@ -72,7 +72,7 @@ contains
   call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,xm,y,dy,ym,z,dz,zm &
-       ,gx,gz,eta ) 
+       ,gx,gz,eta,min_dx) 
 
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                 ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)

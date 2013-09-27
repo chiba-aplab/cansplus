@@ -17,6 +17,7 @@ OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o conve
 
 #Dependencies
 boundary.o : mpi_setup.o
+getNewdt.o : mpi_setup.o
 
 clean :
 	rm -f $(OBJS) *.mod

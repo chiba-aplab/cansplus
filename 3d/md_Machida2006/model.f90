@@ -15,7 +15,7 @@ contains
   subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
                          ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                          ,x,dx,xm,y,dy,ym,z,dz,zm &
-                         ,gx,gz,eta)
+                         ,gx,gz,eta,min_dx)
 
 !---Input & Output
   real(8),dimension(ix),      intent(out) :: x,dx
@@ -32,6 +32,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
   real(8),dimension(ix,jx,kx),intent(out) :: vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(out) :: bxi,byi,bzi
+  real(8),                    intent(out) :: min_dx
 
   integer :: i,j,k
   integer :: ig,jg,kg
@@ -212,6 +213,14 @@ contains
      kg=mpid%mpirank_3d(3)*(kx-2*margin)+k
      zm(k) = zmg(kg)
   end do
+
+! calculate min_dx
+  min_dx = min(minval(dxg),minval(dzg))
+  do j=1,jgx
+     do i=margin+1,igx
+        min_dx=min(min_dx,xg(i)*dyg(j))
+     enddo
+  enddo
 
 !---Step 3a.----------------------------------------------------------|
 ! set gravitation

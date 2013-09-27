@@ -63,11 +63,8 @@ program main
 !----------------------------------------------------------------------|
   call getNewdt__glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-       ,dt,ch)
+       ,dt,ch,min_dx)
 
-  call mpi_allreduce(dt,dtg,1,mdp,mmin,mcomw,merr)
-
-  dt = dtg
   if(merr /= 0) exit loop
 
   timep = time

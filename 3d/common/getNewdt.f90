@@ -1,5 +1,6 @@
 module getNewdt
 
+  use mpi_setup
   implicit none
   private
 
@@ -11,11 +12,12 @@ contains
 
   subroutine getNewdt__glm(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
                           ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-                          ,dt,ch)
+                          ,dt,ch,min_dx)
 
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: safety ! CFL number
   real(8),intent(in) :: dtmin ! minimum dt
+  real(8),intent(in) :: min_dx
   real(8),intent(in) :: gm ! specific heat retio
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
@@ -38,19 +40,15 @@ contains
   real(8) :: v1,v2,v3
   real(8) :: temp, temp2
   real(8) :: temp_sum,temp_dif
-  real(8) :: beforedt
-  real(8) :: min_dx,min_dx_temp
+  real(8) :: beforedt,dtg
 
 ! calculate time step dt in resistive glmmhd @ cartesian grid
   dtmaxi = 0.0d0
   beforedt = dt
 
-  min_dx = dabs(dx(1))
-
-  do k=margin+1,kx-margin
-     do j=margin+1,jx-margin
-        do i=margin+1,ix-margin
-
+  do k=1,kx
+     do j=1,jx
+        do i=1,ix
            roinverse = 1.0d0/ro(i,j,k)
            vsq = vx(i,j,k)**2+vy(i,j,k)**2+vz(i,j,k)**2
            
@@ -93,13 +91,12 @@ contains
               jmin = j
               kmin = k
            endif
-           min_dx_temp = min(dx(i),dy(j),dz(k))
-           min_dx = min(min_dx_temp,min_dx)
         end do
      end do
   end do
 
-  dt = min(2.0d0*beforedt,safety/dtmaxi)
+  dtg = min(2.0d0*beforedt,safety/dtmaxi)
+  call mpi_allreduce(dt,dtg,1,mdp,mmin,mcomw,merr)
   ch = safety*min_dx/dt
 
 ! Exception print
@@ -123,11 +120,12 @@ contains
 
   subroutine getNewdt__glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
                              ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-                             ,dt,ch)
+                             ,dt,ch,min_dx)
  
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: safety ! CFL number
   real(8),intent(in) :: dtmin ! minimum dt
+  real(8),intent(in) :: min_dx
   real(8),intent(in) :: gm ! specific heat retio
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
@@ -150,19 +148,15 @@ contains
   real(8) :: v1,v2,v3
   real(8) :: temp, temp2
   real(8) :: temp_sum,temp_dif
-  real(8) :: beforedt
-  real(8) :: min_dx,min_dx_temp
+  real(8) :: beforedt,dtg
 
 ! calculate time step dt in resistive glmmhd @ cylindrical coordinate
   dtmaxi = 0.0d0
   beforedt = dt
 
-  min_dx = dabs(dx(1))
-
-  do k=margin+1,kx-margin
-     do j=margin+1,jx-margin
-        do i=margin+1,ix-margin
-
+  do k=1,kx
+     do j=1,jx
+        do i=1,ix
            roinverse = 1.0d0/ro(i,j,k)
            vsq = vx(i,j,k)**2+vy(i,j,k)**2+vz(i,j,k)**2
            
@@ -205,13 +199,12 @@ contains
               jmin = j
               kmin = k
            endif
-           min_dx_temp = min(dx(i),(x(i)*dy(j)),dz(k))
-           min_dx = min(min_dx_temp,min_dx)
         end do
      end do
   end do
 
-  dt = min(2.0d0*beforedt,safety/dtmaxi)
+  dtg = min(2.0d0*beforedt,safety/dtmaxi)
+  call mpi_allreduce(dtg,dt,1,mdp,mmin,mcomw,merr)
   ch = safety*min_dx/dt
 
 ! Exception print
