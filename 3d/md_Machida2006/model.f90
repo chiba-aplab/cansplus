@@ -283,7 +283,8 @@ contains
            !---- set corona ---------------------
            ss = sqrt(x(i)**2+z(k)**2)
            roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
-           prc = tec0*roc
+!           prc = tec0*roc
+           prc = tec0*grav*roc
 
            !---- set torus ----------------------
            rod = 0.0d0

@@ -1,5 +1,6 @@
 #FC = mpifrt
-FC = mpif90
+#FC = mpif90
+FC = ftn
 
 #FFLAGS = -Kfast
 FFLAGS = -O3

@@ -3,7 +3,7 @@ module const
   implicit none
  
   integer,parameter :: margin=3
-  integer,parameter :: ix = 256+2*margin,jx=64+2*margin,kx=16+2*margin
+  integer,parameter :: ix = 16+2*margin,jx=32+2*margin,kx=16+2*margin
 
   real(8),parameter :: cr=0.18d0
 
@@ -18,9 +18,9 @@ module const
 
 !--------------------------------------------------------------------------
 !  MPI
-  integer,parameter :: mpisize_x=2
+  integer,parameter :: mpisize_x=16
   integer,parameter :: mpisize_y=2                  ! unimplement for mpi
-  integer,parameter :: mpisize_z=4
+  integer,parameter :: mpisize_z=16
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)
@@ -31,9 +31,9 @@ module const
 
   logical :: restart = .false.     ! if ".true." then start from restart data
   
-  real(8),parameter :: tend  = 0.01d0
-  real(8),parameter :: dtout = tend/(5.0d0)
-  integer,parameter :: nstop = 20            !number of total time steps for the run
+  real(8),parameter :: tend  = pi2*4.d1
+  real(8),parameter :: dtout = pi2/1.d1
+  integer,parameter :: nstop = int(2.d6)       !number of total time steps for the run
 
 !  cooling switching     here モデル依存?
   real(8),parameter :: swtch_t=62.8d0
@@ -66,7 +66,7 @@ module const
   integer,parameter :: ugrid_xmax=96        ! in case of uniform, ugrid_xmax=0  
   real(8),parameter :: dzmax = 10.0d0*dxg0
   real(8),parameter :: ratio_z = 1.05d0     ! in case of uniform, ratio_z=1.0d0
-  integer,parameter :: ugrid_zmax=96        ! in case of uniform, ugrid_zmax=0 
+  integer,parameter :: ugrid_zmax=44        ! in case of uniform, ugrid_zmax=0 
 
 
 !--cooling
@@ -92,7 +92,7 @@ module const
 
   real(8),parameter :: xin = 0.2d0   ! inner boundary
   ! resistivity
-  real(8),parameter :: eta0 = 4.0d0*pi*1.0d-4      ! upper limit of resistivity
+  real(8),parameter :: eta0 = 4.0d0*pi*1.0d-3      ! upper limit of resistivity
   real(8),parameter :: vc=0.2d0*2.998d10/nrmlv!here! threshold 
   ! gravity
   real(8),parameter :: ssg=rg_nrmlx    ! 
@@ -101,7 +101,7 @@ module const
 
   ! corona (or halo)
   real(8),parameter :: factorc=boltzmann_const*Navo/mmw*nrmlte/nrmlv/nrmlv
-  real(8),parameter :: tec0 = 5.0d-1
+  real(8),parameter :: tec0 = 2.d0
   real(8),parameter :: rohalo = 1.0d-4  ! density ratio of halo to torus
   ! torus 
   real(8),parameter :: aa=0.2d0   ! dependence of raius on angular momentum

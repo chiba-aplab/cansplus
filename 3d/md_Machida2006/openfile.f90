@@ -5,6 +5,8 @@ module openfile
 !         file open
 !
 !======================================================================
+  use dac_header
+
   implicit none
 
   integer,public :: mf_params
