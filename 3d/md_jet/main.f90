@@ -8,7 +8,6 @@ program main
   use integrate_cyl, only : integrate_cyl__TVDRK3
 
   implicit none
-  include 'mpif.h'
 
 !----------------------------------------------------------------------|
 !  initial setting
