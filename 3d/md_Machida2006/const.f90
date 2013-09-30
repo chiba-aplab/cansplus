@@ -100,7 +100,6 @@ module const
   real(8),parameter :: grav = (1.0d0-ssg)**2
 
   ! corona (or halo)
-  real(8),parameter :: factorc=boltzmann_const*Navo/mmw*nrmlte/nrmlv/nrmlv
   real(8),parameter :: tec0 = 2.d0
   real(8),parameter :: rohalo = 1.0d-4  ! density ratio of halo to torus
   ! torus 

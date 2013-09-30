@@ -16,19 +16,16 @@ program main
 
 !----------------------------------------------------------------------|
 !  file open
-  call openfileCor(nd,mpid%mpirank,ix,jx,kx)
-  call openfileAll(nd,mpid%mpirank,ix,jx,kx)
-  call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
-  call file_output_param(dtout,tend,ix,jx,kx,igx,jgx,kgx,margin,mpid%mpisize &
-       ,mpid%mpirank,mpisize_x,mpisize_z,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee &
-       ,mass_bh,rg,rg_nrmlx &
+  call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
+                  ,ix,jx,kx)
+  call file_output_param(nd,dtout,tend,ix,jx,kx,igx,jgx,kgx,margin &
+       ,mpid%mpisize,mpid%mpirank,mpisize_x,mpisize_y,mpisize_z & 
+       ,nrmlro,nrmlte,nrmlx,nrmlv,nrmlt,nrmlee,mass_bh,rg,rg_nrmlx &
        ,RadCool,te_factor,rohalo,eta0,vc,gm,x,y,z,dx,dy,dz,gx,gz)
   if(mpid%mpirank == 0)then
     write(6,913) ns,time,nd
     write(*,*) 'dt :: ',dt
   endif
-  call closefileAll()
-  call closefileCor()
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|
@@ -37,15 +34,12 @@ program main
      open(91,file='readFileNumber.dat')
      read(91,*) nd
      close(91)
-     call openReadFileAll(nd,mpid%mpirank,ix,jx,kx,nd)
-     call file_input(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,ix,jx,kx)
-
+     call file_input(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
+                    ,ix,jx,kx)
      time = real(nd-1)*dtout
      if(mpid%mpirank == 0)then
-        write(*,*) 'restart -> time :: ',time,' nd ::'
+        write(*,*) 'restart -> time :: ',time,' nd ::',nd
      endif
-     
-     call closeReadFileAll()
   endif
   nd=nd+1
 !----------------------------------------------------------------------|
@@ -91,10 +85,8 @@ program main
   nt2=int(time/dtout)
   if(nt1 < nt2) mw=1
   if(mw /= 0)then
-     call openfileAll(nd,mpid%mpirank,ix,jx,kx)
-     call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
-     call closefileAll()
-
+     call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
+                     ,ix,jx,kx)
      if(mpid%mpirank == 0)then
         write(6,913) ns,time,nd
         write(*,*) '[NORMAL] dt :: ',dt
@@ -122,13 +114,10 @@ program main
      if(mpid%mpirank == 0)then
         write(6,913) ns,time,nd
      endif
-
-     call openfileAll(nd,mpid%mpirank,ix,jx,kx)
-     call file_output(ro,pr,vx,vy,vz,bx,by,bz,phi,eta,time,ix,jx,kx)
-     call closefileAll()
+     call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
+                     ,ix,jx,kx)
   endif
 
-  close(mf_t)
   call mpi_finalize(merr)
 
   write(6,915) ns,time

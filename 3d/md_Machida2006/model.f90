@@ -181,16 +181,6 @@ contains
   end do
 
 !---Step 2b.-------------------------------------------------------------|
-! set individual x-grid 
-  do j=1,jx
-     y(j)=yg(jg)
-     dy(j) = dyg(jg)
-  enddo
-  do i=0,ix
-     xm(i) = xmg(ig)
-  end do
-
-!---Step 2b.-------------------------------------------------------------|
 ! set individual y-grid 
   do j=1,jx
      jg = mpid%mpirank_3d(2)*(jx-2*margin)+j

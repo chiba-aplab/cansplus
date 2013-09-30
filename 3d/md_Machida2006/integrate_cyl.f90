@@ -80,7 +80,6 @@ contains
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
   real(8) :: cp
-  real(8) :: dts
   real(8) :: dtodx,dtody,dtodz,hdt
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
@@ -361,7 +360,6 @@ contains
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
   real(8) :: cp
-  real(8) :: dts
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
