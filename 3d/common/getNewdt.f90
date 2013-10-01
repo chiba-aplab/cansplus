@@ -27,7 +27,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(in) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(in) :: eta
 
-  real(8), intent(out) :: dt
+  real(8), intent(inout) :: dt
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.
   real(8), intent(out) :: ch 

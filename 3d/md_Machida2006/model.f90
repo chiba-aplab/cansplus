@@ -75,7 +75,7 @@ contains
   enddo
 
 !  do i=margin+2,margin+96
-  do i=margin+2,margin+ugrid_xmax
+  do i=margin*2+1,margin+ugrid_xmax
      dxg(i) = dxg0
   enddo
 
