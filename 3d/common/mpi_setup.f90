@@ -91,7 +91,6 @@ contains
     mpid%b = ptable(mpid%mpirank_3d(1),  mpid%mpirank_3d(2)-1,mpid%mpirank_3d(3)  )
     mpid%t = ptable(mpid%mpirank_3d(1),  mpid%mpirank_3d(2),  mpid%mpirank_3d(3)+1)
     mpid%d = ptable(mpid%mpirank_3d(1),  mpid%mpirank_3d(2),  mpid%mpirank_3d(3)-1)
-    mpid%ax = MPI_PROC_NULL !For cylindrical coord.
 
     lcheck = .false.
 
@@ -106,7 +105,7 @@ contains
 
     if(lcheck) stop 'Call mpi_setup__init first.'
     if(mod(mpisize_y,2) /= 0)then
-       stop 'Proc size in the theta direction should be an odd number'
+       stop 'Proc size in the theta direction should be an even number'
        call MPI_ABORT(mcomw, 9, merr)
        call MPI_FINALIZE(merr)
     endif
