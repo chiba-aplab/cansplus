@@ -33,18 +33,7 @@ contains
 
 !======================================================================
 ! inner x-boundary
-  if(mpid%l == mnull)then
-     call bd_synpx(0,margin,ro,ix,jx,kx)
-     call bd_synpx(0,margin,pr,ix,jx,kx)
-     call bd_synnx(0,margin,vx,ix,jx,kx)
-     call bd_synnx(0,margin,vy,ix,jx,kx)
-     call bd_synpx(0,margin,vz,ix,jx,kx)
-     call bd_synnx(0,margin,bx,ix,jx,kx)
-     call bd_synnx(0,margin,by,ix,jx,kx)
-     call bd_synpx(0,margin,bz,ix,jx,kx)
-     call bd_synpx(0,margin,phi,ix,jx,kx)
-     call bd_synpx(0,margin,eta,ix,jx,kx)
-  end if
+  call boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
 
 !======================================================================
 ! outer x-boudary

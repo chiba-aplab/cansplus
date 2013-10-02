@@ -5,12 +5,12 @@ module mpi_setup
 
   include 'mpif.h'
 
-  public :: mpi_setup__init
+  public :: mpi_setup__init, mpi_setup__init_cyl
 
   type :: mpivars
      integer :: mpisize, mpirank
      integer, dimension(3) :: mpirank_3d
-     integer :: l,r,f,b,t,d
+     integer :: l,r,f,b,t,d,ax
   end type mpivars
 
   type(mpivars), public :: mpid
@@ -18,6 +18,8 @@ module mpi_setup
   integer, public, parameter :: mnull = MPI_PROC_NULL
   integer, public, parameter :: mdp   = MPI_DOUBLE_PRECISION
   integer, public, parameter :: mmin  = MPI_MIN
+  logical, save :: lcheck=.true.
+  integer, save , allocatable :: ptable(:,:,:)
  
 
 contains
@@ -27,9 +29,10 @@ contains
 
     logical, intent(in) :: pbcheck(3)
     integer, intent(in) :: mpisize_x, mpisize_y, mpisize_z
-    integer :: ptable(-1:mpisize_x,-1:mpisize_y,-1:mpisize_z)
     integer :: mpisize, mpirank
     integer :: i, j, k, irank
+
+    allocate(ptable(-1:mpisize_x,-1:mpisize_y,-1:mpisize_z))
 
     call mpi_init(merr)
     call mpi_comm_size(mcomw,mpisize,merr)
@@ -88,10 +91,29 @@ contains
     mpid%b = ptable(mpid%mpirank_3d(1),  mpid%mpirank_3d(2)-1,mpid%mpirank_3d(3)  )
     mpid%t = ptable(mpid%mpirank_3d(1),  mpid%mpirank_3d(2),  mpid%mpirank_3d(3)+1)
     mpid%d = ptable(mpid%mpirank_3d(1),  mpid%mpirank_3d(2),  mpid%mpirank_3d(3)-1)
+    mpid%ax = MPI_PROC_NULL !For cylindrical coord.
 
-    write(*,*) 'myrank :: ',mpid%mpirank,mpid%mpirank_3d
+    lcheck = .false.
 
   end subroutine mpi_setup__init
+
+
+  subroutine mpi_setup__init_cyl(mpisize_y)
+
+    integer, intent(in) :: mpisize_y
+    integer :: mpisize, mpirank
+    integer :: i, j, k, irank
+
+    if(lcheck) stop 'Call mpi_setup__init first.'
+    if(mod(mpisize_y,2) /= 0)then
+       stop 'Proc size in the theta direction should be an odd number'
+       call MPI_ABORT(mcomw, 9, merr)
+       call MPI_FINALIZE(merr)
+    endif
+
+    mpid%ax = ptable(mpid%mpirank_3d(1),mod(mpid%mpirank_3d(2)+mpisize_y/2,mpisize_y),mpid%mpirank_3d(3))
+
+  end subroutine mpi_setup__init_cyl
 
 
 end module mpi_setup

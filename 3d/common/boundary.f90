@@ -7,7 +7,7 @@ module boundary
             bd_inix, bd_iniy, bd_iniz,                               &
             bd_synnx_car, bd_synny_car, bd_synnz_car, bd_synnx,      &
             bd_synpx_car, bd_synpy_car, bd_synpz_car, bd_synpx,      &
-            boundary__mpi
+            boundary__mpi, boundary__mpi_cyl
 
 
 contains
@@ -936,6 +936,75 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   end if
 
   end subroutine boundary__mpi
+
+
+  subroutine boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+
+  use mpi_setup
+
+  integer,intent(in) :: ix,jx,kx,margin
+  real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
+  real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
+  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz,phi
+
+  integer,parameter :: mx = 9
+  integer :: i,j,k,mmx,msend,mrecv
+  real(8),dimension(margin,jx,kx,mx) :: bufsnd_x,bufrcv_x
+
+!=============================================================
+! surface exchange
+!=============================================================
+! r-direction
+!----------------
+! across axis
+
+  mmx = margin*jx*kx*mx
+  msend = mpid%ax
+  mrecv = mpid%ax
+
+  do k=1,kx
+     do j=1,jx
+        do i=1,margin
+           bufsnd_x(i,j,k,1) = ro(margin+i,j,k)
+           bufsnd_x(i,j,k,2) = pr(margin+i,j,k)
+
+           bufsnd_x(i,j,k,3) = vx(margin+i,j,k)
+           bufsnd_x(i,j,k,4) = vy(margin+i,j,k)
+           bufsnd_x(i,j,k,5) = vz(margin+i,j,k)
+
+           bufsnd_x(i,j,k,6) = bx(margin+i,j,k)
+           bufsnd_x(i,j,k,7) = by(margin+i,j,k)
+           bufsnd_x(i,j,k,8) = bz(margin+i,j,k)
+
+           bufsnd_x(i,j,k,9) = phi(margin+i,j,k)
+        enddo
+     enddo
+  enddo
+
+  call mpi_sendrecv              &
+       (bufsnd_x,mmx,mdp,msend,0 &
+       ,bufrcv_x,mmx,mdp,mrecv,0 &
+       ,mcomw,mstat,merr)
+
+  if(mpid%l == mnull)then
+     do k=1,kx
+        do j=1,jx
+           do i=1,margin
+              ro(i,j,k) = bufrcv_x(i,j,k,1)
+              pr(i,j,k) = bufrcv_x(i,j,k,2)
+              vx(i,j,k) = bufrcv_x(i,j,k,3)
+              vy(i,j,k) = bufrcv_x(i,j,k,4)
+              vz(i,j,k) = bufrcv_x(i,j,k,5)
+              bx(i,j,k) = bufrcv_x(i,j,k,6)
+              by(i,j,k) = bufrcv_x(i,j,k,7)
+              bz(i,j,k) = bufrcv_x(i,j,k,8)
+              phi(i,j,k) = bufrcv_x(i,j,k,9)
+           enddo
+        enddo
+     enddo
+  endif
+
+  end subroutine boundary__mpi_cyl
 
 
 end module boundary

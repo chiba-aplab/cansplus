@@ -49,7 +49,7 @@ contains
 
   use lr_state, only : reconstructionConstant
   use model, only : model_setup
-  use mpi_setup, only : mpi_setup__init
+  use mpi_setup, only : mpi_setup__init, mpi_setup__init_cyl
   use bnd
 
   real(8),dimension(0:ix) :: xm
@@ -59,6 +59,7 @@ contains
 !----------------------------------------------------------------------|
 !   for MPI
   call mpi_setup__init(mpisize_x,mpisize_y,mpisize_z,pbcheck)
+  call mpi_setup__init_cyl(mpisize_y)
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|
