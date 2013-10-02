@@ -103,7 +103,7 @@ contains
   real(8),intent(in),dimension(ix) :: x
   real(8),intent(in),dimension(kx) :: z
   real(8),intent(in),dimension(ix,jx,kx) :: qqi
-  real(8),intent(out),dimension(ix,jx,kx) :: qq
+  real(8),intent(inout),dimension(ix,jx,kx) :: qq
   real(8) :: ai,ss,dx0
   integer :: i,j,k
 
