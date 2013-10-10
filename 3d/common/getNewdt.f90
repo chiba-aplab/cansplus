@@ -75,14 +75,14 @@ contains
                 + 4.0d0*cssq*(b1*b1 + b2*b2)*roinverse))
            
 ! absolute wave velocity
-           temp = (dabs(v1)+sqrt(cfxsq))/dx(i) &
-                + (dabs(v2)+sqrt(cfysq))/dy(j) &
-                + (dabs(v3)+sqrt(cfzsq))/dz(k)
+           temp = max((dabs(v1)+sqrt(cfxsq))/dx(i) &
+                , (dabs(v2)+sqrt(cfysq))/dy(j) &
+                , (dabs(v3)+sqrt(cfzsq))/dz(k))
            
 ! diffusion velocity
-           temp2 = eta(i,j,k)/dx(i)**2 &
-                +eta(i,j,k)/dy(j)**2 &
-                +eta(i,j,k)/dz(k)**2
+           temp2 = max(eta(i,j,k)/dx(i)**2 &
+                , eta(i,j,k)/dy(j)**2 &
+                , eta(i,j,k)/dz(k)**2)
 
            temp = max(temp,temp2)
            if ( temp > dtmaxi) then
@@ -135,7 +135,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(in) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(in) :: eta
 
-  real(8),intent(out) :: dt
+  real(8),intent(inout) :: dt
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.
   real(8),intent(out) :: ch 

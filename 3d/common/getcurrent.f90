@@ -9,7 +9,7 @@ module getcurrent
 contains
 
 
-  subroutine getcurrent__cart(ix,jx,kx,bx,by,bz,dx,dy,dz &
+  subroutine getcurrent__cart(bx,by,bz,ix,jx,kx,dx,dy,dz &
                              ,curx,cury,curz)
 
   integer,intent(in) :: ix,jx,kx
