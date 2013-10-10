@@ -6,26 +6,21 @@ module const
   integer,parameter :: ix = 16+2*margin,jx=32+2*margin,kx=16+2*margin
 
   real(8),parameter :: cr=0.18d0
-
-! physical parameter
+  real(8),parameter :: floor= 1.d-6                 ! minimum value
   real(8),parameter :: pi= acos(-1.0d0)            ! circular constant
   real(8),parameter :: pi2=2.0d0*pi
-! real(8),parameter :: pi4=4.0d0*pi, hpi4=sqrt(pi4)
-  real(8),parameter :: gm=5.d0/3.d0                ! specific heat retio
-  real(8),parameter :: beta0=100.d0                ! pressure ratio or plasma beta
-
-  real(8),parameter :: floor= 1.d-6                 ! minimum value
 
 !--------------------------------------------------------------------------
 !  MPI
   integer,parameter :: mpisize_x=2
-  integer,parameter :: mpisize_y=4                  ! unimplement for mpi
+  integer,parameter :: mpisize_y=4                  
   integer,parameter :: mpisize_z=2
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)
   !TRUE if periodic boundary condition is applied. (1:x, 2:y, 3:z)
   logical,parameter :: pbcheck(3) = (/.false., .true., .false./) 
+
 !--------------------------------------------------------------------------
 !   time control parameters
 
@@ -35,25 +30,19 @@ module const
   real(8),parameter :: dtout = pi2/1.d1
   integer,parameter :: nstop = int(2.d6)       !number of total time steps for the run
 
-!  cooling switching     here モデル依存?
-  real(8),parameter :: swtch_t=62.8d0
+  real(8),parameter :: swtch_t=62.8d0    !  cooling switching 
 
   real(8),parameter :: safety=0.2d0
   real(8),parameter :: dtmin=1.d-10
+
 !--------------------------------------------------------------------------
-! real(8),parameter :: ~~~
-
-
-
 ! model parameter
 
   !  size 
-  real(8),parameter :: xmin = 0.0d0
-!  real(8),parameter :: xmax
+  real(8),parameter :: xmin = 0.0d0  
   real(8),parameter :: ymin = 0.0d0
   real(8),parameter :: ymax = pi2
   real(8),parameter :: zmin = 0.0d0  
-!  real(8),parameter :: zmax = 0.0d0  
 
   ! set uniform grid
   real(8),parameter :: dxg0 = 0.01d0
@@ -68,6 +57,9 @@ module const
   real(8),parameter :: ratio_z = 1.05d0     ! in case of uniform, ratio_z=1.0d0
   integer,parameter :: ugrid_zmax=44        ! in case of uniform, ugrid_zmax=0 
 
+! physical parameter
+  real(8),parameter :: gm=5.d0/3.d0                ! specific heat retio
+  real(8),parameter :: beta0=100.d0                ! pressure ratio or plasma beta
 
 !--cooling
   real(8),parameter :: velocity_c = 2.9979d0*(10.0d0**10)         !cgs

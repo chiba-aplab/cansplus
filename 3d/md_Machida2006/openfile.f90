@@ -21,7 +21,6 @@ module openfile
   integer,public :: mf_phi,mf_eta
 
   integer,public :: mfi_x,mfi_y,mfi_z ! coordianates
-  integer,public :: mfi_t ! time
 
   integer,public :: mfi_ro,mfi_pr       ! primitive variables
   integer,public :: mfi_vx,mfi_vy,mfi_vz !
@@ -188,6 +187,7 @@ contains
     call dacputparami(mf_params,'jgx',jgx)
     call dacputparami(mf_params,'kgx',kgx)
     call dacputparami(mf_params,'margin',margin)
+    call dacputparamd(mf_params,'dtout',dtout)
     call dacputparamd(mf_params,'tend',tend)
     call dacputparami(mf_params,'mpi',1)
     call dacputparami(mf_params,'mpisize',mpisize)

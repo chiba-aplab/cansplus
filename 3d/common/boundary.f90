@@ -987,15 +987,15 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
      do k=1,kx
         do j=1,jx
            do i=1,margin
-              ro(i,jx-j+1,k) = bufrcv_x(i,j,k,1)
-              pr(i,jx-j+1,k) = bufrcv_x(i,j,k,2)
-              vx(i,jx-j+1,k) = bufrcv_x(i,j,k,3)
-              vy(i,jx-j+1,k) = bufrcv_x(i,j,k,4)
-              vz(i,jx-j+1,k) = bufrcv_x(i,j,k,5)
-              bx(i,jx-j+1,k) = bufrcv_x(i,j,k,6)
-              by(i,jx-j+1,k) = bufrcv_x(i,j,k,7)
-              bz(i,jx-j+1,k) = bufrcv_x(i,j,k,8)
-              phi(i,jx-j+1,k) = bufrcv_x(i,j,k,9)
+              ro(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,1)
+              pr(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,2)
+              vx(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,3)
+              vy(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,4)
+              vz(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,5)
+              bx(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,6)
+              by(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,7)
+              bz(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,8)
+              phi(margin+1-i,jx-j+1,k) =  bufrcv_x(i,j,k,9)
            enddo
         enddo
      enddo

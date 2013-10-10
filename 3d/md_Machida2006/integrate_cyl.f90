@@ -84,8 +84,8 @@ contains
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
-  real(8) :: ratio   ! here -> const.f90
-  ratio=10000.0d0    ! here -> const.f90
+  real(8) :: ratio  
+  ratio=10000.0d0  
 
   cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
@@ -364,8 +364,8 @@ contains
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
-  real(8) :: ratio   ! here -> const.f90
-  ratio=10000.0d0    ! here -> const.f90
+  real(8) :: ratio   
+  ratio=10000.0d0   
 
   cp = sqrt(ch*cr)
   pi = acos(-1.0d0)

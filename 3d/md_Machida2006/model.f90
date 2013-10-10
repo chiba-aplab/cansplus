@@ -53,33 +53,14 @@ contains
   real(8),dimension(ix,jx,kx) :: gpot
   real(8),dimension(igx,jgx,kgx) :: gxg,gzg,gpotg
 
-!---Step 0.--------------------------------------------------------------|
-! set parameter
-!
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
 !
-
-!  do i=margin+1,2*margin
-!       dxg(i) = 4.0d0*dxg0
-!  enddo
-!
-!  do i=2*margin+1,2*margin+19
-!    dxg(i) = dxg0
-!  enddo
-
-
-!  here
-  do i=1,margin
-     dxg(margin+i)=4.0d0*dxg0
-  enddo
-
-!  do i=margin+2,margin+96
-  do i=margin*2+1,margin+ugrid_xmax
+     dxg(margin+1)=4.0d0*dxg0
+  do i=margin+2,margin+ugrid_xmax
      dxg(i) = dxg0
   enddo
 
-!  do i=margin+97,igx-margin
   do i=margin+1+ugrid_xmax,igx-margin
      dxg(i) = dxg(i-1)*ratio_x
      if(dxg(i) > dxmax) dxg(i)=dxmax
@@ -91,10 +72,10 @@ contains
      dxg(margin-i) = dxg(margin-i+1)
   enddo
 
-  izero = margin+1
-
 ! X origin
+  izero = margin+1
   xmg(izero) = xmin + dxg(izero)
+
   do i=izero,igx-1
      xmg(i+1) = xmg(i)+dxg(i+1)
   enddo
@@ -111,6 +92,7 @@ contains
      dyg(j) = dyg0
   enddo
 
+! Y origin
   jzero = margin+1
   ymg(jzero) = ymin+0.5d0*dyg(jzero)
 
@@ -132,7 +114,6 @@ contains
      dzg(k) = dzg0
   enddo
 
-!  do k=int(kgx/2)+45,kgx
   do k=int(kgx/2)+ugrid_zmax,kgx
      dzg(k) = dzg(k-1)*ratio_z
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
@@ -141,7 +122,6 @@ contains
      dzg(k)=dzg(kgx-margin)
   enddo
 
-!  do k=int(kgx/2)-44,margin,-1
   do k=int(kgx/2)-1-ugrid_zmax,margin,-1
      dzg(k) = dzg(k+1)*ratio_z
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
