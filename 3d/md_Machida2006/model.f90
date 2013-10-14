@@ -69,7 +69,7 @@ contains
      dxg(i)=dxg(igx-margin)
   enddo
   do i=0,margin-1
-     dxg(margin-i) = dxg(margin-i+1)
+     dxg(margin-i) = dxg(margin+i+1)
   enddo
 
 ! X origin
@@ -114,7 +114,7 @@ contains
      dzg(k) = dzg0
   enddo
 
-  do k=int(kgx/2)+ugrid_zmax,kgx
+  do k=int(kgx/2)+1+ugrid_zmax,kgx
      dzg(k) = dzg(k-1)*ratio_z
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
   enddo
@@ -122,7 +122,7 @@ contains
      dzg(k)=dzg(kgx-margin)
   enddo
 
-  do k=int(kgx/2)-1-ugrid_zmax,margin,-1
+  do k=int(kgx/2)-ugrid_zmax,margin,-1
      dzg(k) = dzg(k+1)*ratio_z
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
   end do
@@ -131,7 +131,7 @@ contains
   enddo
 
 ! Z origin
-  kzero = kgx/2
+  kzero = kgx/2+1
   zmg(kzero) = zmin + dzg(kzero)
 
   do k=kzero,kgx-1
@@ -142,11 +142,9 @@ contains
      zmg(k) = zmg(k+1)-dzg(k+1)
   enddo
 
-  do k=2,kgx
+  do k=1,kgx
      zg(k) = 0.5d0*(zmg(k)+zmg(k-1))
   enddo
-
-  zg(1) = 0.5d0*(zmg(1) + (zmg(1)-dzg0))
 
 !---Step 2a.-------------------------------------------------------------|
 ! set individual x-grid 
