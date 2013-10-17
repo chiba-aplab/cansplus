@@ -8,12 +8,13 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
   real(8),dimension(ix,jx,kx,2),intent(inout) :: row,prw,vxw,vyw,vzw
   real(8),dimension(ix,jx,kx,2),intent(inout) :: bxw,byw,bzw,phiw
 
+  integer :: i,j,k
   real(8) :: minvalue
 
-  do k=3,kx-2
-     do j=3,jx-2
-        do i=3,ix-2
-           if (mdir == 1)then
+  if (mdir == 1)then
+     do k=3,kx-2
+        do j=3,jx-2
+           do i=3,ix-2
               minvalue = min(row(i-1,j,k,2),row(i,j,k,1),prw(i-1,j,k,2),prw(i,j,k,1))
               if(minvalue <= 0d0)then
                  row(i-1,j,k,2) = ro(i,j,k)
@@ -35,7 +36,13 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
                  phiw(i-1,j,k,2) = phi(i,j,k)
                  phiw(i  ,j,k,1) = phi(i,j,k)
               endif
-           else if(mdir == 2)then
+           enddo
+        enddo
+     enddo
+  else if(mdir == 2)then
+     do k=3,kx-2
+        do j=3,jx-2
+           do i=3,ix-2
               minvalue = min(row(i,j-1,k,2),row(i,j,k,1),prw(i,j-1,k,2),prw(i,j,k,1))
               if(minvalue <= 0d0)then
                  row(i,j-1,k,2) = ro(i,j,k)
@@ -57,7 +64,13 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
                  phiw(i,j-1,k,2) = phi(i,j,k)
                  phiw(i,j  ,k,1) = phi(i,j,k)
               endif
-           else
+           enddo
+        enddo
+     enddo
+  else
+     do k=3,kx-2
+        do j=3,jx-2
+           do i=3,ix-2
               minvalue = min(row(i,j,k-1,2),row(i,j,k,1),prw(i,j,k-1,2),prw(i,j,k,1))
               if(minvalue <= 0d0)then
                  row(i,j,k-1,2) = ro(i,j,k)
@@ -79,10 +92,10 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
                  phiw(i,j,k-1,2) = phi(i,j,k)
                  phiw(i,j,k  ,1) = phi(i,j,k)
               endif
-           endif
+           enddo
         enddo
      enddo
-  enddo
+  endif
 
   return
 end subroutine MP5to1st
