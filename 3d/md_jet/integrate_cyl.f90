@@ -73,7 +73,6 @@ contains
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,hdt
   real(8) :: inversex             !1/x
-  real(8) :: pi,hpi4,inhpi4
   real(8) :: te
   real(8) :: ratio   ! here -> const.f90
   real(8),dimension(ix,jx,kx) :: eta
@@ -84,9 +83,6 @@ contains
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
   cp = sqrt(ch*cr)
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
@@ -118,10 +114,8 @@ contains
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
+  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
  
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -146,10 +140,8 @@ contains
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
+  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -175,10 +167,8 @@ contains
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
+  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
@@ -351,7 +341,6 @@ contains
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
-  real(8) :: pi,hpi4,inhpi4
   real(8) :: te
   real(8) :: ratio   ! here -> const.f90
   real(8),dimension(ix,jx,kx) :: eta
@@ -362,9 +351,6 @@ contains
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
   cp = sqrt(ch*cr)
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
@@ -396,10 +382,8 @@ contains
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
+  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
  
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -424,10 +408,8 @@ contains
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
 
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
+  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -453,10 +435,8 @@ contains
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
-  call MP5toMC2(ix,jx,kx,x,dx,y,dy,z,dz &
-       ,ro,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw &
-       ,mdir,floor,ratio,xin)
+  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
+       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)

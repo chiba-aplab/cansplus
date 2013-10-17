@@ -297,51 +297,6 @@ contains
                  enddo
               enddo
 
-              qql(1) = max(min(ro(i,j,k),ro(i-1,j,k)),qql(1))
-              qql(1) = min(max(ro(i,j,k),ro(i-1,j,k)),qql(1))
-              qqr(1) = max(min(ro(i,j,k),ro(i+1,j,k)),qqr(1))
-              qqr(1) = min(max(ro(i,j,k),ro(i+1,j,k)),qqr(1))
-              
-              qql(2) = max(min(vx(i,j,k),vx(i-1,j,k)),qql(2))
-              qql(2) = min(max(vx(i,j,k),vx(i-1,j,k)),qql(2))
-              qqr(2) = max(min(vx(i,j,k),vx(i+1,j,k)),qqr(2))
-              qqr(2) = min(max(vx(i,j,k),vx(i+1,j,k)),qqr(2))
-              
-              qql(3) = max(min(vy(i,j,k),vy(i-1,j,k)),qql(3))
-              qql(3) = min(max(vy(i,j,k),vy(i-1,j,k)),qql(3))
-              qqr(3) = max(min(vy(i,j,k),vy(i+1,j,k)),qqr(3))
-              qqr(3) = min(max(vy(i,j,k),vy(i+1,j,k)),qqr(3))
-              
-              qql(4) = max(min(vz(i,j,k),vz(i-1,j,k)),qql(4))
-              qql(4) = min(max(vz(i,j,k),vz(i-1,j,k)),qql(4))
-              qqr(4) = max(min(vz(i,j,k),vz(i+1,j,k)),qqr(4))
-              qqr(4) = min(max(vz(i,j,k),vz(i+1,j,k)),qqr(4))
-              
-              qql(5) = max(min(pr(i,j,k),pr(i-1,j,k)),qql(5))
-              qql(5) = min(max(pr(i,j,k),pr(i-1,j,k)),qql(5))
-              qqr(5) = max(min(pr(i,j,k),pr(i+1,j,k)),qqr(5))
-              qqr(5) = min(max(pr(i,j,k),pr(i+1,j,k)),qqr(5))
-              
-              qql(6) = max(min(bx(i,j,k),bx(i-1,j,k)),qql(6))
-              qql(6) = min(max(bx(i,j,k),bx(i-1,j,k)),qql(6))
-              qqr(6) = max(min(bx(i,j,k),bx(i+1,j,k)),qqr(6))
-              qqr(6) = min(max(bx(i,j,k),bx(i+1,j,k)),qqr(6))
-              
-              qql(7) = max(min(by(i,j,k),by(i-1,j,k)),qql(7))
-              qql(7) = min(max(by(i,j,k),by(i-1,j,k)),qql(7))
-              qqr(7) = max(min(by(i,j,k),by(i+1,j,k)),qqr(7))
-              qqr(7) = min(max(by(i,j,k),by(i+1,j,k)),qqr(7))
-              
-              qql(8) = max(min(bz(i,j,k),bz(i-1,j,k)),qql(8))
-              qql(8) = min(max(bz(i,j,k),bz(i-1,j,k)),qql(8))
-              qqr(8) = max(min(bz(i,j,k),bz(i+1,j,k)),qqr(8))
-              qqr(8) = min(max(bz(i,j,k),bz(i+1,j,k)),qqr(8))
-              
-              qql(9) = max(min(phi(i,j,k),phi(i-1,j,k)),qql(9))
-              qql(9) = min(max(phi(i,j,k),phi(i-1,j,k)),qql(9))
-              qqr(9) = max(min(phi(i,j,k),phi(i+1,j,k)),qqr(9))
-              qqr(9) = min(max(phi(i,j,k),phi(i+1,j,k)),qqr(9))
-              
               row(i-1,j,k,2) = qql(1)
               row(i,j,k,1) = qqr(1)
               
@@ -473,51 +428,6 @@ contains
                  enddo
               enddo
 
-              qql(1) = max(min(ro(i,j,k),ro(i,j-1,k)),qql(1))
-              qql(1) = min(max(ro(i,j,k),ro(i,j-1,k)),qql(1))
-              qqr(1) = max(min(ro(i,j,k),ro(i,j+1,k)),qqr(1))
-              qqr(1) = min(max(ro(i,j,k),ro(i,j+1,k)),qqr(1))
-              
-              qql(2) = max(min(vx(i,j,k),vx(i,j-1,k)),qql(2))
-              qql(2) = min(max(vx(i,j,k),vx(i,j-1,k)),qql(2))
-              qqr(2) = max(min(vx(i,j,k),vx(i,j+1,k)),qqr(2))
-              qqr(2) = min(max(vx(i,j,k),vx(i,j+1,k)),qqr(2))
-              
-              qql(3) = max(min(vy(i,j,k),vy(i,j-1,k)),qql(3))
-              qql(3) = min(max(vy(i,j,k),vy(i,j-1,k)),qql(3))
-              qqr(3) = max(min(vy(i,j,k),vy(i,j+1,k)),qqr(3))
-              qqr(3) = min(max(vy(i,j,k),vy(i,j+1,k)),qqr(3))
-              
-              qql(4) = max(min(vz(i,j,k),vz(i,j-1,k)),qql(4))
-              qql(4) = min(max(vz(i,j,k),vz(i,j-1,k)),qql(4))
-              qqr(4) = max(min(vz(i,j,k),vz(i,j+1,k)),qqr(4))
-              qqr(4) = min(max(vz(i,j,k),vz(i,j+1,k)),qqr(4))
-              
-              qql(5) = max(min(pr(i,j,k),pr(i,j-1,k)),qql(5))
-              qql(5) = min(max(pr(i,j,k),pr(i,j-1,k)),qql(5))
-              qqr(5) = max(min(pr(i,j,k),pr(i,j+1,k)),qqr(5))
-              qqr(5) = min(max(pr(i,j,k),pr(i,j+1,k)),qqr(5))
-              
-              qql(6) = max(min(bx(i,j,k),bx(i,j-1,k)),qql(6))
-              qql(6) = min(max(bx(i,j,k),bx(i,j-1,k)),qql(6))
-              qqr(6) = max(min(bx(i,j,k),bx(i,j+1,k)),qqr(6))
-              qqr(6) = min(max(bx(i,j,k),bx(i,j+1,k)),qqr(6))
-              
-              qql(7) = max(min(by(i,j,k),by(i,j-1,k)),qql(7))
-              qql(7) = min(max(by(i,j,k),by(i,j-1,k)),qql(7))
-              qqr(7) = max(min(by(i,j,k),by(i,j+1,k)),qqr(7))
-              qqr(7) = min(max(by(i,j,k),by(i,j+1,k)),qqr(7))
-              
-              qql(8) = max(min(bz(i,j,k),bz(i,j-1,k)),qql(8))
-              qql(8) = min(max(bz(i,j,k),bz(i,j-1,k)),qql(8))
-              qqr(8) = max(min(bz(i,j,k),bz(i,j+1,k)),qqr(8))
-              qqr(8) = min(max(bz(i,j,k),bz(i,j+1,k)),qqr(8))
-              
-              qql(9) = max(min(phi(i,j,k),phi(i,j-1,k)),qql(9))
-              qql(9) = min(max(phi(i,j,k),phi(i,j-1,k)),qql(9))
-              qqr(9) = max(min(phi(i,j,k),phi(i,j+1,k)),qqr(9))
-              qqr(9) = min(max(phi(i,j,k),phi(i,j+1,k)),qqr(9))
-              
               row(i,j-1,k,2) = qql(1)
               row(i,j,k,1) = qqr(1)
               
@@ -648,51 +558,6 @@ contains
                  enddo
               enddo
 
-              qql(1) = max(min(ro(i,j,k),ro(i,j,k-1)),qql(1))
-              qql(1) = min(max(ro(i,j,k),ro(i,j,k-1)),qql(1))
-              qqr(1) = max(min(ro(i,j,k),ro(i,j,k+1)),qqr(1))
-              qqr(1) = min(max(ro(i,j,k),ro(i,j,k+1)),qqr(1))
-              
-              qql(2) = max(min(vx(i,j,k),vx(i,j,k-1)),qql(2))
-              qql(2) = min(max(vx(i,j,k),vx(i,j,k-1)),qql(2))
-              qqr(2) = max(min(vx(i,j,k),vx(i,j,k+1)),qqr(2))
-              qqr(2) = min(max(vx(i,j,k),vx(i,j,k+1)),qqr(2))
-              
-              qql(3) = max(min(vy(i,j,k),vy(i,j,k-1)),qql(3))
-              qql(3) = min(max(vy(i,j,k),vy(i,j,k-1)),qql(3))
-              qqr(3) = max(min(vy(i,j,k),vy(i,j,k+1)),qqr(3))
-              qqr(3) = min(max(vy(i,j,k),vy(i,j,k+1)),qqr(3))
-              
-              qql(4) = max(min(vz(i,j,k),vz(i,j,k-1)),qql(4))
-              qql(4) = min(max(vz(i,j,k),vz(i,j,k-1)),qql(4))
-              qqr(4) = max(min(vz(i,j,k),vz(i,j,k+1)),qqr(4))
-              qqr(4) = min(max(vz(i,j,k),vz(i,j,k+1)),qqr(4))
-              
-              qql(5) = max(min(pr(i,j,k),pr(i,j,k-1)),qql(5))
-              qql(5) = min(max(pr(i,j,k),pr(i,j,k-1)),qql(5))
-              qqr(5) = max(min(pr(i,j,k),pr(i,j,k+1)),qqr(5))
-              qqr(5) = min(max(pr(i,j,k),pr(i,j,k+1)),qqr(5))
-              
-              qql(6) = max(min(bx(i,j,k),bx(i,j,k-1)),qql(6))
-              qql(6) = min(max(bx(i,j,k),bx(i,j,k-1)),qql(6))
-              qqr(6) = max(min(bx(i,j,k),bx(i,j,k+1)),qqr(6))
-              qqr(6) = min(max(bx(i,j,k),bx(i,j,k+1)),qqr(6))
-              
-              qql(7) = max(min(by(i,j,k),by(i,j,k-1)),qql(7))
-              qql(7) = min(max(by(i,j,k),by(i,j,k-1)),qql(7))
-              qqr(7) = max(min(by(i,j,k),by(i,j,k+1)),qqr(7))
-              qqr(7) = min(max(by(i,j,k),by(i,j,k+1)),qqr(7))
-              
-              qql(8) = max(min(bz(i,j,k),bz(i,j,k-1)),qql(8))
-              qql(8) = min(max(bz(i,j,k),bz(i,j,k-1)),qql(8))
-              qqr(8) = max(min(bz(i,j,k),bz(i,j,k+1)),qqr(8))
-              qqr(8) = min(max(bz(i,j,k),bz(i,j,k+1)),qqr(8))
-              
-              qql(9) = max(min(phi(i,j,k),phi(i,j,k-1)),qql(9))
-              qql(9) = min(max(phi(i,j,k),phi(i,j,k-1)),qql(9))
-              qqr(9) = max(min(phi(i,j,k),phi(i,j,k+1)),qqr(9))
-              qqr(9) = min(max(phi(i,j,k),phi(i,j,k+1)),qqr(9))
-              
               row(i,j,k-1,2) = qql(1)
               row(i,j,k,1) = qqr(1)
               

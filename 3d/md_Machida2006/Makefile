@@ -3,6 +3,7 @@ include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = a.out
 OBJS =  getEta2.o openfile.o const.o model.o init.o \
 	integrate_cyl.o\
+	MP5to1st.o \
 	switch_MP5toMC2.o switch_MP5toMC2_2.o MP5toMC2.o MP5toMC2_2.o \
 	bnd.o main.o 
 
