@@ -240,7 +240,7 @@ contains
                  
                  dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
-                 
+
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
                  qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
                  
@@ -686,7 +686,7 @@ contains
   sfs = sign(0.5d0,cf2_cs2-eps) + 0.5d0
   sas = sign(0.5d0,asq-cssq) + 0.5d0
   saf = sign(0.5d0,asq-cfsq) + 0.5d0
-  ifs = 1.0d0/cf2_cs2
+  ifs = 1.0d0/(cf2_cs2+1.0d0-sfs)
 
   alpha_f = (1.0d0-sfs) + sfs*((1.0d0-saf)*sqrt(max(asq-cssq,0d0)*ifs) + saf)
   alpha_s =               sfs*(sas*sqrt(max(cfsq-asq,0d0)*ifs) + (1.0d0-sas))
