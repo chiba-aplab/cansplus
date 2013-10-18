@@ -16,8 +16,8 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
         do j=3,jx-2
            do i=3,ix-2
               minvalue = min(row(i-1,j,k,2),row(i,j,k,1),prw(i-1,j,k,2),prw(i,j,k,1))
-              smv = max(sign(1.0d0,minvalue))
-              msmv = 1.0d0-sminv
+              smv = sign(0.5d0,minvalue)+0.5
+              msmv = 1.0d0-smv
 
               row(i-1,j,k,2) = row(i-1,j,k,2)*smv + ro(i,j,k)*msmv
               row(i  ,j,k,1) = row(i  ,j,k,1)*smv + ro(i,j,k)*msmv
@@ -45,8 +45,8 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
         do j=3,jx-2
            do i=3,ix-2
               minvalue = min(row(i,j-1,k,2),row(i,j,k,1),prw(i,j-1,k,2),prw(i,j,k,1))
-              smv = max(sign(1.0d0,minvalue))
-              msmv = 1.0d0-sminv
+              smv = sign(0.5d0,minvalue)+0.5d0
+              msmv = 1.0d0-smv
 
               row(i,j-1,k,2) = row(i,j-1,k,2)*smv + ro(i,j,k)*msmv
               row(i,j  ,k,1) = row(i,j  ,k,1)*smv + ro(i,j,k)*msmv
@@ -74,8 +74,8 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
         do j=3,jx-2
            do i=3,ix-2
               minvalue = min(row(i,j,k-1,2),row(i,j,k,1),prw(i,j,k-1,2),prw(i,j,k,1))
-              smv = max(sign(1.0d0,minvalue))
-              msmv = 1.0d0-sminv
+              smv = sign(0.5d0,minvalue)+0.5d0
+              msmv = 1.0d0-smv
 
               row(i,j,k-1,2) = row(i,j,k-1,2)*smv + ro(i,j,k)*msmv
               row(i,j,k  ,1) = row(i,j,k  ,1)*smv + ro(i,j,k)*msmv
