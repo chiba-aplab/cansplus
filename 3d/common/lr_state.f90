@@ -668,7 +668,7 @@ contains
   cf2_cs2 = sqrt(tdif**2 + 4.0d0*asq*ct2)
   cfsq = 0.5d0*(tsum + cf2_cs2)
   cf = sqrt(cfsq)
-  cssq = 0.5d0*(tsum - cf2_cs2)
+  cssq = asq*vaxsq/cfsq
   cs = sqrt(cssq)
 
 ! compute beta
