@@ -650,6 +650,7 @@ contains
   real(8) :: ct2,tsum,tdif,cf2_cs2
   real(8) :: cfsq,cf,cssq,cs
   real(8) :: bt,ibt,sbt,isq2,bet2,bet3
+  real(8) :: sfs,sas,saf,eps,ifs
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
   real(8) :: sqrtro,s,a,af,as
