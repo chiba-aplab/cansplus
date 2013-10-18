@@ -649,7 +649,7 @@ contains
   real(8) :: roi,btsq,vaxsq,asq
   real(8) :: ct2,tsum,tdif,cf2_cs2
   real(8) :: cfsq,cf,cssq,cs
-  real(8) :: bt,bet2,bet3
+  real(8) :: bt,ibt,sbt,isq2,bet2,bet3
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
   real(8) :: sqrtro,s,a,af,as
@@ -667,33 +667,28 @@ contains
   cf2_cs2 = sqrt(tdif**2 + 4.0d0*asq*ct2)
   cfsq = 0.5d0*(tsum + cf2_cs2)
   cf = sqrt(cfsq)
-  cssq = asq*vaxsq/cfsq
+  cssq = 0.5d0*(tsum - cf2_cs2)
   cs = sqrt(cssq)
 
 ! compute beta
+  
   bt = sqrt(btsq)
-  if ( bt == 0.0d0) then
-     bet2 = 1.0d0/sqrt(2.0d0)
-     bet3 = 1.0d0/sqrt(2.0d0)
-  else
-     bet2 = by/bt
-     bet3 = bz/bt
-  endif
+  isq2 = 1.0d0/sqrt(2.0d0)
+  eps = 1d-40
+  sbt = sign(0.5d0,bt-eps)+0.5d0
+  ibt = sbt/(bt+1d0-sbt)
 
+  bet2 = (1.0d0-sbt)*isq2 + by*ibt
+  bet3 = (1.0d0-sbt)*isq2 + bz*ibt
+  
 ! compute alpha
-  if(cf2_cs2 == 0.0d0) then
-     alpha_f = 1.0d0
-     alpha_s = 0.0d0
-  else if ((asq -cssq) <= 0.0d0)then
-     alpha_f = 0.0d0
-     alpha_s = 1.0d0
-  else if ((cfsq - asq) <= 0.0d0)then
-     alpha_f = 1.0d0
-     alpha_s = 0.0d0
-  else
-     alpha_f = sqrt((asq -cssq)/cf2_cs2)
-     alpha_s = sqrt((cfsq -asq)/cf2_cs2)
-  endif
+  sfs = sign(0.5d0,cf2_cs2-eps) + 0.5d0
+  sas = sign(0.5d0,asq-cssq) + 0.5d0
+  saf = sign(0.5d0,asq-cfsq) + 0.5d0
+  ifs = 1.0d0/cf2_cs2
+
+  alpha_f = (1.0d0-sfs) + sfs*((1.0d0-saf)*sqrt(max(asq-cssq,0d0)*ifs) + saf)
+  alpha_s =               sfs*(sas*sqrt(max(cfsq-asq,0d0)*ifs) + (1.0d0-sas))
 
 ! compute Q(s),A(s)
   sqrtro = sqrt(ro)

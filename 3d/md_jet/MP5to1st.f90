@@ -9,33 +9,34 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
   real(8),dimension(ix,jx,kx,2),intent(inout) :: bxw,byw,bzw,phiw
 
   integer :: i,j,k
-  real(8) :: minvalue
+  real(8) :: minvalue,smv,msmv
 
   if (mdir == 1)then
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
               minvalue = min(row(i-1,j,k,2),row(i,j,k,1),prw(i-1,j,k,2),prw(i,j,k,1))
-              if(minvalue <= 0d0)then
-                 row(i-1,j,k,2) = ro(i,j,k)
-                 row(i  ,j,k,1) = ro(i,j,k)
-                 prw(i-1,j,k,2) = pr(i,j,k)
-                 prw(i  ,j,k,1) = pr(i,j,k)
-                 vxw(i-1,j,k,2) = vx(i,j,k)
-                 vxw(i  ,j,k,1) = vx(i,j,k)
-                 vyw(i-1,j,k,2) = vy(i,j,k)
-                 vyw(i  ,j,k,1) = vy(i,j,k)
-                 vzw(i-1,j,k,2) = vz(i,j,k)
-                 vzw(i  ,j,k,1) = vz(i,j,k)
-                 bxw(i-1,j,k,2) = bx(i,j,k)
-                 bxw(i  ,j,k,1) = bx(i,j,k)
-                 byw(i-1,j,k,2) = by(i,j,k)
-                 byw(i  ,j,k,1) = by(i,j,k)
-                 bzw(i-1,j,k,2) = bz(i,j,k)
-                 bzw(i  ,j,k,1) = bz(i,j,k)
-                 phiw(i-1,j,k,2) = phi(i,j,k)
-                 phiw(i  ,j,k,1) = phi(i,j,k)
-              endif
+              smv = max(sign(1.0d0,minvalue))
+              msmv = 1.0d0-sminv
+
+              row(i-1,j,k,2) = row(i-1,j,k,2)*smv + ro(i,j,k)*msmv
+              row(i  ,j,k,1) = row(i  ,j,k,1)*smv + ro(i,j,k)*msmv
+              prw(i-1,j,k,2) = prw(i-1,j,k,2)*smv + pr(i,j,k)*msmv
+              prw(i  ,j,k,1) = prw(i  ,j,k,1)*smv + pr(i,j,k)*msmv
+              vxw(i-1,j,k,2) = vxw(i-1,j,k,2)*smv + vx(i,j,k)*msmv
+              vxw(i  ,j,k,1) = vxw(i  ,j,k,1)*smv + vx(i,j,k)*msmv
+              vyw(i-1,j,k,2) = vyw(i-1,j,k,2)*smv + vy(i,j,k)*msmv
+              vyw(i  ,j,k,1) = vyw(i  ,j,k,1)*smv + vy(i,j,k)*msmv
+              vzw(i-1,j,k,2) = vzw(i-1,j,k,2)*smv + vz(i,j,k)*msmv
+              vzw(i  ,j,k,1) = vzw(i  ,j,k,1)*smv + vz(i,j,k)*msmv
+              bxw(i-1,j,k,2) = bxw(i-1,j,k,2)*smv + bx(i,j,k)*msmv
+              bxw(i  ,j,k,1) = bxw(i  ,j,k,1)*smv + bx(i,j,k)*msmv
+              byw(i-1,j,k,2) = byw(i-1,j,k,2)*smv + by(i,j,k)*msmv
+              byw(i  ,j,k,1) = byw(i  ,j,k,1)*smv + by(i,j,k)*msmv
+              bzw(i-1,j,k,2) = bzw(i-1,j,k,2)*smv + bz(i,j,k)*msmv
+              bzw(i  ,j,k,1) = bzw(i  ,j,k,1)*smv + bz(i,j,k)*msmv
+              phiw(i-1,j,k,2) = phiw(i-1,j,k,2)*smv + phi(i,j,k)*msmv
+              phiw(i  ,j,k,1) = phiw(i  ,j,k,1)*smv + phi(i,j,k)*msmv
            enddo
         enddo
      enddo
@@ -44,26 +45,27 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
         do j=3,jx-2
            do i=3,ix-2
               minvalue = min(row(i,j-1,k,2),row(i,j,k,1),prw(i,j-1,k,2),prw(i,j,k,1))
-              if(minvalue <= 0d0)then
-                 row(i,j-1,k,2) = ro(i,j,k)
-                 row(i,j  ,k,1) = ro(i,j,k)
-                 prw(i,j-1,k,2) = pr(i,j,k)
-                 prw(i,j  ,k,1) = pr(i,j,k)
-                 vxw(i,j-1,k,2) = vx(i,j,k)
-                 vxw(i,j  ,k,1) = vx(i,j,k)
-                 vyw(i,j-1,k,2) = vy(i,j,k)
-                 vyw(i,j  ,k,1) = vy(i,j,k)
-                 vzw(i,j-1,k,2) = vz(i,j,k)
-                 vzw(i,j  ,k,1) = vz(i,j,k)
-                 bxw(i,j-1,k,2) = bx(i,j,k)
-                 bxw(i,j  ,k,1) = bx(i,j,k)
-                 byw(i,j-1,k,2) = by(i,j,k)
-                 byw(i,j  ,k,1) = by(i,j,k)
-                 bzw(i,j-1,k,2) = bz(i,j,k)
-                 bzw(i,j  ,k,1) = bz(i,j,k)
-                 phiw(i,j-1,k,2) = phi(i,j,k)
-                 phiw(i,j  ,k,1) = phi(i,j,k)
-              endif
+              smv = max(sign(1.0d0,minvalue))
+              msmv = 1.0d0-sminv
+
+              row(i,j-1,k,2) = row(i,j-1,k,2)*smv + ro(i,j,k)*msmv
+              row(i,j  ,k,1) = row(i,j  ,k,1)*smv + ro(i,j,k)*msmv
+              prw(i,j-1,k,2) = prw(i,j-1,k,2)*smv + pr(i,j,k)*msmv
+              prw(i,j  ,k,1) = prw(i,j  ,k,1)*smv + pr(i,j,k)*msmv
+              vxw(i,j-1,k,2) = vxw(i,j-1,k,2)*smv + vx(i,j,k)*msmv
+              vxw(i,j  ,k,1) = vxw(i,j  ,k,1)*smv + vx(i,j,k)*msmv
+              vyw(i,j-1,k,2) = vyw(i,j-1,k,2)*smv + vy(i,j,k)*msmv
+              vyw(i,j  ,k,1) = vyw(i,j  ,k,1)*smv + vy(i,j,k)*msmv
+              vzw(i,j-1,k,2) = vzw(i,j-1,k,2)*smv + vz(i,j,k)*msmv
+              vzw(i,j  ,k,1) = vzw(i,j  ,k,1)*smv + vz(i,j,k)*msmv
+              bxw(i,j-1,k,2) = bxw(i,j-1,k,2)*smv + bx(i,j,k)*msmv
+              bxw(i,j  ,k,1) = bxw(i,j  ,k,1)*smv + bx(i,j,k)*msmv
+              byw(i,j-1,k,2) = byw(i,j-1,k,2)*smv + by(i,j,k)*msmv
+              byw(i,j  ,k,1) = byw(i,j  ,k,1)*smv + by(i,j,k)*msmv
+              bzw(i,j-1,k,2) = bzw(i,j-1,k,2)*smv + bz(i,j,k)*msmv
+              bzw(i,j  ,k,1) = bzw(i,j  ,k,1)*smv + bz(i,j,k)*msmv
+              phiw(i,j-1,k,2) = phiw(i,j-1,k,2)*smv + phi(i,j,k)*msmv
+              phiw(i,j  ,k,1) = phiw(i,j  ,k,1)*smv + phi(i,j,k)*msmv
            enddo
         enddo
      enddo
@@ -72,26 +74,27 @@ subroutine MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
         do j=3,jx-2
            do i=3,ix-2
               minvalue = min(row(i,j,k-1,2),row(i,j,k,1),prw(i,j,k-1,2),prw(i,j,k,1))
-              if(minvalue <= 0d0)then
-                 row(i,j,k-1,2) = ro(i,j,k)
-                 row(i,j,k  ,1) = ro(i,j,k)
-                 prw(i,j,k-1,2) = pr(i,j,k)
-                 prw(i,j,k  ,1) = pr(i,j,k)
-                 vxw(i,j,k-1,2) = vx(i,j,k)
-                 vxw(i,j,k  ,1) = vx(i,j,k)
-                 vyw(i,j,k-1,2) = vy(i,j,k)
-                 vyw(i,j,k  ,1) = vy(i,j,k)
-                 vzw(i,j,k-1,2) = vz(i,j,k)
-                 vzw(i,j,k  ,1) = vz(i,j,k)
-                 bxw(i,j,k-1,2) = bx(i,j,k)
-                 bxw(i,j,k  ,1) = bx(i,j,k)
-                 byw(i,j,k-1,2) = by(i,j,k)
-                 byw(i,j,k  ,1) = by(i,j,k)
-                 bzw(i,j,k-1,2) = bz(i,j,k)
-                 bzw(i,j,k  ,1) = bz(i,j,k)
-                 phiw(i,j,k-1,2) = phi(i,j,k)
-                 phiw(i,j,k  ,1) = phi(i,j,k)
-              endif
+              smv = max(sign(1.0d0,minvalue))
+              msmv = 1.0d0-sminv
+
+              row(i,j,k-1,2) = row(i,j,k-1,2)*smv + ro(i,j,k)*msmv
+              row(i,j,k  ,1) = row(i,j,k  ,1)*smv + ro(i,j,k)*msmv
+              prw(i,j,k-1,2) = prw(i,j,k-1,2)*smv + pr(i,j,k)*msmv
+              prw(i,j,k  ,1) = prw(i,j,k  ,1)*smv + pr(i,j,k)*msmv
+              vxw(i,j,k-1,2) = vxw(i,j,k-1,2)*smv + vx(i,j,k)*msmv
+              vxw(i,j,k  ,1) = vxw(i,j,k  ,1)*smv + vx(i,j,k)*msmv
+              vyw(i,j,k-1,2) = vyw(i,j,k-1,2)*smv + vy(i,j,k)*msmv
+              vyw(i,j,k  ,1) = vyw(i,j,k  ,1)*smv + vy(i,j,k)*msmv
+              vzw(i,j,k-1,2) = vzw(i,j,k-1,2)*smv + vz(i,j,k)*msmv
+              vzw(i,j,k  ,1) = vzw(i,j,k  ,1)*smv + vz(i,j,k)*msmv
+              bxw(i,j,k-1,2) = bxw(i,j,k-1,2)*smv + bx(i,j,k)*msmv
+              bxw(i,j,k  ,1) = bxw(i,j,k  ,1)*smv + bx(i,j,k)*msmv
+              byw(i,j,k-1,2) = byw(i,j,k-1,2)*smv + by(i,j,k)*msmv
+              byw(i,j,k  ,1) = byw(i,j,k  ,1)*smv + by(i,j,k)*msmv
+              bzw(i,j,k-1,2) = bzw(i,j,k-1,2)*smv + bz(i,j,k)*msmv
+              bzw(i,j,k  ,1) = bzw(i,j,k  ,1)*smv + bz(i,j,k)*msmv
+              phiw(i,j,k-1,2) = phiw(i,j,k-1,2)*smv + phi(i,j,k)*msmv
+              phiw(i,j,k  ,1) = phiw(i,j,k  ,1)*smv + phi(i,j,k)*msmv
            enddo
         enddo
      enddo
