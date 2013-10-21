@@ -14,7 +14,7 @@ module const
   real(8),parameter :: eta0 = 4.0d0*pi*1d-4, vc = 0.2d0
 
   real(8),parameter :: floor = 1d-6 ! minimum value
-  real(8),parameter :: safety = 0.3d0 ! CFL number
+  real(8),parameter :: safety = 0.2d0 ! CFL number
   real(8),parameter :: limit=0d0, ratio=1d4
 
 

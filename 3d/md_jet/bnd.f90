@@ -33,6 +33,9 @@ contains
     call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
 
 !======================================================================
+    call boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+
+!======================================================================
 ! inner x-boundary
     if(mpid%l == mnull)then
        call bd_synpx(0,margin,ro,ix,jx,kx)

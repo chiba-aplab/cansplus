@@ -649,8 +649,8 @@ contains
   real(8) :: roi,btsq,vaxsq,asq
   real(8) :: ct2,tsum,tdif,cf2_cs2
   real(8) :: cfsq,cf,cssq,cs
-  real(8) :: bt,ibt,sbt,isq2,bet2,bet3
-  real(8) :: sfs,sas,saf,eps,ifs
+  real(8) :: bt,ibt,sbt,psbt,msbt,isq2,bet2,bet3
+  real(8) :: sfs,psfs,msfs,sas,saf,eps,ifs
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
   real(8) :: sqrtro,s,a,af,as
@@ -676,20 +676,24 @@ contains
   bt = sqrt(btsq)
   isq2 = 1.0d0/sqrt(2.0d0)
   eps = 1d-40
-  sbt = sign(0.5d0,bt-eps)+0.5d0
-  ibt = sbt/(bt+1d0-sbt)
+  sbt = sign(1d0,bt-eps)
+  psbt = max(0d0,sbt)
+  msbt = max(0d0,-sbt)
+  ibt = psbt/(bt+msbt)
 
-  bet2 = (1.0d0-sbt)*isq2 + by*ibt
-  bet3 = (1.0d0-sbt)*isq2 + bz*ibt
+  bet2 = msbt*isq2 + by*ibt
+  bet3 = msbt*isq2 + bz*ibt
   
 ! compute alpha
-  sfs = sign(0.5d0,cf2_cs2-eps) + 0.5d0
-  sas = sign(0.5d0,asq-cssq) + 0.5d0
-  saf = sign(0.5d0,asq-cfsq) + 0.5d0
-  ifs = 1.0d0/(cf2_cs2+1.0d0-sfs)
+  sfs = sign(1d0,cf2_cs2-eps)
+  psfs = max(0d0,sfs)
+  msfs = max(0d0,-sfs)
+  sas = max(0d0,sign(1d0,asq-cssq))
+  saf = max(0d0,sign(1d0,asq-cfsq))
+  ifs = 1.0d0/(cf2_cs2+msfs)
 
-  alpha_f = (1.0d0-sfs) + sfs*((1.0d0-saf)*sqrt(max(asq-cssq,0d0)*ifs) + saf)
-  alpha_s =               sfs*(sas*sqrt(max(cfsq-asq,0d0)*ifs) + (1.0d0-sas))
+  alpha_f = msfs + psfs*((1.0d0-saf)*sqrt(max(asq-cssq,0d0)*ifs) + saf)
+  alpha_s =        psfs*(sas*sqrt(max(cfsq-asq,0d0)*ifs) + (1.0d0-sas))
 
 ! compute Q(s),A(s)
   sqrtro = sqrt(ro)
