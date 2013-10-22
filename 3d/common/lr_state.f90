@@ -227,6 +227,15 @@ contains
                     enddo
                  enddo
               end do
+!              !FOR CHECKING PtoCtoP
+!              do n=1,nwave
+!                 qqr(n) = wwc(1,3)*rem(n,1)
+!                 do m=2,nwave
+!                    qqr(n) = qqr(n)+wwc(m,3)*rem(n,m)
+!                 enddo
+!              enddo
+!              write(*,'(a,9e11.2)')'before',ww(1:n,3)
+!              write(*,'(a,9e11.2)')'after',qqr(1:n)
               
               ! left state
               ! mp5
@@ -653,9 +662,10 @@ contains
   real(8) :: sfs,psfs,msfs,sas,saf,eps,ifs
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
-  real(8) :: sqrtro,s,a,af,as
+  real(8) :: sqrtro,s,a,af,as,sqrt2i
   real(8) :: temp,ich
 
+  sqrt2i = 1.D0/sqrt(2.D0)
   roi = 1.0d0/ro
   btsq = by**2+bz**2
   vaxsq = (bx**2)*roi
@@ -727,22 +737,22 @@ contains
   rem(2,9) = 0.0d0
 
   rem(3,1) = qs*bet2
-  rem(3,2) = -bet3
+  rem(3,2) = -bet3*sqrt2i
   rem(3,3) = -qf*bet2
   rem(3,4) = 0.0d0
   rem(3,5) = -rem(3,3)
   rem(3,6) = 0.0d0
-  rem(3,7) = bet3
+  rem(3,7) = rem(3,2)
   rem(3,8) = -rem(3,1)
   rem(3,9) = 0.0d0
 
   rem(4,1) = qs*bet3
-  rem(4,2) = bet2
+  rem(4,2) = bet2*sqrt2i
   rem(4,3) = -qf*bet3
   rem(4,4) = 0.0d0
   rem(4,5) = -rem(4,3)
   rem(4,6) = 0.0d0
-  rem(4,7) = -bet2
+  rem(4,7) = rem(4,2)
   rem(4,8) = -rem(4,1)
   rem(4,9) = 0.0d0
 
@@ -767,22 +777,22 @@ contains
   rem(6,9) = 1.0d0
 
   rem(7,1) = as*bet2
-  rem(7,2) = -bet3*s*sqrtro
+  rem(7,2) = -bet3*sqrt2i*sqrtro
   rem(7,3) = -af*bet2
   rem(7,4) = 0.0d0
   rem(7,5) = rem(7,3)
   rem(7,6) = 0.0d0
-  rem(7,7) = rem(7,2) 
+  rem(7,7) = -rem(7,2) 
   rem(7,8) = rem(7,1)
   rem(7,9) = 0.0d0
 
   rem(8,1) = as*bet3
-  rem(8,2) = bet2*s*sqrtro
+  rem(8,2) = +bet2*sqrt2i*sqrtro
   rem(8,3) = -af*bet3
   rem(8,4) = 0.0d0
   rem(8,5) = rem(8,3)
   rem(8,6) = 0.0d0
-  rem(8,7) = rem(8,2)
+  rem(8,7) = -rem(8,2)
   rem(8,8) = rem(8,1)
   rem(8,9) = 0.0d0
 
@@ -815,12 +825,12 @@ contains
 
   lem(2,1) = 0.0d0
   lem(2,2) = 0.0d0
-  lem(2,3) = -0.5d0*bet3
-  lem(2,4) = 0.5d0*bet2
+  lem(2,3) = -sqrt2i*bet3
+  lem(2,4) = +sqrt2i*bet2
   lem(2,5) = 0.0d0
   lem(2,6) = 0.0d0
-  lem(2,7) = -0.5d0*bet3*s/sqrtro
-  lem(2,8) = 0.5d0*bet2*s/sqrtro
+  lem(2,7) = -bet3*sqrt2i/sqrtro
+  lem(2,8) = +bet2*sqrt2i/sqrtro
   lem(2,9) = 0.0d0
 
   lem(3,1) = 0.0d0
@@ -865,12 +875,12 @@ contains
 
   lem(7,1) = 0.0d0
   lem(7,2) = 0.0d0
-  lem(7,3) = -lem(2,3)
-  lem(7,4) = -lem(2,4)
+  lem(7,3) = lem(2,3)
+  lem(7,4) = lem(2,4)
   lem(7,5) = 0.0d0
   lem(7,6) = 0.0d0
-  lem(7,7) = lem(2,7)
-  lem(7,8) = lem(2,8)
+  lem(7,7) = -lem(2,7)
+  lem(7,8) = -lem(2,8)
   lem(7,9) = 0.0d0
 
   lem(8,1) = 0.0d0

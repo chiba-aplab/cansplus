@@ -13,7 +13,7 @@ module const
 !--------------------------------------------------------------------------
 !  MPI
   integer,parameter :: mpisize_x=2
-  integer,parameter :: mpisize_y=4                  
+  integer,parameter :: mpisize_y=4
   integer,parameter :: mpisize_z=2
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
