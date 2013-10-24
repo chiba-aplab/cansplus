@@ -166,7 +166,7 @@ contains
   ! ww(*,1) = qqm2, ..
   real(8),dimension(nwave,5) :: ww,wwc,tmpq
   real(8),dimension(nwave,nwave) :: lem,rem,tmpD1,tmpD2
-  real(8) :: wwor
+  real(8) :: wwor,wwmp,smp,psmp,msmp
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
 
 !----parameter
@@ -243,6 +243,7 @@ contains
                  wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
+                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -259,8 +260,11 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
+                 psmp = max(0d0,smp)
+                 msmp = max(0d0,-smp)
+                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
+                      + msmp * wwor
               end do
               
               ! characteristic to primitive
@@ -277,7 +281,7 @@ contains
                  wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
                       + ccx(3,1,i-1)*wwc(n,3) + ccx(2,1,i-1)*wwc(n,2) &
                       + ccx(1,1,i-1)*wwc(n,1))
-
+                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -294,8 +298,12 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
+                 psmp = max(0d0,smp)
+                 msmp = max(0d0,-smp)
+              
+                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
+                      + msmp * wwor
               end do
               
               ! characteristic to primitive
@@ -374,6 +382,7 @@ contains
                  wwor = B1*(ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
                       + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
                       + ccy(5,2,j)*wwc(n,5))
+                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -390,8 +399,12 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
+                 psmp = max(0d0,smp)
+                 msmp = max(0d0,-smp)
 
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
+                      + msmp * wwor
 
               end do
               
@@ -409,6 +422,7 @@ contains
                  wwor = B1*(ccy(5,1,j-1)*wwc(n,5)+ccy(4,1,j-1)*wwc(n,4) &
                       + ccy(3,1,j-1)*wwc(n,3) + ccy(2,1,j-1)*wwc(n,2) &
                       + ccy(1,1,j-1)*wwc(n,1))
+                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -425,8 +439,12 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
+                 psmp = max(0d0,smp)
+                 msmp = max(0d0,-smp)
                  
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
+                      + msmp * wwor
               end do
               
               ! characteristic to primitive
@@ -505,6 +523,7 @@ contains
                  wwor = B1*(ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
                       + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
                       + ccz(5,2,k)*wwc(n,5))
+                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -521,8 +540,12 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
+                 psmp = max(0d0,smp)
+                 msmp = max(0d0,-smp)
 
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
+                      + msmp * wwor
               end do
               
               ! characteristic to primitive
@@ -539,6 +562,7 @@ contains
                  wwor = B1*(ccz(5,1,k-1)*wwc(n,5)+ccz(4,1,k-1)*wwc(n,4) &
                       + ccz(3,1,k-1)*wwc(n,3) + ccz(2,1,k-1)*wwc(n,2) &
                       + ccz(1,1,k-1)*wwc(n,1))
+                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -555,8 +579,12 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
+                 psmp = max(0d0,smp)
+                 msmp = max(0d0,-smp)
                  
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
+                      + msmp * wwor
               end do
               
               ! characteristic to primitive
