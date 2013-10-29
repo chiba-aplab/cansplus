@@ -166,7 +166,7 @@ contains
   ! ww(*,1) = qqm2, ..
   real(8),dimension(nwave,5) :: ww,wwc,tmpq
   real(8),dimension(nwave,nwave) :: lem,rem,tmpD1,tmpD2
-  real(8) :: wwor,wwmp,smp,psmp,msmp
+  real(8) :: wwor,minvalue,smv,psmv,msmv
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
 
 !----parameter
@@ -243,7 +243,7 @@ contains
                  wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
-                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
+
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -260,11 +260,7 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
-                 psmp = max(0d0,smp)
-                 msmp = max(0d0,-smp)
-                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
-                      + msmp * wwor
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -281,7 +277,7 @@ contains
                  wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
                       + ccx(3,1,i-1)*wwc(n,3) + ccx(2,1,i-1)*wwc(n,2) &
                       + ccx(1,1,i-1)*wwc(n,1))
-                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
+
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -298,12 +294,8 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
-                 psmp = max(0d0,smp)
-                 msmp = max(0d0,-smp)
               
-                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
-                      + msmp * wwor
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -314,28 +306,29 @@ contains
                  enddo
               enddo
 
-              row(i-1,j,k,2) = qql(1)
-              row(i,j,k,1) = qqr(1)
-              
-              vxw(i-1,j,k,2) = qql(2)
-              vxw(i,j,k,1) = qqr(2)
-              vyw(i-1,j,k,2) = qql(3)
-              vyw(i,j,k,1) = qqr(3)
-              vzw(i-1,j,k,2) = qql(4)
-              vzw(i,j,k,1) = qqr(4)
-              
-              prw(i-1,j,k,2) = qql(5)
-              prw(i,j,k,1) = qqr(5)
-              
-              bxw(i-1,j,k,2) = qql(6)
-              bxw(i,j,k,1) = qqr(6)
-              byw(i-1,j,k,2) = qql(7)
-              byw(i,j,k,1) = qqr(7)
-              bzw(i-1,j,k,2) = qql(8)
-              bzw(i,j,k,1) = qqr(8)
-              
-              phiw(i-1,j,k,2) = qql(9)
-              phiw(i,j,k,1) = qqr(9)
+              minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              smv = sign(1d0,minvalue)
+              psmv = max(0d0,smv)
+              msmv = max(0d0,-smv)
+
+              row(i-1,j,k,2) = qql(1)*psmv + ro1*msmv
+              row(i  ,j,k,1) = qqr(1)*psmv + ro1*msmv
+              vxw(i-1,j,k,2) = qql(2)*psmv + vx1*msmv
+              vxw(i  ,j,k,1) = qqr(2)*psmv + vx1*msmv
+              vyw(i-1,j,k,2) = qql(3)*psmv + vy1*msmv
+              vyw(i  ,j,k,1) = qqr(3)*psmv + vy1*msmv
+              vzw(i-1,j,k,2) = qql(4)*psmv + vz1*msmv
+              vzw(i  ,j,k,1) = qqr(4)*psmv + vz1*msmv
+              prw(i-1,j,k,2) = qql(5)*psmv + pr1*msmv
+              prw(i  ,j,k,1) = qqr(5)*psmv + pr1*msmv
+              bxw(i-1,j,k,2) = qql(6)*psmv + bx1*msmv
+              bxw(i  ,j,k,1) = qqr(6)*psmv + bx1*msmv
+              byw(i-1,j,k,2) = qql(7)*psmv + by1*msmv
+              byw(i  ,j,k,1) = qqr(7)*psmv + by1*msmv
+              bzw(i-1,j,k,2) = qql(8)*psmv + bz1*msmv
+              bzw(i  ,j,k,1) = qqr(8)*psmv + bz1*msmv
+              phiw(i-1,j,k,2) = qql(9)*psmv + phi1*msmv
+              phiw(i  ,j,k,1) = qqr(9)*psmv + phi1*msmv
            end do
         end do
      end do
@@ -382,7 +375,7 @@ contains
                  wwor = B1*(ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
                       + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
                       + ccy(5,2,j)*wwc(n,5))
-                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
+
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -399,13 +392,8 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
-                 psmp = max(0d0,smp)
-                 msmp = max(0d0,-smp)
 
-                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
-                      + msmp * wwor
-
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -422,7 +410,7 @@ contains
                  wwor = B1*(ccy(5,1,j-1)*wwc(n,5)+ccy(4,1,j-1)*wwc(n,4) &
                       + ccy(3,1,j-1)*wwc(n,3) + ccy(2,1,j-1)*wwc(n,2) &
                       + ccy(1,1,j-1)*wwc(n,1))
-                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
+
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -439,12 +427,8 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
-                 psmp = max(0d0,smp)
-                 msmp = max(0d0,-smp)
                  
-                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
-                      + msmp * wwor
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -455,28 +439,29 @@ contains
                  enddo
               enddo
 
-              row(i,j-1,k,2) = qql(1)
-              row(i,j,k,1) = qqr(1)
-              
-              vxw(i,j-1,k,2) = qql(2)
-              vxw(i,j,k,1) = qqr(2)
-              vyw(i,j-1,k,2) = qql(3)
-              vyw(i,j,k,1) = qqr(3)
-              vzw(i,j-1,k,2) = qql(4)
-              vzw(i,j,k,1) = qqr(4)
-              
-              prw(i,j-1,k,2) = qql(5)
-              prw(i,j,k,1) = qqr(5)
-              
-              bxw(i,j-1,k,2) = qql(6)
-              bxw(i,j,k,1) = qqr(6)
-              byw(i,j-1,k,2) = qql(7)
-              byw(i,j,k,1) = qqr(7)
-              bzw(i,j-1,k,2) = qql(8)
-              bzw(i,j,k,1) = qqr(8)
-              
-              phiw(i,j-1,k,2) = qql(9)
-              phiw(i,j,k,1) = qqr(9)
+              minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              smv = sign(1d0,minvalue)
+              psmv = max(0d0,smv)
+              msmv = max(0d0,-smv)
+
+              row(i,j-1,k,2) = qql(1)*psmv + ro1*msmv
+              row(i,j  ,k,1) = qqr(1)*psmv + ro1*msmv
+              vxw(i,j-1,k,2) = qql(2)*psmv + vx1*msmv
+              vxw(i,j  ,k,1) = qqr(2)*psmv + vx1*msmv
+              vyw(i,j-1,k,2) = qql(3)*psmv + vy1*msmv
+              vyw(i,j  ,k,1) = qqr(3)*psmv + vy1*msmv
+              vzw(i,j-1,k,2) = qql(4)*psmv + vz1*msmv
+              vzw(i,j  ,k,1) = qqr(4)*psmv + vz1*msmv
+              prw(i,j-1,k,2) = qql(5)*psmv + pr1*msmv
+              prw(i,j  ,k,1) = qqr(5)*psmv + pr1*msmv
+              bxw(i,j-1,k,2) = qql(6)*psmv + bx1*msmv
+              bxw(i,j  ,k,1) = qqr(6)*psmv + bx1*msmv
+              byw(i,j-1,k,2) = qql(7)*psmv + by1*msmv
+              byw(i,j  ,k,1) = qqr(7)*psmv + by1*msmv
+              bzw(i,j-1,k,2) = qql(8)*psmv + bz1*msmv
+              bzw(i,j  ,k,1) = qqr(8)*psmv + bz1*msmv
+              phiw(i,j-1,k,2) = qql(9)*psmv + phi1*msmv
+              phiw(i,j  ,k,1) = qqr(9)*psmv + phi1*msmv
            end do
         end do
      end do
@@ -523,7 +508,7 @@ contains
                  wwor = B1*(ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
                       + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
                       + ccz(5,2,k)*wwc(n,5))
-                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
+
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -540,12 +525,8 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
-                 psmp = max(0d0,smp)
-                 msmp = max(0d0,-smp)
 
-                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
-                      + msmp * wwor
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -562,7 +543,7 @@ contains
                  wwor = B1*(ccz(5,1,k-1)*wwc(n,5)+ccz(4,1,k-1)*wwc(n,4) &
                       + ccz(3,1,k-1)*wwc(n,3) + ccz(2,1,k-1)*wwc(n,2) &
                       + ccz(1,1,k-1)*wwc(n,1))
-                 wwmp = wwc(n,3) + minmod(wwc(n,4)-wwc(n,3),Alpha*(wwc(n,3)-wwc(n,2)))
+
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
@@ -579,12 +560,8 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 smp = sign(1d0,(wwor-wwc(n,3))*(wwor-wwmp))
-                 psmp = max(0d0,smp)
-                 msmp = max(0d0,-smp)
                  
-                 wwc_w(n) = psmp * (wwor + minmod((qqmin-wwor),(qqmax-wwor))) &
-                      + msmp * wwor
+                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
@@ -595,28 +572,29 @@ contains
                  enddo
               enddo
 
-              row(i,j,k-1,2) = qql(1)
-              row(i,j,k,1) = qqr(1)
-              
-              vxw(i,j,k-1,2) = qql(2)
-              vxw(i,j,k,1) = qqr(2)
-              vyw(i,j,k-1,2) = qql(3)
-              vyw(i,j,k,1) = qqr(3)
-              vzw(i,j,k-1,2) = qql(4)
-              vzw(i,j,k,1) = qqr(4)
-              
-              prw(i,j,k-1,2) = qql(5)
-              prw(i,j,k,1) = qqr(5)
-              
-              bxw(i,j,k-1,2) = qql(6)
-              bxw(i,j,k,1) = qqr(6)
-              byw(i,j,k-1,2) = qql(7)
-              byw(i,j,k,1) = qqr(7)
-              bzw(i,j,k-1,2) = qql(8)
-              bzw(i,j,k,1) = qqr(8)
-              
-              phiw(i,j,k-1,2) = qql(9)
-              phiw(i,j,k,1) = qqr(9)
+              minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              smv = sign(1d0,minvalue)
+              psmv = max(0d0,smv)
+              msmv = max(0d0,-smv)
+
+              row(i,j,k-1,2) = qql(1)*psmv + ro1*msmv
+              row(i,j,k  ,1) = qqr(1)*psmv + ro1*msmv
+              vxw(i,j,k-1,2) = qql(2)*psmv + vx1*msmv
+              vxw(i,j,k  ,1) = qqr(2)*psmv + vx1*msmv
+              vyw(i,j,k-1,2) = qql(3)*psmv + vy1*msmv
+              vyw(i,j,k  ,1) = qqr(3)*psmv + vy1*msmv
+              vzw(i,j,k-1,2) = qql(4)*psmv + vz1*msmv
+              vzw(i,j,k  ,1) = qqr(4)*psmv + vz1*msmv
+              prw(i,j,k-1,2) = qql(5)*psmv + pr1*msmv
+              prw(i,j,k  ,1) = qqr(5)*psmv + pr1*msmv
+              bxw(i,j,k-1,2) = qql(6)*psmv + bx1*msmv
+              bxw(i,j,k  ,1) = qqr(6)*psmv + bx1*msmv
+              byw(i,j,k-1,2) = qql(7)*psmv + by1*msmv
+              byw(i,j,k  ,1) = qqr(7)*psmv + by1*msmv
+              bzw(i,j,k-1,2) = qql(8)*psmv + bz1*msmv
+              bzw(i,j,k  ,1) = qqr(8)*psmv + bz1*msmv
+              phiw(i,j,k-1,2) = qql(9)*psmv + phi1*msmv
+              phiw(i,j,k  ,1) = qqr(9)*psmv + phi1*msmv
            end do
         end do
      end do
