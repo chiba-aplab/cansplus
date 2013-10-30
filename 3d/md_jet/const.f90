@@ -15,7 +15,6 @@ module const
 
   real(8),parameter :: floor = 1d-6 ! minimum value
   real(8),parameter :: safety = 0.2d0 ! CFL number
-  real(8),parameter :: limit=0d0, ratio=1d4
 
 
 ! time control parameters

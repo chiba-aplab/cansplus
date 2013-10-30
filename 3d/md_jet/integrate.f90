@@ -1,15 +1,15 @@
-module integrate_cyl
+module integrate
 
   implicit none
   private
 
-  public :: integrate_cyl__RK2, integrate_cyl__TVDRK3
+  public :: integrate__RK2, integrate__TVDRK3
 
 
 contains
 
 
-  subroutine integrate_cyl__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+  subroutine integrate__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
                                ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
                                ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                ,eta0,vc,eta,ccx,ccy,ccz,xin)
@@ -74,11 +74,8 @@ contains
   real(8) :: dtodx,dtody,dtodz,hdt
   real(8) :: inversex             !1/x
   real(8) :: te
-  real(8) :: ratio   ! here -> const.f90
   real(8),dimension(ix,jx,kx) :: eta
   real(8),dimension(ix,jx,kx) :: curx,cury,curz
-
-  ratio=10000.0d0    ! here -> const.f90
 
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
@@ -259,10 +256,10 @@ contains
 
   enddo
 
-  end subroutine integrate_cyl__RK2
+  end subroutine integrate__RK2
 
 
-  subroutine integrate_cyl__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+  subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
                                   ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
                                   ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                   ,eta0,vc,eta,ccx,ccy,ccz,xin)
@@ -328,11 +325,8 @@ contains
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: te
-  real(8) :: ratio   ! here -> const.f90
   real(8),dimension(ix,jx,kx) :: eta
   real(8),dimension(ix,jx,kx) :: curx,cury,curz
-
-  ratio=10000.0d0    ! here -> const.f90
 
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
@@ -522,7 +516,7 @@ contains
 
   enddo
 
-  end subroutine integrate_cyl__TVDRK3
+  end subroutine integrate__TVDRK3
 
 
-end module integrate_cyl
+end module integrate
