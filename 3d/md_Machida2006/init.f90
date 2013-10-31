@@ -27,7 +27,7 @@ module init
   real(8),public,dimension(ix,jx,kx) :: roi,pri
   real(8),public,dimension(ix,jx,kx) :: vxi,vyi,vzi
   real(8),public,dimension(ix,jx,kx) :: bxi,byi,bzi
-  real(8), public :: ch,min_dx
+  real(8), public :: ch,cp,min_dx
 
 !----------------------------------------------------------------------|
 !  initialize counters

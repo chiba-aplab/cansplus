@@ -227,15 +227,6 @@ contains
                     enddo
                  enddo
               end do
-!              !FOR CHECKING PtoCtoP
-!              do n=1,nwave
-!                 qqr(n) = wwc(1,3)*rem(n,1)
-!                 do m=2,nwave
-!                    qqr(n) = qqr(n)+wwc(m,3)*rem(n,m)
-!                 enddo
-!              enddo
-!              write(*,'(a,9e11.2)')'before',ww(1:n,3)
-!              write(*,'(a,9e11.2)')'after',qqr(1:n)
               
               ! left state
               ! mp5

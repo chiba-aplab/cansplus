@@ -1,16 +1,16 @@
-module integrate_cyl
+module integrate
 
   implicit none
   private
 
-  public :: integrate_cyl__RK2, integrate_cyl__TVDRK3
+  public :: integrate__RK2, integrate__TVDRK3
 
 
 contains
 
 
-  subroutine integrate_cyl__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+  subroutine integrate__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                                ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                ,eta0,vc,eta,ccx,ccy,ccz,xin)
 
@@ -21,7 +21,7 @@ contains
   use bnd
   
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: ch,cr
+  real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
   real(8),dimension(ix),intent(in) :: x,dx
@@ -67,23 +67,17 @@ contains
   integer :: merr
   integer :: mdir
   integer :: i,j,k,n
-  real(8) :: cp
   real(8) :: dts
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,hdt
   real(8) :: inversex             !1/x
   real(8) :: te
-  real(8) :: ratio   ! here -> const.f90
   real(8),dimension(ix,jx,kx) :: eta
   real(8),dimension(ix,jx,kx) :: curx,cury,curz
 
-  ratio=10000.0d0    ! here -> const.f90
-
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
-  cp = sqrt(ch*cr)
-
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
@@ -252,18 +246,18 @@ contains
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
 !
-  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
+                    ,vx,vy,vz,pr)
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
              ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   enddo
 
-  end subroutine integrate_cyl__RK2
+  end subroutine integrate__RK2
 
 
-  subroutine integrate_cyl__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+  subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                                   ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                   ,eta0,vc,eta,ccx,ccy,ccz,xin)
 
@@ -274,7 +268,7 @@ contains
   use bnd
 
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: ch,cr
+  real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
   real(8),dimension(ix),intent(in) :: x,dx
@@ -321,23 +315,17 @@ contains
   integer :: mdir
   integer :: i,j,k,n
   real(8), parameter :: fac=1.D0/12.D0
-  real(8) :: cp
   real(8) :: dts
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: te
-  real(8) :: ratio   ! here -> const.f90
   real(8),dimension(ix,jx,kx) :: eta
   real(8),dimension(ix,jx,kx) :: curx,cury,curz
 
-  ratio=10000.0d0    ! here -> const.f90
-
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
-  cp = sqrt(ch*cr)
-
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
        ,rx,ry,rz,ee)
 
@@ -515,14 +503,14 @@ contains
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
 !
-  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
+                    ,vx,vy,vz,pr)
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
              ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
   enddo
 
-  end subroutine integrate_cyl__TVDRK3
+  end subroutine integrate__TVDRK3
 
 
-end module integrate_cyl
+end module integrate

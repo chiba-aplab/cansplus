@@ -4,19 +4,12 @@ module const
 
   integer,parameter :: FLAG_Accuracy=0
   real(8),parameter :: pi = acos(-1.0d0), pi2 = 2d0*pi
-
   integer,parameter :: margin = 3
   integer,parameter :: ix = 64+2*margin,jx=8+2*margin,kx=64+2*margin
-
-  real(8),parameter :: cr = 0.18d0
-
   real(8),parameter :: gm = 5d0/3d0 ! specific heat retio
   real(8),parameter :: eta0 = 4.0d0*pi*1d-4, vc = 0.2d0
-
   real(8),parameter :: floor = 1d-6 ! minimum value
   real(8),parameter :: safety = 0.2d0 ! CFL number
-  real(8),parameter :: limit=0d0, ratio=1d4
-
 
 ! time control parameters
   logical :: restart = .false.     ! if ".true." then start from restart data

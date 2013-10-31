@@ -6,13 +6,15 @@ module getNewdt
 
   public :: getNewdt__glm, getNewdt__glmcyl
 
+! GLM-MHD's wave velocity
+  real(8), parameter :: cr=0.18d0
 
 contains
 
 
   subroutine getNewdt__glm(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
                           ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-                          ,dt,ch,min_dx)
+                          ,dt,ch,cp,min_dx)
 
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: safety ! CFL number
@@ -30,7 +32,7 @@ contains
   real(8), intent(inout) :: dt
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.
-  real(8), intent(out) :: ch 
+  real(8), intent(out) :: ch, cp
   
   integer :: imin,jmin,kmin
   integer :: i,j,k
@@ -98,6 +100,7 @@ contains
   dtg = min(2.0d0*beforedt,safety/dtmaxi)
   call mpi_allreduce(dtg,dt,1,mdp,mmin,mcomw,merr)
   ch = safety*min_dx/dt
+  cp = sqrt(ch*cr)
 
 ! Exception print
 
@@ -120,7 +123,7 @@ contains
 
   subroutine getNewdt__glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
                              ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-                             ,dt,ch,min_dx)
+                             ,dt,ch,cp,min_dx)
  
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: safety ! CFL number
@@ -138,7 +141,7 @@ contains
   real(8),intent(inout) :: dt
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.
-  real(8),intent(out) :: ch 
+  real(8),intent(out) :: ch, cp
   
   integer :: imin,jmin,kmin
   integer :: i,j,k
@@ -206,9 +209,9 @@ contains
   dtg = min(2.0d0*beforedt,safety/dtmaxi)
   call mpi_allreduce(dtg,dt,1,mdp,mmin,mcomw,merr)
   ch = safety*min_dx/dt
+  cp = sqrt(ch*cr)
 
 ! Exception print
-
   if (dt < dtmin) then
      write(6,*) '  ### stop due to small dt, less than dtmin ###'
      write(6,*) dt,dtmin,imin,jmin,kmin

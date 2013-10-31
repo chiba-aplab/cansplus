@@ -10,12 +10,11 @@ module flux_calc
 contains
 
 
-  subroutine flux_calc__hll(row,prw,vxw,vyw,vzw,bx,byw,bzw,gm,ix,jx,kx,zfloor &
+  subroutine flux_calc__hll(row,prw,vxw,vyw,vzw,bx,byw,bzw,gm,ix,jx,kx &
                            ,fro,fee,frx,fry,frz,fby,fbz)
 
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: gm
-  real(8),intent(in) :: zfloor
 ! primitive variables :: 1 = left state , 2 = right state
   real(8),dimension(ix,jx,kx,2),intent(in) :: row,prw,vxw,vyw,vzw
   real(8),dimension(ix,jx,kx,2),intent(in) :: byw,bzw

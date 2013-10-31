@@ -1,5 +1,6 @@
 syntax: glob
 *.dat
+*.dac*
 *.ps
 *.eps
 *.png

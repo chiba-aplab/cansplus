@@ -10,7 +10,7 @@ contains
 
 
   subroutine integrate_cyl__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                                ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
 
@@ -23,7 +23,7 @@ contains
 
 !--Input
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: ch,cr
+  real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
 
@@ -79,7 +79,6 @@ contains
   integer :: i,j,k,n
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
-  real(8) :: cp
   real(8) :: dtodx,dtody,dtodz,hdt
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
@@ -87,7 +86,6 @@ contains
   real(8) :: ratio  
   ratio=10000.0d0  
 
-  cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
@@ -268,8 +266,8 @@ contains
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
 !
-  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
+                    ,vx,vy,vz,pr)
 
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                 ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
@@ -280,7 +278,7 @@ contains
 
 
   subroutine integrate_cyl__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                                   ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                   ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
 
@@ -291,7 +289,7 @@ contains
   use bnd
 
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: ch,cr
+  real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
   real(8),dimension(ix),intent(in) :: x,dx
@@ -344,7 +342,6 @@ contains
   real(8), parameter :: fac=1.D0/12.D0
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
-  real(8) :: cp
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
@@ -352,7 +349,6 @@ contains
   real(8) :: ratio   
   ratio=10000.0d0   
 
-  cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
@@ -540,8 +536,8 @@ contains
 
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
-  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
+                    ,vx,vy,vz,pr)
 
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                 ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)

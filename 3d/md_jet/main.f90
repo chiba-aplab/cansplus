@@ -5,7 +5,7 @@ program main
   use const
   use init
   use getNewdt
-  use integrate_cyl, only : integrate_cyl__TVDRK3
+  use integrate, only : integrate__TVDRK3
 
   implicit none
 
@@ -57,15 +57,15 @@ program main
 !----------------------------------------------------------------------|
   call getNewdt__glmcyl(margin,safety,dtmin,ix,jx,kx,gm,ro,pr &
        ,vx,vy,vz,bx,by,bz,x,dx,y,dy,z,dz,eta &
-       ,dt,ch,min_dx)
+       ,dt,ch,cp,min_dx)
 
   if(merr /= 0) exit loop
   timep = time
   time = time+dt
 
 !---- integrate--------------------------------------------------------|
-  call integrate_cyl__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                            ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+  call integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+                            ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                             ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                             ,eta0,vc,eta,ccx,ccy,ccz,xin)
 !----------------------------------------------------------------------|

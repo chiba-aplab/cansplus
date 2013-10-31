@@ -51,7 +51,7 @@ contains
   end subroutine convert__ptoc
 
 
-  subroutine convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bxc,byc,bzc,floor &
+  subroutine convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bxc,byc,bzc &
                           ,vx,vy,vz,pr)
 !======================================================================
 ! Name :: convert_ctop
@@ -61,13 +61,11 @@ contains
 !          gm :: specific heat retio
 !          ro,ee,rx,ry,rz,bxc,byc,bzc
 !             :: conserved variables
-!          floor :: minimum number
 ! Output :: 
 !           vx,vy,vz,pr :: primitive variable
 !======================================================================
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: gm
-  real(8),intent(in) :: floor
   real(8),dimension(ix,jx,kx),intent(inout) :: ro
   real(8),dimension(ix,jx,kx),intent(in) :: ee
   real(8),dimension(ix,jx,kx),intent(in) :: rx,ry,rz
@@ -82,57 +80,15 @@ contains
   do k=1,kx
      do j=1,jx
         do i=1,ix
-! negative density cheak
 
-!!$           sign1 = sign(1.0d0,(ro(i,j,k)-floor))
-!!$           
-!!$           ro(i,j,k) = max(ro(i,j,k),floor)
-!!$           roinverse = 1.0d0/ro(i,j,k)
-!!$           vx(i,j,k) = max(sign1,0.0d0)*rx(i,j,k)*roinverse
-!!$           vy(i,j,k) = max(sign1,0.0d0)*ry(i,j,k)*roinverse
-!!$           vz(i,j,k) = max(sign1,0.0d0)*rz(i,j,k)*roinverse
-!!$
-           if(ro(i,j,k) < floor)then
-              ro(i,j,k) = floor
-              vx(i,j,k) = 0.0d0
-              vy(i,j,k) = 0.0d0
-              vz(i,j,k) = 0.0d0
-           else
-              vx(i,j,k) = rx(i,j,k)/ro(i,j,k)
-              vy(i,j,k) = ry(i,j,k)/ro(i,j,k)
-              vz(i,j,k) = rz(i,j,k)/ro(i,j,k)
-           endif
+           vx(i,j,k) = rx(i,j,k)/ro(i,j,k)
+           vy(i,j,k) = ry(i,j,k)/ro(i,j,k)
+           vz(i,j,k) = rz(i,j,k)/ro(i,j,k)
+
            pb = 0.5d0*(bxc(i,j,k)**2 + byc(i,j,k)**2 + bzc(i,j,k)**2)
            vsq = vx(i,j,k)**2 + vy(i,j,k)**2 + vz(i,j,k)**2
            pr(i,j,k) = (gm-1.0d0)*(ee(i,j,k)-0.5d0*vsq*ro(i,j,k)-pb)
-! negative pressure cheak
-!!$           sign1 = sign(1.0d0,(pr(i,j,k)-floor))
-!!$
-!!$           pr(i,j,k) = max(pr(i,j,k),floor)
-!!$
-!!$           vx(i,j,k) = max(0.0d0,sign1)*vx(i,j,k)
-!!$           vy(i,j,k) = max(0.0d0,sign1)*vy(i,j,k)
-!!$           vz(i,j,k) = max(0.0d0,sign1)*vz(i,j,k)
 
-!!$           if(pr(i,j,k) < floor)then
-!!$              vx(i,j,k) = 0.0d0
-!!$              vz(i,j,k) = 0.0d0
-!!$              vsq = vx(i,j,k)**2 + vy(i,j,k)**2 + vz(i,j,k)**2
-!!$              pr(i,j,k) = (gm-1.0d0)*(ee(i,j,k)-0.5d0*vsq*ro(i,j,k)-pb)
-!!$           endif
-!!$
-!!$           if(pr(i,j,k) < floor)then
-!!$              vy(i,j,k) = 0.0d0
-!!$              pr(i,j,k) = (gm-1.0d0)*(ee(i,j,k)-0.5d0*vsq*ro(i,j,k)-pb)
-!!$           endif
-
-           if(pr(i,j,k) < floor)then
-              pr(i,j,k) = floor
-              vx(i,j,k) = 0.0d0
-              vy(i,j,k) = 0.0d0
-              vz(i,j,k) = 0.0d0
-           endif
-           
         enddo
      enddo
   end do
