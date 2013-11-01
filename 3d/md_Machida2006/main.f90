@@ -31,7 +31,7 @@ program main
 !----------------------------------------------------------------------|
 !  read-data
   if(restart)then
-     open(91,file='readFileNumber.dat')
+     open(91,file=input_dir//'readFileNumber.dat')
      read(91,*) nd
      close(91)
      call file_input(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
@@ -93,7 +93,7 @@ program main
         write(*,*) 'nd: ',nd
      endif
 
-    open(91,file='readFileNumber.dat')
+    open(91,file=output_dir//'readFileNumber.dat')
     write(91,*) nd
     close(91)
 

@@ -23,7 +23,7 @@ module const
 !   time control parameters
 
   logical :: restart = .false.     ! if ".true." then start from restart data
-  
+  character(*),parameter :: input_dir = "./data/", output_dir = "./data/"
   real(8),parameter :: tend  = pi2*4.d1
   real(8),parameter :: dtout = pi2/1.d1
   integer,parameter :: nstop = int(2.d6)       !number of total time steps for the run

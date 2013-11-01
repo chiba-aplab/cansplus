@@ -26,7 +26,7 @@ model.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 bnd.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 integrate.o : $(CANS_LIB_DIR)/libcans3d.a bnd.o
 main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o openfile.o
-openfile.o : $(CANS_LIB_DIR)/libcans3d.a
+openfile.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 
 clean:
 	rm -f params.txt* *.o *.mod *.oo *.dac.* *.dat $(TARGET) $(OBJS)
