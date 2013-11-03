@@ -6,8 +6,9 @@ module getNewdt
 
   public :: getNewdt__glm, getNewdt__glmcyl
 
-! GLM-MHD's wave velocity
+! for GLM-MHD
   real(8), parameter :: cr=0.18d0
+
 
 contains
 
@@ -17,10 +18,10 @@ contains
                           ,dt,ch,cp,min_dx)
 
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: safety ! CFL number
-  real(8),intent(in) :: dtmin ! minimum dt
+  real(8),intent(in) :: safety
+  real(8),intent(in) :: dtmin
   real(8),intent(in) :: min_dx
-  real(8),intent(in) :: gm ! specific heat retio
+  real(8),intent(in) :: gm
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
   real(8),dimension(kx),intent(in) :: z,dz  
@@ -28,7 +29,6 @@ contains
   real(8),dimension(ix,jx,kx),intent(in) :: vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(in) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(in) :: eta
-
   real(8), intent(inout) :: dt
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.
@@ -126,10 +126,10 @@ contains
                              ,dt,ch,cp,min_dx)
  
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: safety ! CFL number
-  real(8),intent(in) :: dtmin ! minimum dt
+  real(8),intent(in) :: safety
+  real(8),intent(in) :: dtmin
   real(8),intent(in) :: min_dx
-  real(8),intent(in) :: gm ! specific heat retio
+  real(8),intent(in) :: gm
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
   real(8),dimension(kx),intent(in) :: z,dz  
@@ -137,7 +137,6 @@ contains
   real(8),dimension(ix,jx,kx),intent(in) :: vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(in) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(in) :: eta
-
   real(8),intent(inout) :: dt
 ! GLM-MHD's wave velocity
 ! this wave velocity shuld be maximum velocity in system.

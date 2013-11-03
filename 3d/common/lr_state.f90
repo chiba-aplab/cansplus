@@ -184,14 +184,19 @@ contains
   real(8) :: qqul,qqav,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
   real(8) :: djp2,qqlr
 
+!----Recipe for rarefaction ---
+  real(8), parameter :: floor=1d-2
+  real(8) :: romaxvalue,prmaxvalue
+
   minmod4(d1,d2,d3,d4) = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2))* &
        dabs((sign(1.0d0,d1) + sign(1.0d0,d3))* &
        (sign(1.0d0,d1)+sign(1.0d0,d4))) &
        *min(dabs(d1),dabs(d2),dabs(d3),dabs(d4))
 
   minmod(x,y) = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(dabs(x),dabs(y))
-
+  
   if(mdir == 1)then
+
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -298,10 +303,13 @@ contains
               enddo
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
-
+           
               row(i-1,j,k,2) = qql(1)*psmv + ro1*msmv
               row(i  ,j,k,1) = qqr(1)*psmv + ro1*msmv
               vxw(i-1,j,k,2) = qql(2)*psmv + vx1*msmv
@@ -431,6 +439,9 @@ contains
               enddo
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
@@ -564,6 +575,9 @@ contains
               enddo
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
