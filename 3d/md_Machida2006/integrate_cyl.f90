@@ -10,7 +10,7 @@ contains
 
 
   subroutine integrate_cyl__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                                ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
 
@@ -23,7 +23,7 @@ contains
 
 !--Input
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: ch,cr
+  real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
 
@@ -79,17 +79,14 @@ contains
   integer :: i,j,k,n
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
-  real(8) :: cp
   real(8) :: dtodx,dtody,dtodz,hdt
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
   real(8) :: ratio  
   real(8),dimension(ix,jx,kx) :: see_rad
-
   ratio=10000.0d0  
 
-  cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
@@ -127,9 +124,6 @@ contains
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
-  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
-
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
@@ -152,9 +146,6 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
-
-  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -180,9 +171,6 @@ contains
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
-  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
-
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
 
@@ -200,15 +188,13 @@ contains
 
 !-----Step 2.---------------------------------------------------------|
 ! half time step update cell center variables using flux
-!
-
 !-- radiative cooling -------------------------------
   if (time .gt. swtch_t) then
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
                  te = te_factor*pr(i,j,k)/ro(i,j,k)
-                 te = max(te, dsign(te,ro(i,j,k)-rohalo))
+                 te = max(te, sign(te,ro(i,j,k)-rohalo))
                  see_rad(i,j,k) = RadCool*(ro(i,j,k)**2)*sqrt(te)
            enddo
         enddo
@@ -222,8 +208,8 @@ contains
         enddo
      enddo
   endif
-!----------------------------------------------------
 
+!
   hdt=dt*0.5d0*n
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
@@ -297,8 +283,8 @@ contains
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
 !
-  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
+                    ,vx,vy,vz,pr)
 
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                 ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
@@ -309,7 +295,7 @@ contains
 
 
   subroutine integrate_cyl__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cr &
+                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                                   ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                                   ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
 
@@ -320,7 +306,7 @@ contains
   use bnd
 
   integer,intent(in) :: ix,jx,kx,margin
-  real(8),intent(in) :: ch,cr
+  real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
   real(8),intent(in) :: floor
   real(8),dimension(ix),intent(in) :: x,dx
@@ -373,17 +359,14 @@ contains
   real(8), parameter :: fac=1.D0/12.D0
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
-  real(8) :: cp
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
   real(8) :: ratio   
   real(8),dimension(ix,jx,kx) :: see_rad
-
   ratio=10000.0d0   
 
-  cp = sqrt(ch*cr)
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
@@ -420,9 +403,6 @@ contains
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
-  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
-
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
@@ -445,9 +425,6 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
-
-  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -473,9 +450,6 @@ contains
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
 
-  call MP5to1st(mdir,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
-
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
 
@@ -493,7 +467,6 @@ contains
 
 !-----Step 2.---------------------------------------------------------|
 ! TVDRK substep
-
 !-- radiative cooling -------------------------------
   if (time .gt. swtch_t) then
      do k=margin+1,kx-margin
@@ -514,8 +487,7 @@ contains
         enddo
      enddo
   endif
-
-!----------------------------------------------------
+!-------
 
   k1 = fac*(-7.D0*n*n+30.D0*n-23.D0)
   k2 = fac*(+7.D0*n*n-30.D0*n+35.D0)
@@ -599,8 +571,8 @@ contains
 
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
-  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz,floor &
-       ,vx,vy,vz,pr)
+  call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
+                    ,vx,vy,vz,pr)
 
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                 ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
