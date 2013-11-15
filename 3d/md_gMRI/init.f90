@@ -18,15 +18,13 @@ module init
   real(8),public,dimension(ix,jx,kx) :: vx,vy,vz
   real(8),public,dimension(ix,jx,kx) :: bx,by,bz,phi
   real(8),public,dimension(ix,jx,kx) :: eta
-  real(8),public,dimension(ix,jx,kx) :: ro1,pr1
-  real(8),public,dimension(ix,jx,kx) :: vx1,vy1,vz1
-  real(8),public,dimension(ix,jx,kx) :: bx1,by1,bz1,phi1
 ! gravitation
   real(8),public,dimension(ix,jx,kx) :: gx,gy,gz
 ! initial variables
   real(8),public,dimension(ix,jx,kx) :: roi,pri
   real(8),public,dimension(ix,jx,kx) :: vxi,vyi,vzi
   real(8),public,dimension(ix,jx,kx) :: bxi,byi,bzi
+  real(8),public,dimension(ix,jx,kx) :: phii
   real(8), public :: ch,cp,min_dx
 
 !----------------------------------------------------------------------|
@@ -66,12 +64,11 @@ contains
 !   setup numerical model (grid, initial conditions, etc.)
 !----------------------------------------------------------------------|
   call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
        ,x,dx,xm,y,dy,ym,z,dz,zm &
        ,gx,gz,eta,min_dx) 
 
-  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-                ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
 !-----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5

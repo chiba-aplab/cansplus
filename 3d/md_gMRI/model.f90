@@ -13,7 +13,7 @@ contains
 
 
   subroutine  model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
-                         ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
+                         ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                          ,x,dx,xm,y,dy,ym,z,dz,zm &
                          ,gx,gz,eta,min_dx)
 
@@ -32,6 +32,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
   real(8),dimension(ix,jx,kx),intent(out) :: vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(out) :: bxi,byi,bzi
+  real(8),dimension(ix,jx,kx),intent(out) :: phii
   real(8),                    intent(out) :: min_dx
 
   integer :: i,j,k
@@ -296,6 +297,7 @@ contains
   bxi = 0.0d0
   byi = by
   bzi = 0.0d0
+  phii = 0.0d0
 
   call perturb(1,bx,by,bz,x,dx,dy,dz,bbAbsMax)
        

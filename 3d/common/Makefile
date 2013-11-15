@@ -1,7 +1,7 @@
 CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = $(CANS_LIB_DIR)/libcans3d.a
-OBJS =  getcurrent.o getEta.o getNewdt.o lr_state.o flux_calc.o boundary.o convert.o dac_header.o mpi_setup.o
+OBJS =  getNewdt.o lr_state.o flux_calc.o boundary.o convert.o dac_header.o mpi_setup.o
 
 '.update' : $(OBJS)
 	$ ar -r $(TARGET) $(OBJS)

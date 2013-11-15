@@ -1,25 +1,25 @@
-module integrate_cyl
+module integrate
 
   implicit none
   private
 
-  public :: integrate_cyl__RK2, integrate_cyl__TVDRK3
+  public :: integrate__RK2, integrate__TVDRK3
 
 
 contains
 
 
-  subroutine integrate_cyl__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                               ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
-                               ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-                               ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+  subroutine integrate__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+                           ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                           ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
+                           ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time &
+                           ,rohalo,swtch_t,xin)
 
   use convert
   use lr_state, only : lr_state__MP5
   use flux_calc
-  use getcurrent, only : getcurrent__cyl
   use bnd
-
+  use getEta
 
 !--Input
   integer,intent(in) :: ix,jx,kx,margin
@@ -37,6 +37,7 @@ contains
   real(8),intent(in) :: RadCool,te_factor,time,rohalo,swtch_t,xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
+  real(8),dimension(ix,jx,kx),intent(in) :: phii
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
 
 !-- Input & output
@@ -83,9 +84,7 @@ contains
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
-  real(8) :: ratio  
   real(8),dimension(ix,jx,kx) :: see_rad
-  ratio=10000.0d0  
 
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
@@ -94,7 +93,7 @@ contains
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
-       ,rx,ry,rz,ee)
+                    ,rx,ry,rz,ee)
 
   ro1=ro
   rx1=rx
@@ -109,10 +108,7 @@ contains
 !------RK substeps--------!
   do n=1,2
 
-  call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
-       ,curx,cury,curz)
-
-  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,x,dx,dy,dz,eta0,vc,eta)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -187,15 +183,14 @@ contains
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
-! half time step update cell center variables using flux
 !-- radiative cooling -------------------------------
-  if (time .gt. swtch_t) then
+  if (time > swtch_t) then
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
-                 te = te_factor*pr(i,j,k)/ro(i,j,k)
-                 te = max(te, sign(te,ro(i,j,k)-rohalo))
-                 see_rad(i,j,k) = RadCool*(ro(i,j,k)**2)*sqrt(te)
+              te = te_factor*pr(i,j,k)/ro(i,j,k)
+              te = max(te, sign(te,ro(i,j,k)-rohalo))
+              see_rad(i,j,k) = RadCool*(ro(i,j,k)**2)*sqrt(te)
            enddo
         enddo
      enddo
@@ -209,7 +204,6 @@ contains
      enddo
   endif
 
-!
   hdt=dt*0.5d0*n
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
@@ -286,24 +280,27 @@ contains
   call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
                     ,vx,vy,vz,pr)
 
-  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-                ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
   enddo
 
-  end subroutine integrate_cyl__RK2
+  call bnd__absorb(ix,jx,kx,x,z,xin,ro,pr,vx,vy,vz,bx,by,bz,phi &
+                  ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii)
+
+  end subroutine integrate__RK2
 
 
-  subroutine integrate_cyl__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                                  ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
-                                  ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-                                  ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time,rohalo,swtch_t,xin)
+  subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
+                              ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                              ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
+                              ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time &
+                              ,rohalo,swtch_t,xin)
 
   use convert
   use lr_state, only : lr_state__MP5
   use flux_calc
-  use getcurrent, only : getcurrent__cyl
   use bnd
+  use getEta
 
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cp
@@ -318,6 +315,7 @@ contains
   real(8),intent(in) :: RadCool,te_factor,time,rohalo,swtch_t,xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
+  real(8),dimension(ix,jx,kx),intent(in) :: phii
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr,vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
@@ -363,9 +361,7 @@ contains
   real(8) :: inversex             !1/x
   real(8) :: pi,hpi4,inhpi4
   real(8) :: te
-  real(8) :: ratio   
   real(8),dimension(ix,jx,kx) :: see_rad
-  ratio=10000.0d0   
 
   pi = acos(-1.0d0)
   hpi4 = sqrt(4.0d0*pi)
@@ -389,10 +385,7 @@ contains
 !------RK substeps-----!
   do n=1,3
 
-  call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
-       ,curx,cury,curz)
-
-  call getEta2(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta,rohalo)
+  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,x,dx,dy,dz,eta0,vc,eta)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -466,15 +459,14 @@ contains
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
-! TVDRK substep
 !-- radiative cooling -------------------------------
-  if (time .gt. swtch_t) then
+  if (time > swtch_t) then
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
-                 te = te_factor*pr(i,j,k)/ro(i,j,k)
-                 te = max(te, sign(te,ro(i,j,k)-rohalo))
-                 see_rad(i,j,k) = RadCool*(ro(i,j,k)**2)*sqrt(te)
+              te = te_factor*pr(i,j,k)/ro(i,j,k)
+              te = max(te, sign(te,ro(i,j,k)-rohalo))
+              see_rad(i,j,k) = RadCool*(ro(i,j,k)**2)*sqrt(te)
            enddo
         enddo
      enddo
@@ -487,7 +479,6 @@ contains
         enddo
      enddo
   endif
-!-------
 
   k1 = fac*(-7.D0*n*n+30.D0*n-23.D0)
   k2 = fac*(+7.D0*n*n-30.D0*n+35.D0)
@@ -574,12 +565,14 @@ contains
   call convert__ctop(ix,jx,kx,gm,ro,ee,rx,ry,rz,bx,by,bz &
                     ,vx,vy,vz,pr)
 
-  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-                ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
   enddo
 
-  end subroutine integrate_cyl__TVDRK3
+  call bnd__absorb(ix,jx,kx,x,z,xin,ro,pr,vx,vy,vz,bx,by,bz,phi &
+                  ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii)
+
+  end subroutine integrate__TVDRK3
 
 
-end module integrate_cyl
+end module integrate

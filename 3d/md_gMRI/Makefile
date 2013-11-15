@@ -1,9 +1,8 @@
 CANS_LIB_DIR = ..
 include $(CANS_LIB_DIR)/Makefile_inc
 TARGET = a.out
-OBJS =  getEta2.o openfile.o const.o model.o init.o \
-	integrate_cyl.o\
-	bnd.o main.o 
+OBJS =  getEta.o openfile.o const.o model.o init.o \
+	integrate.o bnd.o main.o 
 
 .PHONY : all 
 .PHONY : clean
@@ -26,7 +25,7 @@ params.txt : $(TARGET)
 init.o : $(CANS_LIB_DIR)/libcans3d.a const.o model.o bnd.o
 model.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 bnd.o : $(CANS_LIB_DIR)/libcans3d.a
-integrate_cyl.o : $(CANS_LIB_DIR)/libcans3d.a bnd.o
+integrate.o : $(CANS_LIB_DIR)/libcans3d.a bnd.o getEta.o
 main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o openfile.o
 openfile.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 

@@ -3,29 +3,22 @@ module bnd
   implicit none
   private
 
-  public :: bnd__exec
+  public :: bnd__exec, bnd__absorb
 
 
 contains
 
 
-  subroutine bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-                      ,xin,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  subroutine bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
   use mpi_setup, only : mpid, mnull
   use boundary
 
   integer,intent(in) :: margin,ix,jx,kx
-  real(8),dimension(ix),intent(in) :: x
-  real(8),dimension(kx),intent(in) :: z
-  real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
-  real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
-  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
-  real(8),dimension(ix,jx,kx),intent(inout) :: phi,eta
-  real(8),dimension(ix,jx,kx),intent(in) :: roi,pri
-  real(8),dimension(ix,jx,kx),intent(in) :: vxi,vyi,vzi
-  real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
-  real(8),intent(in) :: xin
+  real(8),intent(inout),dimension(ix,jx,kx) :: ro,pr
+  real(8),intent(inout),dimension(ix,jx,kx) :: vx,vy,vz
+  real(8),intent(inout),dimension(ix,jx,kx) :: bx,by,bz
+  real(8),intent(inout),dimension(ix,jx,kx) :: phi,eta
 
 !======================================================================
 ! inter-process communication by MPI
@@ -80,30 +73,25 @@ contains
      call bd_frez(1,margin,eta,ix,jx,kx)
   end if
 
-!----------------------------------------------------------------------|
-! central boundary
-  call absorb(ix,jx,kx,x,z,xin,ro,roi)
-  call absorb(ix,jx,kx,x,z,xin,pr,pri)
-  call absorb(ix,jx,kx,x,z,xin,vx,vxi)
-  call absorb(ix,jx,kx,x,z,xin,vy,vyi)
-  call absorb(ix,jx,kx,x,z,xin,vz,vzi)
-  call absorb(ix,jx,kx,x,z,xin,bx,bxi)
-  call absorb(ix,jx,kx,x,z,xin,by,byi)
-  call absorb(ix,jx,kx,x,z,xin,bz,bzi)
-
   end subroutine bnd__exec
 
 
-  subroutine absorb(ix,jx,kx,x,z,xin,qq,qqi)
-
-  implicit none
+  subroutine bnd__absorb(ix,jx,kx,x,z,xin,ro,pr,vx,vy,vz,bx,by,bz,phi &
+                        ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii)
 
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: xin
   real(8),intent(in),dimension(ix) :: x
   real(8),intent(in),dimension(kx) :: z
-  real(8),intent(in),dimension(ix,jx,kx) :: qqi
-  real(8),intent(inout),dimension(ix,jx,kx) :: qq
+  real(8),intent(in),dimension(ix,jx,kx) :: roi,pri
+  real(8),intent(in),dimension(ix,jx,kx) :: vxi,vyi,vzi
+  real(8),intent(in),dimension(ix,jx,kx) :: bxi,byi,bzi
+  real(8),intent(in),dimension(ix,jx,kx) :: phii
+  real(8),intent(inout),dimension(ix,jx,kx) :: ro,pr
+  real(8),intent(inout),dimension(ix,jx,kx) :: vx,vy,vz
+  real(8),intent(inout),dimension(ix,jx,kx) :: bx,by,bz
+  real(8),intent(inout),dimension(ix,jx,kx) :: phi
+
   real(8) :: ai,ss,dx0
   integer :: i,j,k
 
@@ -113,14 +101,22 @@ contains
       do i=1,ix
          ss = sqrt(x(i)**2+z(k)**2)
          if(ss <= xin)then
-         ai = 0.1d0*(1.0d0-tanh((ss-xin+5.0d0*dx0)/(2.0d0*dx0)))
-         qq(i,j,k) = (1.0d0-ai)*qq(i,j,k)+ai*qqi(i,j,k)
+            ai = 0.1d0*(1.0d0-tanh((ss-xin+5.0d0*dx0)/(2.0d0*dx0)))
+            ro(i,j,k) = (1.0d0-ai)*ro(i,j,k)+ai*roi(i,j,k)
+            pr(i,j,k) = (1.0d0-ai)*pr(i,j,k)+ai*pri(i,j,k)
+            vx(i,j,k) = (1.0d0-ai)*vx(i,j,k)+ai*vxi(i,j,k)
+            vy(i,j,k) = (1.0d0-ai)*vy(i,j,k)+ai*vyi(i,j,k)
+            vz(i,j,k) = (1.0d0-ai)*vz(i,j,k)+ai*vzi(i,j,k)
+            bx(i,j,k) = (1.0d0-ai)*bx(i,j,k)+ai*bxi(i,j,k)
+            by(i,j,k) = (1.0d0-ai)*by(i,j,k)+ai*byi(i,j,k)
+            bz(i,j,k) = (1.0d0-ai)*bz(i,j,k)+ai*bzi(i,j,k)
+            phi(i,j,k) = (1.0d0-ai)*phi(i,j,k)+ai*phii(i,j,k)
          endif
       enddo
     enddo
   enddo
 
-  end subroutine absorb
+  end subroutine bnd__absorb
 
 
 end module bnd
