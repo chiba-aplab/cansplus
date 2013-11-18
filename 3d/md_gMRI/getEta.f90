@@ -9,7 +9,7 @@ module getEta
 contains
 
 
-  subroutine getEta__anomalous(ix,jx,kx,ro,bx,by,bz,x,dx,dy,dz,eta0,vc,eta)
+  subroutine getEta__anomalous(ix,jx,kx,ro,bx,by,bz,x,dx,dy,dz,eta0,vc,eta,curx,cury,curz)
 
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: eta0,vc
@@ -18,11 +18,10 @@ contains
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: dy
   real(8),dimension(kx),intent(in) :: dz
-  real(8),dimension(ix,jx,kx),intent(out) :: eta
+  real(8),dimension(ix,jx,kx),intent(out) :: eta,curx,cury,curz
 
   integer :: i,j,k
   real(8) :: cur_abs,vd,etamax,flag
-  real(8),dimension(ix,jx,kx) :: curx,cury,curz
 
 
 ! In Cylindrical coordinate
