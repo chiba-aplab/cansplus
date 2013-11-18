@@ -8,7 +8,6 @@ module const
   integer,parameter :: ix = 64+2*margin,jx=8+2*margin,kx=64+2*margin
   real(8),parameter :: gm = 5d0/3d0 ! specific heat retio
   real(8),parameter :: eta0 = 4.0d0*pi*1d-4, vc = 0.2d0
-  real(8),parameter :: floor = 1d-6 ! minimum value
   real(8),parameter :: safety = 0.2d0 ! CFL number
 
 ! time control parameters

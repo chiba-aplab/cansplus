@@ -10,7 +10,7 @@ contains
 
 
   subroutine integrate__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                           ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                           ,gx,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                            ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                            ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time &
                            ,rohalo,swtch_t,xin)
@@ -25,7 +25,6 @@ contains
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
-  real(8),intent(in) :: floor
 
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
@@ -124,7 +123,7 @@ contains
        ,bx_m,phi_m,ch)
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
   call flux_calc__fbres(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
@@ -148,7 +147,7 @@ contains
 
   call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
   call flux_calc__fbres(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
@@ -172,7 +171,7 @@ contains
 
   call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
   call flux_calc__fbres(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
@@ -291,7 +290,7 @@ contains
 
 
   subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                              ,gx,gz,floor,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                              ,gx,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                               ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                               ,eta0,vc,eta,ccx,ccy,ccz,RadCool,te_factor,time &
                               ,rohalo,swtch_t,xin)
@@ -305,7 +304,6 @@ contains
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm,eta0,vc
-  real(8),intent(in) :: floor
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: y,dy
   real(8),dimension(kx),intent(in) :: z,dz
@@ -400,7 +398,7 @@ contains
        ,bx_m,phi_m,ch)
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
   call flux_calc__fbres(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
@@ -424,7 +422,7 @@ contains
 
   call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
   call flux_calc__fbres(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
@@ -448,7 +446,7 @@ contains
 
   call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx,floor &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
   call flux_calc__fbres(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &

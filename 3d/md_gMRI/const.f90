@@ -4,7 +4,6 @@ module const
  
   integer,parameter :: margin=3
   integer,parameter :: ix = 16+2*margin,jx=32+2*margin,kx=16+2*margin
-  real(8),parameter :: floor= 1.d-6                 ! minimum value
   real(8),parameter :: pi= acos(-1.0d0)            ! circular constant
   real(8),parameter :: pi2=2.0d0*pi
 
