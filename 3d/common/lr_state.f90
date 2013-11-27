@@ -18,7 +18,6 @@ contains
 
   integer :: i,j,k
   real(8) :: dqqx,dqqy,dqqz
-  real(8) :: temp
 
   if(mdir == 1)then
      do k=2,kx-1
@@ -80,7 +79,6 @@ contains
   real(8) :: dxc,dxl,dxr
   real(8) :: dyc,dyl,dyr
   real(8) :: dzc,dzl,dzr
-  real(8) :: temp
 
 !-----Step 1a.-------------------------------------------------|
 ! dqq
@@ -164,8 +162,8 @@ contains
   integer,parameter :: nwave = 9
   real(8),dimension(nwave) :: wwc_w,qql,qqr
   ! ww(*,1) = qqm2, ..
-  real(8),dimension(nwave,5) :: ww,wwc,tmpq
-  real(8),dimension(nwave,nwave) :: lem,rem,tmpD1,tmpD2
+  real(8),dimension(nwave,5) :: ww,wwc
+  real(8),dimension(nwave,nwave) :: lem,rem
   real(8) :: wwor,minvalue,smv,psmv,msmv
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
 
@@ -674,7 +672,7 @@ contains
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
   real(8) :: sqrtro,s,a,af,as,sqrt2i
-  real(8) :: temp,ich
+  real(8) :: ich
 
   sqrt2i = 1.D0/sqrt(2.D0)
   roi = 1.0d0/ro
@@ -748,22 +746,22 @@ contains
   rem(2,9) = 0.0d0
 
   rem(3,1) = qs*bet2
-  rem(3,2) = -bet3*sqrt2i
+  rem(3,2) = -bet3
   rem(3,3) = -qf*bet2
   rem(3,4) = 0.0d0
   rem(3,5) = -rem(3,3)
   rem(3,6) = 0.0d0
-  rem(3,7) = rem(3,2)
+  rem(3,7) = bet3
   rem(3,8) = -rem(3,1)
   rem(3,9) = 0.0d0
 
   rem(4,1) = qs*bet3
-  rem(4,2) = bet2*sqrt2i
+  rem(4,2) = bet2
   rem(4,3) = -qf*bet3
   rem(4,4) = 0.0d0
   rem(4,5) = -rem(4,3)
   rem(4,6) = 0.0d0
-  rem(4,7) = rem(4,2)
+  rem(4,7) = -bet2
   rem(4,8) = -rem(4,1)
   rem(4,9) = 0.0d0
 
@@ -788,22 +786,22 @@ contains
   rem(6,9) = 1.0d0
 
   rem(7,1) = as*bet2
-  rem(7,2) = -bet3*sqrt2i*sqrtro
+  rem(7,2) = -bet3*s*sqrtro
   rem(7,3) = -af*bet2
   rem(7,4) = 0.0d0
   rem(7,5) = rem(7,3)
   rem(7,6) = 0.0d0
-  rem(7,7) = -rem(7,2) 
+  rem(7,7) = rem(7,2) 
   rem(7,8) = rem(7,1)
   rem(7,9) = 0.0d0
 
   rem(8,1) = as*bet3
-  rem(8,2) = +bet2*sqrt2i*sqrtro
+  rem(8,2) = bet2*s*sqrtro
   rem(8,3) = -af*bet3
   rem(8,4) = 0.0d0
   rem(8,5) = rem(8,3)
   rem(8,6) = 0.0d0
-  rem(8,7) = -rem(8,2)
+  rem(8,7) = rem(8,2)
   rem(8,8) = rem(8,1)
   rem(8,9) = 0.0d0
 
@@ -836,12 +834,12 @@ contains
 
   lem(2,1) = 0.0d0
   lem(2,2) = 0.0d0
-  lem(2,3) = -sqrt2i*bet3
-  lem(2,4) = +sqrt2i*bet2
+  lem(2,3) = -0.5d0*bet3
+  lem(2,4) = 0.5d0*bet2
   lem(2,5) = 0.0d0
   lem(2,6) = 0.0d0
-  lem(2,7) = -bet3*sqrt2i/sqrtro
-  lem(2,8) = +bet2*sqrt2i/sqrtro
+  lem(2,7) = -0.5d0*bet3*s/sqrtro
+  lem(2,8) = 0.5d0*bet2*s/sqrtro
   lem(2,9) = 0.0d0
 
   lem(3,1) = 0.0d0
@@ -886,12 +884,12 @@ contains
 
   lem(7,1) = 0.0d0
   lem(7,2) = 0.0d0
-  lem(7,3) = lem(2,3)
-  lem(7,4) = lem(2,4)
+  lem(7,3) = -lem(2,3)
+  lem(7,4) = -lem(2,4)
   lem(7,5) = 0.0d0
   lem(7,6) = 0.0d0
-  lem(7,7) = -lem(2,7)
-  lem(7,8) = -lem(2,8)
+  lem(7,7) = lem(2,7)
+  lem(7,8) = lem(2,8)
   lem(7,9) = 0.0d0
 
   lem(8,1) = 0.0d0

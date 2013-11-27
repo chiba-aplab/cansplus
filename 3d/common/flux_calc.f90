@@ -279,10 +279,10 @@ contains
   
   integer :: i,j,k  
 ! no if
-  real(8) :: sign1,eps,igm,itf,maxs1,mins1,abbx
+  real(8), parameter :: eps=1d-40
+  real(8) :: sign1,igm,itf,maxs1,mins1,abbx
   real(8) :: msl,mslst,msm,msrst,msr
 
-  eps = 1d-40
   igm = 1.0d0/(gm-1.0d0)
 
   do k=2,kx-2
