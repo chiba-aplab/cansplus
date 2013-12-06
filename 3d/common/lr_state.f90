@@ -160,12 +160,14 @@ contains
   real(8),dimension(ix,jx,kx,2),intent(out) :: row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw
 
   integer,parameter :: nwave = 9
-  real(8),dimension(nwave) :: wwc_w,qql,qqr
+  real(8),dimension(nwave) :: qql,qqr
+  real(8),dimension(2,nwave) :: wwc_w
   ! ww(*,1) = qqm2, ..
   real(8),dimension(nwave,5) :: ww,wwc
   real(8),dimension(nwave,nwave) :: lem,rem
   real(8) :: wwor,minvalue,smv,psmv,msmv
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
+  real(8) :: temp,temp1,temp2
 
 !----parameter
   real(8),parameter :: B1 = 0.016666666667
@@ -177,7 +179,6 @@ contains
   integer :: i,j,k,l,m,n
   real(8) :: minmod4,d1,d2,d3,d4
   real(8) :: minmod,x,y
-  real(8) :: median
   real(8) :: djm1,dj,djp1,dm4jph,dm4jmh,djpp1,dm4jpph
   real(8) :: qqul,qqav,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
   real(8) :: djp2,qqlr
@@ -210,30 +211,31 @@ contains
                  ww(8,n) = bz(i-3+n,j,k)
                  ww(9,n) = phi(i-3+n,j,k)
               end do
-              ro1 = ro(i,j,k)
-              pr1 = pr(i,j,k)
-              vx1 = vx(i,j,k)
-              vy1 = vy(i,j,k)
-              vz1 = vz(i,j,k)
-              bx1 = bx(i,j,k)
-              by1 = by(i,j,k)
-              bz1 = bz(i,j,k)
-              phi1 = phi(i,j,k)
+              ro1 = ww(1,3)
+              vx1 = ww(2,3)
+              vy1 = ww(3,3)
+              vz1 = ww(4,3)
+              pr1 = ww(5,3)
+              bx1 = ww(6,3)
+              by1 = ww(7,3)
+              bz1 = ww(8,3)
+              phi1 = ww(9,3)
 
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              wwc = 0d0
               do l=1,5
-                 do n=1,nwave
-                    wwc(n,l) = lem(n,1)*ww(1,l)
-                    do m=2,nwave
-                       wwc(n,l) = wwc(n,l)+lem(n,m)*ww(m,l)
+                 do m=1,nwave
+                    temp = ww(m,l)
+                    do n=1,nwave
+                       wwc(n,l) = wwc(n,l)+lem(n,m)*temp
                     enddo
                  enddo
               end do
               
-              ! left state
               ! mp5
               do n=1,nwave
+                 !left state
                  wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
@@ -241,62 +243,42 @@ contains
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
-                 
                  dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
 
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
-                 qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
-                 
                  qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
                  qqmd = qqav - 0.5d0*dm4jph
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-              end do
-              
-              ! characteristic to primitive
-              do n=1,nwave
-                 qqr(n) = wwc_w(1)*rem(n,1)
-                 do m=2,nwave
-                    qqr(n) = qqr(n)+wwc_w(m)*rem(n,m)
-                 enddo
-              enddo
-              
-              ! right state
-              ! mp5
-              do n=1,nwave
+                 wwc_w(1,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !right state
                  wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
                       + ccx(3,1,i-1)*wwc(n,3) + ccx(2,1,i-1)*wwc(n,2) &
                       + ccx(1,1,i-1)*wwc(n,1))
 
-                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
-                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
-                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
-                 
-                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
-                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
-                 
-                 qqul = wwc(n,2)+Alpha*(wwc(n,2)-wwc(n,1))
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
-                 
                  qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
                  qqmd = qqav - 0.5d0*dm4jmh
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-              
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(2,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
-              do n=1,nwave
-                 qql(n) = wwc_w(1)*rem(n,1)
-                 do m=2,nwave
-                    qql(n) = qql(n)+wwc_w(m)*rem(n,m)
+              qql = 0d0
+              qqr = 0d0
+              do m=1,nwave
+                 temp1 = wwc_w(1,m)
+                 temp2 = wwc_w(2,m)
+                 do n=1,nwave
+                    qqr(n) = qqr(n)+temp1*rem(n,m)
+                    qql(n) = qql(n)+temp2*rem(n,m)
                  enddo
               enddo
 
@@ -345,30 +327,32 @@ contains
                  ww(8,n) = bz(i,j-3+n,k)
                  ww(9,n) = phi(i,j-3+n,k)
               end do
-              ro1 = ro(i,j,k)
-              pr1 = pr(i,j,k)
-              vx1 = vx(i,j,k)
-              vy1 = vy(i,j,k)
-              vz1 = vz(i,j,k)
-              bx1 = bx(i,j,k)
-              by1 = by(i,j,k)
-              bz1 = bz(i,j,k)
-              phi1 = phi(i,j,k)
+              ro1 = ww(1,3)
+              vx1 = ww(2,3)
+              vy1 = ww(3,3)
+              vz1 = ww(4,3)
+              pr1 = ww(5,3)
+              bx1 = ww(6,3)
+              by1 = ww(7,3)
+              bz1 = ww(8,3)
+              phi1 = ww(9,3)
               
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              wwc = 0d0
               do l=1,5
-                 do n=1,nwave
-                    wwc(n,l) = lem(n,1)*ww(1,l)
-                    do m=2,nwave
-                       wwc(n,l) = wwc(n,l)+lem(n,m)*ww(m,l)
+                 do m=1,nwave
+                    temp = ww(m,l)
+                    do n=1,nwave
+                       wwc(n,l) = wwc(n,l)+lem(n,m)*temp
                     enddo
                  enddo
               end do
               
-              ! left state
+
               ! mp5
               do n=1,nwave
+                 ! left state
                  wwor = B1*(ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
                       + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
                       + ccy(5,2,j)*wwc(n,5))
@@ -381,8 +365,6 @@ contains
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
                  
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
-                 qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
-                 
                  qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
                  qqmd = qqav - 0.5d0*dm4jph
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
@@ -390,34 +372,14 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
 
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-              end do
-              
-              ! characteristic to primitive
-              do n=1,nwave
-                 qqr(n) = wwc_w(1)*rem(n,1)
-                 do m=2,nwave
-                    qqr(n) = qqr(n)+wwc_w(m)*rem(n,m)
-                 enddo
-              enddo
-
-              ! right state
-              ! mp5
-              do n=1,nwave
+                 wwc_w(1,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 
+                 ! right state
                  wwor = B1*(ccy(5,1,j-1)*wwc(n,5)+ccy(4,1,j-1)*wwc(n,4) &
                       + ccy(3,1,j-1)*wwc(n,3) + ccy(2,1,j-1)*wwc(n,2) &
                       + ccy(1,1,j-1)*wwc(n,1))
 
-                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
-                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
-                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
-                 
-                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
-                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
-                 
-                 qqul = wwc(n,2)+Alpha*(wwc(n,2)-wwc(n,1))
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
-                 
                  qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
                  qqmd = qqav - 0.5d0*dm4jmh
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
@@ -425,14 +387,18 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
                  
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(2,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
-              do n=1,nwave
-                 qql(n) = wwc_w(1)*rem(n,1)
-                 do m=2,nwave
-                    qql(n) = qql(n)+wwc_w(m)*rem(n,m)
+              qqr = 0d0
+              qql = 0d0
+              do m=1,nwave
+                 temp1 = wwc_w(1,m)
+                 temp2 = wwc_w(2,m)
+                 do n=1,nwave
+                    qqr(n) = qqr(n)+temp1*rem(n,m)
+                    qql(n) = qql(n)+temp2*rem(n,m)
                  enddo
               enddo
 
@@ -481,30 +447,31 @@ contains
                  ww(8,n) = bz(i,j,k-3+n)
                  ww(9,n) = phi(i,j,k-3+n)
               end do
-              ro1 = ro(i,j,k)
-              pr1 = pr(i,j,k)
-              vx1 = vx(i,j,k)
-              vy1 = vy(i,j,k)
-              vz1 = vz(i,j,k)
-              bx1 = bx(i,j,k)
-              by1 = by(i,j,k)
-              bz1 = bz(i,j,k)
-              phi1 = phi(i,j,k)
+              ro1 = ww(1,3)
+              vx1 = ww(2,3)
+              vy1 = ww(3,3)
+              vz1 = ww(4,3)
+              pr1 = ww(5,3)
+              bx1 = ww(6,3)
+              by1 = ww(7,3)
+              bz1 = ww(8,3)
+              phi1 = ww(9,3)
               
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              wwc = 0d0
               do l=1,5
-                 do n=1,nwave
-                    wwc(n,l) = lem(n,1)*ww(1,l)
-                    do m=2,nwave
-                       wwc(n,l) = wwc(n,l)+lem(n,m)*ww(m,l)
+                 do m=1,nwave
+                    temp = ww(m,l)
+                    do n=1,nwave
+                       wwc(n,l) = wwc(n,l)+lem(n,m)*temp
                     enddo
                  enddo
               end do
               
-              ! left state
               ! mp5
               do n=1,nwave
+                 ! left state
                  wwor = B1*(ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
                       + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
                       + ccz(5,2,k)*wwc(n,5))
@@ -517,8 +484,6 @@ contains
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
                  
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
-                 qqlr = wwc(n,4)+Alpha*(wwc(n,4)-wwc(n,5))
-                 
                  qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
                  qqmd = qqav - 0.5d0*dm4jph
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
@@ -526,34 +491,14 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
 
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-              end do
-              
-              ! characteristic to primitive
-              do n=1,nwave
-                 qqr(n) = wwc_w(1)*rem(n,1)
-                 do m=2,nwave
-                    qqr(n) = qqr(n)+wwc_w(m)*rem(n,m)
-                 enddo
-              enddo
+                 wwc_w(1,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
               ! right state
-              ! mp5
-              do n=1,nwave
                  wwor = B1*(ccz(5,1,k-1)*wwc(n,5)+ccz(4,1,k-1)*wwc(n,4) &
                       + ccz(3,1,k-1)*wwc(n,3) + ccz(2,1,k-1)*wwc(n,2) &
                       + ccz(1,1,k-1)*wwc(n,1))
 
-                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
-                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
-                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
-                 
-                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
-                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
-                 
-                 qqul = wwc(n,2)+Alpha*(wwc(n,2)-wwc(n,1))
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
-                 
                  qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
                  qqmd = qqav - 0.5d0*dm4jmh
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
@@ -561,14 +506,18 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
                  
-                 wwc_w(n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(2,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
-              do n=1,nwave
-                 qql(n) = wwc_w(1)*rem(n,1)
-                 do m=2,nwave
-                    qql(n) = qql(n)+wwc_w(m)*rem(n,m)
+              qqr = 0d0
+              qql = 0d0
+              do m=1,nwave
+                 temp1 = wwc_w(1,m)
+                 temp2 = wwc_w(2,m)
+                 do n=1,nwave
+                    qqr(n) = qqr(n)+temp1*rem(n,m)
+                    qql(n) = qql(n)+temp2*rem(n,m)
                  enddo
               enddo
 
@@ -667,7 +616,7 @@ contains
   real(8) :: roi,btsq,vaxsq,asq
   real(8) :: ct2,tsum,tdif,cf2_cs2
   real(8) :: cfsq,cf,cssq,cs
-  real(8) :: bt,ibt,sbt,psbt,msbt,isq2,bet2,bet3
+  real(8) :: bt,ibt,sbt,psbt,msbt,bet2,bet3
   real(8) :: sfs,psfs,msfs,sas,saf,eps,ifs
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
@@ -693,15 +642,14 @@ contains
 ! compute beta
   
   bt = sqrt(btsq)
-  isq2 = 1.0d0/sqrt(2.0d0)
   eps = 1d-40
   sbt = sign(1d0,bt-eps)
   psbt = max(0d0,sbt)
   msbt = max(0d0,-sbt)
   ibt = psbt/(bt+msbt)
 
-  bet2 = msbt*isq2 + by*ibt
-  bet3 = msbt*isq2 + bz*ibt
+  bet2 = msbt*sqrt2i + by*ibt
+  bet3 = msbt*sqrt2i + bz*ibt
   
 ! compute alpha
   sfs = sign(1d0,cf2_cs2-eps)

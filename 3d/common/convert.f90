@@ -73,9 +73,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz,pr
 
   integer :: i,j,k
-  real(8) :: rsq,pb,roinverse,vsq
-  real(8) :: sign1,sign2,sign3
-  real(8) :: temp1,temp2
+  real(8) :: pb,roinverse,vsq
 
   do k=1,kx
      do j=1,jx
