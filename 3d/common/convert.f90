@@ -66,27 +66,33 @@ contains
 !======================================================================
   integer,intent(in) :: ix,jx,kx
   real(8),intent(in) :: gm
-  real(8),dimension(ix,jx,kx),intent(inout) :: ro
-  real(8),dimension(ix,jx,kx),intent(in) :: ee
+  real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
+  real(8),dimension(ix,jx,kx),intent(inout) :: ee
   real(8),dimension(ix,jx,kx),intent(in) :: rx,ry,rz
   real(8),dimension(ix,jx,kx),intent(in) :: bxc,byc,bzc
-  real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz,pr
+  real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
 
   integer :: i,j,k
-  real(8) :: pb,roinverse,vsq
-
+  real(8) :: pb,roinverse,vsqk,igm,temppr,signpr,temp1,temp2
+  
+  igm = 1d0/(gm-1d0)
   do k=1,kx
      do j=1,jx
         do i=1,ix
-
-           vx(i,j,k) = rx(i,j,k)/ro(i,j,k)
-           vy(i,j,k) = ry(i,j,k)/ro(i,j,k)
-           vz(i,j,k) = rz(i,j,k)/ro(i,j,k)
+           temppr = pr(i,j,k) * 1d-8
+           roinverse = 1d0/ro(i,j,k)
+           vx(i,j,k) = rx(i,j,k) * roinverse
+           vy(i,j,k) = ry(i,j,k) * roinverse
+           vz(i,j,k) = rz(i,j,k) * roinverse
 
            pb = 0.5d0*(bxc(i,j,k)**2 + byc(i,j,k)**2 + bzc(i,j,k)**2)
            vsq = vx(i,j,k)**2 + vy(i,j,k)**2 + vz(i,j,k)**2
            pr(i,j,k) = (gm-1.0d0)*(ee(i,j,k)-0.5d0*vsq*ro(i,j,k)-pb)
-
+           signpr = sign(1d0,pr(i,j,k))
+           temp1 = max(0d0,signpr)
+           temp2 = -min(0d0,signpr)
+           pr(i,j,k) = temp1*pr(i,j,k) + temp2*temppr
+           ee(i,j,k) = pr(i,j,k)*igm + 0.5d0*vsq*ro(i,j,k) +pb
         enddo
      enddo
   end do
