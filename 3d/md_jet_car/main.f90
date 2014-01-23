@@ -1,3 +1,8 @@
+!###########################################
+! Model : Jet propagation
+! Coordinate system : Cartesian grid
+! Reference : Norman et al., A&A, 1982
+!###########################################
 program main
 
   use mpi_setup

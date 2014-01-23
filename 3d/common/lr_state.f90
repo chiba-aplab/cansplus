@@ -167,7 +167,7 @@ contains
   real(8),dimension(nwave,nwave) :: lem,rem
   real(8) :: wwor,minvalue,smv,psmv,msmv
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
-  real(8) :: temp,temp1,temp2
+  real(8) :: temp,temp1,temp2,temp3,ich
 
 !----parameter
   real(8),parameter :: B1 = 0.016666666667
@@ -180,11 +180,11 @@ contains
   real(8) :: minmod4,d1,d2,d3,d4
   real(8) :: minmod,x,y
   real(8) :: djm1,dj,djp1,dm4jph,dm4jmh,djpp1,dm4jpph
-  real(8) :: qqul,qqav,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
+  real(8) :: qqul,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
   real(8) :: djp2,qqlr
 
 !----Recipe for rarefaction ---
-  real(8), parameter :: floor=1d-2
+  real(8), parameter :: floor=1d-1
   real(8) :: romaxvalue,prmaxvalue
 
   minmod4(d1,d2,d3,d4) = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2))* &
@@ -194,6 +194,8 @@ contains
 
   minmod(x,y) = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(dabs(x),dabs(y))
   
+  ich = 0.5d0/ch
+
   if(mdir == 1)then
 
      do k=3,kx-2
@@ -223,15 +225,30 @@ contains
 
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
-              wwc = 0d0
+
               do l=1,5
-                 do m=1,nwave
-                    temp = ww(m,l)
-                    do n=1,nwave
-                       wwc(n,l) = wwc(n,l)+lem(n,m)*temp
-                    enddo
-                 enddo
-              end do
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+              enddo
               
               ! mp5
               do n=1,nwave
@@ -247,8 +264,7 @@ contains
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
 
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
-                 qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
-                 qqmd = qqav - 0.5d0*dm4jph
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
@@ -261,8 +277,7 @@ contains
                       + ccx(1,1,i-1)*wwc(n,1))
 
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
-                 qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
-                 qqmd = qqav - 0.5d0*dm4jmh
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
@@ -271,16 +286,40 @@ contains
               end do
               
               ! characteristic to primitive
-              qql = 0d0
-              qqr = 0d0
-              do m=1,nwave
-                 temp1 = wwc_w(1,m)
-                 temp2 = wwc_w(2,m)
-                 do n=1,nwave
-                    qqr(n) = qqr(n)+temp1*rem(n,m)
-                    qql(n) = qql(n)+temp2*rem(n,m)
-                 enddo
-              enddo
+              temp1 = wwc_w(1,1)-wwc_w(1,8)
+              temp2 = wwc_w(1,2)-wwc_w(1,7)
+              temp3 = wwc_w(1,3)-wwc_w(1,5)
+              qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,1)+wwc_w(1,8)
+              temp2 = wwc_w(1,2)+wwc_w(1,7)
+              temp3 = wwc_w(1,3)+wwc_w(1,5)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(1,4)
+              qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qqr(6) = wwc_w(1,6) + wwc_w(1,9)
+              qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qqr(9) = ch*(-wwc_w(1,6) + wwc_w(1,9)) 
+
+              temp1 = wwc_w(2,1)-wwc_w(2,8)
+              temp2 = wwc_w(2,2)-wwc_w(2,7)
+              temp3 = wwc_w(2,3)-wwc_w(2,5)
+              qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(2,1)+wwc_w(2,8)
+              temp2 = wwc_w(2,2)+wwc_w(2,7)
+              temp3 = wwc_w(2,3)+wwc_w(2,5)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(2,4)
+              qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qql(6) = wwc_w(2,6) + wwc_w(2,9)
+              qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qql(9) = ch*(-wwc_w(2,6) + wwc_w(2,9)) 
+
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
@@ -339,16 +378,30 @@ contains
               
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
-              wwc = 0d0
+
               do l=1,5
-                 do m=1,nwave
-                    temp = ww(m,l)
-                    do n=1,nwave
-                       wwc(n,l) = wwc(n,l)+lem(n,m)*temp
-                    enddo
-                 enddo
-              end do
-              
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+              enddo
 
               ! mp5
               do n=1,nwave
@@ -365,8 +418,7 @@ contains
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
                  
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
-                 qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
-                 qqmd = qqav - 0.5d0*dm4jph
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
@@ -380,8 +432,7 @@ contains
                       + ccy(1,1,j-1)*wwc(n,1))
 
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
-                 qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
-                 qqmd = qqav - 0.5d0*dm4jmh
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
@@ -391,16 +442,40 @@ contains
               end do
               
               ! characteristic to primitive
-              qqr = 0d0
-              qql = 0d0
-              do m=1,nwave
-                 temp1 = wwc_w(1,m)
-                 temp2 = wwc_w(2,m)
-                 do n=1,nwave
-                    qqr(n) = qqr(n)+temp1*rem(n,m)
-                    qql(n) = qql(n)+temp2*rem(n,m)
-                 enddo
-              enddo
+              temp1 = wwc_w(1,1)-wwc_w(1,8)
+              temp2 = wwc_w(1,2)-wwc_w(1,7)
+              temp3 = wwc_w(1,3)-wwc_w(1,5)
+              qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,1)+wwc_w(1,8)
+              temp2 = wwc_w(1,2)+wwc_w(1,7)
+              temp3 = wwc_w(1,3)+wwc_w(1,5)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(1,4)
+              qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qqr(6) = wwc_w(1,6) + wwc_w(1,9)
+              qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qqr(9) = ch*(-wwc_w(1,6) + wwc_w(1,9)) 
+
+              temp1 = wwc_w(2,1)-wwc_w(2,8)
+              temp2 = wwc_w(2,2)-wwc_w(2,7)
+              temp3 = wwc_w(2,3)-wwc_w(2,5)
+              qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(2,1)+wwc_w(2,8)
+              temp2 = wwc_w(2,2)+wwc_w(2,7)
+              temp3 = wwc_w(2,3)+wwc_w(2,5)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(2,4)
+              qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qql(6) = wwc_w(2,6) + wwc_w(2,9)
+              qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qql(9) = ch*(-wwc_w(2,6) + wwc_w(2,9)) 
+
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
@@ -459,16 +534,31 @@ contains
               
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
-              wwc = 0d0
+
               do l=1,5
-                 do m=1,nwave
-                    temp = ww(m,l)
-                    do n=1,nwave
-                       wwc(n,l) = wwc(n,l)+lem(n,m)*temp
-                    enddo
-                 enddo
-              end do
-              
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+              enddo
+
               ! mp5
               do n=1,nwave
                  ! left state
@@ -484,8 +574,7 @@ contains
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
                  
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
-                 qqav = 0.5d0*(wwc(n,3)+wwc(n,4))
-                 qqmd = qqav - 0.5d0*dm4jph
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
@@ -499,8 +588,7 @@ contains
                       + ccz(1,1,k-1)*wwc(n,1))
 
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
-                 qqav = 0.5d0*(wwc(n,3)+wwc(n,2))
-                 qqmd = qqav - 0.5d0*dm4jmh
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
@@ -510,16 +598,40 @@ contains
               end do
               
               ! characteristic to primitive
-              qqr = 0d0
-              qql = 0d0
-              do m=1,nwave
-                 temp1 = wwc_w(1,m)
-                 temp2 = wwc_w(2,m)
-                 do n=1,nwave
-                    qqr(n) = qqr(n)+temp1*rem(n,m)
-                    qql(n) = qql(n)+temp2*rem(n,m)
-                 enddo
-              enddo
+              temp1 = wwc_w(1,1)-wwc_w(1,8)
+              temp2 = wwc_w(1,2)-wwc_w(1,7)
+              temp3 = wwc_w(1,3)-wwc_w(1,5)
+              qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,1)+wwc_w(1,8)
+              temp2 = wwc_w(1,2)+wwc_w(1,7)
+              temp3 = wwc_w(1,3)+wwc_w(1,5)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(1,4)
+              qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qqr(6) = wwc_w(1,6) + wwc_w(1,9)
+              qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qqr(9) = ch*(-wwc_w(1,6) + wwc_w(1,9)) 
+
+              temp1 = wwc_w(2,1)-wwc_w(2,8)
+              temp2 = wwc_w(2,2)-wwc_w(2,7)
+              temp3 = wwc_w(2,3)-wwc_w(2,5)
+              qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(2,1)+wwc_w(2,8)
+              temp2 = wwc_w(2,2)+wwc_w(2,7)
+              temp3 = wwc_w(2,3)+wwc_w(2,5)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(2,4)
+              qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qql(6) = wwc_w(2,6) + wwc_w(2,9)
+              qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qql(9) = ch*(-wwc_w(2,6) + wwc_w(2,9)) 
+
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
@@ -620,20 +732,21 @@ contains
   real(8) :: sfs,psfs,msfs,sas,saf,eps,ifs
   real(8) :: alpha_f,alpha_s
   real(8) :: na,qf,qs,af_prm,as_prm
-  real(8) :: sqrtro,s,a,af,as,sqrt2i
-  real(8) :: ich
+  real(8) :: sqrtro,sqrtroi,s,a,af,as,sqrt2i
+  real(8) :: temp1,temp2
 
-  sqrt2i = 1.D0/sqrt(2.D0)
+  sqrt2i = 0.5D0*sqrt(2.D0)
   roi = 1.0d0/ro
-  btsq = by**2+bz**2
-  vaxsq = (bx**2)*roi
+  sqrtroi = sqrt(roi)
+  btsq = by*by+bz*bz
+  vaxsq = bx*bx*roi
   asq = gm*pr*roi
 
 ! fast and slow speed
   ct2 = btsq*roi
   tsum = vaxsq + ct2 + asq
   tdif = vaxsq + ct2 - asq
-  cf2_cs2 = sqrt(tdif**2 + 4.0d0*asq*ct2)
+  cf2_cs2 = sqrt(tdif*tdif + 4.0d0*asq*ct2)
   cfsq = 0.5d0*(tsum + cf2_cs2)
   cf = sqrt(cfsq)
   cssq = asq*vaxsq/cfsq
@@ -672,96 +785,35 @@ contains
   as = a*alpha_s*sqrtro
 
 ! Right-eigenvector
-!  ich = 1.0d0/(ch)
-  rem(1,1) = ro*alpha_f
-  rem(1,2) = 0.0d0
-  rem(1,3) = ro*alpha_s
-  rem(1,4) = 1.0d0
-  rem(1,5) = rem(1,3)
-  rem(1,6) = 0.0d0
-  rem(1,7) = 0.0d0
-  rem(1,8) = rem(1,1)
-  rem(1,9) = 0.0d0
+
+  temp1 = ro*alpha_f
+  temp2 = ro*alpha_s
+
+  rem(1,1) = temp1
+  rem(1,3) = temp2
 
   rem(2,1) = -cf*alpha_f
-  rem(2,2) = 0.0d0
   rem(2,3) = -cs*alpha_s
-  rem(2,4) = 0.0d0
-  rem(2,5) = -rem(2,3)
-  rem(2,6) = 0.0d0
-  rem(2,7) = 0.0d0
-  rem(2,8) = -rem(2,1)
-  rem(2,9) = 0.0d0
 
   rem(3,1) = qs*bet2
   rem(3,2) = -bet3
   rem(3,3) = -qf*bet2
-  rem(3,4) = 0.0d0
-  rem(3,5) = -rem(3,3)
-  rem(3,6) = 0.0d0
-  rem(3,7) = bet3
-  rem(3,8) = -rem(3,1)
-  rem(3,9) = 0.0d0
 
   rem(4,1) = qs*bet3
   rem(4,2) = bet2
   rem(4,3) = -qf*bet3
-  rem(4,4) = 0.0d0
-  rem(4,5) = -rem(4,3)
-  rem(4,6) = 0.0d0
-  rem(4,7) = -bet2
-  rem(4,8) = -rem(4,1)
-  rem(4,9) = 0.0d0
 
-  rem(5,1) = ro*asq*alpha_f
-  rem(5,2) = 0.0d0
-  rem(5,3) = ro*asq*alpha_s
-  rem(5,4) = 0.0d0
-  rem(5,5) = rem(5,3) 
-  rem(5,6) = 0.0d0
-  rem(5,7) = 0.0d0
-  rem(5,8) = rem(5,1)
-  rem(5,9) = 0.0d0
+  rem(5,1) = asq*temp1
+  rem(5,3) = asq*temp2
 
-  rem(6,1) = 0.0d0
-  rem(6,2) = 0.0d0
-  rem(6,3) = 0.0d0
-  rem(6,4) = 0.0d0
-  rem(6,5) = 0.0d0
-  rem(6,6) = 1.0d0
-  rem(6,7) = 0.0d0
-  rem(6,8) = 0.0d0
-  rem(6,9) = 1.0d0
-
+  temp1 = s*sqrtro
   rem(7,1) = as*bet2
-  rem(7,2) = -bet3*s*sqrtro
+  rem(7,2) = -bet3*temp1
   rem(7,3) = -af*bet2
-  rem(7,4) = 0.0d0
-  rem(7,5) = rem(7,3)
-  rem(7,6) = 0.0d0
-  rem(7,7) = rem(7,2) 
-  rem(7,8) = rem(7,1)
-  rem(7,9) = 0.0d0
 
   rem(8,1) = as*bet3
-  rem(8,2) = bet2*s*sqrtro
+  rem(8,2) = bet2*temp1
   rem(8,3) = -af*bet3
-  rem(8,4) = 0.0d0
-  rem(8,5) = rem(8,3)
-  rem(8,6) = 0.0d0
-  rem(8,7) = rem(8,2)
-  rem(8,8) = rem(8,1)
-  rem(8,9) = 0.0d0
-
-  rem(9,1) = 0.0d0
-  rem(9,2) = 0.0d0
-  rem(9,3) = 0.0d0
-  rem(9,4) = 0.0d0
-  rem(9,5) = 0.0d0
-  rem(9,6) = -ch
-  rem(9,7) = 0.0d0
-  rem(9,8) = 0.0d0
-  rem(9,9) = ch
 
 ! Left eigenvector
   na = 0.5d0/asq
@@ -770,95 +822,28 @@ contains
   af_prm = na*af*roi
   as_prm = na*as*roi
 
-  lem(1,1) = 0.0d0
+  temp1 = na*roi
   lem(1,2) = -na*cf*alpha_f
   lem(1,3) = qs*bet2
   lem(1,4) = qs*bet3
-  lem(1,5) = na*alpha_f*roi
-  lem(1,6) = 0.0d0
+  lem(1,5) = alpha_f*temp1
   lem(1,7) = as_prm*bet2
   lem(1,8) = as_prm*bet3
-  lem(1,9) = 0.0d0
 
-  lem(2,1) = 0.0d0
-  lem(2,2) = 0.0d0
+  temp2 = 0.5d0*s*sqrtroi
   lem(2,3) = -0.5d0*bet3
   lem(2,4) = 0.5d0*bet2
-  lem(2,5) = 0.0d0
-  lem(2,6) = 0.0d0
-  lem(2,7) = -0.5d0*bet3*s/sqrtro
-  lem(2,8) = 0.5d0*bet2*s/sqrtro
-  lem(2,9) = 0.0d0
+  lem(2,7) = -bet3*temp2
+  lem(2,8) = bet2*temp2
 
-  lem(3,1) = 0.0d0
   lem(3,2) = -na*cs*alpha_s
   lem(3,3) = -qf*bet2
   lem(3,4) = -qf*bet3
-  lem(3,5) = na*alpha_s*roi
-  lem(3,6) = 0.0d0
+  lem(3,5) = alpha_s*temp1
   lem(3,7) = -af_prm*bet2
   lem(3,8) = -af_prm*bet3
-  lem(3,9) = 0.0d0
 
-  lem(4,1) = 1.0d0
-  lem(4,2) = 0.0d0
-  lem(4,3) = 0.0d0
-  lem(4,4) = 0.0d0
-  lem(4,5) = -1.0d0/asq
-  lem(4,6) = 0.0d0
-  lem(4,7) = 0.0d0
-  lem(4,8) = 0.0d0
-  lem(4,9) = 0.0d0
-
-  lem(5,1) = 0.0d0
-  lem(5,2) = -lem(3,2)
-  lem(5,3) = -lem(3,3)
-  lem(5,4) = -lem(3,4)
-  lem(5,5) = lem(3,5) 
-  lem(5,6) = 0.0d0
-  lem(5,7) = lem(3,7)
-  lem(5,8) = lem(3,8)
-  lem(5,9) = 0.0d0
-
-  lem(6,1) = 0.0d0
-  lem(6,2) = 0.0d0
-  lem(6,3) = 0.0d0
-  lem(6,4) = 0.0d0
-  lem(6,5) = 0.0d0
-  lem(6,6) = 0.5d0
-  lem(6,7) = 0.0d0
-  lem(6,8) = 0.0d0
-  lem(6,9) = -0.5d0/ch
-
-  lem(7,1) = 0.0d0
-  lem(7,2) = 0.0d0
-  lem(7,3) = -lem(2,3)
-  lem(7,4) = -lem(2,4)
-  lem(7,5) = 0.0d0
-  lem(7,6) = 0.0d0
-  lem(7,7) = lem(2,7)
-  lem(7,8) = lem(2,8)
-  lem(7,9) = 0.0d0
-
-  lem(8,1) = 0.0d0
-  lem(8,2) = -lem(1,2)
-  lem(8,3) = -lem(1,3)
-  lem(8,4) = -lem(1,4)
-  lem(8,5) = lem(1,5)
-  lem(8,6) = 0.0d0
-  lem(8,7) = lem(1,7)
-  lem(8,8) = lem(1,8)
-  lem(8,9) = 0.0d0
-
-  lem(9,1) = 0.0d0
-  lem(9,2) = 0.0d0
-  lem(9,3) = 0.0d0
-  lem(9,4) = 0.0d0
-  lem(9,5) = 0.0d0
-  lem(9,6) = 0.5d0
-  lem(9,7) = 0.0d0
-  lem(9,8) = 0.0d0
-  lem(9,9) = 0.5d0/ch
+  lem(4,5) = -2d0*na
 
   end subroutine esystem_glmmhd
 
