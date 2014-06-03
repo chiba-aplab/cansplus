@@ -80,7 +80,7 @@ contains
            temp = max((dabs(v1)+sqrt(cfxsq))/dx(i) &
                 , (dabs(v2)+sqrt(cfysq))/dy(j) &
                 , (dabs(v3)+sqrt(cfzsq))/dz(k))
-           
+
 ! diffusion velocity
            temp2 = max(eta(i,j,k)/dx(i)**2 &
                 , eta(i,j,k)/dy(j)**2 &

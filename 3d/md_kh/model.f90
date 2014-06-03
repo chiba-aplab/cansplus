@@ -38,7 +38,7 @@ contains
   real(8),dimension(0:igx) :: xmg
   real(8),dimension(0:jgx) :: ymg
   real(8),dimension(0:kgx) :: zmg
-  real(8) :: aa
+  real(8) :: aa, s0, s1, s
 
 !*********** Random seed *************!
   call random_seed()
@@ -133,16 +133,25 @@ contains
      do j=1,jx
         do i=1,ix
            call random_number(aa)
-           ro(i,j,k) = ro0*(0.5*( (1.-rr)*tanh(y(j)/lmd)+1.+rr )+0.01*2.0*(aa-0.5))
-           pr(i,j,k) = beta/2.
-           vx(i,j,k) = -v0/2.*tanh(y(j)/lmd)
+           bx(i,j,k) = b0*(0.5*( (1.-br)*tanh(y(j)/lmd)+1.+br ))*cos(theta)
+           by(i,j,k) = 0.d0
+           bz(i,j,k) = b0*(0.5*( (1.-br)*tanh(y(j)/lmd)+1.+br ))*sin(theta)
+           pr(i,j,k) = 0.5*(beta+1.0)-0.5*(bx(i,j,k)**2+by(i,j,k)**2+bz(i,j,k)**2)
+           vx(i,j,k) = -v0/2.*(1.+tanh(y(j)/lmd))
            vy(i,j,k) = 0.01*v0*sin(pi2*x(i)/(xmax-xmin))/cosh(y(j)/lmd)**2
            vz(i,j,k) = 0.D0
-           bx(i,j,k) = b0*cos(theta)
-           by(i,j,k) = 0.d0
-           bz(i,j,k) = b0*sin(theta)
            phi(i,j,k) = 0.d0
            eta(i,j,k) = 0.d0
+        enddo
+     enddo
+  enddo
+  s0 = 0.5*beta/ro0**gm
+  s1 = pr(1,1,1)/(ro0*rr)**gm
+  do k=1,kx
+     do j=1,jx
+        do i=1,ix
+           s = 0.5*( (s0-s1)*tanh(y(j)/lmd)+s0+s1 )
+           ro(i,j,k) = (pr(i,j,k)/s)**(1.d0/gm)
         enddo
      enddo
   enddo

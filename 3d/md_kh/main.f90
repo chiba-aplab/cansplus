@@ -64,14 +64,12 @@ program main
                            ,eta,ccx,ccy,ccz)
 !----------------------------------------------------------------------|
 
-     call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
-                  ,ix,jx,kx)
-
 !----- check output
 ! dtout
      mw=0
      nt1=int(timep/dtout)
      nt2=int(time/dtout)
+
      if(nt1 < nt2) mw=1
      if(mw /= 0) then
         call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &

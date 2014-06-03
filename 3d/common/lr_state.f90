@@ -161,7 +161,7 @@ contains
 
   integer,parameter :: nwave = 9
   real(8),dimension(nwave) :: qql,qqr
-  real(8),dimension(2,nwave) :: wwc_w
+  real(8),dimension(nwave,2) :: wwc_w
   ! ww(*,1) = qqm2, ..
   real(8),dimension(nwave,5) :: ww,wwc
   real(8),dimension(nwave,nwave) :: lem,rem
@@ -269,7 +269,7 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-                 wwc_w(1,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
                  !right state
                  wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
@@ -282,44 +282,43 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 wwc_w(2,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
-              
+
               ! characteristic to primitive
-              temp1 = wwc_w(1,1)-wwc_w(1,8)
-              temp2 = wwc_w(1,2)-wwc_w(1,7)
-              temp3 = wwc_w(1,3)-wwc_w(1,5)
+              temp1 = wwc_w(1,1)-wwc_w(8,1)
+              temp2 = wwc_w(2,1)-wwc_w(7,1)
+              temp3 = wwc_w(3,1)-wwc_w(5,1)
               qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
               qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
               qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
 
-              temp1 = wwc_w(1,1)+wwc_w(1,8)
-              temp2 = wwc_w(1,2)+wwc_w(1,7)
-              temp3 = wwc_w(1,3)+wwc_w(1,5)
-              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(1,4)
+              temp1 = wwc_w(1,1)+wwc_w(8,1)
+              temp2 = wwc_w(2,1)+wwc_w(7,1)
+              temp3 = wwc_w(3,1)+wwc_w(5,1)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,1)
               qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
-              qqr(6) = wwc_w(1,6) + wwc_w(1,9)
+              qqr(6) = wwc_w(6,1) + wwc_w(9,1)
               qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
               qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
-              qqr(9) = ch*(-wwc_w(1,6) + wwc_w(1,9)) 
+              qqr(9) = ch*(-wwc_w(6,1) + wwc_w(9,1)) 
 
-              temp1 = wwc_w(2,1)-wwc_w(2,8)
-              temp2 = wwc_w(2,2)-wwc_w(2,7)
-              temp3 = wwc_w(2,3)-wwc_w(2,5)
+              temp1 = wwc_w(1,2)-wwc_w(8,2)
+              temp2 = wwc_w(2,2)-wwc_w(7,2)
+              temp3 = wwc_w(3,2)-wwc_w(5,2)
               qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
               qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
               qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
 
-              temp1 = wwc_w(2,1)+wwc_w(2,8)
-              temp2 = wwc_w(2,2)+wwc_w(2,7)
-              temp3 = wwc_w(2,3)+wwc_w(2,5)
-              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(2,4)
+              temp1 = wwc_w(1,2)+wwc_w(8,2)
+              temp2 = wwc_w(2,2)+wwc_w(7,2)
+              temp3 = wwc_w(3,2)+wwc_w(5,2)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,2)
               qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
-              qql(6) = wwc_w(2,6) + wwc_w(2,9)
+              qql(6) = wwc_w(6,2) + wwc_w(9,2)
               qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
               qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
-              qql(9) = ch*(-wwc_w(2,6) + wwc_w(2,9)) 
-
+              qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
@@ -328,7 +327,7 @@ contains
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
-           
+
               row(i-1,j,k,2) = qql(1)*psmv + ro1*msmv
               row(i  ,j,k,1) = qqr(1)*psmv + ro1*msmv
               vxw(i-1,j,k,2) = qql(2)*psmv + vx1*msmv
@@ -424,7 +423,7 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
 
-                 wwc_w(1,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
                  
                  ! right state
                  wwor = B1*(ccy(5,1,j-1)*wwc(n,5)+ccy(4,1,j-1)*wwc(n,4) &
@@ -438,44 +437,43 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
                  
-                 wwc_w(2,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
-              temp1 = wwc_w(1,1)-wwc_w(1,8)
-              temp2 = wwc_w(1,2)-wwc_w(1,7)
-              temp3 = wwc_w(1,3)-wwc_w(1,5)
+              temp1 = wwc_w(1,1)-wwc_w(8,1)
+              temp2 = wwc_w(2,1)-wwc_w(7,1)
+              temp3 = wwc_w(3,1)-wwc_w(5,1)
               qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
               qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
               qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
 
-              temp1 = wwc_w(1,1)+wwc_w(1,8)
-              temp2 = wwc_w(1,2)+wwc_w(1,7)
-              temp3 = wwc_w(1,3)+wwc_w(1,5)
-              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(1,4)
+              temp1 = wwc_w(1,1)+wwc_w(8,1)
+              temp2 = wwc_w(2,1)+wwc_w(7,1)
+              temp3 = wwc_w(3,1)+wwc_w(5,1)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,1)
               qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
-              qqr(6) = wwc_w(1,6) + wwc_w(1,9)
+              qqr(6) = wwc_w(6,1) + wwc_w(9,1)
               qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
               qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
-              qqr(9) = ch*(-wwc_w(1,6) + wwc_w(1,9)) 
+              qqr(9) = ch*(-wwc_w(6,1) + wwc_w(9,1)) 
 
-              temp1 = wwc_w(2,1)-wwc_w(2,8)
-              temp2 = wwc_w(2,2)-wwc_w(2,7)
-              temp3 = wwc_w(2,3)-wwc_w(2,5)
+              temp1 = wwc_w(1,2)-wwc_w(8,2)
+              temp2 = wwc_w(2,2)-wwc_w(7,2)
+              temp3 = wwc_w(3,2)-wwc_w(5,2)
               qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
               qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
               qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
 
-              temp1 = wwc_w(2,1)+wwc_w(2,8)
-              temp2 = wwc_w(2,2)+wwc_w(2,7)
-              temp3 = wwc_w(2,3)+wwc_w(2,5)
-              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(2,4)
+              temp1 = wwc_w(1,2)+wwc_w(8,2)
+              temp2 = wwc_w(2,2)+wwc_w(7,2)
+              temp3 = wwc_w(3,2)+wwc_w(5,2)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,2)
               qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
-              qql(6) = wwc_w(2,6) + wwc_w(2,9)
+              qql(6) = wwc_w(6,2) + wwc_w(9,2)
               qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
               qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
-              qql(9) = ch*(-wwc_w(2,6) + wwc_w(2,9)) 
-
+              qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
@@ -580,7 +578,7 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
 
-                 wwc_w(1,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
               ! right state
                  wwor = B1*(ccz(5,1,k-1)*wwc(n,5)+ccz(4,1,k-1)*wwc(n,4) &
@@ -594,44 +592,43 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
                  
-                 wwc_w(2,n) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               end do
               
               ! characteristic to primitive
-              temp1 = wwc_w(1,1)-wwc_w(1,8)
-              temp2 = wwc_w(1,2)-wwc_w(1,7)
-              temp3 = wwc_w(1,3)-wwc_w(1,5)
+              temp1 = wwc_w(1,1)-wwc_w(8,1)
+              temp2 = wwc_w(2,1)-wwc_w(7,1)
+              temp3 = wwc_w(3,1)-wwc_w(5,1)
               qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
               qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
               qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
 
-              temp1 = wwc_w(1,1)+wwc_w(1,8)
-              temp2 = wwc_w(1,2)+wwc_w(1,7)
-              temp3 = wwc_w(1,3)+wwc_w(1,5)
-              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(1,4)
+              temp1 = wwc_w(1,1)+wwc_w(8,1)
+              temp2 = wwc_w(2,1)+wwc_w(7,1)
+              temp3 = wwc_w(3,1)+wwc_w(5,1)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,1)
               qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
-              qqr(6) = wwc_w(1,6) + wwc_w(1,9)
+              qqr(6) = wwc_w(6,1) + wwc_w(9,1)
               qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
               qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
-              qqr(9) = ch*(-wwc_w(1,6) + wwc_w(1,9)) 
+              qqr(9) = ch*(-wwc_w(6,1) + wwc_w(9,1)) 
 
-              temp1 = wwc_w(2,1)-wwc_w(2,8)
-              temp2 = wwc_w(2,2)-wwc_w(2,7)
-              temp3 = wwc_w(2,3)-wwc_w(2,5)
+              temp1 = wwc_w(1,2)-wwc_w(8,2)
+              temp2 = wwc_w(2,2)-wwc_w(7,2)
+              temp3 = wwc_w(3,2)-wwc_w(5,2)
               qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
               qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
               qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
 
-              temp1 = wwc_w(2,1)+wwc_w(2,8)
-              temp2 = wwc_w(2,2)+wwc_w(2,7)
-              temp3 = wwc_w(2,3)+wwc_w(2,5)
-              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(2,4)
+              temp1 = wwc_w(1,2)+wwc_w(8,2)
+              temp2 = wwc_w(2,2)+wwc_w(7,2)
+              temp3 = wwc_w(3,2)+wwc_w(5,2)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,2)
               qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
-              qql(6) = wwc_w(2,6) + wwc_w(2,9)
+              qql(6) = wwc_w(6,2) + wwc_w(9,2)
               qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
               qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
-              qql(9) = ch*(-wwc_w(2,6) + wwc_w(2,9)) 
-
+              qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))

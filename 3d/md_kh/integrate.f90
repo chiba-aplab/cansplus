@@ -208,7 +208,6 @@ contains
                 +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k))   &
                 )*exp(-dt*ch**2/cp**2)
 
-            if(k == kx/2 .and. i==ix/2) write(*,'(4i4,9e12.3)')n,i,j,k,ro(i,j,k),ee(i,j,k),rx(i,j,k),ry(i,j,k),rz(i,j,k),bx(i,j,k),by(i,j,k),bz(i,j,k),phi(i,j,k)
         enddo
      enddo
   enddo
