@@ -140,21 +140,22 @@ contains
            vx(i,j,k) = -v0/2.*(1.+tanh(y(j)/lmd))
            vy(i,j,k) = 0.01*v0*sin(pi2*x(i)/(xmax-xmin))/cosh(y(j)/lmd)**2
            vz(i,j,k) = 0.D0
+           ro(i,j,k) = 0.5*ro0*( (1.-rr)*tanh(y(j)/lmd)+1.+rr )
            phi(i,j,k) = 0.d0
            eta(i,j,k) = 0.d0
         enddo
      enddo
   enddo
-  s0 = 0.5*beta/ro0**gm
-  s1 = pr(1,1,1)/(ro0*rr)**gm
-  do k=1,kx
-     do j=1,jx
-        do i=1,ix
-           s = 0.5*( (s0-s1)*tanh(y(j)/lmd)+s0+s1 )
-           ro(i,j,k) = (pr(i,j,k)/s)**(1.d0/gm)
-        enddo
-     enddo
-  enddo
+!  s0 = 0.5*beta/ro0**gm
+!  s1 = pr(1,1,1)/(ro0*rr)**gm
+!  do k=1,kx
+!     do j=1,jx
+!        do i=1,ix
+!           s = 0.5*( (s0-s1)*tanh(y(j)/lmd)+s0+s1 )
+!           ro(i,j,k) = (pr(i,j,k)/s)**(1.d0/gm)
+!        enddo
+!     enddo
+!  enddo
 
 end subroutine model_setup
 
