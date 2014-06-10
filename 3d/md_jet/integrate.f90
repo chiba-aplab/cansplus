@@ -17,7 +17,7 @@ contains
   use convert
   use lr_state, only : lr_state__MP5
   use flux_calc
-  use getcurrent, only : getcurrent__cyl
+  use getEta
   use bnd
   
   integer,intent(in) :: ix,jx,kx,margin
@@ -92,10 +92,7 @@ contains
 
   do n=1,2
 
-  call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
-       ,curx,cury,curz)
-
-  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta)
+  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,x,dx,dy,dz,eta0,vc,eta,curx,cury,curz)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -112,14 +109,14 @@ contains
 
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,margin,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
-  call flux_calc__fbres(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
        ,fbyxr)
-  call flux_calc__fbres(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
        ,fbzxr)
-  call flux_calc__feres(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
        ,feexr)
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
@@ -136,14 +133,14 @@ contains
 
   call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-  call flux_calc__fbres(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
        ,fbzyr)
-  call flux_calc__fbres(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
        ,fbxyr)
-  call flux_calc__feres(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
@@ -160,14 +157,14 @@ contains
 
   call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,margin,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
-  call flux_calc__fbres(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
        ,fbxzr)
-  call flux_calc__fbres(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
        ,fbyzr)
-  call flux_calc__feres(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
@@ -263,7 +260,7 @@ contains
   use convert
   use lr_state, only : lr_state__MP5
   use flux_calc
-  use getcurrent, only : getcurrent__cyl
+  use getEta
   use bnd
 
   integer,intent(in) :: ix,jx,kx,margin
@@ -318,7 +315,7 @@ contains
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
-  real(8) :: te
+  real(8) ::	 te
   real(8),dimension(ix,jx,kx) :: eta
   real(8),dimension(ix,jx,kx) :: curx,cury,curz
 
@@ -339,10 +336,7 @@ contains
 
   do n=1,3
 
-  call getcurrent__cyl(bx,by,bz,ix,jx,kx,x,dx,dy,dz &
-       ,curx,cury,curz)
-
-  call getEta(ix,jx,kx,ro,curx,cury,curz,eta0,vc,eta)
+  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,x,dx,dy,dz,eta0,vc,eta,curx,cury,curz)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -359,14 +353,14 @@ contains
 
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,margin,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
-  call flux_calc__fbres(mdir,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
        ,fbyxr)
-  call flux_calc__fbres(mdir,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
        ,fbzxr)
-  call flux_calc__feres(mdir,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
        ,feexr)
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
@@ -383,14 +377,14 @@ contains
 
   call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-  call flux_calc__fbres(mdir,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
        ,fbzyr)
-  call flux_calc__fbres(mdir,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
        ,fbxyr)
-  call flux_calc__feres(mdir,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
@@ -407,14 +401,14 @@ contains
 
   call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,margin,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
-  call flux_calc__fbres(mdir,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
        ,fbxzr)
-  call flux_calc__fbres(mdir,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
        ,fbyzr)
-  call flux_calc__feres(mdir,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
        ,feezr)
 
 !-----Step 2.---------------------------------------------------------|

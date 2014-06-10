@@ -10,7 +10,7 @@ contains
 
 
   subroutine integrate__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                            ,gx,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                            ,gx,gy,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                             ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                             ,eta0,vc,eta,ccx,ccy,ccz,xin)
 
@@ -31,7 +31,7 @@ contains
   real(8),intent(in) :: xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
-  real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
+  real(8),dimension(ix,jx,kx),intent(in) :: gx,gy,gz
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr,vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(inout) :: phi
@@ -105,7 +105,7 @@ contains
 
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,margin,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
 !-----Step 1b.---------------------------------------------------------|
@@ -123,7 +123,7 @@ contains
 
   call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
 !-----Step 1c.---------------------------------------------------------|
@@ -141,7 +141,7 @@ contains
 
   call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,margin,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
 !-----Step 2.---------------------------------------------------------|
@@ -307,7 +307,7 @@ contains
 
   call flux_calc__glm(bx_m,phi_m,ch,fbxx,fphix,ix,jx,kx)
   
-  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,margin,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
 !-----Step 1b.---------------------------------------------------------|
@@ -325,7 +325,7 @@ contains
 
   call flux_calc__glm(by_m,phi_m,ch,fbyy,fphiy,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
 !-----Step 1c.---------------------------------------------------------|
@@ -343,7 +343,7 @@ contains
 
   call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
 
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,ix,jx,kx &
+  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,margin,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
 !-----Step 2.---------------------------------------------------------|

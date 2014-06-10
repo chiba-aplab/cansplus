@@ -9,7 +9,7 @@ module const
 
 ! time control parameters
   logical           :: restart = .false. ! if .true. then start from restart data
-  real(8),parameter :: tend = 200.0d0, dtout = tend/100
+  real(8),parameter :: tend = 200.0d0, dtout = 4
   integer,parameter :: nstop = 100000
   real(8),parameter :: dtmin = 1d-10! minimum time step
   character(*),parameter :: input_dir = "./data/", output_dir = "./data/"

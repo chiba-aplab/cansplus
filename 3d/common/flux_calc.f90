@@ -6,14 +6,16 @@ module flux_calc
   public :: flux_calc__hll, flux_calc__hlld, flux_calc__glm, flux_calc__bp, &
             flux_calc__fbres, flux_calc__feres
 
+  real(8), parameter :: eps=1d-40
+
 
 contains
 
 
-  subroutine flux_calc__hll(row,prw,vxw,vyw,vzw,bx,byw,bzw,gm,ix,jx,kx &
+  subroutine flux_calc__hll(row,prw,vxw,vyw,vzw,bx,byw,bzw,gm,margin,ix,jx,kx &
                            ,fro,fee,frx,fry,frz,fby,fbz)
 
-  integer,intent(in) :: ix,jx,kx
+  integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: gm
 ! primitive variables :: 1 = left state , 2 = right state
   real(8),dimension(ix,jx,kx,2),intent(in) :: row,prw,vxw,vyw,vzw
@@ -51,9 +53,9 @@ contains
   real(8) :: cfl,cfr
   integer :: i,j,k
 
-  do k=2,kx-2
-     do j=2,jx-2
-        do i=2,ix-2
+  do k=margin,kx-margin
+     do j=margin,jx-margin
+        do i=margin,ix-margin
 
 !----- Step 0. ----------------------------------------------------------|
 ! set L/R-state
@@ -113,8 +115,8 @@ contains
            gpbl = gmpl+2.0d0*pbl
            gpbr = gmpr+2.0d0*pbr
            
-           cfl = sqrt((gpbl + sqrt(gpbl**2-4.0d0*gmpl*bxsq))/(2.0d0*rol))
-           cfr = sqrt((gpbr + sqrt(gpbr**2-4.0d0*gmpr*bxsq))/(2.0d0*ror))
+           cfl = sqrt((gpbl + sqrt(max(eps,gpbl*gpbl-4.0d0*gmpl*bxsq)))/(2.0d0*rol))
+           cfr = sqrt((gpbr + sqrt(max(eps,gpbr*gpbr-4.0d0*gmpr*bxsq)))/(2.0d0*ror))
            
            sl = min(vxl,vxr)-max(cfl,cfr)
            sr = max(vxl,vxr)+max(cfl,cfr)
@@ -184,7 +186,7 @@ contains
   end subroutine flux_calc__hll
 
 
-  subroutine flux_calc__hlld(row,prw,vxw,vyw,vzw,bx,byw,bzw,gm,ix,jx,kx &
+  subroutine flux_calc__hlld(row,prw,vxw,vyw,vzw,bx,byw,bzw,gm,margin,ix,jx,kx &
                             ,fro,fee,frx,fry,frz,fby,fbz)
 !=====================================================================
 !
@@ -206,7 +208,7 @@ contains
 !   f**      :: numerical flux
 !=====================================================================
 
-  integer,intent(in) :: ix,jx,kx ! array size
+  integer,intent(in) :: ix,jx,kx,margin ! array size
   real(8),intent(in) :: gm       ! specific heat rate
 ! primitive variables :: 1 = left state , 2 = right state
   real(8),dimension(ix,jx,kx,2),intent(in) :: row,prw,vxw,vyw,vzw
@@ -279,15 +281,14 @@ contains
   
   integer :: i,j,k  
 ! no if
-  real(8), parameter :: eps=1d-40
   real(8) :: sign1,igm,itf,maxs1,mins1,abbx
   real(8) :: msl,mslst,msm,msrst,msr
 
   igm = 1.0d0/(gm-1.0d0)
 
-  do k=2,kx-2
-     do j=2,jx-2
-        do i=2,ix-2
+  do k=margin,kx-margin
+     do j=margin,jx-margin
+        do i=margin,ix-margin
 
 !----- Step 0. ----------------------------------------------------------|
 ! set L/R-state
@@ -344,8 +345,8 @@ contains
            gpbl = gmpl+2.0d0*pbl
            gpbr = gmpr+2.0d0*pbr
            
-           cfl = sqrt((gpbl + sqrt(gpbl*gpbl-4.0d0*gmpl*bxsq))*0.5d0/rol)
-           cfr = sqrt((gpbr + sqrt(gpbr*gpbr-4.0d0*gmpr*bxsq))*0.5d0/ror)
+           cfl = sqrt((gpbl + sqrt(max(eps,gpbl*gpbl-4.0d0*gmpl*bxsq)))*0.5d0/rol)
+           cfr = sqrt((gpbr + sqrt(max(eps,gpbr*gpbr-4.0d0*gmpr*bxsq)))*0.5d0/ror)
            
            sl = min(vxl,vxr)-max(cfl,cfr)
            sr = max(vxl,vxr)+max(cfl,cfr)
@@ -542,9 +543,14 @@ contains
            fbz(i,j,k) = (fbzl-msl*bzl-bzlst*temp+bzldst*mslst)*maxs1 &
                 +(fbzr-msr*bzr-bzrst*temp1+bzrdst*msrst)*mins1
 
+           if(isnan(fro(i,j,k)) .and. k > margin)then
+              write(*,'(i,5e12.3)')k,gpbl,gmpl,bxsq,rol,gpbl*gpbl-4.0d0*gmpl*bxsq
+              stop
+           endif
         end do
      end do
   enddo
+
 
   end subroutine flux_calc__hlld
 
@@ -601,10 +607,10 @@ contains
   end subroutine flux_calc__bp
 
 
-  subroutine flux_calc__fbres(mdir,ix,jx,kx,fbx,curx,eta,pm &
+  subroutine flux_calc__fbres(mdir,margin,ix,jx,kx,fbx,curx,eta,pm &
                              ,fbx_res)
 
-  integer,intent(in) :: ix,jx,kx,mdir
+  integer,intent(in) :: ix,jx,kx,mdir,margin
 ! +1 or -1, consistency between Electric fields and numerical flux
   real(8),intent(in) :: pm
   real(8),dimension(ix,jx,kx),intent(in) :: fbx,curx,eta
@@ -616,9 +622,9 @@ contains
 ! Average eta*current at cell curface
 ! Flux at i+1/2
   if(mdir == 1)then
-     do k=2,kx-2
-        do j=2,jx-2
-           do i=2,ix-2
+     do k=margin,kx-margin
+        do j=margin,jx-margin
+           do i=margin,ix-margin
               fres = 0.5d0*pm*(eta(i,j,k)*curx(i,j,k) &
                    +eta(i+1,j,k)*curx(i+1,j,k))
 
@@ -628,9 +634,9 @@ contains
      end do
 ! Flux at j+1/2
   else if(mdir == 2)then
-     do k=2,kx-2
-        do j=2,jx-2
-           do i=2,ix-2
+     do k=margin,kx-margin
+        do j=margin,jx-margin
+           do i=margin,ix-margin
               fres = 0.5d0*pm*(eta(i,j,k)*curx(i,j,k) &
                    +eta(i,j+1,k)*curx(i,j+1,k))
               fbx_res(i,j,k) = fbx(i,j,k)+fres
@@ -639,9 +645,9 @@ contains
      end do
 ! Flux at k+1/2
   else
-     do k=2,kx-2
-        do j=2,jx-2
-           do i=2,ix-2
+     do k=margin,kx-margin
+        do j=margin,jx-margin
+           do i=margin,ix-margin
               fres = 0.5d0*pm*(eta(i,j,k)*curx(i,j,k) &
                    +eta(i,j,k+1)*curx(i,j,k+1))
               fbx_res(i,j,k) = fbx(i,j,k)+fres
@@ -653,10 +659,10 @@ contains
   end subroutine flux_calc__fbres
 
 
-  subroutine flux_calc__feres(mdir,ix,jx,kx,fee,curx,cury,curz,bx,by,bz,eta &
+  subroutine flux_calc__feres(mdir,margin,ix,jx,kx,fee,curx,cury,curz,bx,by,bz,eta &
                             ,fee_res)
 
-  integer,intent(in) :: ix,jx,kx,mdir
+  integer,intent(in) :: ix,jx,kx,mdir,margin
   real(8),dimension(ix,jx,kx),intent(in) :: fee,curx,cury,curz,bx,by,bz,eta
   real(8),dimension(ix,jx,kx),intent(out) :: fee_res
 
@@ -666,9 +672,9 @@ contains
 ! Average eta*current at cell curface
 ! Flux at i+1/2
   if(mdir == 1)then
-     do k=2,kx-2
-        do j=2,jx-2
-           do i=2,ix-2
+     do k=margin,kx-margin
+        do j=margin,jx-margin
+           do i=margin,ix-margin
               fres =0.5d0*(eta(i,j,k)*(cury(i,j,k)*bz(i,j,k)-curz(i,j,k)*by(i,j,k)) &
                    +eta(i+1,j,k)*(cury(i+1,j,k)*bz(i+1,j,k)-curz(i+1,j,k)*by(i+1,j,k)))
               fee_res(i,j,k) = fee(i,j,k)+fres
@@ -677,9 +683,9 @@ contains
      end do
 ! Flux at j+1/2
   else if(mdir == 2)then
-     do k=2,kx-2
-        do j=2,jx-2
-           do i=2,ix-2
+     do k=margin,kx-margin
+        do j=margin,jx-margin
+           do i=margin,ix-margin
               fres =0.5d0*(eta(i,j,k)*(curz(i,j,k)*bx(i,j,k)-curx(i,j,k)*bz(i,j,k)) &
                    +eta(i,j+1,k)*(curz(i,j+1,k)*bx(i,j+1,k)-curx(i,j+1,k)*bz(i,j+1,k)))
               fee_res(i,j,k) = fee(i,j,k)+fres
@@ -688,9 +694,9 @@ contains
      end do
 ! Flux at k+1/2
   else
-     do k=2,kx-2
-        do j=2,jx-2
-           do i=2,ix-2
+     do k=margin,kx-margin
+        do j=margin,jx-margin
+           do i=margin,ix-margin
               fres =0.5d0*(eta(i,j,k)*(curx(i,j,k)*by(i,j,k)-cury(i,j,k)*bx(i,j,k)) &
                    +eta(i,j,k+1)*(curx(i,j,k+1)*by(i,j,k+1)-cury(i,j,k+1)*bx(i,j,k+1)))
               fee_res(i,j,k) = fee(i,j,k)+fres
