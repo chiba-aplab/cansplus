@@ -115,8 +115,8 @@ contains
            gpbl = gmpl+2.0d0*pbl
            gpbr = gmpr+2.0d0*pbr
            
-           cfl = sqrt((gpbl + sqrt(max(eps,gpbl*gpbl-4.0d0*gmpl*bxsq)))/(2.0d0*rol))
-           cfr = sqrt((gpbr + sqrt(max(eps,gpbr*gpbr-4.0d0*gmpr*bxsq)))/(2.0d0*ror))
+           cfl = sqrt((gpbl + sqrt((gmpl-2.0d0*pbl)**2+4.0d0*gmpl*(byl**2+bzl**2)))/(2.0d0*rol))
+           cfr = sqrt((gpbr + sqrt((gmpr-2.0d0*pbr)**2+4.0d0*gmpr*(byr**2+bzr**2)))/(2.0d0*ror))
            
            sl = min(vxl,vxr)-max(cfl,cfr)
            sr = max(vxl,vxr)+max(cfl,cfr)
@@ -345,8 +345,8 @@ contains
            gpbl = gmpl+2.0d0*pbl
            gpbr = gmpr+2.0d0*pbr
            
-           cfl = sqrt((gpbl + sqrt(max(eps,gpbl*gpbl-4.0d0*gmpl*bxsq)))*0.5d0/rol)
-           cfr = sqrt((gpbr + sqrt(max(eps,gpbr*gpbr-4.0d0*gmpr*bxsq)))*0.5d0/ror)
+           cfl = sqrt((gpbl + sqrt((gmpl-2.0d0*pbl)**2+4.0d0*gmpl*(byl**2+bzl**2)))*0.5d0/rol)
+           cfr = sqrt((gpbr + sqrt((gmpr-2.0d0*pbr)**2+4.0d0*gmpr*(byr**2+bzr**2)))*0.5d0/ror)
            
            sl = min(vxl,vxr)-max(cfl,cfr)
            sr = max(vxl,vxr)+max(cfl,cfr)
