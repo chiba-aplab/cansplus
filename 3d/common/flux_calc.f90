@@ -542,11 +542,6 @@ contains
                 +(fbyr-msr*byr-byrst*temp1+byrdst*msrst)*mins1
            fbz(i,j,k) = (fbzl-msl*bzl-bzlst*temp+bzldst*mslst)*maxs1 &
                 +(fbzr-msr*bzr-bzrst*temp1+bzrdst*msrst)*mins1
-
-           if(isnan(fro(i,j,k)) .and. k > margin)then
-              write(*,'(i,5e12.3)')k,gpbl,gmpl,bxsq,rol,gpbl*gpbl-4.0d0*gmpl*bxsq
-              stop
-           endif
         end do
      end do
   enddo
