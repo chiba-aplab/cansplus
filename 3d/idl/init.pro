@@ -2,7 +2,7 @@
 
 ;; set path environment
 !path = expand_path('./') +':'+!path
-!path = getenv('CANSPLUS_DIR')+'3d/idl/'+':'+!path
+!path = getenv('CANSPLUS_DIR')+'/3d/idl/'+':'+!path
 
 ;; set color map for 24-bit display
 device, decomposed=0, retain=2, true_color=24
