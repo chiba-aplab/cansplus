@@ -435,5 +435,9 @@ for l=0L,nd-1 do begin
    endfor
 endfor
 
+data = reform(data[margin:igx-1-margin,margin:jgx-1-margin,margin:kgx-1-margin,0:nd-1])
+x = reform(x[margin:igx-1-margin])
+y = reform(y[margin:jgx-1-margin])
+z = reform(z[margin:kgx-1-margin])
 
 end
