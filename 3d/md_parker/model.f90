@@ -12,7 +12,7 @@ module model
 contains
 
   
-  subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi         &
+  subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi        &
                       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                       ,x,dx,xm,y,dy,ym,z,dz,zm &
                       ,gx,gz,eta,min_dx)

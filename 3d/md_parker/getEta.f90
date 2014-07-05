@@ -30,19 +30,13 @@ contains
                       ,curx,cury,curz)
   
   etamax=0.01d0
-!  do k=2,kx-1
-!     do j=2,jx-1
-!        do i=2,ix-1
   do k=1,kx
      do j=1,jx
         do i=1,ix
            cur_abs = sqrt(+curx(i,j,k)*curx(i,j,k)+cury(i,j,k)*cury(i,j,k) &
                           +curz(i,j,k)*curz(i,j,k))
            vd = cur_abs/ro(i,j,k)
-
-           flag = max(sign(1.0d0,ro(i,j,k)-1.0d-2),0.0d0)
-!           eta(i,j,k) = flag*min(etamax,eta0*(max((vd/vc-1.0d0),0.0d0)**2))
-           eta(i,j,k) = eta0
+           eta(i,j,k) = min(etamax,eta0*(max((vd/vc-1.0d0),0.0d0)**2))
         end do
      end do
   end do

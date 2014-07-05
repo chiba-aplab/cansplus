@@ -4,8 +4,6 @@ TARGET = a.out
 OBJS =  openfile.o const.o model.o init.o \
 	integrate.o bnd.o main.o 
 
-#  mpirun -l -np 16 ./a.out
-
 .PHONY : all 
 .PHONY : clean
 .SUFFIXES :
