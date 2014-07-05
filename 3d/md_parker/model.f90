@@ -199,22 +199,22 @@ contains
   enddo
  
 !----------------------------------------------------------------------|
-! set initial mocel  
+! set initial model  
   den0(kzero) = ro0
   pre0(kzero) = pr0 * tem0(kzero)
 
   ! set density pressure
   do k=kzero+1,kgx
     den0(k) = den0(k-1)   &
-   *((1+rbetacr(k-1)+rbeta(k-1))*tem0(k-1)+0.5d0*gm*gzm0(k-1)*dzg(k-1)) &
-   /((1+rbetacr(k)  +rbeta(k)  )*tem0(k)  -0.5d0*gm*gzm0(k-1)*dzg(k-1))
+   *((1+rbeta(k-1))*tem0(k-1)+0.5d0*gm*gzm0(k-1)*dzg(k-1)) &
+   /((1+rbeta(k)  )*tem0(k)  -0.5d0*gm*gzm0(k-1)*dzg(k-1))
     pre0(k) = pre0(kzero) &
    *(den0(k)/den0(kzero))*(tem0(k)/ tem0(kzero))
   enddo
   do k=kzero-1,1,-1
     den0(k) = den0(k+1)  &
-   *((1+rbetacr(k+1)+rbeta(k+1))*tem0(k+1)-0.5d0*gm*gzm0(k)*dzg(k)) &
-   /((1+rbetacr(k  )+rbeta(k)  )*tem0(k)  +0.5d0*gm*gzm0(k)*dzg(k))
+   *((1+rbeta(k+1))*tem0(k+1)-0.5d0*gm*gzm0(k)*dzg(k)) &
+   /((1+rbeta(k)  )*tem0(k)  +0.5d0*gm*gzm0(k)*dzg(k))
     pre0(k) = pre0(kzero) &
    *(den0(k)/den0(kzero))*(tem0(k)/ tem0(kzero))
   enddo
@@ -232,15 +232,13 @@ contains
          ro(i,j,k)=den0(kg)
          pr(i,j,k)=pre0(kg)
          vx(i,j,k)=0.0d0
-         vy(i,j,k)= amp*sin(2*pi*y(j)/ylamd)                       &
-         *((tanh((zg(kg)-yptb1)/wptb1)-tanh((zg(kg)-yptb2)/wptb2)) &
-            - (tanh((zg(kg)-yptb3)/wptb2)-tanh((zg(kg)-yptb4)/wptb1)))
+         vy(i,j,k)=0.0d0 
          vz(i,j,k)=0.0d0
          bx(i,j,k)=0.0d0
          by(i,j,k)=bmx0(kg)
          bz(i,j,k)=0.0d0
          eta(i,j,k)=0.0d0
-         phi(i,j,k) = 0.0d0
+         phi(i,j,k)=0.0d0
 
          roi(i,j,k)=den0(kg)
          pri(i,j,k)=pre0(kg)
@@ -250,12 +248,38 @@ contains
          bxi(i,j,k)=0.0d0
          byi(i,j,k)=bmx0(kg)
          bzi(i,j,k)=0.0d0
-         phii(i,j,k) = 0.0d0
+         phii(i,j,k)=0.0d0
+        enddo
+     enddo
+  enddo
+
+  call pertub(vx,vy,vz,x,ix,y,jx,z,kx)
+
+  return
+  end subroutine model_setup
+
+
+  subroutine pertub(vx,vy,vz,x,ix,y,jx,z,kx)
+  real(8),dimension(ix)      ,intent(out) :: x
+  real(8),dimension(jx)      ,intent(out) :: y
+  real(8),dimension(kx)      ,intent(out) :: z
+  real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
+  integer :: i,j,k
+
+  do k=1,kx
+     do j=1,jx
+        do i=1,ix
+         vx(i,j,k)=0.0d0
+         vy(i,j,k)= amp*sin(2*pi*y(j)/ylamd)                      &
+            *((tanh((z(k)-yptb1)/wptb1)-tanh((z(k)-yptb2)/wptb2)) &
+            - (tanh((z(k)-yptb3)/wptb2)-tanh((z(k)-yptb4)/wptb1)))
+         vz(i,j,k)=0.0d0
         enddo
      enddo
   enddo
 
   return
-end subroutine model_setup
+  end subroutine pertub
+
 
 end module model

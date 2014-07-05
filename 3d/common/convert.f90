@@ -79,7 +79,7 @@ contains
   do k=1,kx
      do j=1,jx
         do i=1,ix
-           temppr = pr(i,j,k) * 1d-8
+           temppr = pr(i,j,k) * 1d0
            roinverse = 1d0/ro(i,j,k)
            vx(i,j,k) = rx(i,j,k) * roinverse
            vy(i,j,k) = ry(i,j,k) * roinverse
@@ -93,6 +93,9 @@ contains
            temp2 = -min(0d0,signpr)
            pr(i,j,k) = temp1*pr(i,j,k) + temp2*temppr
            ee(i,j,k) = pr(i,j,k)*igm + 0.5d0*vsq*ro(i,j,k) +pb
+
+           pbeta = pr(i,j,k)/(pb+1.d-20)
+           pr(i,j,k) = max(1.d-2,pbeta)*(pb+1.d-20)
         enddo
      enddo
   end do
