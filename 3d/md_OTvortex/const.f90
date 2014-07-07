@@ -5,15 +5,18 @@ module const
 ! physical constants
   real(8),parameter :: pi = acos(-1.0d0), pi2 = 2d0*pi
   real(8),parameter :: gm = 5d0/3d0 ! specific heat retio
-  real(8),parameter :: safety = 0.3d0 ! CFL number
 
 ! time control parameters
-  logical           :: restart = .false. ! if .true. then start from restart data
-  real(8),parameter :: tend = pi, dtout = tend/10
+  logical,parameter :: restart = .false. ! if .true. then start from restart data
   integer,parameter :: nstop = 100000
+  real(8),parameter :: safety = 0.3d0 ! CFL number
+  real(8),parameter :: tend = pi, dtout = tend/10
   real(8),parameter :: dtmin = 1d-10! minimum time step
+
+! Output DIRs
   character(*),parameter :: input_dir = "./data/", output_dir = "./data/"
-! grid & MPI
+
+! Cell & MPI
   integer,parameter :: margin = 3 ! for 5th order interpolation
   integer,parameter :: ix = 50+2*margin,jx=100+2*margin,kx=1+2*margin
   integer,parameter :: mpisize_x = 4, mpisize_y = 2,mpisize_z = 1

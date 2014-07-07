@@ -17,8 +17,6 @@ contains
                       ,x,dx,xm,y,dy,ym,z,dz,zm &
                       ,gx,gz,eta,min_dx)
 
-  implicit none
-
 !---Input & Output
   real(8),dimension(ix)      ,intent(out) :: x,dx
   real(8),dimension(0:ix)    ,intent(out) :: xm  
@@ -253,13 +251,12 @@ contains
      enddo
   enddo
 
-  call pertub(vx,vy,vz,x,ix,y,jx,z,kx)
+  call pertub(vx,vy,vz,x,y,z)
 
-  return
   end subroutine model_setup
 
 
-  subroutine pertub(vx,vy,vz,x,ix,y,jx,z,kx)
+  subroutine pertub(vx,vy,vz,x,y,z)
   real(8),dimension(ix)      ,intent(out) :: x
   real(8),dimension(jx)      ,intent(out) :: y
   real(8),dimension(kx)      ,intent(out) :: z
@@ -278,7 +275,6 @@ contains
      enddo
   enddo
 
-  return
   end subroutine pertub
 
 

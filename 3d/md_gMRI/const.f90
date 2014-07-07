@@ -2,49 +2,46 @@ module const
 
   implicit none
  
-  integer,parameter :: margin=3
-  integer,parameter :: ix = 16+2*margin,jx=32+2*margin,kx=16+2*margin
-  real(8),parameter :: pi= acos(-1.0d0)            ! circular constant
+! physical constants
+  real(8),parameter :: pi= acos(-1.0d0)
   real(8),parameter :: pi2=2.0d0*pi
+  real(8),parameter :: gm=5.d0/3.d0    ! specific heat retio
 
 !--------------------------------------------------------------------------
-!  MPI
+!   time control parameters
+  logical,parameter :: restart = .false.     ! if ".true." then start from restart data
+  integer,parameter :: nstop = int(2.d6)       !number of total time steps for the run
+  real(8),parameter :: tend  = pi2*4.d1
+  real(8),parameter :: dtout = pi2/1.d1
+  real(8),parameter :: safety=0.2d0
+  real(8),parameter :: dtmin=1.d-10
+
+! Output DIRs
+  character(*),parameter :: input_dir = "./data/", output_dir = "./data/"
+
+!--------------------------------------------------------------------------
+! Cell & MPI
+  integer,parameter :: margin=3
+  integer,parameter :: ix = 16+2*margin,jx=32+2*margin,kx=16+2*margin
   integer,parameter :: mpisize_x=2
   integer,parameter :: mpisize_y=4
   integer,parameter :: mpisize_z=2
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)
-  !TRUE if periodic boundary condition is applied. (1:x, 2:y, 3:z)
-  logical,parameter :: pbcheck(3) = (/.false., .true., .false./) 
-
-!--------------------------------------------------------------------------
-!   time control parameters
-
-  logical :: restart = .false.     ! if ".true." then start from restart data
-  character(*),parameter :: input_dir = "./data/", output_dir = "./data/"
-  real(8),parameter :: tend  = pi2*4.d1
-  real(8),parameter :: dtout = pi2/1.d1
-  integer,parameter :: nstop = int(2.d6)       !number of total time steps for the run
-
-  real(8),parameter :: swtch_t=62.8d0    !  cooling switching 
-
-  real(8),parameter :: safety=0.2d0
-  real(8),parameter :: dtmin=1.d-10
-
-!--------------------------------------------------------------------------
-! model parameter
-
-  !  size 
   real(8),parameter :: xmin = 0.0d0  
   real(8),parameter :: ymin = 0.0d0
   real(8),parameter :: ymax = pi2
   real(8),parameter :: zmin = 0.0d0  
-
-  ! set uniform grid
   real(8),parameter :: dxg0 = 0.01d0
   real(8),parameter :: dyg0 = (ymax-ymin)/real(jgx-margin*2)
   real(8),parameter :: dzg0 = 0.01d0
+  !TRUE if periodic boundary condition is applied. (1:x, 2:y, 3:z)
+  logical,parameter :: pbcheck(3) = (/.false., .true., .false./) 
+
+!--------------------------------------------------------------------------
+! model parameter
+  real(8),parameter :: swtch_t=62.8d0    !  cooling switching 
 
   ! set global non-uniform grid  
   real(8),parameter :: dxmax = 10.0d0*dxg0
@@ -55,7 +52,6 @@ module const
   integer,parameter :: ugrid_zmax=44        ! in case of uniform, ugrid_zmax=0 
 
 ! physical parameter
-  real(8),parameter :: gm=5.d0/3.d0                ! specific heat retio
   real(8),parameter :: beta0=100.d0                ! pressure ratio or plasma beta
 
 !--cooling

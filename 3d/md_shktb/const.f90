@@ -5,12 +5,12 @@ module const
 ! physical constants
   real(8),parameter :: pi = acos(-1.0d0), pi2 = 2d0*pi
   real(8),parameter :: gm = 2d0/1d0 ! specific heat retio
-  real(8),parameter :: safety = 0.3d0 ! CFL number
 
 ! time control parameters
-  logical           :: restart = .false. ! if .true. then start from restart data
-  real(8),parameter :: tend = 0.2d0, dtout = tend/20
+  logical,parameter :: restart = .false. ! if .true. then start from restart data
   integer,parameter :: nstop = 100000
+  real(8),parameter :: safety = 0.3d0 ! CFL number
+  real(8),parameter :: tend = 0.2d0, dtout = tend/20
   real(8),parameter :: dtmin = 1d-10! minimum time step
 
 ! Output DIRs
