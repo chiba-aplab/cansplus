@@ -257,9 +257,9 @@ contains
 
 
   subroutine pertub(vx,vy,vz,x,y,z)
-  real(8),dimension(ix)      ,intent(out) :: x
-  real(8),dimension(jx)      ,intent(out) :: y
-  real(8),dimension(kx)      ,intent(out) :: z
+  real(8),dimension(ix)      ,intent(in) :: x
+  real(8),dimension(jx)      ,intent(in) :: y
+  real(8),dimension(kx)      ,intent(in) :: z
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
   integer :: i,j,k
 
