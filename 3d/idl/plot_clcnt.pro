@@ -14,12 +14,7 @@ pro plot_clcnt, z,xax=xax,yax=yax,ct=ct,sym=sym,maxz=maxz,minz=minz,$
 common wdw, px,py,sx,sy
 
 ;; CHECK INPUT VARIABLE
-if(not(keyword_set(z)))then begin
-    z = file_read()
-    if(n_elements(z) eq 1)then begin
-        if(z eq 0)then return
-    endif
-endif
+if(not(keyword_set(z)))then return
 
 ;; CHECK COLOR TABLE
 if(not(keyword_set(ct)))then ct=0
@@ -139,7 +134,4 @@ loadct, 12, /silent
 
 
 end
-
-
-
 
