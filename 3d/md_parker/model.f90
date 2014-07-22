@@ -14,8 +14,7 @@ contains
   
   subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi        &
                       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
-                      ,x,dx,xm,y,dy,ym,z,dz,zm &
-                      ,gx,gz,eta,min_dx)
+                      ,x,dx,xm,y,dy,ym,z,dz,zm,gy,eta,min_dx)
 
 !---Input & Output
   real(8),dimension(ix)      ,intent(out) :: x,dx
@@ -28,7 +27,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(out) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(out) :: eta,phi
-  real(8),dimension(ix,jx,kx),intent(out) :: gx,gz
+  real(8),dimension(ix,jx,kx),intent(out) :: gy
   real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
   real(8),dimension(ix,jx,kx),intent(out) :: vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(out) :: bxi,byi,bzi,phii
@@ -46,9 +45,8 @@ contains
   real(8),dimension(0:jgx) :: ymg
   real(8),dimension(kgx) :: zg,dzg
   real(8),dimension(0:kgx) :: zmg
-  real(8),dimension(igx,jgx,kgx) :: gxg,gzg
-
-  real(8),dimension(kgx) :: gzm0,tem0,rbeta,rbetacr,den0,pre0,bmx0   
+  real(8),dimension(igx,jgx,kgx) :: gyg
+  real(8),dimension(jgx) :: gym0,tem0,rbeta,den0,pre0,bmx0   
 
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
@@ -160,11 +158,10 @@ contains
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
-        gxg(i,j,k)=0.0d0
-        gzg(i,j,k)= - g0 * tanh(zg(k)/wg0)
+        gyg(i,j,k)= - g0 * tanh(yg(j)/wg)
         end do
+        gym0(j)= - g0 * tanh((yg(j)+0.5d0*dyg(j))/wg)
      end do
-        gzm0(k)= - g0 * tanh((zg(k)+0.5d0*dzg(k))/wg0)
   end do
 
 !--Step 3b.----------------------------------------------------------|
@@ -175,50 +172,49 @@ contains
            ig = mpid%mpirank_3d(1)*(ix-2*margin)+i
            jg = mpid%mpirank_3d(2)*(jx-2*margin)+j
            kg = mpid%mpirank_3d(3)*(kx-2*margin)+k
-           gx(i,j,k) = gxg(ig,jg,kg)
-           gz(i,j,k) = gzg(ig,jg,kg)
+           gy(i,j,k) = gyg(ig,jg,kg)
         enddo
      enddo
   enddo
  
 !-------------------------
 !   temperature
-  do k=1,kgx
-    tem0(k)=1.d0 + &
-           0.5d0*(tcor-1.d0)*(tanh((abs(zg(k))-ztr)/wtr)+1.d0)
+  do j=1,jgx
+    tem0(j)=1.d0 + &
+           0.5d0*(tcor-1.d0)*(tanh((abs(yg(j))-ytr)/wtr)+1.d0)
   enddo
 
 !-------------------------
 !   pressure ratio
-  do k=1,kgx
-          af1 = (  tanh((zg(k)-zf1)/wf0) + 1.d0)*0.5d0
-          af2 = ( -tanh((zg(k)-zf2)/wf0) + 1.d0)*0.5d0
-    rbeta(k) = abs(alpha*af1*af2)
+  do j=1,jgx
+          af1 = (  tanh((yg(j)-yf1)/wf0) + 1.d0)*0.5d0
+          af2 = ( -tanh((yg(j)-yf2)/wf0) + 1.d0)*0.5d0
+    rbeta(j) = abs(alpha*af1*af2)
   enddo
  
 !----------------------------------------------------------------------|
 ! set initial model  
-  den0(kzero) = ro0
-  pre0(kzero) = pr0 * tem0(kzero)
+  den0(jzero) = ro0
+  pre0(jzero) = pr0 * tem0(jzero)
 
   ! set density pressure
-  do k=kzero+1,kgx
-    den0(k) = den0(k-1)   &
-   *((1+rbeta(k-1))*tem0(k-1)+0.5d0*gm*gzm0(k-1)*dzg(k-1)) &
-   /((1+rbeta(k)  )*tem0(k)  -0.5d0*gm*gzm0(k-1)*dzg(k-1))
-    pre0(k) = pre0(kzero) &
-   *(den0(k)/den0(kzero))*(tem0(k)/ tem0(kzero))
+  do j=jzero+1,jgx
+    den0(j) = den0(j-1)   &
+   *((1+rbeta(j-1))*tem0(j-1)+0.5d0*gm*gym0(j-1)*dyg(j-1)) &
+   /((1+rbeta(j)  )*tem0(j)  -0.5d0*gm*gym0(j-1)*dyg(j-1))
+    pre0(j) = pre0(jzero) &
+   *(den0(j)/den0(jzero))*(tem0(j)/ tem0(jzero))
   enddo
-  do k=kzero-1,1,-1
-    den0(k) = den0(k+1)  &
-   *((1+rbeta(k+1))*tem0(k+1)-0.5d0*gm*gzm0(k)*dzg(k)) &
-   /((1+rbeta(k)  )*tem0(k)  +0.5d0*gm*gzm0(k)*dzg(k))
-    pre0(k) = pre0(kzero) &
-   *(den0(k)/den0(kzero))*(tem0(k)/ tem0(kzero))
+  do j=jzero-1,1,-1
+    den0(j) = den0(j+1)  &
+   *((1+rbeta(j+1))*tem0(j+1)-0.5d0*gm*gym0(k)*dyg(j)) &
+   /((1+rbeta(j)  )*tem0(j)  +0.5d0*gm*gym0(k)*dyg(j))
+    pre0(j) = pre0(jzero) &
+   *(den0(j)/den0(jzero))*(tem0(j)/ tem0(jzero))
   enddo
   ! set magnetic field 
-  do k=1,kgx
-    bmx0(k)  = sqrt(2*pre0(k)*rbeta(k))
+  do j=1,jgx
+    bmx0(j)  = sqrt(2*pre0(j)*rbeta(j))
   enddo
 
   do k=1,kx
@@ -227,24 +223,24 @@ contains
      kg=mpid%mpirank_3d(3)*(kx-2*margin)+k
      jg=mpid%mpirank_3d(2)*(jx-2*margin)+j
      ig=mpid%mpirank_3d(1)*(ix-2*margin)+i
-         ro(i,j,k)=den0(kg)
-         pr(i,j,k)=pre0(kg)
+         ro(i,j,k)=den0(jg)
+         pr(i,j,k)=pre0(jg)
          vx(i,j,k)=0.0d0
          vy(i,j,k)=0.0d0 
          vz(i,j,k)=0.0d0
-         bx(i,j,k)=0.0d0
-         by(i,j,k)=bmx0(kg)
+         bx(i,j,k)=bmx0(jg)
+         by(i,j,k)=0.0d0
          bz(i,j,k)=0.0d0
          eta(i,j,k)=0.0d0
          phi(i,j,k)=0.0d0
 
-         roi(i,j,k)=den0(kg)
-         pri(i,j,k)=pre0(kg)
+         roi(i,j,k)=den0(jg)
+         pri(i,j,k)=pre0(jg)
          vxi(i,j,k)=0.0d0
          vyi(i,j,k)=0.0d0
          vzi(i,j,k)=0.0d0
-         bxi(i,j,k)=0.0d0
-         byi(i,j,k)=bmx0(kg)
+         bxi(i,j,k)=bmx0(jg)
+         byi(i,j,k)=0.0d0
          bzi(i,j,k)=0.0d0
          phii(i,j,k)=0.0d0
         enddo
@@ -266,10 +262,10 @@ contains
   do k=1,kx
      do j=1,jx
         do i=1,ix
-         vx(i,j,k)=0.0d0
-         vy(i,j,k)= amp*sin(2*pi*y(j)/ylamd)                      &
-            *((tanh((z(k)-yptb1)/wptb1)-tanh((z(k)-yptb2)/wptb2)) &
-            - (tanh((z(k)-yptb3)/wptb2)-tanh((z(k)-yptb4)/wptb1)))
+         vx(i,j,k)= amp*sin(2*pi*x(i)/xlamd)                      &
+            *((tanh((y(j)-yptb1)/wptb1)-tanh((y(j)-yptb2)/wptb2)) &
+            - (tanh((y(j)-yptb3)/wptb2)-tanh((y(j)-yptb4)/wptb1)))
+         vy(i,j,k)=0.0d0
          vz(i,j,k)=0.0d0
         enddo
      enddo

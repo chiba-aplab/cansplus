@@ -66,7 +66,7 @@ program main
 
 !---- integrate--------------------------------------------------------|
   call integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                        ,gx,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                        ,gy,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                         ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                         ,eta0,vc,eta,ccx,ccy,ccz,time )
 !----------------------------------------------------------------------|

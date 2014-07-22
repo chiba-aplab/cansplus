@@ -9,7 +9,7 @@ module integrate
 contains
 
   subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
-                              ,gx,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
+                              ,gy,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                               ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                               ,eta0,vc,eta,ccx,ccy,ccz,time)
   use convert
@@ -31,7 +31,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
  real(8),dimension(ix,jx,kx),intent(in) :: phii
-  real(8),dimension(ix,jx,kx),intent(in) :: gx,gz
+  real(8),dimension(ix,jx,kx),intent(in) :: gy
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr,vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(inout) :: phi
@@ -182,15 +182,15 @@ contains
 ! density
            sro = 0.d0
 ! x-momentum
-           srx = ro(i,j,k)*gx(i,j,k)
+           srx = 0.0d0
 ! y-momentum
-           sry = 0.0d0
+           sry = ro(i,j,k)*gy(i,j,k)
 ! z-momentum
-           srz = ro(i,j,k)*gz(i,j,k)
+           srz = 0.0d0
 ! z-magnetic
            sbz = 0.0d0
 ! energy
-           see = ro(i,j,k)*(vx(i,j,k)*gx(i,j,k)+vz(i,j,k)*gz(i,j,k))
+           see = ro(i,j,k)*vy(i,j,k)*gy(i,j,k)
 ! phi
            sphi = 0.0d0
 
