@@ -99,8 +99,8 @@ contains
   enddo
 
 ! Z origin
-  kzero=kgx/2    
-  zmg(kzero)=0.d0
+  kzero=kgx/2-1    
+  zmg(kzero)=-dzg0*0.5d0
   do k=kzero,kgx-1
     zmg(k+1) = zmg(k)+dzg(k+1)
   enddo
@@ -207,8 +207,8 @@ contains
   enddo
   do j=jzero-1,1,-1
     den0(j) = den0(j+1)  &
-   *((1+rbeta(j+1))*tem0(j+1)-0.5d0*gm*gym0(k)*dyg(j)) &
-   /((1+rbeta(j)  )*tem0(j)  +0.5d0*gm*gym0(k)*dyg(j))
+   *((1+rbeta(j+1))*tem0(j+1)-0.5d0*gm*gym0(j)*dyg(j)) &
+   /((1+rbeta(j)  )*tem0(j)  +0.5d0*gm*gym0(j)*dyg(j))
     pre0(j) = pre0(jzero) &
    *(den0(j)/den0(jzero))*(tem0(j)/ tem0(jzero))
   enddo
