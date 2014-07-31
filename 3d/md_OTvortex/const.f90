@@ -19,7 +19,7 @@ module const
 ! Cell & MPI
   integer,parameter :: margin = 3 ! for 5th order interpolation
   integer,parameter :: ix = 50+2*margin,jx=100+2*margin,kx=1+2*margin
-  integer,parameter :: mpisize_x = 4, mpisize_y = 2,mpisize_z = 1
+  integer,parameter :: mpisize_x = 2, mpisize_y = 2,mpisize_z = 1
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)

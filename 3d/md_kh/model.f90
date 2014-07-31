@@ -137,7 +137,7 @@ contains
            by(i,j,k) = 0.d0
            bz(i,j,k) = b0*(0.5*( (1.-br)*tanh(y(j)/lmd)+1.+br ))*sin(theta)
            pr(i,j,k) = 0.5*(beta+1.0)-0.5*(bx(i,j,k)**2+by(i,j,k)**2+bz(i,j,k)**2)
-           vx(i,j,k) = -v0/2.*(1.+tanh(y(j)/lmd))
+           vx(i,j,k) = -v0/2.*tanh(y(j)/lmd)
            vy(i,j,k) = 0.01*v0*sin(pi2*x(i)/(xmax-xmin))/cosh(y(j)/lmd)**2
            vz(i,j,k) = 0.D0
            ro(i,j,k) = 0.5*ro0*( (1.-rr)*tanh(y(j)/lmd)+1.+rr )
