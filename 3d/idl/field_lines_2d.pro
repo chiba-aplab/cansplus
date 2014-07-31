@@ -24,7 +24,7 @@ endelse
 
 r = dblarr(2,nsteps,npos)
 
-for k=0,npos-1 do begin
+for k=0L,npos-1 do begin
     r(0,0,k) = r0(0,k)
     r(1,0,k) = r0(1,k)
 endfor
@@ -58,13 +58,16 @@ for i=1L,nsteps-1 do begin
 	    (r(1,i,k) gt 0) and (r(1,i,k) lt ny-1)
 
     if(not(flags))then begin
-        istop=i
+        istop=i-1
         r(0,istop+1:*,k) = r(0,istop,k)
         r(1,istop+1:*,k) = r(1,istop,k)
         break
     endif
 endfor
 endfor
+
+r[0,*,*,*] = r[0,*,*,*]/nx
+r[1,*,*,*] = r[1,*,*,*]/ny
 
 return, r
 
