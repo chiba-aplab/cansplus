@@ -1,8 +1,8 @@
-pro dacgetparam,file,name,value,swap_endian=swap_endian
+pro dacgetparam,file,name,value
 
 ; check header
 ;
-openr,unit,file,/get_lun,/swap_endian
+openr,unit,file,/get_lun
 tmp=FSTAT(unit) & filesize=tmp.size
 
 str=''
@@ -42,7 +42,7 @@ end
 
 
 pro dacget1d,files,data $
-   ,ix=ix,margin=margin,swap_endian=swap_endian
+   ,ix=ix,margin=margin
 
 if n_elements(msode0) eq 0 then msode0=4
 msode=msode0
@@ -55,7 +55,7 @@ file=files[0]
 
 ; check header
 ;
-openr,unit,file,/get_lun,/swap_endian
+openr,unit,file,/get_lun
 
 L300:
 unity=0L
@@ -139,7 +139,7 @@ for mf=0,mfx-1 do begin
 
 file=files[mf]
 
-dacget1d,file,data0,/swap_endian
+dacget1d,file,data0
 
 if (mf eq 0) then begin
   sz=size(data0)
@@ -178,7 +178,7 @@ end
 
 
 pro dacget3s,files,data,narg=narg $
-   ,ix=ix,jx=jx,kx=kx,nx=nx,narr=narr,ndx=ndx,margin=margin,swap_endian=swap_endian
+   ,ix=ix,jx=jx,kx=kx,nx=nx,narr=narr,ndx=ndx,margin=margin
 
 
 if n_elements(narg) eq 0 then narg=-1
@@ -205,7 +205,7 @@ file=files[0]
 
 ; check header
 ;
-openr,unit,file,/get_lun,/swap_endian
+openr,unit,file,/get_lun
 
 L300:
 unity=0L
@@ -313,7 +313,7 @@ for mf=0,mfx-1 do begin
 file=files[mf]
 
 dacget3s,file,data0,narg=narg $
-   ,ix=ix,jx=jx,kx=kx,nx=nx,narr=narr,ndx=ndx,/swap_endian
+   ,ix=ix,jx=jx,kx=kx,nx=nx,narr=narr,ndx=ndx
 
 if (mf eq 0) then begin
   igx=ix
@@ -352,7 +352,7 @@ return
 end
 
 
-pro dac_read, data, x, y, z, filename, swap_endian=swap_endian
+pro dac_read, data, x, y, z, filename
 
 if(not(keyword_set(filename)))then retall
 
@@ -363,16 +363,16 @@ if(count eq 0) then begin
 endif
 
 dir = file_dirname(flist[0],/mark_directory)
-dacgetparam,dir+'params_rank=0000.txt','gm',gm,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','ix',ix,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','jx',jx,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','kx',kx,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','mpisize',npe,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','margin',margin,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','dtout',dt,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','mpix',mpix,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','mpiy',mpiy,/swap_endian
-dacgetparam,dir+'params_rank=0000.txt','mpiz',mpiz,/swap_endian
+dacgetparam,dir+'params_rank=0000.txt','gm',gm
+dacgetparam,dir+'params_rank=0000.txt','ix',ix
+dacgetparam,dir+'params_rank=0000.txt','jx',jx
+dacgetparam,dir+'params_rank=0000.txt','kx',kx
+dacgetparam,dir+'params_rank=0000.txt','mpisize',npe
+dacgetparam,dir+'params_rank=0000.txt','margin',margin
+dacgetparam,dir+'params_rank=0000.txt','dtout',dt
+dacgetparam,dir+'params_rank=0000.txt','mpix',mpix
+dacgetparam,dir+'params_rank=0000.txt','mpiy',mpiy
+dacgetparam,dir+'params_rank=0000.txt','mpiz',mpiz
 
 igx=ix*mpix-(mpix-1)*margin*2
 jgx=jx*mpiy-(mpiy-1)*margin*2
@@ -388,11 +388,11 @@ for mz=1,mpiz do begin
    for my=1,mpiy do begin
       for mx=1,mpix do begin
          files=dir+'x_rank='+string(mpirank,form='(i4.4)')+'.dac'
-         dacget1d,files,xd,margin=margin,/swap_endian
+         dacget1d,files,xd,margin=margin
          files=dir+'y_rank='+string(mpirank,form='(i4.4)')+'.dac'
-         dacget1d,files,yd,margin=margin,/swap_endian
+         dacget1d,files,yd,margin=margin
          files=dir+'z_rank='+string(mpirank,form='(i4.4)')+'.dac'
-         dacget1d,files,zd,margin=margin,/swap_endian
+         dacget1d,files,zd,margin=margin
          ixs=(mx-1)*(ix-2*margin)+1-1
          ixe=ixs+ix-1
          jxs=(my-1)*(jx-2*margin)+1-1
@@ -421,7 +421,7 @@ for l=0L,nd-1 do begin
       for my=1,mpiy do begin
          for mx=1,mpix do begin
             print, 'Reading...',flist[l*nproc+mpirank]
-            dacget3s,flist[l*nproc+mpirank],temp,margin=margin,/swap_endian
+            dacget3s,flist[l*nproc+mpirank],temp,margin=margin
             ixs=(mx-1)*(ix-2*margin)+1-1
             ixe=ixs+ix-1
             jxs=(my-1)*(jx-2*margin)+1-1
