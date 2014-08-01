@@ -102,7 +102,7 @@ module const
   real(8),parameter :: kk=0.05d0  ! ratio of thermal energy to bulk energy     
 !=== parameter for pol_2D ===
   real(8),parameter :: rhomax = 1.d0 ! maximum rho inside the torus
-  real(8),parameter :: dst = 1.1d0 !distortion of torus
+  real(8),parameter :: dst = 1.5d0 !distortion of torus
   real(8), parameter :: n_poly = 1.d0/(gm-1.d0)
   real(8), parameter :: a_poly = rhomax**(-gm+1.d0)*(0.5d0 - 0.5d0/dst)/(n_poly+1.d0)
 
