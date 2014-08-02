@@ -2,8 +2,8 @@
 pushd,'data'
 dac_read,data,x,y,z,'0011_*'
 popd
-dx = x[1]-x[0]
-dy = y[1]-y[0]
+dx = abs(x[1]-x[0])
+dy = abs(y[1]-y[0])
 
 ;; CALCULATION OF TEMPERATURE
 temperature  = data[*,*,5]/data[*,*,6]

@@ -7,8 +7,8 @@ gr = 0.077
 pushd,'data'
 dac_read,data,x,y,z,'0013*.dac'
 popd
-dx = x[1]-x[0]
-dy = y[1]-y[0]
+dx = abs(x[1]-x[0])
+dy = abs(y[1]-y[0])
 
 ;; DRAW 2D PROFILE WITH IMAGE, VECTOR, COLORBAR IDL NATIVE ROUTINES
 img = image(data[*,*,5],x-dx/2.,y-dy/2.,axis_style=2,xtickdir=1,ytickdir=1,rgb_table=33)
