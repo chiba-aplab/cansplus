@@ -136,9 +136,9 @@ contains
   call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curx,eta,-1.0d0 &
        ,fbzyr)
-  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curz,eta,+1.0d0 &
        ,fbxyr)
   call flux_calc__feres(mdir,margin,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
@@ -380,9 +380,9 @@ contains
   call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curz,eta,-1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curx,eta,-1.0d0 &
        ,fbzyr)
-  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curx,eta,+1.0d0 &
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curz,eta,+1.0d0 &
        ,fbxyr)
   call flux_calc__feres(mdir,margin,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
        ,feeyr)
