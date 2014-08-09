@@ -68,7 +68,6 @@ contains
 ! primitive to conserve
   call convert__ptoc(ix,jx,kx,gm,ro,pr,vx,vy,vz,bx,by,bz &
                     ,rx,ry,rz,ee)
-!  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,dx,dy,dz,eta0,vc,eta,curx,cury,curz
 
   curx=0.d0  
   cury=0.d0  
@@ -85,6 +84,9 @@ contains
   phi1=phi
 
   do n=1,3
+
+!  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,dx,dy,dz, &
+!                         eta0,vc,eta,curx,cury,curz)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction

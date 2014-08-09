@@ -140,7 +140,7 @@ contains
            vx(i,j,k) = -v0/2.*tanh(y(j)/lmd)
            vy(i,j,k) = 0.01*v0*sin(pi2*x(i)/(xmax-xmin))/cosh(y(j)/lmd)**2
            vz(i,j,k) = 0.D0
-           ro(i,j,k) = 0.5*ro0*( (1.-rr)*tanh(y(j)/lmd)+1.+rr )
+           ro(i,j,k) = 0.5*ro0*( (1.-rr)*tanh(y(j)/lmd)+1.+rr )*(1.+0.01*(2.*aa-1.))
            phi(i,j,k) = 0.d0
            eta(i,j,k) = 0.d0
         enddo
