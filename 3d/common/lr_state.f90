@@ -184,7 +184,7 @@ contains
   real(8) :: djp2,qqlr
 
 !----Recipe for rarefaction ---
-  real(8), parameter :: floor=1d-1
+  real(8), parameter :: floor=1d-2
   real(8) :: romaxvalue,prmaxvalue
 
   minmod4(d1,d2,d3,d4) = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2))* &
