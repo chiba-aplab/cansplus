@@ -36,7 +36,7 @@ contains
        call bd_synpx_car(0,margin,bx,ix,jx,kx)
        call bd_synnx_car(0,margin,by,ix,jx,kx)
        call bd_synnx_car(0,margin,bz,ix,jx,kx)
-       call bd_synpx_car(0,margin,phi,ix,jx,kx)
+       call bd_synnx_car(0,margin,phi,ix,jx,kx)
        call bd_synpx_car(0,margin,eta,ix,jx,kx)
     end if
     if(mpid%r == mnull) then
@@ -48,7 +48,7 @@ contains
        call bd_synpx_car(1,margin,bx,ix,jx,kx)
        call bd_synnx_car(1,margin,by,ix,jx,kx)
        call bd_synnx_car(1,margin,bz,ix,jx,kx)
-       call bd_synpx_car(1,margin,phi,ix,jx,kx)
+       call bd_synnx_car(1,margin,phi,ix,jx,kx)
        call bd_synpx_car(1,margin,eta,ix,jx,kx)
     end if
 
