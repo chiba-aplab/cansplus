@@ -29,11 +29,11 @@ module const
   !TRUE if periodic boundary condition is applied. (1:x, 2:y, 3:z)
   logical,parameter :: pbcheck(3) = (/.false., .false., .false./)
 
-! Parameters for the Kelvin-Helmholtz instability
+! Parameters for magnetic reconnection
   real(8),parameter :: ro0   = 1.d0  !at Y=ymax
   real(8),parameter :: b0    = 1.d0  !at Y=ymax
   real(8),parameter :: beta  = 0.2d0 !at Y=ymax, Pressure in B0^2/4pi = beta/2
-  real(8),parameter :: lmd   = 1.d0  !velocity shear width
+  real(8),parameter :: lmd   = 1.d0  !current sheet width
   real(8),parameter :: eta0  = 0.001d0          !resistivity 
   real(8),parameter :: eta1  = 1.0d0/60.0d0     !resistivity 
   real(8),parameter :: amp   = 0.03d0     !perturbation 

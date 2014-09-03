@@ -14,7 +14,7 @@ contains
                               ,eta,ccx,ccy,ccz)
 
   use convert
-  use lr_state, only : lr_state__MP5
+  use lr_state, only : lr_state__MP5, lr_state__MSCL2
   use flux_calc
   use bnd
 
@@ -94,9 +94,12 @@ contains
 !
   mdir = 1
 
-  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
+!  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
+!       ,vx,vy,vz,bx,by,bz,phi &
+!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
+  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
-       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
+       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -117,9 +120,12 @@ contains
 !
   mdir = 2
 
-  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
+!  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
+!       ,vy,vz,vx,by,bz,bx,phi &
+!       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
+  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
-       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
+       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -141,9 +147,12 @@ contains
 !
   mdir = 3
   
-  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
+!  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
+!       ,vz,vx,vy,bz,bx,by,phi &
+!       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
+  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
-       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
+       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)

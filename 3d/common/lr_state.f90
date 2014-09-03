@@ -3,7 +3,7 @@ module lr_state
   implicit none
   private
 
-  public :: lr_state__1st, lr_state__2nd, lr_state__MP5, reconstructionConstant
+  public :: lr_state__1st, lr_state__MSCL2, lr_state__MP5, reconstructionConstant
 
 
 contains
@@ -51,100 +51,450 @@ contains
   end subroutine lr_state__1st
 
 
-  subroutine lr_state__2nd(mdir,ix,jx,kx,dx,dy,dz,qq,qqw)
-!======================================================================
-! Name :: lr_state_minmod
-!         flux limiter :: minmod
-! Input :: 
-!         mdir :: direction 1:x, 2:y, 3:z
-!         ix,jx,kx :: array size
-!         qq :: variables
-! Output :: 
-!         qqw :: qqw(1) :: left state
-!                qqw(2) :: right state
-!
-!======================================================================
 
-  integer,intent(in) :: mdir
-  integer,intent(in) :: ix,jx,kx
+  subroutine lr_state__MSCL2(mdir,ix,jx,kx,&
+                             ro,pr,vx,vy,vz,bx,by,bz,phi,ch,gm,&
+                             row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
+
+  integer,intent(in) :: ix,jx,kx,mdir
+  real(8),intent(in) :: gm,ch
   real(8),dimension(ix),intent(in) :: dx
   real(8),dimension(jx),intent(in) :: dy
   real(8),dimension(kx),intent(in) :: dz
-  real(8),dimension(ix,jx,kx),intent(in) :: qq
-  real(8),dimension(ix,jx,kx,2), intent(out) :: qqw
+  real(8),dimension(ix,jx,kx),intent(in) :: ro,pr,vx,vy,vz,bx,by,bz,phi
+  real(8),dimension(ix,jx,kx,2),intent(out) :: row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw
 
-  integer :: i,j,k
+  integer,parameter :: nwave = 9
+  integer :: i,j,k,l,m,n
+  real(8),dimension(nwave) :: qql,qqr
+  real(8),dimension(nwave,2) :: wwc_w
+  ! ww(*,1) = qqm2, ..
+  real(8),dimension(nwave,3) :: ww,wwc
+  real(8),dimension(nwave,nwave) :: lem,rem
+  real(8) :: wwor,minvalue,smv,psmv,msmv
+  real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
+  real(8) :: temp,temp1,temp2,temp3,ich
   real(8) :: dqqx,dqqy,dqqz
   real(8) :: dqc,dql,dqr
   real(8) :: dxc,dxl,dxr
   real(8) :: dyc,dyl,dyr
   real(8) :: dzc,dzl,dzr
 
-!-----Step 1a.-------------------------------------------------|
-! dqq
-!
-!-----Step 1b.-------------------------------------------------|
-! mdir = 1 :: x-direction
+!----Recipe for rarefaction ---
+  real(8), parameter :: floor=1d-2
+  real(8) :: romaxvalue,prmaxvalue
+
+  ich = 0.5d0/ch
+
   if(mdir == 1)then
+
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              dxl = 0.5d0*(dx(i)+dx(i-1))
-              dxr = 0.5d0*(dx(i+1)+dx(i))
-              dxc = dxl+dxr
 
-              dql = (qq(i,j,k)-qq(i-1,j,k))/dxl
-              dqr = (qq(i+1,j,k)-qq(i,j,k))/dxr
-              dqc = (qq(i+1,j,k)-qq(i-1,j,k))/dxc
+              do n=1,3
+                 ww(1,n) = ro(i-2+n,j,k)
+                 ww(2,n) = vx(i-2+n,j,k)
+                 ww(3,n) = vy(i-2+n,j,k)
+                 ww(4,n) = vz(i-2+n,j,k)
+                 ww(5,n) = pr(i-2+n,j,k)
+                 ww(6,n) = bx(i-2+n,j,k)
+                 ww(7,n) = by(i-2+n,j,k)
+                 ww(8,n) = bz(i-2+n,j,k)
+                 ww(9,n) = phi(i-2+n,j,k)
+              end do
+              ro1 = ww(1,2)
+              vx1 = ww(2,2)
+              vy1 = ww(3,2)
+              vz1 = ww(4,2)
+              pr1 = ww(5,2)
+              bx1 = ww(6,2)
+              by1 = ww(7,2)
+              bz1 = ww(8,2)
+              phi1 = ww(9,2)
 
-              dqqx = MC_limiter(dqc,dqr,dql)
+              ! primitive to characteristic
+              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+
+              do l=1,3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+              enddo
               
-              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqx*dx(i)
-              qqw(i-1,j,k,2) = qq(i,j,k) - 0.5d0*dqqx*dx(i)
-           enddo
-        enddo
-     enddo
-!-----Step 1b.-------------------------------------------------|
-! mdir = 2 :: y-direction
+              !MUSCL
+              do n=1,nwave
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(dqr,dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+              end do
+
+              ! characteristic to primitive
+              temp1 = wwc_w(1,1)-wwc_w(8,1)
+              temp2 = wwc_w(2,1)-wwc_w(7,1)
+              temp3 = wwc_w(3,1)-wwc_w(5,1)
+              qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,1)+wwc_w(8,1)
+              temp2 = wwc_w(2,1)+wwc_w(7,1)
+              temp3 = wwc_w(3,1)+wwc_w(5,1)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,1)
+              qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qqr(6) = wwc_w(6,1) + wwc_w(9,1)
+              qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qqr(9) = ch*(-wwc_w(6,1) + wwc_w(9,1)) 
+
+              temp1 = wwc_w(1,2)-wwc_w(8,2)
+              temp2 = wwc_w(2,2)-wwc_w(7,2)
+              temp3 = wwc_w(3,2)-wwc_w(5,2)
+              qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,2)+wwc_w(8,2)
+              temp2 = wwc_w(2,2)+wwc_w(7,2)
+              temp3 = wwc_w(3,2)+wwc_w(5,2)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,2)
+              qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qql(6) = wwc_w(6,2) + wwc_w(9,2)
+              qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
+
+              minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              smv = sign(1d0,minvalue)
+              psmv = max(0d0,smv)
+              msmv = max(0d0,-smv)
+
+              row(i-1,j,k,2) = qql(1)*psmv + ro1*msmv
+              row(i  ,j,k,1) = qqr(1)*psmv + ro1*msmv
+              vxw(i-1,j,k,2) = qql(2)*psmv + vx1*msmv
+              vxw(i  ,j,k,1) = qqr(2)*psmv + vx1*msmv
+              vyw(i-1,j,k,2) = qql(3)
+              vyw(i  ,j,k,1) = qqr(3)
+              vzw(i-1,j,k,2) = qql(4)
+              vzw(i  ,j,k,1) = qqr(4)
+              prw(i-1,j,k,2) = qql(5)*psmv + pr1*msmv
+              prw(i  ,j,k,1) = qqr(5)*psmv + pr1*msmv
+              bxw(i-1,j,k,2) = qql(6)*psmv + bx1*msmv
+              bxw(i  ,j,k,1) = qqr(6)*psmv + bx1*msmv
+              byw(i-1,j,k,2) = qql(7)
+              byw(i  ,j,k,1) = qqr(7)
+              bzw(i-1,j,k,2) = qql(8)
+              bzw(i  ,j,k,1) = qqr(8)
+              phiw(i-1,j,k,2) = qql(9)*psmv + phi1*msmv
+              phiw(i  ,j,k,1) = qqr(9)*psmv + phi1*msmv
+           end do
+        end do
+     end do
   else if(mdir == 2)then
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              dql = qq(i,j,k)-qq(i,j-1,k)
-              dqr = qq(i,j+1,k)-qq(i,j,k)
-              dqc = 0.5d0*(qq(i,j+1,k)-qq(i,j-1,k))
 
-              dqqy = MC_limiter(dqc,dqr,dql)
+              do n=1,3
+                 ww(1,n) = ro(i,j-2+n,k)
+                 ww(2,n) = vx(i,j-2+n,k)
+                 ww(3,n) = vy(i,j-2+n,k)
+                 ww(4,n) = vz(i,j-2+n,k)
+                 ww(5,n) = pr(i,j-2+n,k)
+                 ww(6,n) = bx(i,j-2+n,k)
+                 ww(7,n) = by(i,j-2+n,k)
+                 ww(8,n) = bz(i,j-2+n,k)
+                 ww(9,n) = phi(i,j-2+n,k)
+              end do
+              ro1 = ww(1,2)
+              vx1 = ww(2,2)
+              vy1 = ww(3,2)
+              vz1 = ww(4,2)
+              pr1 = ww(5,2)
+              bx1 = ww(6,2)
+              by1 = ww(7,2)
+              bz1 = ww(8,2)
+              phi1 = ww(9,2)
               
-              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqy
-              qqw(i,j-1,k,2) = qq(i,j,k) - 0.5d0*dqqy
+              ! primitive to characteristic
+              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+
+              do l=1,3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+              enddo
+
+              !MUSCL
+              do n=1,nwave
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(dqr,dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+              end do
+              
+              ! characteristic to primitive
+              temp1 = wwc_w(1,1)-wwc_w(8,1)
+              temp2 = wwc_w(2,1)-wwc_w(7,1)
+              temp3 = wwc_w(3,1)-wwc_w(5,1)
+              qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,1)+wwc_w(8,1)
+              temp2 = wwc_w(2,1)+wwc_w(7,1)
+              temp3 = wwc_w(3,1)+wwc_w(5,1)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,1)
+              qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qqr(6) = wwc_w(6,1) + wwc_w(9,1)
+              qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qqr(9) = ch*(-wwc_w(6,1) + wwc_w(9,1)) 
+
+              temp1 = wwc_w(1,2)-wwc_w(8,2)
+              temp2 = wwc_w(2,2)-wwc_w(7,2)
+              temp3 = wwc_w(3,2)-wwc_w(5,2)
+              qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,2)+wwc_w(8,2)
+              temp2 = wwc_w(2,2)+wwc_w(7,2)
+              temp3 = wwc_w(3,2)+wwc_w(5,2)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,2)
+              qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qql(6) = wwc_w(6,2) + wwc_w(9,2)
+              qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
+
+              minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              smv = sign(1d0,minvalue)
+              psmv = max(0d0,smv)
+              msmv = max(0d0,-smv)
+
+              row(i,j-1,k,2) = qql(1)*psmv + ro1*msmv
+              row(i,j  ,k,1) = qqr(1)*psmv + ro1*msmv
+              vxw(i,j-1,k,2) = qql(2)
+              vxw(i,j  ,k,1) = qqr(2)
+              vyw(i,j-1,k,2) = qql(3)*psmv + vy1*msmv
+              vyw(i,j  ,k,1) = qqr(3)*psmv + vy1*msmv
+              vzw(i,j-1,k,2) = qql(4)
+              vzw(i,j  ,k,1) = qqr(4)
+              prw(i,j-1,k,2) = qql(5)*psmv + pr1*msmv
+              prw(i,j  ,k,1) = qqr(5)*psmv + pr1*msmv
+              bxw(i,j-1,k,2) = qql(6)
+              bxw(i,j  ,k,1) = qqr(6)
+              byw(i,j-1,k,2) = qql(7)*psmv + by1*msmv
+              byw(i,j  ,k,1) = qqr(7)*psmv + by1*msmv
+              bzw(i,j-1,k,2) = qql(8)
+              bzw(i,j  ,k,1) = qqr(8)
+              phiw(i,j-1,k,2) = qql(9)*psmv + phi1*msmv
+              phiw(i,j  ,k,1) = qqr(9)*psmv + phi1*msmv
            end do
         end do
      end do
   else
-!-----Step 3a.-------------------------------------------------|
-! dqq
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              dzl = 0.5d0*(dz(k)+dz(k-1))
-              dzr = 0.5d0*(dz(k+1)+dz(k))
-              dzc = dzl+dzr
 
-              dql = (qq(i,j,k)-qq(i,j,k-1))/dzl
-              dqr = (qq(i,j,k+1)-qq(i,j,k))/dzr
-              dqc = (qq(i,j,k+1)-qq(i,j,k-1))/dzc
+              do n=1,3
+                 ww(1,n) = ro(i,j,k-2+n)
+                 ww(2,n) = vx(i,j,k-2+n)
+                 ww(3,n) = vy(i,j,k-2+n)
+                 ww(4,n) = vz(i,j,k-2+n)
+                 ww(5,n) = pr(i,j,k-2+n)
+                 ww(6,n) = bx(i,j,k-2+n)
+                 ww(7,n) = by(i,j,k-2+n)
+                 ww(8,n) = bz(i,j,k-2+n)
+                 ww(9,n) = phi(i,j,k-2+n)
+              end do
+              ro1 = ww(1,2)
+              vx1 = ww(2,2)
+              vy1 = ww(3,2)
+              vz1 = ww(4,2)
+              pr1 = ww(5,2)
+              bx1 = ww(6,2)
+              by1 = ww(7,2)
+              bz1 = ww(8,2)
+              phi1 = ww(9,2)
+              
+              ! primitive to characteristic
+              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
 
-              dqqz = MC_limiter(dqc,dqr,dql)
-           
-              qqw(i,j,k,1) = qq(i,j,k) + 0.5d0*dqqz*dz(k)
-              qqw(i,j,k-1,2) = qq(i,j,k) - 0.5d0*dqqz*dz(k)
+              do l=1,3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+              enddo
+
+              !MUSCL
+              do n=1,nwave
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(dqr,dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+              end do
+              
+              ! characteristic to primitive
+              temp1 = wwc_w(1,1)-wwc_w(8,1)
+              temp2 = wwc_w(2,1)-wwc_w(7,1)
+              temp3 = wwc_w(3,1)-wwc_w(5,1)
+              qqr(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qqr(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qqr(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,1)+wwc_w(8,1)
+              temp2 = wwc_w(2,1)+wwc_w(7,1)
+              temp3 = wwc_w(3,1)+wwc_w(5,1)
+              qqr(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,1)
+              qqr(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qqr(6) = wwc_w(6,1) + wwc_w(9,1)
+              qqr(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qqr(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qqr(9) = ch*(-wwc_w(6,1) + wwc_w(9,1)) 
+
+              temp1 = wwc_w(1,2)-wwc_w(8,2)
+              temp2 = wwc_w(2,2)-wwc_w(7,2)
+              temp3 = wwc_w(3,2)-wwc_w(5,2)
+              qql(2) = rem(2,1)*temp1 + rem(2,3)*temp3
+              qql(3) = rem(3,1)*temp1 + rem(3,2)*temp2 + rem(3,3)*temp3
+              qql(4) = rem(4,1)*temp1 + rem(4,2)*temp2 + rem(4,3)*temp3
+
+              temp1 = wwc_w(1,2)+wwc_w(8,2)
+              temp2 = wwc_w(2,2)+wwc_w(7,2)
+              temp3 = wwc_w(3,2)+wwc_w(5,2)
+              qql(1) = rem(1,1)*temp1 + rem(1,3)*temp3 + wwc_w(4,2)
+              qql(5) = rem(5,1)*temp1 + rem(5,3)*temp3
+              qql(6) = wwc_w(6,2) + wwc_w(9,2)
+              qql(7) = rem(7,1)*temp1 + rem(7,2)*temp2 + rem(7,3)*temp3
+              qql(8) = rem(8,1)*temp1 + rem(8,2)*temp2 + rem(8,3)*temp3
+              qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
+
+              minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              smv = sign(1d0,minvalue)
+              psmv = max(0d0,smv)
+              msmv = max(0d0,-smv)
+
+              row(i,j,k-1,2) = qql(1)*psmv + ro1*msmv
+              row(i,j,k  ,1) = qqr(1)*psmv + ro1*msmv
+              vxw(i,j,k-1,2) = qql(2)
+              vxw(i,j,k  ,1) = qqr(2)
+              vyw(i,j,k-1,2) = qql(3)
+              vyw(i,j,k  ,1) = qqr(3)
+              vzw(i,j,k-1,2) = qql(4)*psmv + vz1*msmv
+              vzw(i,j,k  ,1) = qqr(4)*psmv + vz1*msmv
+              prw(i,j,k-1,2) = qql(5)*psmv + pr1*msmv
+              prw(i,j,k  ,1) = qqr(5)*psmv + pr1*msmv
+              bxw(i,j,k-1,2) = qql(6)
+              bxw(i,j,k  ,1) = qqr(6)
+              byw(i,j,k-1,2) = qql(7)
+              byw(i,j,k  ,1) = qqr(7)
+              bzw(i,j,k-1,2) = qql(8)*psmv + bz1*msmv
+              bzw(i,j,k  ,1) = qqr(8)*psmv + bz1*msmv
+              phiw(i,j,k-1,2) = qql(9)*psmv + phi1*msmv
+              phiw(i,j,k  ,1) = qqr(9)*psmv + phi1*msmv
            end do
         end do
      end do
   endif
 
-  end subroutine lr_state__2nd
+  end subroutine lr_state__MSCL2
 
 
   subroutine lr_state__MP5(mdir,ix,jx,kx,ro,pr &
@@ -177,8 +527,6 @@ contains
 
 !----function
   integer :: i,j,k,l,m,n
-  real(8) :: minmod4,d1,d2,d3,d4
-  real(8) :: minmod,x,y
   real(8) :: djm1,dj,djp1,dm4jph,dm4jmh,djpp1,dm4jpph
   real(8) :: qqul,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
   real(8) :: djp2,qqlr
@@ -187,13 +535,6 @@ contains
   real(8), parameter :: floor=1d-2
   real(8) :: romaxvalue,prmaxvalue
 
-  minmod4(d1,d2,d3,d4) = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2))* &
-       dabs((sign(1.0d0,d1) + sign(1.0d0,d3))* &
-       (sign(1.0d0,d1)+sign(1.0d0,d4))) &
-       *min(dabs(d1),dabs(d2),dabs(d3),dabs(d4))
-
-  minmod(x,y) = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(dabs(x),dabs(y))
-  
   ich = 0.5d0/ch
 
   if(mdir == 1)then
@@ -845,39 +1186,32 @@ contains
   end subroutine esystem_glmmhd
 
 
-  function minmod_limiter2(qqr,qql)
+  real(8) function minmod(x,y)
+    real(8), intent(in) :: x,y
+   
+    minmod = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(dabs(x),dabs(y))
 
-    real(8), intent(in) :: qqr, qql
-    real(8) :: minmod_limiter2
-    real(8) :: signr,signlr
+  end function minmod
 
-    signr = sign(1.0d0,qqr)
-    signlr = sign(1.0d0,(qqr*qql))
 
-    minmod_limiter2 = max(signlr,0.0d0)*( &
-         max(signr,0.0d0)*max(0.0d0,min(qql,qqr)) &
-         -min(signr,0.0d0)*min(0.0d0,max(qql,qqr)))
+  real(8) function minmod4(d1,d2,d3,d4)
+    real(8), intent(in) :: d1,d2,d3,d4
 
-  end function minmod_limiter2
-  
+    minmod4 = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2)) &
+              *dabs( (sign(1.0d0,d1)+sign(1.0d0,d3)) &
+                    *(sign(1.0d0,d1)+sign(1.0d0,d4))) &
+              *min(dabs(d1),dabs(d2),dabs(d3),dabs(d4))
 
-  function MC_limiter(qqc,qql,qqr)
+  end function minmod4
+
+
+  real(8) function MC2(qqr,qql,qqc)
 
     real(8), intent(in) :: qqr,qql,qqc
-    real(8) :: minmod_lr
-    real(8) :: MC_limiter
-    real(8) :: signlr,signMC
 
-    minmod_lr = minmod_limiter2(qql,qqr)
+    MC2 = minmod(qqc,minmod(qql,qqr))
 
-    signlr = sign(1.0d0,(qqc*minmod_lr))
-    signMC = sign(1.0d0,(dabs(qqc)-dabs(2.0d0*minmod_lr)))
-
-    MC_limiter = max(signlr,0.0d0)*( &
-         max(signMC,0.0d0)*minmod_lr &
-         -min(signMC,0.0d0)*(qqc))
-
-  end function MC_limiter
+  end function MC2
 
 
 end module lr_state
