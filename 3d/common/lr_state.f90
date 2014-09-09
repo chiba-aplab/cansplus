@@ -9,22 +9,38 @@ module lr_state
 contains
 
 
-  subroutine lr_state__1st(mdir,ix,jx,kx,qq,qqw)
-
+  subroutine lr_state__1st(mdir,ix,jx,kx,&
+                           ro,pr,vx,vy,vz,bx,by,bz,phi,&
+                           row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
   integer,intent(in) :: mdir
   integer,intent(in) :: ix,jx,kx
-  real(8),dimension(ix,jx,kx), intent(in) :: qq
-  real(8),dimension(ix,jx,kx,2), intent(out) :: qqw
+  real(8),dimension(ix,jx,kx),intent(in) :: ro,pr,vx,vy,vz,bx,by,bz,phi
+  real(8),dimension(ix,jx,kx,2),intent(out) :: row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw
 
   integer :: i,j,k
-  real(8) :: dqqx,dqqy,dqqz
 
   if(mdir == 1)then
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              qqw(i,j,k,1) = qq(i,j,k)
-              qqw(i-1,j,k,2) = qq(i,j,k)
+              row(i-1,j,k,2) = ro(i,j,k)
+              row(i  ,j,k,1) = ro(i,j,k)
+              vxw(i-1,j,k,2) = vx(i,j,k)
+              vxw(i  ,j,k,1) = vx(i,j,k)
+              vyw(i-1,j,k,2) = vy(i,j,k)
+              vyw(i  ,j,k,1) = vy(i,j,k)
+              vzw(i-1,j,k,2) = vz(i,j,k)
+              vzw(i  ,j,k,1) = vz(i,j,k)
+              prw(i-1,j,k,2) = pr(i,j,k)
+              prw(i  ,j,k,1) = pr(i,j,k)
+              bxw(i-1,j,k,2) = bx(i,j,k)
+              bxw(i  ,j,k,1) = bx(i,j,k)
+              byw(i-1,j,k,2) = by(i,j,k)
+              byw(i  ,j,k,1) = by(i,j,k)
+              bzw(i-1,j,k,2) = bz(i,j,k)
+              bzw(i  ,j,k,1) = bz(i,j,k)
+              phiw(i-1,j,k,2) = phi(i,j,k)
+              phiw(i  ,j,k,1) = phi(i,j,k)
            enddo
         enddo
      enddo
@@ -32,8 +48,24 @@ contains
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              qqw(i,j,k,1) = qq(i,j,k)
-              qqw(i,j-1,k,2) = qq(i,j,k)
+              row(i,j-1,k,2) = ro(i,j,k)
+              row(i,j  ,k,1) = ro(i,j,k)
+              vxw(i,j-1,k,2) = vx(i,j,k)
+              vxw(i,j  ,k,1) = vx(i,j,k)
+              vyw(i,j-1,k,2) = vy(i,j,k)
+              vyw(i,j  ,k,1) = vy(i,j,k)
+              vzw(i,j-1,k,2) = vz(i,j,k)
+              vzw(i,j  ,k,1) = vz(i,j,k)
+              prw(i,j-1,k,2) = pr(i,j,k)
+              prw(i,j  ,k,1) = pr(i,j,k)
+              bxw(i,j-1,k,2) = bx(i,j,k)
+              bxw(i,j  ,k,1) = bx(i,j,k)
+              byw(i,j-1,k,2) = by(i,j,k)
+              byw(i,j  ,k,1) = by(i,j,k)
+              bzw(i,j-1,k,2) = bz(i,j,k)
+              bzw(i,j  ,k,1) = bz(i,j,k)
+              phiw(i,j-1,k,2) = phi(i,j,k)
+              phiw(i,j  ,k,1) = phi(i,j,k)
            end do
         end do
      end do
@@ -41,8 +73,24 @@ contains
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
-              qqw(i,j,k,1) = qq(i,j,k)
-              qqw(i,j,k-1,2) = qq(i,j,k)
+              row(i,j,k-1,2) = ro(i,j,k)
+              row(i,j,k  ,1) = ro(i,j,k)
+              vxw(i,j,k-1,2) = vx(i,j,k)
+              vxw(i,j,k  ,1) = vx(i,j,k)
+              vyw(i,j,k-1,2) = vy(i,j,k)
+              vyw(i,j,k  ,1) = vy(i,j,k)
+              vzw(i,j,k-1,2) = vz(i,j,k)
+              vzw(i,j,k  ,1) = vz(i,j,k)
+              prw(i,j,k-1,2) = pr(i,j,k)
+              prw(i,j,k  ,1) = pr(i,j,k)
+              bxw(i,j,k-1,2) = bx(i,j,k)
+              bxw(i,j,k  ,1) = bx(i,j,k)
+              byw(i,j,k-1,2) = by(i,j,k)
+              byw(i,j,k  ,1) = by(i,j,k)
+              bzw(i,j,k-1,2) = bz(i,j,k)
+              bzw(i,j,k  ,1) = bz(i,j,k)
+              phiw(i,j,k-1,2) = phi(i,j,k)
+              phiw(i,j,k  ,1) = phi(i,j,k)
            end do
         end do
      end do
@@ -92,16 +140,16 @@ contains
         do j=2,jx-1
            do i=2,ix-1
 
-              do n=1,3
-                 ww(1,n) = ro(i-2+n,j,k)
-                 ww(2,n) = vx(i-2+n,j,k)
-                 ww(3,n) = vy(i-2+n,j,k)
-                 ww(4,n) = vz(i-2+n,j,k)
-                 ww(5,n) = pr(i-2+n,j,k)
-                 ww(6,n) = bx(i-2+n,j,k)
-                 ww(7,n) = by(i-2+n,j,k)
-                 ww(8,n) = bz(i-2+n,j,k)
-                 ww(9,n) = phi(i-2+n,j,k)
+              do l=1,3
+                 ww(1,l) = ro(i-2+l,j,k)
+                 ww(2,l) = vx(i-2+l,j,k)
+                 ww(3,l) = vy(i-2+l,j,k)
+                 ww(4,l) = vz(i-2+l,j,k)
+                 ww(5,l) = pr(i-2+l,j,k)
+                 ww(6,l) = bx(i-2+l,j,k)
+                 ww(7,l) = by(i-2+l,j,k)
+                 ww(8,l) = bz(i-2+l,j,k)
+                 ww(9,l) = phi(i-2+l,j,k)
               end do
               ro1 = ww(1,2)
               vx1 = ww(2,2)
@@ -150,8 +198,8 @@ contains
                  dqr = (wwc(n,3)-wwc(n,2))/dxr
                  dqc = (wwc(n,3)-wwc(n,1))/dxc
 
-                 dqqx = MC2(dqr,dql,dqc)
-              
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
                  !right-hand left-state
                  wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
                  !left-hand right-state
@@ -227,16 +275,16 @@ contains
         do j=2,jx-1
            do i=2,ix-1
 
-              do n=1,3
-                 ww(1,n) = ro(i,j-2+n,k)
-                 ww(2,n) = vx(i,j-2+n,k)
-                 ww(3,n) = vy(i,j-2+n,k)
-                 ww(4,n) = vz(i,j-2+n,k)
-                 ww(5,n) = pr(i,j-2+n,k)
-                 ww(6,n) = bx(i,j-2+n,k)
-                 ww(7,n) = by(i,j-2+n,k)
-                 ww(8,n) = bz(i,j-2+n,k)
-                 ww(9,n) = phi(i,j-2+n,k)
+              do l=1,3
+                 ww(1,l) = ro(i,j-2+l,k)
+                 ww(2,l) = vx(i,j-2+l,k)
+                 ww(3,l) = vy(i,j-2+l,k)
+                 ww(4,l) = vz(i,j-2+l,k)
+                 ww(5,l) = pr(i,j-2+l,k)
+                 ww(6,l) = bx(i,j-2+l,k)
+                 ww(7,l) = by(i,j-2+l,k)
+                 ww(8,l) = bz(i,j-2+l,k)
+                 ww(9,l) = phi(i,j-2+l,k)
               end do
               ro1 = ww(1,2)
               vx1 = ww(2,2)
@@ -285,8 +333,8 @@ contains
                  dqr = (wwc(n,3)-wwc(n,2))/dyr
                  dqc = (wwc(n,3)-wwc(n,1))/dyc
 
-                 dqqy = MC2(dqr,dql,dqc)
-              
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
                  !right-hand left-state
                  wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
                  !left-hand right-state
@@ -362,16 +410,16 @@ contains
         do j=2,jx-1
            do i=2,ix-1
 
-              do n=1,3
-                 ww(1,n) = ro(i,j,k-2+n)
-                 ww(2,n) = vx(i,j,k-2+n)
-                 ww(3,n) = vy(i,j,k-2+n)
-                 ww(4,n) = vz(i,j,k-2+n)
-                 ww(5,n) = pr(i,j,k-2+n)
-                 ww(6,n) = bx(i,j,k-2+n)
-                 ww(7,n) = by(i,j,k-2+n)
-                 ww(8,n) = bz(i,j,k-2+n)
-                 ww(9,n) = phi(i,j,k-2+n)
+              do l=1,3
+                 ww(1,l) = ro(i,j,k-2+l)
+                 ww(2,l) = vx(i,j,k-2+l)
+                 ww(3,l) = vy(i,j,k-2+l)
+                 ww(4,l) = vz(i,j,k-2+l)
+                 ww(5,l) = pr(i,j,k-2+l)
+                 ww(6,l) = bx(i,j,k-2+l)
+                 ww(7,l) = by(i,j,k-2+l)
+                 ww(8,l) = bz(i,j,k-2+l)
+                 ww(9,l) = phi(i,j,k-2+l)
               end do
               ro1 = ww(1,2)
               vx1 = ww(2,2)
@@ -420,7 +468,7 @@ contains
                  dqr = (wwc(n,3)-wwc(n,2))/dzr
                  dqc = (wwc(n,3)-wwc(n,1))/dzc
 
-                 dqqz = MC2(dqr,dql,dqc)
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
               
                  !right-hand left-state
                  wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
@@ -543,16 +591,16 @@ contains
         do j=3,jx-2
            do i=3,ix-2
 
-              do n=1,5
-                 ww(1,n) = ro(i-3+n,j,k)
-                 ww(2,n) = vx(i-3+n,j,k)
-                 ww(3,n) = vy(i-3+n,j,k)
-                 ww(4,n) = vz(i-3+n,j,k)
-                 ww(5,n) = pr(i-3+n,j,k)
-                 ww(6,n) = bx(i-3+n,j,k)
-                 ww(7,n) = by(i-3+n,j,k)
-                 ww(8,n) = bz(i-3+n,j,k)
-                 ww(9,n) = phi(i-3+n,j,k)
+              do l=1,5
+                 ww(1,l) = ro(i-3+l,j,k)
+                 ww(2,l) = vx(i-3+l,j,k)
+                 ww(3,l) = vy(i-3+l,j,k)
+                 ww(4,l) = vz(i-3+l,j,k)
+                 ww(5,l) = pr(i-3+l,j,k)
+                 ww(6,l) = bx(i-3+l,j,k)
+                 ww(7,l) = by(i-3+l,j,k)
+                 ww(8,l) = bz(i-3+l,j,k)
+                 ww(9,l) = phi(i-3+l,j,k)
               end do
               ro1 = ww(1,3)
               vx1 = ww(2,3)
@@ -593,7 +641,7 @@ contains
               
               ! mp5
               do n=1,nwave
-                 !left state
+                 !right-hand left state
                  wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
@@ -612,7 +660,7 @@ contains
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
                  wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
-                 !right state
+                 !left-hand right state
                  wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
                       + ccx(3,1,i-1)*wwc(n,3) + ccx(2,1,i-1)*wwc(n,2) &
                       + ccx(1,1,i-1)*wwc(n,1))
@@ -695,16 +743,16 @@ contains
         do j=3,jx-2
            do i=3,ix-2
 
-              do n=1,5
-                 ww(1,n) = ro(i,j-3+n,k)
-                 ww(2,n) = vx(i,j-3+n,k)
-                 ww(3,n) = vy(i,j-3+n,k)
-                 ww(4,n) = vz(i,j-3+n,k)
-                 ww(5,n) = pr(i,j-3+n,k)
-                 ww(6,n) = bx(i,j-3+n,k)
-                 ww(7,n) = by(i,j-3+n,k)
-                 ww(8,n) = bz(i,j-3+n,k)
-                 ww(9,n) = phi(i,j-3+n,k)
+              do l=1,5
+                 ww(1,l) = ro(i,j-3+l,k)
+                 ww(2,l) = vx(i,j-3+l,k)
+                 ww(3,l) = vy(i,j-3+l,k)
+                 ww(4,l) = vz(i,j-3+l,k)
+                 ww(5,l) = pr(i,j-3+l,k)
+                 ww(6,l) = bx(i,j-3+l,k)
+                 ww(7,l) = by(i,j-3+l,k)
+                 ww(8,l) = bz(i,j-3+l,k)
+                 ww(9,l) = phi(i,j-3+l,k)
               end do
               ro1 = ww(1,3)
               vx1 = ww(2,3)
@@ -850,16 +898,16 @@ contains
         do j=3,jx-2
            do i=3,ix-2
 
-              do n=1,5
-                 ww(1,n) = ro(i,j,k-3+n)
-                 ww(2,n) = vx(i,j,k-3+n)
-                 ww(3,n) = vy(i,j,k-3+n)
-                 ww(4,n) = vz(i,j,k-3+n)
-                 ww(5,n) = pr(i,j,k-3+n)
-                 ww(6,n) = bx(i,j,k-3+n)
-                 ww(7,n) = by(i,j,k-3+n)
-                 ww(8,n) = bz(i,j,k-3+n)
-                 ww(9,n) = phi(i,j,k-3+n)
+              do l=1,5
+                 ww(1,l) = ro(i,j,k-3+l)
+                 ww(2,l) = vx(i,j,k-3+l)
+                 ww(3,l) = vy(i,j,k-3+l)
+                 ww(4,l) = vz(i,j,k-3+l)
+                 ww(5,l) = pr(i,j,k-3+l)
+                 ww(6,l) = bx(i,j,k-3+l)
+                 ww(7,l) = by(i,j,k-3+l)
+                 ww(8,l) = bz(i,j,k-3+l)
+                 ww(9,l) = phi(i,j,k-3+l)
               end do
               ro1 = ww(1,3)
               vx1 = ww(2,3)
@@ -1209,7 +1257,7 @@ contains
 
     real(8), intent(in) :: qqr,qql,qqc
 
-    MC2 = minmod(qqc,minmod(qql,qqr))
+    MC2 = minmod(qqr,minmod(qql,qqc))
 
   end function MC2
 
