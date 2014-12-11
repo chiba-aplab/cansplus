@@ -242,8 +242,8 @@ contains
               qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
-              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
-              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3))
               minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
@@ -377,8 +377,8 @@ contains
               qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
-              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
-              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3))
               minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
@@ -512,8 +512,8 @@ contains
               qql(9) = ch*(-wwc_w(6,2) + wwc_w(9,2)) 
 
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
-              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
-              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
+              romaxvalue = max(ww(1,1),ww(1,2),ww(1,3))
+              prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3))
               minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
