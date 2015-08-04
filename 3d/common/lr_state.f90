@@ -46,6 +46,7 @@ contains
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
      !$OMP PRIVATE(i,j)
@@ -73,6 +74,7 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL
   else
      !$OMP PARALLEL DO &
      !$OMP PRIVATE(i,j)
@@ -100,6 +102,7 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL
   endif
 
   end subroutine lr_state__1st
