@@ -53,10 +53,23 @@ contains
   real(8) :: cfl,cfr
   integer :: i,j,k
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
+  !$OMP PRIVATE(bxs,bxsq)
+  ! --- l state ---
+  !$OMP PRIVATE(rol,vxl,vyl,vzl,byl,bzl,bsql,pbl,prl,ptl,eel,rxl,ryl,rzl)
+  ! --- r state ---
+  !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,bsqr,pbr,prr,ptr,eer,rxr,ryr,rzr)
+  !--- step 1----
+  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr)
+  !--- step 2 ---
+  ! - left
+  !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl)
+  ! - right
+  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr)
   do k=margin,kx-margin
      do j=margin,jx-margin
         do i=margin,ix-margin
-
 !----- Step 0. ----------------------------------------------------------|
 ! set L/R-state
 !
@@ -182,6 +195,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
   
   end subroutine flux_calc__hll
 
@@ -286,13 +300,45 @@ contains
 
   igm = 1.0d0/(gm-1.0d0)
 
+
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
+  !$OMP PRIVATE(bxs,bxsq)
+  ! --- l state ---
+  !$OMP PRIVATE(rol,vxl,vyl,vzl,byl,bzl,pbl,prl,ptl,rxl,ryl,rzl,eel)
+  ! --- r state ---
+  !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,pbr,prr,ptr,rxr,ryr,rzr,eer)
+  !--- step 1----
+  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr)
+  !--- step 2 ---
+  ! - left
+  !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl)
+  ! - right
+  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr)
+  !--- step 4 ---
+  !$OMP PRIVATE(sdl,sdr,rosdl,rosdr,temp,sm,sdml,sdmr)
+  !--- step 5 ---
+  !$OMP PRIVATE(ptst)  
+  !--- step 5a ---
+  !$OMP PRIVATE(temp_fst,sign1,maxs1,mins1,itf,isdml,rolst,vxlst,rxlst)
+  !$OMP PRIVATE(vylst,rylst,vzlst,rzlst,bylst,bzlst,vdbstl,eelst)
+  !--- step 5b ---
+  !$OMP PRIVATE(rorst,vxrst,rxrst)
+  !$OMP PRIVATE(vyrst,ryrst,vzrst,rzrst,byrst,bzrst,vdbstr,eerst)
+  !--- step 5c ---
+  !$OMP PRIVATE(sqrtrol,sqrtror,abbx,slst,srst,signbx,invsumro,roldst,rordst)
+  !$OMP PRIVATE(rxldst,rxrdst,vxldst,vxrdst,vyldst,vyrdst,ryldst,ryrdst)
+  !$OMP PRIVATE(vzldst,vzrdst,rzldst,rzrdst,byldst,byrdst,bzldst,bzrdst)
+  !$OMP PRIVATE(eeldst,eerdst)
+  !--- step 6 ---
+  !$OMP PRIVATE(msl,mslst,msrst,msr,temp1)
   do k=margin,kx-margin
      do j=margin,jx-margin
         do i=margin,ix-margin
 
 !----- Step 0. ----------------------------------------------------------|
 ! set L/R-state
-!
+
            bxs = bx(i,j,k)
            bxsq = bxs*bxs
 
@@ -545,7 +591,8 @@ contains
         end do
      end do
   enddo
-
+  !$OMP END PARALLEL DO
+  
 
   end subroutine flux_calc__hlld
 
@@ -562,6 +609,9 @@ contains
 
   integer :: i,j,k
 
+
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -584,7 +634,9 @@ contains
 
   integer :: i,j,k
 
-! calcurate magnetic field & divergence B @ cell surface
+  ! calcurate magnetic field & divergence B @ cell surface
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -598,6 +650,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
 
   end subroutine flux_calc__bp
 
@@ -617,6 +670,8 @@ contains
 ! Average eta*current at cell curface
 ! Flux at i+1/2
   if(mdir == 1)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -627,8 +682,11 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
 ! Flux at j+1/2
   else if(mdir == 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -638,8 +696,11 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
 ! Flux at k+1/2
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -649,6 +710,7 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   end subroutine flux_calc__fbres
@@ -667,6 +729,8 @@ contains
 ! Average eta*current at cell curface
 ! Flux at i+1/2
   if(mdir == 1)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -676,8 +740,11 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
 ! Flux at j+1/2
   else if(mdir == 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -687,8 +754,11 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
 ! Flux at k+1/2
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -698,6 +768,7 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   end subroutine flux_calc__feres
