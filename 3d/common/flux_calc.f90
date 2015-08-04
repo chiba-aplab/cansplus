@@ -54,19 +54,19 @@ contains
   integer :: i,j,k
 
   !$OMP PARALLEL DO &
-  !$OMP PRIVATE(i,j)
-  !$OMP PRIVATE(bxs,bxsq)
+  !$OMP PRIVATE(i,j) &
+  !$OMP PRIVATE(bxs,bxsq) &
   ! --- l state ---
-  !$OMP PRIVATE(rol,vxl,vyl,vzl,byl,bzl,bsql,pbl,prl,ptl,eel,rxl,ryl,rzl)
+  !$OMP PRIVATE(rol,vxl,vyl,vzl,byl,bzl,bsql,pbl,prl,ptl,eel,rxl,ryl,rzl) &
   ! --- r state ---
-  !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,bsqr,pbr,prr,ptr,eer,rxr,ryr,rzr)
+  !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,bsqr,pbr,prr,ptr,eer,rxr,ryr,rzr) &
   !--- step 1----
-  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr)
+  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr) &
   !--- step 2 ---
   ! - left
-  !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl)
+  !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl) &
   ! - right
-  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr)
+  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr) &
   do k=margin,kx-margin
      do j=margin,jx-margin
         do i=margin,ix-margin
@@ -302,36 +302,36 @@ contains
 
 
   !$OMP PARALLEL DO &
-  !$OMP PRIVATE(i,j)
-  !$OMP PRIVATE(bxs,bxsq)
+  !$OMP PRIVATE(i,j) &
+  !$OMP PRIVATE(bxs,bxsq) &
   ! --- l state ---
-  !$OMP PRIVATE(rol,vxl,vyl,vzl,byl,bzl,pbl,prl,ptl,rxl,ryl,rzl,eel)
+  !$OMP PRIVATE(rol,vxl,vyl,vzl,byl,bzl,pbl,prl,ptl,rxl,ryl,rzl,eel) &
   ! --- r state ---
-  !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,pbr,prr,ptr,rxr,ryr,rzr,eer)
+  !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,pbr,prr,ptr,rxr,ryr,rzr,eer) &
   !--- step 1----
-  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr)
+  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr) &
   !--- step 2 ---
   ! - left
-  !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl)
+  !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl) &
   ! - right
-  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr)
+  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr) &
   !--- step 4 ---
-  !$OMP PRIVATE(sdl,sdr,rosdl,rosdr,temp,sm,sdml,sdmr)
+  !$OMP PRIVATE(sdl,sdr,rosdl,rosdr,temp,sm,sdml,sdmr) &
   !--- step 5 ---
-  !$OMP PRIVATE(ptst)  
+  !$OMP PRIVATE(ptst)   &
   !--- step 5a ---
-  !$OMP PRIVATE(temp_fst,sign1,maxs1,mins1,itf,isdml,rolst,vxlst,rxlst)
-  !$OMP PRIVATE(vylst,rylst,vzlst,rzlst,bylst,bzlst,vdbstl,eelst)
+  !$OMP PRIVATE(temp_fst,sign1,maxs1,mins1,itf,isdml,rolst,vxlst,rxlst) &
+  !$OMP PRIVATE(vylst,rylst,vzlst,rzlst,bylst,bzlst,vdbstl,eelst) &
   !--- step 5b ---
-  !$OMP PRIVATE(rorst,vxrst,rxrst)
-  !$OMP PRIVATE(vyrst,ryrst,vzrst,rzrst,byrst,bzrst,vdbstr,eerst)
+  !$OMP PRIVATE(rorst,vxrst,rxrst) &
+  !$OMP PRIVATE(vyrst,ryrst,vzrst,rzrst,byrst,bzrst,vdbstr,eerst) &
   !--- step 5c ---
-  !$OMP PRIVATE(sqrtrol,sqrtror,abbx,slst,srst,signbx,invsumro,roldst,rordst)
-  !$OMP PRIVATE(rxldst,rxrdst,vxldst,vxrdst,vyldst,vyrdst,ryldst,ryrdst)
-  !$OMP PRIVATE(vzldst,vzrdst,rzldst,rzrdst,byldst,byrdst,bzldst,bzrdst)
-  !$OMP PRIVATE(eeldst,eerdst)
+  !$OMP PRIVATE(sqrtrol,sqrtror,abbx,slst,srst,signbx,invsumro,roldst,rordst) &
+  !$OMP PRIVATE(rxldst,rxrdst,vxldst,vxrdst,vyldst,vyrdst,ryldst,ryrdst) &
+  !$OMP PRIVATE(vzldst,vzrdst,rzldst,rzrdst,byldst,byrdst,bzldst,bzrdst) &
+  !$OMP PRIVATE(eeldst,eerdst) &
   !--- step 6 ---
-  !$OMP PRIVATE(msl,mslst,msrst,msr,temp1)
+  !$OMP PRIVATE(msl,mslst,msrst,msr,temp1) &
   do k=margin,kx-margin
      do j=margin,jx-margin
         do i=margin,ix-margin
