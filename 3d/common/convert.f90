@@ -33,6 +33,8 @@ contains
   integer :: i,j,k
   real(8) :: vsq,pb
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,pb,vsq)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -46,7 +48,8 @@ contains
            ee(i,j,k) = pr(i,j,k)/(gm-1.0d0)+0.5d0*ro(i,j,k)*vsq + pb
         enddo
      enddo
-  end do
+  enddo
+  !$OMP END PARALLEL DO
 
   end subroutine convert__ptoc
 
@@ -77,6 +80,8 @@ contains
   real(8) :: vsq,pb,roinverse,igm,temppr,signpr,temp1,temp2
   
   igm = 1d0/(gm-1d0)
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,temppr,roinverse,pb,vsq,signpr,temp1,temp2)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -97,8 +102,8 @@ contains
            ee(i,j,k) = pr(i,j,k)*igm + 0.5d0*vsq*ro(i,j,k) +pb
         enddo
      enddo
-  end do
-
+  enddo
+  !$OMP END PARALLEL DO
   end subroutine convert__ctop
 
 

@@ -48,6 +48,10 @@ contains
   dtmaxi = 0.0d0
   beforedt = dt
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,roinverse,vsq,v1,v2,v3,b1,b2,b3,bsq,cssq) &
+  !$OMP PRIVATE(temp_sum,temp_dif,cfxsq,cfysq,cfzsq,temp,temp2) &
+  !$OMP REDUCTION(max:dtmaxi)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -96,6 +100,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
 
   dtg = min(2.0d0*beforedt,safety/dtmaxi)
   call mpi_allreduce(dtg,dt,1,mdp,mmin,mcomw,merr)
