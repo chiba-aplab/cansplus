@@ -37,6 +37,8 @@ subroutine bd_consx(mbnd,margin,cons,qq,ix,jx,kx)
 
   if (mbnd .eq. 0)then
      ibnd = 1+margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -44,8 +46,11 @@ subroutine bd_consx(mbnd,margin,cons,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
      ibnd = ix-margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -53,6 +58,7 @@ subroutine bd_consx(mbnd,margin,cons,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   return
@@ -73,6 +79,8 @@ subroutine bd_consy(mbnd,margin,cons,qq,ix,jx,kx)
 
   if( mbnd .eq. 0)then
      jbnd = 1+margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -80,8 +88,11 @@ subroutine bd_consy(mbnd,margin,cons,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
      jbnd = jx-margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -89,6 +100,7 @@ subroutine bd_consy(mbnd,margin,cons,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   return
@@ -142,6 +154,8 @@ subroutine bd_frex(mbnd,margin,qq,ix,jx,kx)
   integer :: i,j,k
 
   if (mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -149,7 +163,10 @@ subroutine bd_frex(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -157,6 +174,7 @@ subroutine bd_frex(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   return
@@ -176,6 +194,8 @@ subroutine bd_frey(mbnd,margin,qq,ix,jx,kx)
 
   if( mbnd .eq. 0)then
      jbnd = 1+margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -183,8 +203,11 @@ subroutine bd_frey(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
      jbnd = jx-margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -192,6 +215,7 @@ subroutine bd_frey(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   return
@@ -244,6 +268,8 @@ subroutine bd_inix(mbnd,margin,qq,qqini,ix,jx,kx)
 
   if (mbnd .eq. 0)then
      ibnd = 1+margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -251,8 +277,11 @@ subroutine bd_inix(mbnd,margin,qq,qqini,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
      ibnd = ix-margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -260,6 +289,7 @@ subroutine bd_inix(mbnd,margin,qq,qqini,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   return
@@ -280,6 +310,8 @@ subroutine bd_iniy(mbnd,margin,qq,qqini,ix,jx,kx)
 
   if( mbnd .eq. 0)then
      jbnd = 1+margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -287,8 +319,11 @@ subroutine bd_iniy(mbnd,margin,qq,qqini,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
      jbnd = jx-margin
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -296,6 +331,7 @@ subroutine bd_iniy(mbnd,margin,qq,qqini,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   return
@@ -350,6 +386,8 @@ subroutine bd_synnx_car(mbnd,margin,qq,ix,jx,kx)
   real(8) :: signj
 
   if(mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -357,7 +395,10 @@ subroutine bd_synnx_car(mbnd,margin,qq,ix,jx,kx)
            enddo
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -365,6 +406,7 @@ subroutine bd_synnx_car(mbnd,margin,qq,ix,jx,kx)
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   return
@@ -383,6 +425,8 @@ subroutine bd_synny_car(mbnd,margin,qq,ix,jx,kx)
   real(8) :: signj
 
   if(mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -390,7 +434,10 @@ subroutine bd_synny_car(mbnd,margin,qq,ix,jx,kx)
            enddo
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -398,6 +445,7 @@ subroutine bd_synny_car(mbnd,margin,qq,ix,jx,kx)
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   return
@@ -453,6 +501,8 @@ subroutine bd_synnx(mbnd,margin,qq,ix,jx,kx)
   hjx = (jx-2*margin)/2
 
   if(mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -471,7 +521,10 @@ subroutine bd_synnx(mbnd,margin,qq,ix,jx,kx)
            enddo
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -479,6 +532,7 @@ subroutine bd_synnx(mbnd,margin,qq,ix,jx,kx)
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   return
@@ -495,6 +549,8 @@ subroutine bd_synpx_car(mbnd,margin,qq,ix,jx,kx)
   integer :: i,j,k
 
   if(mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -502,7 +558,10 @@ subroutine bd_synpx_car(mbnd,margin,qq,ix,jx,kx)
            enddo
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -510,6 +569,7 @@ subroutine bd_synpx_car(mbnd,margin,qq,ix,jx,kx)
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   return
@@ -526,6 +586,8 @@ subroutine bd_synpy_car(mbnd,margin,qq,ix,jx,kx)
   integer :: i,j,k
 
   if(mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -533,7 +595,10 @@ subroutine bd_synpy_car(mbnd,margin,qq,ix,jx,kx)
            enddo
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -541,6 +606,7 @@ subroutine bd_synpy_car(mbnd,margin,qq,ix,jx,kx)
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   return
@@ -594,6 +660,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   hjx = (jx-2*margin)/2
 
   if(mbnd .eq. 0)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -612,7 +680,10 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            enddo
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -620,6 +691,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   end if
 
   end subroutine bd_synpx
@@ -652,6 +724,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   msend = mpid%l
   mrecv = mpid%r
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,jx
         do i=1,margin
@@ -670,6 +744,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   call mpi_sendrecv               &
        (bufsnd_x,mmx,mdp,msend, 0 &
@@ -677,6 +752,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
        ,mcomw,mstat,merr)
 
   if(mrecv /= mnull)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -692,6 +769,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
 !--- Step 1-2.---
@@ -701,6 +779,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   msend = mpid%r
   mrecv = mpid%l
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,jx
         do i=1,margin
@@ -716,6 +796,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   call mpi_sendrecv               &
        (bufsnd_x,mmx,mdp,msend, 0 &
@@ -723,6 +804,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
        ,mcomw,mstat,merr)
 
   if(mrecv /= mnull)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -738,6 +821,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   end if
 
 !--- Step 1-3.---
@@ -749,6 +833,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   msend = mpid%b
   mrecv = mpid%f
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,margin
         do i=1,ix
@@ -764,6 +850,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   call mpi_sendrecv               &
        (bufsnd_y,mmx,mdp,msend, 0 &
@@ -771,6 +858,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
        ,mcomw,mstat,merr)
 
   if(mrecv /= mnull)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -786,6 +875,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   end if
 
 !--- Step 1-4.---
@@ -797,6 +887,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   msend = mpid%f
   mrecv = mpid%b
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,margin
         do i=1,ix
@@ -812,6 +904,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   call mpi_sendrecv               &
        (bufsnd_y,mmx,mdp,msend, 0 &
@@ -819,6 +912,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
        ,mcomw,mstat,merr)
 
   if(mrecv /= mnull)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,margin
            do i=1,ix
@@ -834,6 +929,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   end if
 
 !--- Step 1-5.---
@@ -962,6 +1058,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   msend = mpid%ax
   mrecv = mpid%ax
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j)
   do k=1,kx
      do j=1,jx
         do i=1,margin
@@ -977,6 +1075,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   call mpi_sendrecv              &
        (bufsnd_x,mmx,mdp,msend,0 &
@@ -984,6 +1083,8 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
        ,mcomw,mstat,merr)
 
   if(mpid%l == mnull)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -999,6 +1100,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   end subroutine boundary__mpi_cyl

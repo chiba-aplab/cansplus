@@ -20,6 +20,8 @@ contains
   integer :: i,j,k
 
   if(mdir == 1)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -45,6 +47,8 @@ contains
         enddo
      enddo
   else if(mdir == 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -70,6 +74,8 @@ contains
         end do
      end do
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -135,7 +141,6 @@ contains
   ich = 0.5d0/ch
 
   if(mdir == 1)then
-
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
