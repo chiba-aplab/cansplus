@@ -8,7 +8,7 @@ module const
 
 ! time control parameters
   logical,parameter :: restart = .false.     ! if ".true." then start from restart data
-  integer,parameter :: nstop = 500
+  integer,parameter :: nstop = 100
   real(8),parameter :: tend = 4d0, dtout = 4d0
   real(8),parameter :: dtmin = 1d-10! minimum time step
   real(8),parameter :: safety = 0.3d0 ! CFL number
@@ -16,8 +16,8 @@ module const
 
 ! CELL & MPI
   integer,parameter :: margin = 3
-  integer,parameter :: ix = 20+2*margin,jx=20+2*margin,kx=20+2*margin
-  integer,parameter :: mpisize_x = 2, mpisize_y = 2, mpisize_z = 2
+  integer,parameter :: ix = 40+2*margin,jx=40+2*margin,kx=40+2*margin
+  integer,parameter :: mpisize_x = 1, mpisize_y = 1, mpisize_z = 1
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)

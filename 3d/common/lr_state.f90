@@ -46,7 +46,7 @@ contains
            enddo
         enddo
      enddo
-     !$OMP END PARALLEL
+     !$OMP END PARALLEL DO
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
      !$OMP PRIVATE(i,j)
@@ -74,7 +74,7 @@ contains
            end do
         end do
      end do
-     !$OMP END PARALLEL
+     !$OMP END PARALLEL DO
   else
      !$OMP PARALLEL DO &
      !$OMP PRIVATE(i,j)
@@ -102,7 +102,7 @@ contains
            end do
         end do
      end do
-     !$OMP END PARALLEL
+     !$OMP END PARALLEL DO
   endif
 
   end subroutine lr_state__1st
@@ -144,6 +144,8 @@ contains
   ich = 0.5d0/ch
 
   if(mdir == 1)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,l,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,temp3,qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -278,7 +280,10 @@ contains
            end do
         end do
      end do
+!$OMP END PARALLEL DO
   else if(mdir == 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,l,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,temp3,qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -413,7 +418,10 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,l,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,temp3,qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -548,6 +556,7 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   endif
 
   end subroutine lr_state__MSCL2
@@ -594,7 +603,8 @@ contains
   ich = 0.5d0/ch
 
   if(mdir == 1)then
-
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -746,7 +756,10 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   else if(mdir == 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -901,7 +914,10 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -1056,6 +1072,7 @@ contains
            end do
         end do
      end do
+     !$OMP END PARALLEL DO
   endif
 
   end subroutine lr_state__MP5
@@ -1073,6 +1090,8 @@ contains
   real(8),dimension(5,2,ix) :: cc
   real(8) :: tmp1,tmp2,tmp3,tmp4
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(r,j,tmp3,m,tmp2,l,tmp1,q,tmp4)
   do i=3,ix-3
      do r=1,2
         do j=0,4

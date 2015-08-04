@@ -57,10 +57,10 @@ contains
 
   dxmax = 10.0d0*dxg0
 
-  do i=margin+1,margin+96
+  do i=margin+1,margin+4
      dxg(i) = dxg0
   enddo
-  do i=margin+97,igx-margin
+  do i=margin+5,igx-margin
      dxg(i) = dxg(i-1)*ratio_x
      if(dxg(i) > dxmax) dxg(i)=dxmax
   enddo
