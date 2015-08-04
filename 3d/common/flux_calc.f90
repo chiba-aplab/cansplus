@@ -61,12 +61,12 @@ contains
   ! --- r state ---
   !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,bsqr,pbr,prr,ptr,eer,rxr,ryr,rzr) &
   !--- step 1----
-  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr) &
+  !$OMP PRIVATE(gmpl,gmpr,gpbl,gpbr,cfl,cfr,sl,sr) &
   !--- step 2 ---
   ! - left
   !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl) &
   ! - right
-  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr) &
+  !$OMP PRIVATE(fror,frxr,fryr,frzr,feer,fbyr,fbzr)
   do k=margin,kx-margin
      do j=margin,jx-margin
         do i=margin,ix-margin
@@ -309,7 +309,7 @@ contains
   ! --- r state ---
   !$OMP PRIVATE(ror,vxr,vyr,vzr,byr,bzr,pbr,prr,ptr,rxr,ryr,rzr,eer) &
   !--- step 1----
-  !$OMP PRIVATE(gmpl,gmpr,gmbl,gmbr,cfl,cfr,sl,sr) &
+  !$OMP PRIVATE(gmpl,gmpr,gpbl,gpbr,cfl,cfr,sl,sr) &
   !--- step 2 ---
   ! - left
   !$OMP PRIVATE(frol,frxl,fryl,frzl,feel,fbyl,fbzl) &
@@ -331,7 +331,7 @@ contains
   !$OMP PRIVATE(vzldst,vzrdst,rzldst,rzrdst,byldst,byrdst,bzldst,bzrdst) &
   !$OMP PRIVATE(eeldst,eerdst) &
   !--- step 6 ---
-  !$OMP PRIVATE(msl,mslst,msrst,msr,temp1) &
+  !$OMP PRIVATE(msl,mslst,msrst,msr,temp1) 
   do k=margin,kx-margin
      do j=margin,jx-margin
         do i=margin,ix-margin
