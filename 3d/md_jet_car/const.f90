@@ -16,7 +16,7 @@ module const
 
 ! CELL & MPI
   integer,parameter :: margin = 3
-  integer,parameter :: ix = 40+2*margin,jx=40+2*margin,kx=40+2*margin
+  integer,parameter :: ix = 40+2*margin,jx=40+2*margin,kx=80+2*margin
   integer,parameter :: mpisize_x = 1, mpisize_y = 1, mpisize_z = 1
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)

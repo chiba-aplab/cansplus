@@ -57,18 +57,8 @@ contains
 
   dxmax = 10.0d0*dxg0
 
-  do i=margin+1,margin+4
+  do i=1,igx
      dxg(i) = dxg0
-  enddo
-  do i=margin+5,igx-margin
-     dxg(i) = dxg(i-1)*ratio_x
-     if(dxg(i) > dxmax) dxg(i)=dxmax
-  enddo
-  do i=igx-margin+1,igx
-     dxg(i)=dxg(igx-margin)
-  enddo
-  do i=0,margin-1
-     dxg(margin-i) = dxg(margin+i+1)
   enddo
 
   izero = margin+1
@@ -177,6 +167,8 @@ contains
 
 !---Step 3a.----------------------------------------------------------|
 ! set gravitation
+  !$OMP PARALLEL PRIVATE(i,j,ss,ig,jg,kg)
+  !$OMP DO
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -187,8 +179,10 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END DO 
 
 !----------------------------------------------------------------------|
+  !$OMP DO
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -212,9 +206,11 @@ contains
         end do
      end do
   end do
+  !$OMP END DO
 
 !---Step 3a.----------------------------------------------------------|
 ! set individual gravitation
+  !$OMP DO
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -228,9 +224,11 @@ contains
         enddo
      enddo
   enddo
-  
+  !$OMP END DO
+
 !----------------------------------------------------------------------|
 ! set initial model
+  !$OMP DO
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -247,6 +245,8 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END DO
+  !$OMP END PARALLEL
 
   roi(1:ix,1:jx,1:kx) = ro(1:ix,1:jx,1:kx)
   pri(1:ix,1:jx,1:kx) = pr(1:ix,1:jx,1:kx)

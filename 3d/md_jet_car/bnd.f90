@@ -117,6 +117,8 @@ contains
        call bd_synpz_car(0,margin,eta,ix,jx,kx)
        
        do k=1,margin
+          !$OMP PARALLEL DO &
+          !$OMP PRIVATE(i,r,si,co,b0s)
           do j=1,jx
              do i=1,ix
                 r = sqrt(x(i)*x(i)+y(j)*y(j))
@@ -135,6 +137,7 @@ contains
                 endif
              enddo
           enddo
+          !$OMP END PARALLEL DO
        enddo
     end if
   
