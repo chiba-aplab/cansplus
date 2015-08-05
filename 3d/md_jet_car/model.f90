@@ -40,8 +40,7 @@ contains
   integer :: ig,jg,kg
   integer :: izero,jzero,kzero
   real(8) :: ss
-  real(8) :: dxmax,dymax,dzmax
-  real(8),dimension(ix,jx,kx) :: curx,cury,curz
+  real(8) :: dzmax
   real(8),dimension(igx) :: xg,dxg
   real(8),dimension(0:igx) :: xmg
   real(8),dimension(jgx) :: yg,dyg
@@ -54,8 +53,6 @@ contains
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
 !
-
-  dxmax = 10.0d0*dxg0
 
   do i=1,igx
      dxg(i) = dxg0

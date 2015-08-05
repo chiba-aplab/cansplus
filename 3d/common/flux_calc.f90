@@ -32,14 +32,12 @@ contains
   real(8) :: rxl,ryl,rzl 
   real(8) :: rxr,ryr,rzr
   real(8) :: bxs,bxsq
-  real(8) :: pbl,pbr,ptst,prl,prr
+  real(8) :: pbl,pbr,prl,prr
   real(8) :: gmpl,gmpr,gpbl,gpbr
 
 !----- U* ----
 ! qqlst :: left state
 ! qqrst :: right state
-  real(8) :: rost,vxst,vyst,vzst,byst,bzst,eest
-  real(8) :: rxst,ryst,rzst
   real(8) :: sl,sr
 !----- flux ---
 ! fqql :: left physical flux

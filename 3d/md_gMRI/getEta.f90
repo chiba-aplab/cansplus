@@ -29,6 +29,8 @@ contains
                       ,curx,cury,curz)
   
   etamax=0.01d0
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,cur_abs,vd,flag)
   do k=2,kx-1
      do j=2,jx-1
         do i=2,ix-1
@@ -41,6 +43,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
   
   end subroutine getEta__anomalous
 
@@ -64,7 +67,9 @@ contains
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
-! x-component
+  ! x-component
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,ddy,ddz)
   do k=2,kx-1
      do j=2,jx-1
         do i=2,ix-1
@@ -76,7 +81,10 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,ddz,ddx)
 ! y-component
   do k=2,kx-1
      do j=2,jx-1
@@ -89,7 +97,10 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,ddx,ddy,line2,line1)
 ! z-component
   do k=2,kx-1
      do j=2,jx-1
@@ -104,6 +115,8 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
+
 
   end subroutine getcurrent__cyl
 

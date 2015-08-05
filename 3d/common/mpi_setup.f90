@@ -101,8 +101,6 @@ contains
   subroutine mpi_setup__init_cyl(mpisize_y)
 
     integer, intent(in) :: mpisize_y
-    integer :: mpisize, mpirank
-    integer :: i, j, k, irank
 
     if(lcheck) stop 'Call mpi_setup__init first.'
     if(mod(mpisize_y,2) /= 0)then

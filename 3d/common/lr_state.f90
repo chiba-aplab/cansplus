@@ -122,15 +122,15 @@ contains
   real(8),dimension(ix,jx,kx,2),intent(out) :: row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw
 
   integer,parameter :: nwave = 9
-  integer :: i,j,k,l,m,n
+  integer :: i,j,k,l,n
   real(8),dimension(nwave) :: qql,qqr
   real(8),dimension(nwave,2) :: wwc_w
   ! ww(*,1) = qqm2, ..
   real(8),dimension(nwave,3) :: ww,wwc
   real(8),dimension(nwave,nwave) :: lem,rem
-  real(8) :: wwor,minvalue,smv,psmv,msmv
+  real(8) :: minvalue,smv,psmv,msmv
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
-  real(8) :: temp,temp1,temp2,temp3,ich
+  real(8) :: temp1,temp2,temp3,ich
   real(8) :: dqqx,dqqy,dqqz
   real(8) :: dqc,dql,dqr
   real(8) :: dxc,dxl,dxr
@@ -174,7 +174,7 @@ contains
               phi1 = ww(9,2)
 
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
 
               do l=1,3
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -314,7 +314,7 @@ contains
               phi1 = ww(9,2)
               
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
 
               do l=1,3
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -454,7 +454,7 @@ contains
               phi1 = ww(9,2)
               
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
 
               do l=1,3
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -588,7 +588,7 @@ contains
   real(8),dimension(nwave,nwave) :: lem,rem
   real(8) :: wwor,minvalue,smv,psmv,msmv
   real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
-  real(8) :: temp,temp1,temp2,temp3,ich
+  real(8) :: temp1,temp2,temp3,ich
 
 !----parameter
   real(8),parameter :: B1 = 0.016666666667
@@ -597,10 +597,10 @@ contains
   real(8),parameter :: Epsm = 0.0000000001d0
 
 !----function
-  integer :: i,j,k,l,m,n
-  real(8) :: djm1,dj,djp1,dm4jph,dm4jmh,djpp1,dm4jpph
-  real(8) :: qqul,qqmd,qqlc,qqmin,qqmax,qqmin1,qqmax1
-  real(8) :: djp2,qqlr
+  integer :: i,j,k,l,n
+  real(8) :: djm1,dj,djp1,dm4jph,dm4jmh
+  real(8) :: qqul,qqmd,qqlc,qqmin,qqmax
+  real(8) :: qqlr
 
 !----Recipe for rarefaction ---
   real(8), parameter :: floor=1d-2
@@ -639,7 +639,7 @@ contains
               phi1 = ww(9,3)
 
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
 
               do l=1,5
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -796,7 +796,7 @@ contains
               phi1 = ww(9,3)
               
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
 
               do l=1,5
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -956,7 +956,7 @@ contains
               phi1 = ww(9,3)
               
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1,ch,gm)
+              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
 
               do l=1,5
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -1144,11 +1144,11 @@ contains
   end subroutine reconstructionConstant
 
 
-  subroutine esystem_glmmhd(lem,rem,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,gm)
+  subroutine esystem_glmmhd(lem,rem,ro,pr,bx,by,bz,gm)
 
-  real(8),intent(in) :: gm,ch
-  real(8),intent(in) :: ro,pr,vx,vy,vz
-  real(8),intent(in) :: bx,by,bz,phi
+  real(8),intent(in) :: gm
+  real(8),intent(in) :: ro,pr
+  real(8),intent(in) :: bx,by,bz
   real(8),dimension(9,9),intent(out) :: lem,rem
 
   real(8) :: roi,btsq,vaxsq,asq

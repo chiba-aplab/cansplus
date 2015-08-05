@@ -184,6 +184,8 @@ contains
 !-----Step 2.---------------------------------------------------------|
 !-- radiative cooling -------------------------------
   if (time > swtch_t) then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,te)
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
@@ -193,7 +195,10 @@ contains
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
@@ -201,9 +206,13 @@ contains
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   hdt=dt*0.5d0*n
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j) &
+  !$OMP PRIVATE(inversex,sro,srx,sry,srz,sbz,see,sphi,dtodx,dtody,dtodz)  
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
         do i=margin+1,ix-margin
@@ -272,6 +281,7 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO 
 
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
@@ -459,6 +469,8 @@ contains
 !-----Step 2.---------------------------------------------------------|
 !-- radiative cooling -------------------------------
   if (time > swtch_t) then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j,te)
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
@@ -468,7 +480,10 @@ contains
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=margin+1,kx-margin
         do j=margin+1,jx-margin
            do i=margin+1,ix-margin
@@ -476,10 +491,14 @@ contains
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   k1 = fac*(-7.D0*n*n+30.D0*n-23.D0)
   k2 = fac*(+7.D0*n*n-30.D0*n+35.D0)
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j) &
+  !$OMP PRIVATE(inversex,sro,srx,sry,srz,sbz,see,sphi,dtodx,dtody,dtodz)  
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
         do i=margin+1,ix-margin
@@ -557,6 +576,7 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
 !-----Step 3.----------------------------------------------------------|
 ! conserved to primitive
