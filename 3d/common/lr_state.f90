@@ -145,7 +145,9 @@ contains
 
   if(mdir == 1)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,l,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,temp3,qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
+     !$OMP PRIVATE(i,j,l,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP         temp1,temp2,temp3,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,       &
+     !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -283,7 +285,9 @@ contains
 !$OMP END PARALLEL DO
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,l,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,temp3,qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
+     !$OMP PRIVATE(i,j,n,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP         temp1,temp2,temp3,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,       &
+     !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -421,7 +425,9 @@ contains
      !$OMP END PARALLEL DO
   else
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,l,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,temp3,qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
+     !$OMP PRIVATE(i,j,n,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP         temp1,temp2,temp3,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,       &
+     !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -604,7 +610,9 @@ contains
 
   if(mdir == 1)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
+     !$OMP PRIVATE(i,j,l,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP         temp1,temp2,temp3,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,&
+     !$OMP         qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -759,7 +767,9 @@ contains
      !$OMP END PARALLEL DO
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
+     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
+     !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -917,7 +927,9 @@ contains
      !$OMP END PARALLEL DO
   else
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
+     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
+     !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
            do i=3,ix-2
@@ -1127,6 +1139,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
 
   end subroutine reconstructionConstant
 
@@ -1284,7 +1297,7 @@ contains
 
     real(8), intent(in) :: qqr,qql,qqc
 
-    MC2 = minmod(qqr,minmod(qql,qqc))
+    MC2 = minmod(qqc,minmod(qql,qqr))
 
   end function MC2
 

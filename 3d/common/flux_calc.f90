@@ -291,12 +291,12 @@ contains
   real(8) :: sqrtrol,sqrtror,invsumro
   real(8) :: signbx
   real(8) :: temp,temp1
-  real(8) :: temp_fst,sqrt_fst
+  real(8) :: temp_fst
   
   integer :: i,j,k  
 ! no if
   real(8) :: sign1,igm,itf,maxs1,mins1,abbx
-  real(8) :: msl,mslst,msm,msrst,msr
+  real(8) :: msl,mslst,msrst,msr
 
   igm = 1.0d0/(gm-1.0d0)
 
@@ -672,7 +672,7 @@ contains
 ! Flux at i+1/2
   if(mdir == 1)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,fres)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -687,7 +687,7 @@ contains
 ! Flux at j+1/2
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,fres)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -701,7 +701,7 @@ contains
 ! Flux at k+1/2
   else
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,fres)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -731,7 +731,7 @@ contains
 ! Flux at i+1/2
   if(mdir == 1)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,fres)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -745,7 +745,7 @@ contains
 ! Flux at j+1/2
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,fres)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
@@ -759,7 +759,7 @@ contains
 ! Flux at k+1/2
   else
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,fres)
      do k=margin,kx-margin
         do j=margin,jx-margin
            do i=margin,ix-margin
