@@ -30,6 +30,8 @@ contains
                       ,curx,cury,curz)
   
   etamax=0.01d0
+  !$OMP PARALLEL DO
+  !$OMP PRIVATE(i,j,cur_abs,vd)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -40,6 +42,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
   
   end subroutine getEta__anomalous
 
@@ -63,7 +66,11 @@ contains
   hpi4 = sqrt(4.0d0*pi)
   inhpi4 = 1.0d0/hpi4
 
+!-- start OpenMP----------------------------------------------------
+  !$OMP PARALLEL
+ 
 ! x-component
+  !$OMP DO PRIVATE(i,j,ddy,ddz)
   do k=2,kx-1
      do j=2,jx-1
         do i=2,ix-1
@@ -75,8 +82,10 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END DO NOWAIT
 
 ! y-component
+  !$OMP DO PRIVATE(i,j,ddx,ddz)
   do k=2,kx-1
      do j=2,jx-1
         do i=2,ix-1
@@ -88,23 +97,29 @@ contains
         enddo
      enddo
   enddo
-
+  !$OMP END DO NOWAIT
+ 
 ! z-component
+  !$OMP DO PRIVATE(i,j,ddx,ddy)
   do k=2,kx-1
      do j=2,jx-1
         do i=2,ix-1
            ddx = 0.5d0*dx(i-1)+dx(i)+0.5d0*dx(i+1)
            ddy = 0.5d0*dy(j-1)+dy(j)+0.5d0*dy(j+1)
 
-!           line2 = x(i+1)
-!           line1 = x(i-1)
            curz(i,j,k) = (by(i+1,j,k)-by(i-1,j,k))/ddx &
                 - (bx(i,j+1,k)-bx(i,j-1,k))/ddy
         enddo
      enddo
   enddo
+  !$OMP END DO NOWAIT
 
-  end subroutine getcurrent
+!-- end OpenMP
+  !$OMP END PARALLEL DO
+
+ 
+ 
+ end subroutine getcurrent
 
 
 end module getEta

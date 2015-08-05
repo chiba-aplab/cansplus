@@ -48,6 +48,7 @@ contains
   real(8),dimension(igx,jgx,kgx) :: gyg
   real(8),dimension(jgx) :: gym0,tem0,rbeta,den0,pre0,bmx0   
 
+
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
 !
@@ -217,6 +218,7 @@ contains
     bmx0(j)  = sqrt(2*pre0(j)*rbeta(j))
   enddo
 
+  !$OMP PARALLEL DO PRIVATE(i,j,ig,jg,kg)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -246,6 +248,7 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   call pertub(vx,vy,vz,x,y,z)
 
@@ -259,6 +262,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
   integer :: i,j,k
 
+  !$OMP PARALLEL DO
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -270,6 +274,7 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END PARALLEL DO
 
   end subroutine pertub
 
