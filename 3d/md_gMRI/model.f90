@@ -27,6 +27,8 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: ro,pr
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
   real(8),dimension(ix,jx,kx),intent(out) :: bx,by,bz
+
+
   real(8),dimension(ix,jx,kx),intent(out) :: eta,phi
   real(8),dimension(ix,jx,kx),intent(out) :: gx,gz
   real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
@@ -197,7 +199,11 @@ contains
   enddo
 
 !---Step 3a.----------------------------------------------------------|
-! set gravitation
+  ! set gravitation
+
+  !$OMP PARALLEL
+  !$OMP DO &
+  !$OMP PRIVATE(i,j,ss)
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -207,7 +213,10 @@ contains
         enddo
      enddo
   enddo
-
+  !$OMP END DO
+  
+  !$OMP DO &
+  !$OMP PRIVATE(i,j,ss)
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -230,9 +239,12 @@ contains
         end do
      end do
   end do
+  !$OMP END DO
 
 !---Step 3b.----------------------------------------------------------|
-! set individual gravitation
+  ! set individual gravitation
+  !$OMP DO &
+  !$OMP PRIVATE(i,j,ig,jg,kg)
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -245,34 +257,39 @@ contains
         enddo
      enddo
   enddo
-
+  !$OMP END DO
+  !$OMP END PARALLEL
 !----------------------------------------------------------------------|
-! set initial mocel
-  bbAbsMax = 0.0d0
+! set initial model
+!  bbAbsMax = 0.0d0
   pot0=-grav/(1.0d0-ssg)
   psi0 = pot0+1.0d0/(2.0d0-2.0d0*aa)+gm*kk/(gm-1.0d0)*(1+1.d0/beta0)
 
 !---2D model with poloidal magnetic field -------------------------
-if(pol_2D)then
-  do k=1,kx
-     do j=1,jx
-        do i=1,ix
-           !---- set corona ---------------------
-           ss = sqrt(x(i)**2+z(k)**2)
-           roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
-           prc = tec0*roc/gm
-
-           !---- set torus ----------------------
-           rod = 0.0d0
-           prd = 0.0d0
-           vyd = 0.0d0
-           bxd = 0.0d0
-           byd = 0.0d0
-           bzd = 0.0d0
-           Lnrml = x0**0.5
-           flag_torus(i,j,k) = 0.d0
-           if (ss.gt.sseps) then
-              L_r = Lnrml*x(i)**aa
+  if(pol_2D)then
+     !$OMP PARALLEL
+     !$OMP DO &
+     !$OMP PRIVATE(i,j) &
+     !$OMP PRIVATE(ss,roc,prc,rod,prd,vyd,bxd,byd,bzd,Lnrml,L_r)
+     do k=1,kx
+        do j=1,jx
+           do i=1,ix
+              !---- set corona ---------------------
+              ss = sqrt(x(i)**2+z(k)**2)
+              roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
+              prc = tec0*roc/gm
+              
+              !---- set torus ----------------------
+              rod = 0.0d0
+              prd = 0.0d0
+              vyd = 0.0d0
+              bxd = 0.0d0
+              byd = 0.0d0
+              bzd = 0.0d0
+              Lnrml = x0**0.5
+              flag_torus(i,j,k) = 0.d0
+              if (ss.gt.sseps) then
+                 L_r = Lnrml*x(i)**aa
                  rod = (x0/ss - 0.5d0*x0**2/x(i)**2 - 0.5d0/dst) &
                       /(n_poly+1.d0)/a_poly/x0
                  if (rod.le.0.d0) then
@@ -293,113 +310,118 @@ if(pol_2D)then
                  bzd = rod**2/beta0/x(i) + 2.d0/beta0/a_poly*n_poly &
                       /(n_poly+1.d0)*(-x(i)/ss**3 + x0/x(i)**3) &
                       *rod**(-gm+3.d0)
-                 vyd = L_r/x(i)
-
-                 if(dabs(byd) > bbAbsMax)then
-                    bbAbsMax = dabs(byd)
-                 endif
+                 vyd = L_r/x(i)                 
                  flag_torus(i,j,k) = 1
-!              endif
-           endif
-100        continue
+                 !endif
+              endif
+100           continue
 
-           ro(i,j,k) = rod+roc
-           pr(i,j,k) = prd+prc
-           pr_per(i,j,k) = prd+prc 
-           vx(i,j,k) = 0.0d0
-           vy(i,j,k) = vyd
-           vz(i,j,k) = 0.0d0
-           bx(i,j,k) = bxd
-           by(i,j,k) = byd
-           bz(i,j,k) = bzd
-           phi(i,j,k) = 0.0d0
-           eta(i,j,k) = 0.0d0
+              ro(i,j,k) = rod+roc
+              pr(i,j,k) = prd+prc
+              pr_per(i,j,k) = prd+prc 
+              vx(i,j,k) = 0.0d0
+              vy(i,j,k) = vyd
+              vz(i,j,k) = 0.0d0
+              bx(i,j,k) = bxd
+              by(i,j,k) = byd
+              bz(i,j,k) = bzd
+              phi(i,j,k) = 0.0d0
+              eta(i,j,k) = 0.0d0
+           enddo
         enddo
      enddo
-  enddo
+     !$OMP END DO
+     !$OMP END PARALLEL
+     roi = ro
+     pri = pr
+     vxi = 0.0d0
+     vyi = 0.0d0
+     vzi = 0.0d0
+     bxi = bx
+     byi = 0.0d0
+     bzi = bz
+     phii = 0.0d0
 
-  roi = ro
-  pri = pr
-  vxi = 0.0d0
-  vyi = 0.0d0
-  vzi = 0.0d0
-  bxi = 0.0d0
-  byi = by
-  bzi = 0.0d0
-  phii = 0.0d0
-
-  call perturb2(2,pr_per)
-    do k=1,kx
-     do j=1,jx
-        do i=1,ix
-           if (flag_torus(i,j,k) == 1) then
-              pr(i,j,k) = pr_per(i,j,k)
-           endif
+     call perturb2(2,pr_per)
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j) 
+     do k=1,kx
+        do j=1,jx
+           do i=1,ix
+              if (flag_torus(i,j,k) == 1) then
+                 pr(i,j,k) = pr_per(i,j,k)
+              endif
+           enddo
         enddo
      enddo
-  enddo
+     !$OMP END PARALLEL DO
 endif
 !---3D model with toroldal magnetic field -------------------------
 if(tor_3D)then
-  do k=1,kx
-     do j=1,jx
-        do i=1,ix
-           !---- set corona ---------------------
-           ss = sqrt(x(i)**2+z(k)**2)
-           roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
-!           prc = tec0*roc
-           prc = tec0*roc/gm
+   !$OMP PARALLEL DO &
+   !$OMP PRIVATE(i,j) &
+   !$OMP PRIVATE(ss,roc,prc,rod,prd,vyd,byd,tmp) &
+   !$OMP REDUCTION(max:bbAbsMax)
+   do k=1,kx
+      do j=1,jx
+         do i=1,ix
+            !---- set corona ---------------------
+            ss = sqrt(x(i)**2+z(k)**2)
+            roc = rohalo*exp(-(gpot(i,j,k)-pot0)/tec0)
+            !           prc = tec0*roc
+            prc = tec0*roc/gm
 
-           !---- set torus ----------------------
-           rod = 0.0d0
-           prd = 0.0d0
-           vyd = 0.0d0
-           byd = 0.0d0
+            !---- set torus ----------------------
+            rod = 0.0d0
+            prd = 0.0d0
+            vyd = 0.0d0
+            byd = 0.0d0
+            
+            if (ss.gt.sseps) then
+               tmp = psi0-gpot(i,j,k)-x(i)**(2.0d0*aa-2.0d0)/(2.0d0-2.0d0*aa)
+               if(tmp > 0.0d0)then
+                  rod = (tmp/(kk*(gm/(gm-1.0d0)) &
+                       *(1.0d0+(x(i)**(2.0d0*(gm-1.0d0)))/beta0)))**(1.0d0/(gm-1.0d0))
+                  prd = kk*rod**gm
+                  vyd = x(i)**(aa-1.0d0)
+                  byd = sqrt(rod*2*kk/beta0*(rod*x(i)**2)**(gm-1.0d0))
+                  if(dabs(byd) > bbAbsMax)then
+                     bbAbsMax = dabs(byd)
+                  endif
+               endif
+            endif
 
-           if (ss.gt.sseps) then
-              tmp = psi0-gpot(i,j,k)-x(i)**(2.0d0*aa-2.0d0)/(2.0d0-2.0d0*aa)
-              if(tmp > 0.0d0)then
-                 rod = (tmp/(kk*(gm/(gm-1.0d0)) &
-                      *(1.0d0+(x(i)**(2.0d0*(gm-1.0d0)))/beta0)))**(1.0d0/(gm-1.0d0))
-                 prd = kk*rod**gm
-                 vyd = x(i)**(aa-1.0d0)
-                 byd = sqrt(rod*2*kk/beta0*(rod*x(i)**2)**(gm-1.0d0))
-                 if(dabs(byd) > bbAbsMax)then
-                    bbAbsMax = dabs(byd)
-                 endif
-              endif
-           endif
+            ro(i,j,k) = rod+roc
+            pr(i,j,k) = prd+prc
+            vx(i,j,k) = 0.0d0
+            vy(i,j,k) = vyd
+            vz(i,j,k) = 0.0d0
+            bx(i,j,k) = 0.0d0
+            by(i,j,k) = byd
+            bz(i,j,k) = 0.0d0
+            phi(i,j,k) = 0.0d0
+            eta(i,j,k) = 0.0d0
+         enddo
+      enddo
+   enddo
+   !$OMP END PARALLEL DO
 
-           ro(i,j,k) = rod+roc
-           pr(i,j,k) = prd+prc
-           vx(i,j,k) = 0.0d0
-           vy(i,j,k) = vyd
-           vz(i,j,k) = 0.0d0
-           bx(i,j,k) = 0.0d0
-           by(i,j,k) = byd
-           bz(i,j,k) = 0.0d0
-           phi(i,j,k) = 0.0d0
-           eta(i,j,k) = 0.0d0
-        enddo
-     enddo
-  enddo
-
-  roi = ro
-  pri = pr
-  vxi = 0.0d0
-  vyi = 0.0d0
-  vzi = 0.0d0
-  bxi = 0.0d0
-  byi = by
-  bzi = 0.0d0
-  phii = 0.0d0
+   
+   roi = ro
+   pri = pr
+   vxi = 0.0d0
+   vyi = 0.0d0
+   vzi = 0.0d0
+   bxi = 0.0d0
+   byi = by
+   bzi = 0.0d0
+   phii = 0.0d0
 
   call perturb(1,bx,by,bz,x,dx,dy,dz,bbAbsMax)
 
 endif
        
-  end subroutine model_setup
-
+end subroutine model_setup
 
 !----------------------------------------------------------------
 ! perturbation
@@ -437,6 +459,9 @@ endif
   call random_number(daz)
 
   if(iperturb .eq. 1)then
+     !$OMP PARALLEL
+     !$OMP DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,ix
@@ -446,9 +471,12 @@ endif
            enddo
         enddo
      enddo
-
+     !$OMP END DO
 
      dvxmax = 0.0d0
+     !$OMP DO &
+     !$OMP PRIVATE(i,j,dtodz,temp) &
+     !$OMP REDUCTION(max:dvxmax)
      do k=2,kx-1
         do j=1,jx
            do i=1,ix
@@ -463,8 +491,13 @@ endif
            enddo
         enddo
      enddo
-
+     !$OMP END DO 
+     
      dvymax = 0.0d0
+     
+     !$OMP DO &
+     !$OMP PRIVATE(i,j,dtodz,dtodx,temp) &
+     !$OMP REDUCTION(max:dvymax)
      do k=2,kx-1
         do j=1,jx
            do i=2,ix-1
@@ -481,8 +514,12 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END DO 
 
      dvzmax = 0.0d0
+     !$OMP DO &
+     !$OMP PRIVATE(i,j,line1,line2,dtodx,temp) &
+     !$OMP REDUCTION(max:dvzmax)
      do k=1,kx
         do j=1,jx
            do i=2,ix-1
@@ -499,7 +536,10 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END DO 
 
+     !$OMP DO &
+     !$OMP PRIVATE(i,j) 
      do k=1,kx
         do j=1,jx
            do i=1,ix
@@ -521,7 +561,10 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END DO 
 
+     !$OMP DO &
+     !$OMP PRIVATE(i,j)
      do k=2,kx-1
         do j=1,jx-1
            do i=2,ix-1
@@ -531,7 +574,10 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END DO 
 
+     !$OMP DO &
+     !$OMP PRIVATE(i,j)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
@@ -541,7 +587,11 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END DO 
+     !$OMP END PARALLEL
   else if(iperturb .eq. 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,ix
@@ -553,7 +603,10 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   else
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,ix
@@ -563,6 +616,7 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
   endif
 
   end subroutine perturb
@@ -601,6 +655,8 @@ endif
 !  call random_number(daz)
 
   if(iperturb .eq. 2)then
+     !$OMP PARALLEL DO &
+     !$OMP PRIVATE(i,j)
      do k=1,kx
         do j=1,jx
            do i=1,ix
@@ -612,6 +668,7 @@ endif
            enddo
         enddo
      enddo
+     !$OMP END PARALLEL DO
 !   else
 !      do k=1,kx
 !         do j=1,jx

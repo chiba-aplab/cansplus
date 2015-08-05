@@ -96,6 +96,8 @@ contains
   integer :: i,j,k
 
   dx0 = 0.01d0
+  !$OMP PARALLEL DO &
+  !$OMP PRIVATE(i,j,ss,ai)
   do k=1,kx
     do j=1,jx
       do i=1,ix
@@ -115,6 +117,7 @@ contains
       enddo
     enddo
   enddo
+  !$OMP END PARALLEL DO
 
   end subroutine bnd__absorb
 
