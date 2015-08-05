@@ -72,7 +72,7 @@ program main
   call integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
                         ,gx,gy,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                         ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-                        ,eta0,vc,eta,ccx,ccy,ccz,xin)
+                        ,eta0,vc,eta,ccx,ccy,ccz)
 !----------------------------------------------------------------------|
 
 !     data output 

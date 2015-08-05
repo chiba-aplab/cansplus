@@ -12,7 +12,7 @@ contains
   subroutine integrate__RK2(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
                             ,gx,gy,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                             ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-                            ,eta0,vc,eta,ccx,ccy,ccz,xin)
+                            ,eta0,vc,eta,ccx,ccy,ccz)
 
   use convert
   use lr_state, only : lr_state__MP5
@@ -28,7 +28,6 @@ contains
   real(8),dimension(5,2,ix),intent(in) :: ccx
   real(8),dimension(5,2,jx),intent(in) :: ccy
   real(8),dimension(5,2,kx),intent(in) :: ccz
-  real(8),intent(in) :: xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gy,gz
@@ -37,7 +36,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(inout) :: phi
 
 !-- using flux
-  real(8),dimension(ix,jx,kx) :: ro1,pr1,vx1,vy1,vz1
+  real(8),dimension(ix,jx,kx) :: ro1
   real(8),dimension(ix,jx,kx) :: bx1,by1,bz1
   real(8),dimension(ix,jx,kx) :: phi1
 !-conserved variable
@@ -65,12 +64,9 @@ contains
   integer :: merr
   integer :: mdir
   integer :: i,j,k,n
-  real(8) :: dts
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,hdt
-  real(8) :: inversex             !1/x
-  real(8) :: te
   real(8),dimension(ix,jx,kx) :: eta
 
 !-----Step 0.----------------------------------------------------------|
@@ -220,7 +216,7 @@ contains
   subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,x,dx,y,dy,z,dz,dt &
                               ,gx,gy,gz,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
                               ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
-                              ,eta0,vc,eta,ccx,ccy,ccz,xin)
+                              ,eta0,vc,eta,ccx,ccy,ccz)
 
   use convert
   use lr_state, only : lr_state__MP5
@@ -236,7 +232,6 @@ contains
   real(8),dimension(5,2,ix),intent(in) :: ccx
   real(8),dimension(5,2,jx),intent(in) :: ccy
   real(8),dimension(5,2,kx),intent(in) :: ccz
-  real(8),intent(in) :: xin
   real(8),dimension(ix,jx,kx),intent(in) :: roi,pri,vxi,vyi,vzi
   real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
   real(8),dimension(ix,jx,kx),intent(in) :: gx,gy,gz
@@ -245,7 +240,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(inout) :: phi
 
 !-- using flux
-  real(8),dimension(ix,jx,kx) :: ro1,pr1,vx1,vy1,vz1
+  real(8),dimension(ix,jx,kx) :: ro1
   real(8),dimension(ix,jx,kx) :: bx1,by1,bz1
   real(8),dimension(ix,jx,kx) :: phi1
 !-conserved variable
@@ -271,11 +266,9 @@ contains
   integer :: mdir
   integer :: i,j,k,n
   real(8), parameter :: fac=1.D0/12.D0
-  real(8) :: dts
   real(8) :: sro,srx,sry,srz
   real(8) :: see,sphi,sbz
   real(8) :: dtodx,dtody,dtodz,k1,k2
-  real(8) :: te
   real(8),dimension(ix,jx,kx) :: eta
 
 !-----Step 0.----------------------------------------------------------|
