@@ -95,6 +95,8 @@ contains
        call bd_synpz_car(0,margin,eta,ix,jx,kx)
        
        do k=1,margin
+          !$OMP PARALLEL DO &
+          !$OMP PRIVATE(i)
           do j=1,jx
              do i=1,ix
                 if (x(i).le.r_jet)then
@@ -109,6 +111,7 @@ contains
                 endif
              enddo
           enddo
+          !$OMP END PARALLEL DO
        enddo
     end if
   

@@ -182,6 +182,8 @@ contains
 
 !---Step 3a.----------------------------------------------------------|
 ! set gravitation
+  !$OMP PARALLEL PRIVATE(i,j,ss,ig,jg,kg)
+  !$OMP DO
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -191,8 +193,10 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END DO
 
 !----------------------------------------------------------------------|
+  !$OMP DO
   do k=1,kgx
      do j=1,jgx
         do i=1,igx
@@ -215,9 +219,11 @@ contains
         end do
      end do
   end do
+  !$OMP END DO
 
 !---Step 3a.----------------------------------------------------------|
 ! set individual gravitation
+  !$OMP DO
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -230,9 +236,11 @@ contains
         enddo
      enddo
   enddo
+  !$OMP END DO
   
 !----------------------------------------------------------------------|
 ! set initial model
+  !$OMP DO
   do k=1,kx
      do j=1,jx
         do i=1,ix
@@ -249,7 +257,9 @@ contains
         enddo
      enddo
   enddo
-
+  !$OMP END DO
+  !$OMP END PARALLEL
+  
   roi(1:ix,1:jx,1:kx) = ro(1:ix,1:jx,1:kx)
   pri(1:ix,1:jx,1:kx) = pr(1:ix,1:jx,1:kx)
   vxi(1:ix,1:jx,1:kx) = vx(1:ix,1:jx,1:kx)
