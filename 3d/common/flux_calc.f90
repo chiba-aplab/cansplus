@@ -620,6 +620,7 @@ contains
         end do
      end do
   end do
+  !$OMP END PARALLEL DO
 
   end subroutine flux_calc__glm
 
