@@ -14,7 +14,7 @@ contains
                               ,eta,ccx,ccy,ccz)
 
   use convert
-  use lr_state, only : lr_state__MP5
+  use lr_state, only : lr_state__MP5, lr_state__MSCL2
   use flux_calc
   use bnd
 
@@ -86,6 +86,9 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
+!  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+!       ,vx,vy,vz,bx,by,bz,phi &
+!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -103,6 +106,9 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
+!  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+!       ,vy,vz,vx,by,bz,bx,phi &
+!       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -112,23 +118,6 @@ contains
   call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
                       ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-!-----Step 1c.---------------------------------------------------------|
-! compute flux at z-direction
-! set L/R state at z-direction
-!
-  mdir = 3
-  
-  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
-       ,vz,vx,vy,bz,bx,by,phi &
-       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
-
-  call flux_calc__bp(ix,jx,kx,bzw,phiw &
-       ,bz_m,phi_m,ch)
-
-  call flux_calc__glm(bz_m,phi_m,ch,fbzz,fphiz,ix,jx,kx)
-
-  call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,margin,ix,jx,kx &
-                      ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
 !-----Step 2.---------------------------------------------------------|
 ! TVDRK substep
@@ -144,41 +133,34 @@ contains
 
            ro(i,j,k) = k1*ro1(i,j,k)+k2*(+ro(i,j,k) &
                 +dtodx*(frox(i-1,j,k)-frox(i,j,k))  &
-                +dtody*(froy(i,j-1,k)-froy(i,j,k))  &
-                +dtodz*(froz(i,j,k-1)-froz(i,j,k)))
+                +dtody*(froy(i,j-1,k)-froy(i,j,k)) )
            ee(i,j,k) = k1*ee1(i,j,k)+k2*(+ee(i,j,k)  &
                 +dtodx*(feex(i-1,j,k)-feex(i,j,k)) &
-                +dtody*(feey(i,j-1,k)-feey(i,j,k)) &
-                +dtodz*(feez(i,j,k-1)-feez(i,j,k)))
+                +dtody*(feey(i,j-1,k)-feey(i,j,k)) )
            rx(i,j,k) = k1*rx1(i,j,k)+k2*(+rx(i,j,k) &
                 +dtodx*(frxx(i-1,j,k)-frxx(i,j,k))  &
-                +dtody*(frxy(i,j-1,k)-frxy(i,j,k))  &
-                +dtodz*(frxz(i,j,k-1)-frxz(i,j,k)) )
+                +dtody*(frxy(i,j-1,k)-frxy(i,j,k)) )
            ry(i,j,k) = k1*ry1(i,j,k)+k2*(+ry(i,j,k) &
                 +dtodx*(fryx(i-1,j,k)-fryx(i,j,k))  &
-                +dtody*(fryy(i,j-1,k)-fryy(i,j,k))  &
-                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k)) )
+                +dtody*(fryy(i,j-1,k)-fryy(i,j,k)) )
            rz(i,j,k) = k1*rz1(i,j,k)+k2*(+rz(i,j,k) &
                 +dtodx*(frzx(i-1,j,k)-frzx(i,j,k))  &
-                +dtody*(frzy(i,j-1,k)-frzy(i,j,k))  &
-                +dtodz*(frzz(i,j,k-1)-frzz(i,j,k)) )
+                +dtody*(frzy(i,j-1,k)-frzy(i,j,k)) )
            bx(i,j,k) = k1*bx1(i,j,k)+k2*(+bx(i,j,k)  &
                 +dtodx*(fbxx(i-1,j,k)-fbxx(i,j,k))   &
-                +dtody*(fbxy(i,j-1,k)-fbxy(i,j,k)) &
-                +dtodz*(fbxz(i,j,k-1)-fbxz(i,j,k)) )
+                +dtody*(fbxy(i,j-1,k)-fbxy(i,j,k)) )
            by(i,j,k) = k1*by1(i,j,k)+k2*(+by(i,j,k)  &
                 +dtodx*(fbyx(i-1,j,k)-fbyx(i,j,k)) &
-                +dtody*(fbyy(i,j-1,k)-fbyy(i,j,k))   &
-                +dtodz*(fbyz(i,j,k-1)-fbyz(i,j,k)) )
+                +dtody*(fbyy(i,j-1,k)-fbyy(i,j,k)) )
            bz(i,j,k) = k1*bz1(i,j,k)+k2*(+bz(i,j,k)  &
                 +dtodx*(fbzx(i-1,j,k)-fbzx(i,j,k)) &
-                +dtody*(fbzy(i,j-1,k)-fbzy(i,j,k)) &
-                +dtodz*(fbzz(i,j,k-1)-fbzz(i,j,k)) )
+                +dtody*(fbzy(i,j-1,k)-fbzy(i,j,k)) )
            phi(i,j,k) = k1*phi1(i,j,k)+k2*(+phi(i,j,k) &
                 +dtodx*(fphix(i-1,j,k)-fphix(i,j,k))   &
                 +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k))   &
-                +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k))   &
                 )*exp(-dt*ch**2/cp**2)
+           eta(i,j,k) = ( (fphix(i-1,j,k)-fphix(i,j,k))/dx(i)   &
+                         +(fphiy(i,j-1,k)-fphiy(i,j,k))/dy(j))/ch**2
         enddo
      enddo
   enddo

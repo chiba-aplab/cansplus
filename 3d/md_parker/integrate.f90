@@ -13,7 +13,7 @@ contains
                               ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi,phii &
                               ,eta0,vc,eta,ccx,ccy,ccz,time)
   use convert
-  use lr_state, only : lr_state__MP5
+  use lr_state, only : lr_state__MP5, lr_state__MSCL2
   use flux_calc
   use bnd
 !  use getEta
@@ -108,6 +108,9 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
+!  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+!       ,vx,vy,vz,bx,by,bz,phi &
+!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
   
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -131,6 +134,9 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
        ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy,ccz)
+!  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+!       ,vy,vz,vx,by,bz,bx,phi &
+!       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -155,6 +161,9 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vz,vx,vy,bz,bx,by,phi &
        ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,ccx,ccy,ccz)
+!  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+!       ,vz,vx,vy,bz,bx,by,phi &
+!       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,dx,dy,dz)
 
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
@@ -242,6 +251,8 @@ contains
                 +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k))   &
                 +dtodz*(fphiz(i,j,k-1)-fphiz(i,j,k))   &
                 +dt*sphi)*exp(-dt*ch**2/cp**2)
+           eta(i,j,k) = ( (fphix(i-1,j,k)-fphix(i,j,k))/dx(i)   &
+                         +(fphiy(i,j-1,k)-fphiy(i,j,k))/dy(j))/ch**2
         enddo
      enddo
   enddo
