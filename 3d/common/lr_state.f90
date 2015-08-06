@@ -403,18 +403,18 @@ contains
 
               row(i,j-1,k,2) = qql(1)*psmv + ro1*msmv
               row(i,j  ,k,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j-1,k,2) = qql(2)
-              vxw(i,j  ,k,1) = qqr(2)
-              vyw(i,j-1,k,2) = qql(3)*psmv + vy1*msmv
-              vyw(i,j  ,k,1) = qqr(3)*psmv + vy1*msmv
+              vxw(i,j-1,k,2) = qql(2)*psmv + vx1*msmv
+              vxw(i,j  ,k,1) = qqr(2)*psmv + vx1*msmv
+              vyw(i,j-1,k,2) = qql(3)
+              vyw(i,j  ,k,1) = qqr(3)
               vzw(i,j-1,k,2) = qql(4)
               vzw(i,j  ,k,1) = qqr(4)
               prw(i,j-1,k,2) = qql(5)*psmv + pr1*msmv
               prw(i,j  ,k,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j-1,k,2) = qql(6)
-              bxw(i,j  ,k,1) = qqr(6)
-              byw(i,j-1,k,2) = qql(7)*psmv + by1*msmv
-              byw(i,j  ,k,1) = qqr(7)*psmv + by1*msmv
+              bxw(i,j-1,k,2) = qql(6)*psmv + bx1*msmv
+              bxw(i,j  ,k,1) = qqr(6)*psmv + bx1*msmv
+              byw(i,j-1,k,2) = qql(7)
+              byw(i,j  ,k,1) = qqr(7)
               bzw(i,j-1,k,2) = qql(8)
               bzw(i,j  ,k,1) = qqr(8)
               phiw(i,j-1,k,2) = qql(9)*psmv + phi1*msmv
@@ -543,20 +543,20 @@ contains
 
               row(i,j,k-1,2) = qql(1)*psmv + ro1*msmv
               row(i,j,k  ,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j,k-1,2) = qql(2)
-              vxw(i,j,k  ,1) = qqr(2)
+              vxw(i,j,k-1,2) = qql(2)*psmv + vx1*msmv
+              vxw(i,j,k  ,1) = qqr(2)*psmv + vx1*msmv
               vyw(i,j,k-1,2) = qql(3)
               vyw(i,j,k  ,1) = qqr(3)
-              vzw(i,j,k-1,2) = qql(4)*psmv + vz1*msmv
-              vzw(i,j,k  ,1) = qqr(4)*psmv + vz1*msmv
+              vzw(i,j,k-1,2) = qql(4)
+              vzw(i,j,k  ,1) = qqr(4)
               prw(i,j,k-1,2) = qql(5)*psmv + pr1*msmv
               prw(i,j,k  ,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j,k-1,2) = qql(6)
-              bxw(i,j,k  ,1) = qqr(6)
+              bxw(i,j,k-1,2) = qql(6)*psmv + bx1*msmv
+              bxw(i,j,k  ,1) = qqr(6)*psmv + bx1*msmv
               byw(i,j,k-1,2) = qql(7)
               byw(i,j,k  ,1) = qqr(7)
-              bzw(i,j,k-1,2) = qql(8)*psmv + bz1*msmv
-              bzw(i,j,k  ,1) = qqr(8)*psmv + bz1*msmv
+              bzw(i,j,k-1,2) = qql(8)
+              bzw(i,j,k  ,1) = qqr(8)
               phiw(i,j,k-1,2) = qql(9)*psmv + phi1*msmv
               phiw(i,j,k  ,1) = qqr(9)*psmv + phi1*msmv
            end do
@@ -675,6 +675,7 @@ contains
                  djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
                  dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
                  djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
                  dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
 
@@ -905,18 +906,18 @@ contains
 
               row(i,j-1,k,2) = qql(1)*psmv + ro1*msmv
               row(i,j  ,k,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j-1,k,2) = qql(2)
-              vxw(i,j  ,k,1) = qqr(2)
-              vyw(i,j-1,k,2) = qql(3)*psmv + vy1*msmv
-              vyw(i,j  ,k,1) = qqr(3)*psmv + vy1*msmv
+              vxw(i,j-1,k,2) = qql(2)*psmv + vx1*msmv
+              vxw(i,j  ,k,1) = qqr(2)*psmv + vx1*msmv
+              vyw(i,j-1,k,2) = qql(3)
+              vyw(i,j  ,k,1) = qqr(3)
               vzw(i,j-1,k,2) = qql(4)
               vzw(i,j  ,k,1) = qqr(4)
               prw(i,j-1,k,2) = qql(5)*psmv + pr1*msmv
               prw(i,j  ,k,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j-1,k,2) = qql(6)
-              bxw(i,j  ,k,1) = qqr(6)
-              byw(i,j-1,k,2) = qql(7)*psmv + by1*msmv
-              byw(i,j  ,k,1) = qqr(7)*psmv + by1*msmv
+              bxw(i,j-1,k,2) = qql(6)*psmv + bx1*msmv
+              bxw(i,j  ,k,1) = qqr(6)*psmv + bx1*msmv
+              byw(i,j-1,k,2) = qql(7)
+              byw(i,j  ,k,1) = qqr(7)
               bzw(i,j-1,k,2) = qql(8)
               bzw(i,j  ,k,1) = qqr(8)
               phiw(i,j-1,k,2) = qql(9)*psmv + phi1*msmv
@@ -1065,20 +1066,20 @@ contains
 
               row(i,j,k-1,2) = qql(1)*psmv + ro1*msmv
               row(i,j,k  ,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j,k-1,2) = qql(2)
-              vxw(i,j,k  ,1) = qqr(2)
+              vxw(i,j,k-1,2) = qql(2)*psmv + vx1*msmv
+              vxw(i,j,k  ,1) = qqr(2)*psmv + vx1*msmv
               vyw(i,j,k-1,2) = qql(3)
               vyw(i,j,k  ,1) = qqr(3)
-              vzw(i,j,k-1,2) = qql(4)*psmv + vz1*msmv
-              vzw(i,j,k  ,1) = qqr(4)*psmv + vz1*msmv
+              vzw(i,j,k-1,2) = qql(4)
+              vzw(i,j,k  ,1) = qqr(4)
               prw(i,j,k-1,2) = qql(5)*psmv + pr1*msmv
               prw(i,j,k  ,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j,k-1,2) = qql(6)
-              bxw(i,j,k  ,1) = qqr(6)
+              bxw(i,j,k-1,2) = qql(6)*psmv + bx1*msmv
+              bxw(i,j,k  ,1) = qqr(6)*psmv + bx1*msmv
               byw(i,j,k-1,2) = qql(7)
               byw(i,j,k  ,1) = qqr(7)
-              bzw(i,j,k-1,2) = qql(8)*psmv + bz1*msmv
-              bzw(i,j,k  ,1) = qqr(8)*psmv + bz1*msmv
+              bzw(i,j,k-1,2) = qql(8)
+              bzw(i,j,k  ,1) = qqr(8)
               phiw(i,j,k-1,2) = qql(9)*psmv + phi1*msmv
               phiw(i,j,k  ,1) = qqr(9)*psmv + phi1*msmv
            end do
@@ -1284,10 +1285,12 @@ contains
 
   real(8) function minmod4(d1,d2,d3,d4)
     real(8), intent(in) :: d1,d2,d3,d4
+    real(8) :: sign1
 
-    minmod4 = 0.125d0*(sign(1.0d0,d1)+sign(1.0d0,d2)) &
-              *dabs( (sign(1.0d0,d1)+sign(1.0d0,d3)) &
-                    *(sign(1.0d0,d1)+sign(1.0d0,d4))) &
+    sign1 = sign(1d0,d1)
+    minmod4 = 0.125d0*(sign1+sign(1.0d0,d2)) &
+              *dabs( (sign1+sign(1.0d0,d3)) &
+                    *(sign1+sign(1.0d0,d4))) &
               *min(dabs(d1),dabs(d2),dabs(d3),dabs(d4))
 
   end function minmod4
