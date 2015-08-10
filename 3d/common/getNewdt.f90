@@ -224,6 +224,7 @@ contains
      write(6,*) 'bxc:: ',bx(imin,jmin,kmin),'byc:: ',by(imin,jmin,kmin)
      write(6,*) 'bzc:: ',bz(imin,jmin,kmin)
      write(6,*) 'eta:: ',eta(imin,jmin,kmin)
+     stop
   endif
 
   end subroutine getNewdt__glmcyl
