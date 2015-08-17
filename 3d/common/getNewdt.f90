@@ -116,7 +116,8 @@ contains
      write(6,*) 'bxc:: ',bx(imin,jmin,kmin),'byc:: ',by(imin,jmin,kmin)
      write(6,*) 'bzc:: ',bz(imin,jmin,kmin)
      write(6,*) 'eta:: ',eta(imin,jmin,kmin)
-     stop
+     call MPI_ABORT(mcomw, 9, merr)
+     call MPI_FINALIZE(merr)
   endif
 
   end subroutine getNewdt__glm
@@ -224,7 +225,8 @@ contains
      write(6,*) 'bxc:: ',bx(imin,jmin,kmin),'byc:: ',by(imin,jmin,kmin)
      write(6,*) 'bzc:: ',bz(imin,jmin,kmin)
      write(6,*) 'eta:: ',eta(imin,jmin,kmin)
-     stop
+     call MPI_ABORT(mcomw, 9, merr)
+     call MPI_FINALIZE(merr)
   endif
 
   end subroutine getNewdt__glmcyl
