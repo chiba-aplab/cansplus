@@ -26,7 +26,7 @@ init.o : $(CANS_LIB_DIR)/libcans3d.a const.o model.o bnd.o
 model.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 bnd.o : $(CANS_LIB_DIR)/libcans3d.a
 integrate.o : $(CANS_LIB_DIR)/libcans3d.a bnd.o 
-main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o openfile.o
+main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o openfile.o integrate.o
 openfile.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 
 clean:

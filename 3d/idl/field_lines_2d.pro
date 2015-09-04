@@ -1,5 +1,5 @@
 function field_lines_2d, ux,uy,nsteps=nsteps,len=len,r0=r0,$
-                      thick=thick,npos=npos,dir=dir
+                      npos=npos,dir=dir
 
 info = size(ux)
 nx = info(1)
@@ -30,7 +30,7 @@ for k=0L,npos-1 do begin
 endfor
 
 ;Default length
-if(not(keyword_set(len)))then len = 1.0
+if(not(keyword_set(len)))then len = fltarr(2)+1.0
 
 ;Default direction
 if(not(keyword_set(dir)))then dir = 1.0
@@ -49,8 +49,8 @@ for i=1L,nsteps-1 do begin
     uabs = sqrt(utx^2+uty^2)
     
     if(uabs eq 0.0)then uabs = uabs+1.D-10
-    r(0,i,k) = len*dir*utx/uabs + x0
-    r(1,i,k) = len*dir*uty/uabs + y0
+    r(0,i,k) = len[0]*dir*utx/uabs + x0
+    r(1,i,k) = len[1]*dir*uty/uabs + y0
 ;;     r(0,i,k) = dir*utx*zscale + x0
 ;;     r(1,i,k) = dir*uty*zscale + y0
 
