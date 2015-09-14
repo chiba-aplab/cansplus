@@ -615,19 +615,31 @@ contains
      !$OMP         qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
+           ww(1,2:5) = ro(1:4,j,k)
+           ww(2,2:5) = vx(1:4,j,k)
+           ww(3,2:5) = vy(1:4,j,k)
+           ww(4,2:5) = vz(1:4,j,k)
+           ww(5,2:5) = pr(1:4,j,k)
+           ww(6,2:5) = bx(1:4,j,k)
+           ww(7,2:5) = by(1:4,j,k)
+           ww(8,2:5) = bz(1:4,j,k)
+           ww(9,2:5) = phi(1:4,j,k)
            do i=3,ix-2
+              ww(1:9,1) = ww(1:9,2)
+              ww(1:9,2) = ww(1:9,3)
+              ww(1:9,3) = ww(1:9,4)
+              ww(1:9,4) = ww(1:9,5)
 
-              do l=1,5
-                 ww(1,l) = ro(i-3+l,j,k)
-                 ww(2,l) = vx(i-3+l,j,k)
-                 ww(3,l) = vy(i-3+l,j,k)
-                 ww(4,l) = vz(i-3+l,j,k)
-                 ww(5,l) = pr(i-3+l,j,k)
-                 ww(6,l) = bx(i-3+l,j,k)
-                 ww(7,l) = by(i-3+l,j,k)
-                 ww(8,l) = bz(i-3+l,j,k)
-                 ww(9,l) = phi(i-3+l,j,k)
-              end do
+              ww(1,5) = ro(i+2,j,k)
+              ww(2,5) = vx(i+2,j,k)
+              ww(3,5) = vy(i+2,j,k)
+              ww(4,5) = vz(i+2,j,k)
+              ww(5,5) = pr(i+2,j,k)
+              ww(6,5) = bx(i+2,j,k)
+              ww(7,5) = by(i+2,j,k)
+              ww(8,5) = bz(i+2,j,k)
+              ww(9,5) = phi(i+2,j,k)
+
               ro1 = ww(1,3)
               vx1 = ww(2,3)
               vy1 = ww(3,3)
@@ -772,20 +784,32 @@ contains
      !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
      !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
-        do j=3,jx-2
-           do i=3,ix-2
+        do i=3,ix-2
+           ww(1,2:5) = ro(i,1:4,k)
+           ww(2,2:5) = vx(i,1:4,k)
+           ww(3,2:5) = vy(i,1:4,k)
+           ww(4,2:5) = vz(i,1:4,k)
+           ww(5,2:5) = pr(i,1:4,k)
+           ww(6,2:5) = bx(i,1:4,k)
+           ww(7,2:5) = by(i,1:4,k)
+           ww(8,2:5) = bz(i,1:4,k)
+           ww(9,2:5) = phi(i,1:4,k)
+           do j=3,jx-2
+              ww(1:9,1) = ww(1:9,2)
+              ww(1:9,2) = ww(1:9,3)
+              ww(1:9,3) = ww(1:9,4)
+              ww(1:9,4) = ww(1:9,5)
 
-              do l=1,5
-                 ww(1,l) = ro(i,j-3+l,k)
-                 ww(2,l) = vx(i,j-3+l,k)
-                 ww(3,l) = vy(i,j-3+l,k)
-                 ww(4,l) = vz(i,j-3+l,k)
-                 ww(5,l) = pr(i,j-3+l,k)
-                 ww(6,l) = bx(i,j-3+l,k)
-                 ww(7,l) = by(i,j-3+l,k)
-                 ww(8,l) = bz(i,j-3+l,k)
-                 ww(9,l) = phi(i,j-3+l,k)
-              end do
+              ww(1,5) = ro(i,j+2,k)
+              ww(2,5) = vx(i,j+2,k)
+              ww(3,5) = vy(i,j+2,k)
+              ww(4,5) = vz(i,j+2,k)
+              ww(5,5) = pr(i,j+2,k)
+              ww(6,5) = bx(i,j+2,k)
+              ww(7,5) = by(i,j+2,k)
+              ww(8,5) = bz(i,j+2,k)
+              ww(9,5) = phi(i,j+2,k)
+
               ro1 = ww(1,3)
               vx1 = ww(2,3)
               vy1 = ww(3,3)
@@ -931,21 +955,33 @@ contains
      !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
      !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
      !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
-     do k=3,kx-2
-        do j=3,jx-2
-           do i=3,ix-2
+     do j=3,jx-2
+        do i=3,ix-2
+           ww(1,2:5) = ro(i,j,1:4)
+           ww(2,2:5) = vx(i,j,1:4)
+           ww(3,2:5) = vy(i,j,1:4)
+           ww(4,2:5) = vz(i,j,1:4)
+           ww(5,2:5) = pr(i,j,1:4)
+           ww(6,2:5) = bx(i,j,1:4)
+           ww(7,2:5) = by(i,j,1:4)
+           ww(8,2:5) = bz(i,j,1:4)
+           ww(9,2:5) = phi(i,j,1:4)
+           do k=3,kx-2
+              ww(1:9,1) = ww(1:9,2)
+              ww(1:9,2) = ww(1:9,3)
+              ww(1:9,3) = ww(1:9,4)
+              ww(1:9,4) = ww(1:9,5)
 
-              do l=1,5
-                 ww(1,l) = ro(i,j,k-3+l)
-                 ww(2,l) = vx(i,j,k-3+l)
-                 ww(3,l) = vy(i,j,k-3+l)
-                 ww(4,l) = vz(i,j,k-3+l)
-                 ww(5,l) = pr(i,j,k-3+l)
-                 ww(6,l) = bx(i,j,k-3+l)
-                 ww(7,l) = by(i,j,k-3+l)
-                 ww(8,l) = bz(i,j,k-3+l)
-                 ww(9,l) = phi(i,j,k-3+l)
-              end do
+              ww(1,5) = ro(i,j,k+2)
+              ww(2,5) = vx(i,j,k+2)
+              ww(3,5) = vy(i,j,k+2)
+              ww(4,5) = vz(i,j,k+2)
+              ww(5,5) = pr(i,j,k+2)
+              ww(6,5) = bx(i,j,k+2)
+              ww(7,5) = by(i,j,k+2)
+              ww(8,5) = bz(i,j,k+2)
+              ww(9,5) = phi(i,j,k+2)
+
               ro1 = ww(1,3)
               vx1 = ww(2,3)
               vy1 = ww(3,3)
