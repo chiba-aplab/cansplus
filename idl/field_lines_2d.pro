@@ -66,8 +66,8 @@ for i=1L,nsteps-1 do begin
 endfor
 endfor
 
-r[0,*,*,*] = r[0,*,*,*]/nx
-r[1,*,*,*] = r[1,*,*,*]/ny
+r[0,*,*] = r[0,*,*]/nx
+r[1,*,*] = r[1,*,*]/ny
 
 return, r
 
