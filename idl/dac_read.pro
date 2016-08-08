@@ -424,7 +424,6 @@ tmp=FSTAT(unit) & filesize=tmp.size
 datasize=filesize-headersize
 if (mtype eq 6) then dataunitsize=8L*ix*jx*kx else dataunitsize=4L*ix*jx*kx
 dataperstep=dataunitsize+msode*2
-help,datasize,dataperstep
 ndx=datasize/dataperstep
 endif else begin
   ndx=mdim[mndim-1]
@@ -609,8 +608,7 @@ for l=0L,nd-1 do begin
    endfor
 endfor
 
-print,kgx,margin,size(data,/dim)
-data = reform(data[margin:igx-1-margin,margin:jgx-1-margin,0:kgx-1-margin,0:nd-1])
+data = reform(data[margin:igx-1-margin,margin:jgx-1-margin,margin:kgx-1-margin,0:nd-1])
 x = reform(x[margin:igx-1-margin])
 y = reform(y[margin:jgx-1-margin])
 z = reform(z[margin:kgx-1-margin])
@@ -699,6 +697,7 @@ nparam = n_params()
 
 if(nparam eq 4)then  dac_read2d, data, param1, param2, param3
 if(nparam eq 5)then  dac_read3d, data, param1, param2, param3, param4
+
 
 end
 
