@@ -321,7 +321,7 @@ contains
   !$OMP PRIVATE(temp_fst,sign1,maxs1,mins1,itf,isdml,rolst,vxlst,rxlst) &
   !$OMP PRIVATE(vylst,rylst,vzlst,rzlst,bylst,bzlst,vdbstl,eelst) &
   !--- step 5b ---
-  !$OMP PRIVATE(rorst,vxrst,rxrst) &
+  !$OMP PRIVATE(isdmr,rorst,vxrst,rxrst) &
   !$OMP PRIVATE(vyrst,ryrst,vzrst,rzrst,byrst,bzrst,vdbstr,eerst) &
   !--- step 5c ---
   !$OMP PRIVATE(sqrtrol,sqrtror,abbx,slst,srst,signbx,invsumro,roldst,rordst) &

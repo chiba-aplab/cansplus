@@ -520,7 +520,7 @@ subroutine bd_synnx(mbnd,margin,qq,ix,jx,kx)
 
   if(mbnd .eq. 0)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,jpPi,jnPi,signj)
      do k=1,kx
         do j=1,jx
            do i=1,margin
@@ -685,7 +685,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
 
   if(mbnd .eq. 0)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
+     !$OMP PRIVATE(i,j,jpPi,jnPi,signj)
      do k=1,kx
         do j=1,jx
            do i=1,margin
