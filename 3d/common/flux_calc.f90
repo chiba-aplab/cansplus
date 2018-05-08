@@ -42,7 +42,7 @@ contains
 !----- flux ---
 ! fqql :: left physical flux
 ! fqqr :: right physical flux
-! fluxqq :: intemediate HLLD flux (OUTPUT)
+! fluxqq :: intermediate HLLD flux (OUTPUT)
   real(8) :: frol,frxl,fryl,frzl
   real(8) :: fbyl,fbzl,feel
   real(8) :: fror,frxr,fryr,frzr
@@ -132,7 +132,7 @@ contains
            sl = min(vxl,vxr)-max(cfl,cfr)
            sr = max(vxl,vxr)+max(cfl,cfr)
 !----- Step 2. ----------------------------------------------------------|
-! compute L/R fluxs
+! compute L/R fluxes
 !
 ! Left value
            frol = rxl
@@ -396,7 +396,7 @@ contains
            sr = max(vxl,vxr)+max(cfl,cfr)
 
 !----- Step 2. ----------------------------------------------------------|
-! compute L/R fluxs
+! compute L/R fluxes
 !
 ! Left value
            frol = rxl

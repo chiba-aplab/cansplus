@@ -1,6 +1,6 @@
 !##################################################
 ! Model for magnetic reconnection based on
-! Zenitani and Miyoshi, 2011, PhPl, 18, 2105.
+! Zenitani and Miyoshi, 2011, PhPl, 18, 022105.
 ! Written by T. Shibayama, A. D. Kawamura,
 ! H. Sakamoto and N. Iwamoto in SS2014 in Chiba U. 
 !##################################################
@@ -41,7 +41,7 @@ contains
   real(8),dimension(jgx) :: yg,dyg
   real(8),dimension(0:igx) :: xmg
   real(8),dimension(0:jgx) :: ymg
-  real(8) :: aa, s0, s1, s
+  real(8) :: s0, s1, s
 
 !*********** Random seed *************!
   call random_seed()
@@ -111,7 +111,6 @@ contains
 ! set initial model
   do j=1,jx
      do i=1,ix
-        call random_number(aa)
         bx(i,j) = b0*tanh(y(j)/lmd) - amp*y(j)*exp(-0.25d0*(x(i)**2.0d0+y(j)**2.0d0))
         by(i,j) = amp*x(i)*exp(-0.25d0*(x(i)**2.0d0+y(j)**2.0d0))
         bz(i,j) = 0.0d0 
