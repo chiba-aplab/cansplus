@@ -24,7 +24,7 @@ contains
 !======================================================================
 ! inter-process communication by MPI
 ! periodic boundary in x
-    call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+    call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
 !----------------------------------------------------------------------|
 ! free boundary in y

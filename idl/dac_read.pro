@@ -694,7 +694,6 @@ end
 pro dac_read, data, param1, param2, param3, param4
 
 nparam = n_params()
-
 if(nparam eq 4)then  dac_read2d, data, param1, param2, param3
 if(nparam eq 5)then  dac_read3d, data, param1, param2, param3, param4
 

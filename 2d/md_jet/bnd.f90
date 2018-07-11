@@ -27,7 +27,7 @@ contains
 
 !======================================================================
 ! inter-process communication by MPI
-    call boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+    call boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
 !======================================================================
 ! inner x-boundary

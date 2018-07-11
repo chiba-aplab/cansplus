@@ -378,7 +378,7 @@ subroutine bd_synpy_car(mbnd,margin,qq,ix,jx)
 end subroutine bd_synpy_car
 
 
-subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
   use mpi_setup
 
@@ -386,8 +386,9 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
   real(8),dimension(ix,jx),intent(inout) :: ro,pr
   real(8),dimension(ix,jx),intent(inout) :: vx,vy,vz
   real(8),dimension(ix,jx),intent(inout) :: bx,by,bz,phi
+  real(8),dimension(ix,jx),intent(inout) :: eta
 
-  integer,parameter :: mx = 9
+  integer,parameter :: mx = 10
   integer :: i,j,mmx,msend,mrecv
   real(8),dimension(margin,jx,mx) :: bufsnd_x,bufrcv_x
   real(8),dimension(ix,margin,mx) :: bufsnd_y,bufrcv_y
@@ -410,16 +411,14 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
      do i=1,margin
         bufsnd_x(i,j,1) = ro(margin+i,j)
         bufsnd_x(i,j,2) = pr(margin+i,j)
-
         bufsnd_x(i,j,3) = vx(margin+i,j)
         bufsnd_x(i,j,4) = vy(margin+i,j)
         bufsnd_x(i,j,5) = vz(margin+i,j)
-
         bufsnd_x(i,j,6) = bx(margin+i,j)
         bufsnd_x(i,j,7) = by(margin+i,j)
         bufsnd_x(i,j,8) = bz(margin+i,j)
-
         bufsnd_x(i,j,9) = phi(margin+i,j)
+        bufsnd_x(i,j,10) = eta(margin+i,j)
      enddo
   enddo
   !$OMP END PARALLEL DO
@@ -443,6 +442,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
            by(ix-margin+i,j) = bufrcv_x(i,j,7)
            bz(ix-margin+i,j) = bufrcv_x(i,j,8)
            phi(ix-margin+i,j) = bufrcv_x(i,j,9)
+           eta(ix-margin+i,j) = bufrcv_x(i,j,10)
         enddo
      enddo
      !$OMP END PARALLEL DO
@@ -468,6 +468,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
         bufsnd_x(i,j,7) = by(ix-2*margin+i,j)
         bufsnd_x(i,j,8) = bz(ix-2*margin+i,j)
         bufsnd_x(i,j,9) = phi(ix-2*margin+i,j)
+        bufsnd_x(i,j,10) = eta(ix-2*margin+i,j)
      enddo
   enddo
   !$OMP END PARALLEL DO
@@ -491,6 +492,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
            by(i,j) = bufrcv_x(i,j,7)
            bz(i,j) = bufrcv_x(i,j,8)
            phi(i,j) = bufrcv_x(i,j,9)
+           eta(i,j) = bufrcv_x(i,j,10)
         enddo
      enddo
      !$OMP END PARALLEL DO
@@ -518,6 +520,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
         bufsnd_y(i,j,7) = by(i,margin+j)
         bufsnd_y(i,j,8) = bz(i,margin+j)
         bufsnd_y(i,j,9) = phi(i,margin+j)
+        bufsnd_y(i,j,10) = eta(i,margin+j)
      enddo
   enddo
   !$OMP END PARALLEL DO
@@ -541,6 +544,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
            by(i,jx-margin+j) = bufrcv_y(i,j,7)
            bz(i,jx-margin+j) = bufrcv_y(i,j,8)
            phi(i,jx-margin+j) = bufrcv_y(i,j,9)
+           eta(i,jx-margin+j) = bufrcv_y(i,j,10)
         enddo
      enddo
      !$OMP END PARALLEL DO
@@ -568,6 +572,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
         bufsnd_y(i,j,7) = by(i,jx-2*margin+j)
         bufsnd_y(i,j,8) = bz(i,jx-2*margin+j)
         bufsnd_y(i,j,9) = phi(i,jx-2*margin+j)
+        bufsnd_y(i,j,10) = eta(i,jx-2*margin+j)
      enddo
   enddo
   !$OMP END PARALLEL DO
@@ -591,6 +596,7 @@ subroutine boundary__mpi(margin,ix,jx,ro,pr,vx,vy,vz,bx,by,bz,phi)
            by(i,j) = bufrcv_y(i,j,7)
            bz(i,j) = bufrcv_y(i,j,8)
            phi(i,j) = bufrcv_y(i,j,9)
+           eta(i,j) = bufrcv_y(i,j,10)
         enddo
      enddo
      !$OMP END PARALLEL DO

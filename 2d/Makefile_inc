@@ -1,8 +1,2 @@
 FC = mpif90
-ERR = $(shell which ifort >/dev/null 2>&1; echo $$?)
-
-ifeq ($(ERR),0)
-   FFLAGS = -O2 -f90=ifort -heap-arrays 8192 -openmp
-else
-   FFLAGS = -O2 -f90=gfortran -fmax-stack-var-size=8388608 -fopenmp
-endif
+FFLAGS = -O3 

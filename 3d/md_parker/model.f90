@@ -188,9 +188,10 @@ contains
 !-------------------------
 !   pressure ratio
   do j=1,jgx
-          af1 = (  tanh((yg(j)-yf1)/wf0) + 1.d0)*0.5d0
-          af2 = ( -tanh((yg(j)-yf2)/wf0) + 1.d0)*0.5d0
-    rbeta(j) = abs(alpha*af1*af2)
+!          af1 = (  tanh((yg(j)-yf1)/wf0) + 1.d0)*0.5d0
+!          af2 = ( -tanh((yg(j)-yf2)/wf0) + 1.d0)*0.5d0
+!    rbeta(j) = abs(alpha*af1*af2)
+    rbeta(j) = alpha
   enddo
  
 !----------------------------------------------------------------------|
@@ -262,7 +263,7 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: vx,vy,vz
   integer :: i,j,k
 
-  !$OMP PARALLEL DO
+  !$OMP PARALLEL DO PRIVATE(i,j,k)
   do k=1,kx
      do j=1,jx
         do i=1,ix

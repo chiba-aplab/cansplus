@@ -74,9 +74,9 @@ contains
 !----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5
 !----------------------------------------------------------------------|
-  call reconstructionConstant(margin,ix,x,xm,dx,ccx)
-  call reconstructionConstant(margin,jx,y,ym,dy,ccy)
-  call reconstructionConstant(margin,kx,z,zm,dz,ccz)
+  call reconstructionConstant(margin,ix,xm,dx,ccx)
+  call reconstructionConstant(margin,jx,ym,dy,ccy)
+  call reconstructionConstant(margin,kx,zm,dz,ccz)
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|

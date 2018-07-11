@@ -24,6 +24,7 @@ module init
   real(8),public,dimension(ix,jx,kx) :: roi,pri
   real(8),public,dimension(ix,jx,kx) :: vxi,vyi,vzi
   real(8),public,dimension(ix,jx,kx) :: bxi,byi,bzi
+  real(8),public,dimension(ix,jx,kx) :: phii
 
   real(8),public :: ch,cp,min_dx
 
@@ -43,9 +44,9 @@ contains
 
 
   subroutine initialize
-  use lr_state, only : reconstructionConstant
+  use lr_state, only : reconstructionConstant, reconstructionConstant_cyl
   use model, only : model_setup
-  use mpi_setup, only : mpi_setup__init, mpi_setup__init_cyl
+  use mpi_setup, only : mpi_setup__init, mpi_setup__init_cyl, mpid, mnull
   use bnd
 
   real(8),dimension(0:ix) :: xm
@@ -68,12 +69,28 @@ contains
   call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
                ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
 
+!$OMP WORKSHARE
+  roi = ro
+  pri = pr
+  vxi = vx
+  vyi = vy
+  vzi = vz
+  bxi = bx
+  byi = by
+  bzi = bz
+  phii = phi
+!$OMP END WORKSHARE
+
 !----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5
 !----------------------------------------------------------------------|
-  call reconstructionConstant(margin,ix,x,xm,dx,ccx)
-  call reconstructionConstant(margin,jx,y,ym,dy,ccy)
-  call reconstructionConstant(margin,kx,z,zm,dz,ccz)
+  call reconstructionConstant_cyl(margin,ix,xm,dx,ccx)
+  if(mpid%l == mnull)then
+    ccx(1:5,1,margin+1) = (/0.0D0,0.0D0,1.0D0,0.0D0,0.0D0/)
+    ccx(1:5,2,margin  ) = (/0.0D0,0.0D0,1.0D0,0.0D0,0.0D0/)
+  endif
+  call reconstructionConstant(margin,jx,ym,dy,ccy)
+  call reconstructionConstant(margin,kx,zm,dz,ccz)
 !----------------------------------------------------------------------|
 
 !----------------------------------------------------------------------|

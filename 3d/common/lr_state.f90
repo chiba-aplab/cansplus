@@ -3,7 +3,7 @@ module lr_state
   implicit none
   private
 
-  public :: lr_state__1st, lr_state__MSCL2, lr_state__MP5, reconstructionConstant
+  public :: lr_state__1st, lr_state__MSCL2, lr_state__MP5, reconstructionConstant, reconstructionConstant_cyl
 
 
 contains
@@ -587,11 +587,9 @@ contains
   real(8),dimension(nwave,5) :: ww,wwc
   real(8),dimension(nwave,nwave) :: lem,rem
   real(8) :: wwor,minvalue,smv,psmv,msmv
-  real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
   real(8) :: temp1,temp2,temp3,ich
 
 !----parameter
-  real(8),parameter :: B1 = 0.016666666667
   real(8),parameter :: B2 = 1.333333333333
   real(8),parameter :: Alpha = 4.0d0
   real(8),parameter :: Epsm = 0.0000000001d0
@@ -610,7 +608,7 @@ contains
 
   if(mdir == 1)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP PRIVATE(i,j,l,n,ww,lem,rem,wwc,&
      !$OMP         temp1,temp2,temp3,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,wwc_w,qqlr,&
      !$OMP         qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
@@ -625,6 +623,7 @@ contains
            ww(8,2:5) = bz(1:4,j,k)
            ww(9,2:5) = phi(1:4,j,k)
            do i=3,ix-2
+
               ww(1:9,1) = ww(1:9,2)
               ww(1:9,2) = ww(1:9,3)
               ww(1:9,3) = ww(1:9,4)
@@ -640,18 +639,8 @@ contains
               ww(8,5) = bz(i+2,j,k)
               ww(9,5) = phi(i+2,j,k)
 
-              ro1 = ww(1,3)
-              vx1 = ww(2,3)
-              vy1 = ww(3,3)
-              vz1 = ww(4,3)
-              pr1 = ww(5,3)
-              bx1 = ww(6,3)
-              by1 = ww(7,3)
-              bz1 = ww(8,3)
-              phi1 = ww(9,3)
-
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
+              call esystem_glmmhd(lem,rem,ww(1,3),ww(5,3),ww(6,3),ww(7,3),ww(8,3),gm)
 
               do l=1,5
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -676,11 +665,11 @@ contains
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
               enddo
-              
+
               ! mp5
               do n=1,nwave
                  !right-hand left state
-                 wwor = B1*(ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
 
@@ -700,9 +689,9 @@ contains
                  wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
                  !left-hand right state
-                 wwor = B1*(ccx(5,1,i-1)*wwc(n,5)+ccx(4,1,i-1)*wwc(n,4) &
-                      + ccx(3,1,i-1)*wwc(n,3) + ccx(2,1,i-1)*wwc(n,2) &
-                      + ccx(1,1,i-1)*wwc(n,1))
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
 
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
                  qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
@@ -751,36 +740,36 @@ contains
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
               prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
-              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              minvalue = min(minvalue,ww(1,3)-romaxvalue*floor,ww(5,3)-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
 
-              row(i-1,j,k,2) = qql(1)*psmv + ro1*msmv
-              row(i  ,j,k,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i-1,j,k,2) = qql(2)*psmv + vx1*msmv
-              vxw(i  ,j,k,1) = qqr(2)*psmv + vx1*msmv
+              row(i-1,j,k,2) = qql(1)*psmv + ww(1,3)*msmv
+              row(i  ,j,k,1) = qqr(1)*psmv + ww(1,3)*msmv
+              vxw(i-1,j,k,2) = qql(2)*psmv + ww(2,3)*msmv
+              vxw(i  ,j,k,1) = qqr(2)*psmv + ww(2,3)*msmv
               vyw(i-1,j,k,2) = qql(3)
               vyw(i  ,j,k,1) = qqr(3)
               vzw(i-1,j,k,2) = qql(4)
               vzw(i  ,j,k,1) = qqr(4)
-              prw(i-1,j,k,2) = qql(5)*psmv + pr1*msmv
-              prw(i  ,j,k,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i-1,j,k,2) = qql(6)*psmv + bx1*msmv
-              bxw(i  ,j,k,1) = qqr(6)*psmv + bx1*msmv
+              prw(i-1,j,k,2) = qql(5)*psmv + ww(5,3)*msmv
+              prw(i  ,j,k,1) = qqr(5)*psmv + ww(5,3)*msmv
+              bxw(i-1,j,k,2) = qql(6)*psmv + ww(6,3)*msmv
+              bxw(i  ,j,k,1) = qqr(6)*psmv + ww(6,3)*msmv
               byw(i-1,j,k,2) = qql(7)
               byw(i  ,j,k,1) = qqr(7)
               bzw(i-1,j,k,2) = qql(8)
               bzw(i  ,j,k,1) = qqr(8)
-              phiw(i-1,j,k,2) = qql(9)*psmv + phi1*msmv
-              phiw(i  ,j,k,1) = qqr(9)*psmv + phi1*msmv
+              phiw(i-1,j,k,2) = qql(9)*psmv + ww(9,3)*msmv
+              phiw(i  ,j,k,1) = qqr(9)*psmv + ww(9,3)*msmv
            end do
         end do
      end do
      !$OMP END PARALLEL DO
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP PRIVATE(i,j,l,ww,lem,rem,wwc,&
      !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
      !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
@@ -810,18 +799,8 @@ contains
               ww(8,5) = bz(i,j+2,k)
               ww(9,5) = phi(i,j+2,k)
 
-              ro1 = ww(1,3)
-              vx1 = ww(2,3)
-              vy1 = ww(3,3)
-              vz1 = ww(4,3)
-              pr1 = ww(5,3)
-              bx1 = ww(6,3)
-              by1 = ww(7,3)
-              bz1 = ww(8,3)
-              phi1 = ww(9,3)
-              
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
+              call esystem_glmmhd(lem,rem,ww(1,3),ww(5,3),ww(6,3),ww(7,3),ww(8,3),gm)
 
               do l=1,5
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -850,7 +829,7 @@ contains
               ! mp5
               do n=1,nwave
                  ! left state
-                 wwor = B1*(ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
                       + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
                       + ccy(5,2,j)*wwc(n,5))
 
@@ -871,9 +850,9 @@ contains
                  wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
                  
                  ! right state
-                 wwor = B1*(ccy(5,1,j-1)*wwc(n,5)+ccy(4,1,j-1)*wwc(n,4) &
-                      + ccy(3,1,j-1)*wwc(n,3) + ccy(2,1,j-1)*wwc(n,2) &
-                      + ccy(1,1,j-1)*wwc(n,1))
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
 
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
                  qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
@@ -923,36 +902,36 @@ contains
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
               prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
-              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              minvalue = min(minvalue,ww(1,3)-romaxvalue*floor,ww(5,3)-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
 
-              row(i,j-1,k,2) = qql(1)*psmv + ro1*msmv
-              row(i,j  ,k,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j-1,k,2) = qql(2)*psmv + vx1*msmv
-              vxw(i,j  ,k,1) = qqr(2)*psmv + vx1*msmv
+              row(i,j-1,k,2) = qql(1)*psmv + ww(1,3)*msmv
+              row(i,j  ,k,1) = qqr(1)*psmv + ww(1,3)*msmv
+              vxw(i,j-1,k,2) = qql(2)*psmv + ww(2,3)*msmv
+              vxw(i,j  ,k,1) = qqr(2)*psmv + ww(2,3)*msmv
               vyw(i,j-1,k,2) = qql(3)
               vyw(i,j  ,k,1) = qqr(3)
               vzw(i,j-1,k,2) = qql(4)
               vzw(i,j  ,k,1) = qqr(4)
-              prw(i,j-1,k,2) = qql(5)*psmv + pr1*msmv
-              prw(i,j  ,k,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j-1,k,2) = qql(6)*psmv + bx1*msmv
-              bxw(i,j  ,k,1) = qqr(6)*psmv + bx1*msmv
+              prw(i,j-1,k,2) = qql(5)*psmv + ww(5,3)*msmv
+              prw(i,j  ,k,1) = qqr(5)*psmv + ww(5,3)*msmv
+              bxw(i,j-1,k,2) = qql(6)*psmv + ww(6,3)*msmv
+              bxw(i,j  ,k,1) = qqr(6)*psmv + ww(6,3)*msmv
               byw(i,j-1,k,2) = qql(7)
               byw(i,j  ,k,1) = qqr(7)
               bzw(i,j-1,k,2) = qql(8)
               bzw(i,j  ,k,1) = qqr(8)
-              phiw(i,j-1,k,2) = qql(9)*psmv + phi1*msmv
-              phiw(i,j  ,k,1) = qqr(9)*psmv + phi1*msmv
+              phiw(i,j-1,k,2) = qql(9)*psmv + ww(9,3)*msmv
+              phiw(i,j  ,k,1) = qqr(9)*psmv + ww(9,3)*msmv
            end do
         end do
      end do
      !$OMP END PARALLEL DO
   else
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
+     !$OMP PRIVATE(i,j,l,ww,lem,rem,wwc,&
      !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
      !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do j=3,jx-2
@@ -982,18 +961,8 @@ contains
               ww(8,5) = bz(i,j,k+2)
               ww(9,5) = phi(i,j,k+2)
 
-              ro1 = ww(1,3)
-              vx1 = ww(2,3)
-              vy1 = ww(3,3)
-              vz1 = ww(4,3)
-              pr1 = ww(5,3)
-              bx1 = ww(6,3)
-              by1 = ww(7,3)
-              bz1 = ww(8,3)
-              phi1 = ww(9,3)
-              
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
+              call esystem_glmmhd(lem,rem,ww(1,3),ww(5,3),ww(6,3),ww(7,3),ww(8,3),gm)
 
               do l=1,5
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
@@ -1022,7 +991,7 @@ contains
               ! mp5
               do n=1,nwave
                  ! left state
-                 wwor = B1*(ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
                       + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
                       + ccz(5,2,k)*wwc(n,5))
 
@@ -1043,9 +1012,9 @@ contains
                  wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
               ! right state
-                 wwor = B1*(ccz(5,1,k-1)*wwc(n,5)+ccz(4,1,k-1)*wwc(n,4) &
-                      + ccz(3,1,k-1)*wwc(n,3) + ccz(2,1,k-1)*wwc(n,2) &
-                      + ccz(1,1,k-1)*wwc(n,1))
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
 
                  qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
                  qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
@@ -1095,29 +1064,29 @@ contains
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3),ww(1,4),ww(1,5))
               prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3),ww(5,4),ww(5,5))
-              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              minvalue = min(minvalue,ww(1,3)-romaxvalue*floor,ww(5,3)-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
 
-              row(i,j,k-1,2) = qql(1)*psmv + ro1*msmv
-              row(i,j,k  ,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j,k-1,2) = qql(2)*psmv + vx1*msmv
-              vxw(i,j,k  ,1) = qqr(2)*psmv + vx1*msmv
+              row(i,j,k-1,2) = qql(1)*psmv + ww(1,3)*msmv
+              row(i,j,k  ,1) = qqr(1)*psmv + ww(1,3)*msmv
+              vxw(i,j,k-1,2) = qql(2)*psmv + ww(2,3)*msmv
+              vxw(i,j,k  ,1) = qqr(2)*psmv + ww(2,3)*msmv
               vyw(i,j,k-1,2) = qql(3)
               vyw(i,j,k  ,1) = qqr(3)
               vzw(i,j,k-1,2) = qql(4)
               vzw(i,j,k  ,1) = qqr(4)
-              prw(i,j,k-1,2) = qql(5)*psmv + pr1*msmv
-              prw(i,j,k  ,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j,k-1,2) = qql(6)*psmv + bx1*msmv
-              bxw(i,j,k  ,1) = qqr(6)*psmv + bx1*msmv
+              prw(i,j,k-1,2) = qql(5)*psmv + ww(5,3)*msmv
+              prw(i,j,k  ,1) = qqr(5)*psmv + ww(5,3)*msmv
+              bxw(i,j,k-1,2) = qql(6)*psmv + ww(6,3)*msmv
+              bxw(i,j,k  ,1) = qqr(6)*psmv + ww(6,3)*msmv
               byw(i,j,k-1,2) = qql(7)
               byw(i,j,k  ,1) = qqr(7)
               bzw(i,j,k-1,2) = qql(8)
               bzw(i,j,k  ,1) = qqr(8)
-              phiw(i,j,k-1,2) = qql(9)*psmv + phi1*msmv
-              phiw(i,j,k  ,1) = qqr(9)*psmv + phi1*msmv
+              phiw(i,j,k-1,2) = qql(9)*psmv + ww(9,3)*msmv
+              phiw(i,j,k  ,1) = qqr(9)*psmv + ww(9,3)*msmv
            end do
         end do
      end do
@@ -1127,58 +1096,111 @@ contains
   end subroutine lr_state__MP5
 
 
-  subroutine reconstructionConstant(margin,ix,x,xm,dx,cc)
+  subroutine reconstructionConstant(margin,ix,xm,dx,cc)
 
   integer,intent(in) :: ix,margin
-  real(8),dimension(ix),intent(in) :: x,dx
+  real(8),dimension(ix),intent(in) :: dx
   real(8),dimension(0:ix),intent(in) :: xm
+  real(8),dimension(5,2,ix), intent(out) :: cc
 
-  integer :: i,m,l,q
-  integer,parameter :: k = 5
-  integer :: j,r
-  real(8),dimension(5,2,ix) :: cc
-  real(8) :: tmp1,tmp2,tmp3,tmp4
+  integer :: i,l,m,n,r
+  real(8) :: tmp1,tmp2,tmp3
+  real(8) :: lp(0:5)
 
-  !$OMP PARALLEL DO &
-  !$OMP PRIVATE(r,j,tmp3,m,tmp2,l,tmp1,q,tmp4)
-  do i=3,ix-3
+
+!!5th order interpolation by Lagrange polynomial
+!$OMP PARALLEL DO &
+!$OMP PRIVATE(i,l,m,n,r,lp,tmp1,tmp2,tmp3)
+  do i=margin,ix-margin+1
      do r=1,2
-        do j=0,4
-           tmp3 = 0.0d0
-           do m=(j+1),k
-              tmp2 = 0.0d0
-              do l=0,k
-                 if(l .ne. m)then
-                    tmp1 = 1.0d0
-                    do q=0,k
-                       if(q .ne. m)then
-                          if(q .ne. l)then
-                             tmp1 = tmp1*(xm(i)-xm(i-r+q-1))
-                          endif
-                       endif
-                    enddo
-                    tmp2 = tmp2 + tmp1
+
+     do m=0,5
+        tmp1 = 1.0D0
+        do l=0,5
+           if(l /= m)then 
+              tmp1 = tmp1*(xm(i+m-3)-xm(i+l-3))
+           endif
+        enddo
+
+        tmp2 = 0.0D0
+        do n=0,5
+           if(n /= m)then
+           tmp3 = 1.0D0
+              do l=0,5 
+                 if(l /= m)then
+                    if(l /= n)then
+                       tmp3 = tmp3*(xm(i+r-2)-xm(i+l-3))
+                    endif
                  endif
               enddo
+              tmp2 = tmp2+tmp3
+           endif
+        enddo
+        lp(m) = tmp2/tmp1
+     enddo
+     do m=1,5 
+        cc(m,r,i) = sum(lp(m:5))*dx(i+m-3)
+     enddo
 
-              tmp4 = 1.0d0
-              do l=0,k
-                 if(l .ne. m)then
-                    tmp4 = tmp4*(xm(i-r+m-1)-xm(i-r+l-1))
-                 end if
-              enddo
-              tmp3 = tmp3 + tmp2/tmp4
-              tmp2 = 0.d0
-              tmp4 = 1.0d0
-           end do
-           cc(j+1,r,i) = 60.0d0*tmp3*dx(i-r+j)
-           tmp3 = 0.0d0
-        end do
-     end do
-  end do
-  !$OMP END PARALLEL DO
+     enddo
+  enddo
+!$OMP END PARALLEL DO
 
   end subroutine reconstructionConstant
+
+
+  subroutine reconstructionConstant_cyl(margin,ix,xm,dx,cc)
+
+  integer,intent(in) :: ix,margin
+  real(8),dimension(ix),intent(in) :: dx
+  real(8),dimension(0:ix),intent(in) :: xm
+  real(8),dimension(5,2,ix), intent(out) :: cc
+
+  integer :: i,l,m,n,r
+  real(8) :: tmp1,tmp2,tmp3
+  real(8) :: lp(0:5)
+
+
+!!5th order interpolation by Lagrange polynomial
+!$OMP PARALLEL DO &
+!$OMP PRIVATE(i,l,m,n,r,lp,tmp1,tmp2,tmp3)
+  do i=margin,ix-margin+1
+     do r=1,2
+
+     do m=0,5
+        tmp1 = 1.0D0
+        do l=0,5
+           if(l /= m)then 
+              tmp1 = tmp1*(xm(i+m-3)-xm(i+l-3))
+           endif
+        enddo
+
+        tmp2 = 0.0D0
+        do n=0,5
+           if(n /= m)then
+           tmp3 = 1.0D0
+              do l=0,5 
+                 if(l /= m)then
+                    if(l /= n)then
+                       tmp3 = tmp3*(xm(i+r-2)-xm(i+l-3))
+                    endif
+                 endif
+              enddo
+              tmp2 = tmp2+tmp3
+           endif
+        enddo
+        lp(m) = tmp2/tmp1
+     enddo
+     do m=1,5 
+        cc(m,r,i) = sum(lp(m:5))*dx(i+m-3) &
+                                *0.5*(xm(i+m-3)+xm(i+m-4))/xm(i+r-2)
+     enddo
+
+     enddo
+  enddo
+!$OMP END PARALLEL DO
+
+  end subroutine reconstructionConstant_cyl
 
 
   subroutine esystem_glmmhd(lem,rem,ro,pr,bx,by,bz,gm)
@@ -1216,7 +1238,6 @@ contains
   cs = sqrt(cssq)
 
 ! compute beta
-  
   bt = sqrt(btsq)
   eps = 1d-40
   sbt = sign(1d0,bt-eps)

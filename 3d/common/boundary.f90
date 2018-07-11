@@ -721,16 +721,16 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   end subroutine bd_synpx
 
 
-  subroutine boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+  subroutine boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
   use mpi_setup
 
   integer,intent(in) :: ix,jx,kx,margin
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
   real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
-  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz,phi
+  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz,phi,eta
 
-  integer,parameter :: mx = 9
+  integer,parameter :: mx = 10
   integer :: i,j,k,mmx,msend,mrecv
   real(8),dimension(margin,jx,kx,mx) :: bufsnd_x,bufrcv_x
   real(8),dimension(ix,margin,kx,mx) :: bufsnd_y,bufrcv_y
@@ -765,6 +765,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_x(i,j,k,8) = bz(margin+i,j,k)
 
            bufsnd_x(i,j,k,9) = phi(margin+i,j,k)
+           bufsnd_x(i,j,k,10) = eta(margin+i,j,k)
         enddo
      enddo
   enddo
@@ -790,6 +791,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
               by(ix-margin+i,j,k) = bufrcv_x(i,j,k,7)
               bz(ix-margin+i,j,k) = bufrcv_x(i,j,k,8)
               phi(ix-margin+i,j,k) = bufrcv_x(i,j,k,9)
+              eta(ix-margin+i,j,k) = bufrcv_x(i,j,k,10)
            enddo
         enddo
      enddo
@@ -817,6 +819,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_x(i,j,k,7) = by(ix-2*margin+i,j,k)
            bufsnd_x(i,j,k,8) = bz(ix-2*margin+i,j,k)
            bufsnd_x(i,j,k,9) = phi(ix-2*margin+i,j,k)
+           bufsnd_x(i,j,k,10) = eta(ix-2*margin+i,j,k)
         enddo
      enddo
   enddo
@@ -842,6 +845,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
               by(i,j,k) = bufrcv_x(i,j,k,7)
               bz(i,j,k) = bufrcv_x(i,j,k,8)
               phi(i,j,k) = bufrcv_x(i,j,k,9)
+              eta(i,j,k) = bufrcv_x(i,j,k,10)
            enddo
         enddo
      enddo
@@ -856,7 +860,6 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   mmx = ix*kx*margin*mx
   msend = mpid%b
   mrecv = mpid%f
-
   !$OMP PARALLEL DO &
   !$OMP PRIVATE(i,j)
   do k=1,kx
@@ -871,6 +874,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_y(i,j,k,7) = by(i,margin+j,k)
            bufsnd_y(i,j,k,8) = bz(i,margin+j,k)
            bufsnd_y(i,j,k,9) = phi(i,margin+j,k)
+           bufsnd_y(i,j,k,10) = eta(i,margin+j,k)
         enddo
      enddo
   enddo
@@ -896,6 +900,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
               by(i,jx-margin+j,k) = bufrcv_y(i,j,k,7)
               bz(i,jx-margin+j,k) = bufrcv_y(i,j,k,8)
               phi(i,jx-margin+j,k) = bufrcv_y(i,j,k,9)
+              eta(i,jx-margin+j,k) = bufrcv_y(i,j,k,10)
            enddo
         enddo
      enddo
@@ -910,7 +915,6 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   mmx = ix*kx*margin*mx
   msend = mpid%f
   mrecv = mpid%b
-
   !$OMP PARALLEL DO &
   !$OMP PRIVATE(i,j)
   do k=1,kx
@@ -925,6 +929,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_y(i,j,k,7) = by(i,jx-2*margin+j,k)
            bufsnd_y(i,j,k,8) = bz(i,jx-2*margin+j,k)
            bufsnd_y(i,j,k,9) = phi(i,jx-2*margin+j,k)
+           bufsnd_y(i,j,k,10) = eta(i,jx-2*margin+j,k)
         enddo
      enddo
   enddo
@@ -950,6 +955,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
               by(i,j,k) = bufrcv_y(i,j,k,7)
               bz(i,j,k) = bufrcv_y(i,j,k,8)
               phi(i,j,k) = bufrcv_y(i,j,k,9)
+              eta(i,j,k) = bufrcv_y(i,j,k,10)
            enddo
         enddo
      enddo
@@ -982,6 +988,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_z(i,j,k,8) = bz(i,j,margin+k)
 
            bufsnd_z(i,j,k,9) = phi(i,j,margin+k)
+           bufsnd_z(i,j,k,10) = eta(i,j,margin+k)
         enddo
      enddo
      !$OMP END PARALLEL DO
@@ -1007,6 +1014,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
               by(i,j,kx-margin+k) = bufrcv_z(i,j,k,7)
               bz(i,j,kx-margin+k) = bufrcv_z(i,j,k,8)
               phi(i,j,kx-margin+k) = bufrcv_z(i,j,k,9)
+              eta(i,j,kx-margin+k) = bufrcv_z(i,j,k,10)
            enddo
         enddo
         !$OMP END PARALLEL DO
@@ -1036,6 +1044,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_z(i,j,k,7) = by(i,j,kx-2*margin+k)
            bufsnd_z(i,j,k,8) = bz(i,j,kx-2*margin+k)
            bufsnd_z(i,j,k,9) = phi(i,j,kx-2*margin+k)
+           bufsnd_z(i,j,k,10) = eta(i,j,kx-2*margin+k)
         enddo
      enddo
      !$OMP END PARALLEL DO
@@ -1061,6 +1070,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
               by(i,j,k) = bufrcv_z(i,j,k,7)
               bz(i,j,k) = bufrcv_z(i,j,k,8)
               phi(i,j,k) = bufrcv_z(i,j,k,9)
+              eta(i,j,k) = bufrcv_z(i,j,k,10)
            enddo
         enddo
         !$OMP END PARALLEL DO
@@ -1070,16 +1080,16 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
   end subroutine boundary__mpi
 
 
-  subroutine boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+  subroutine boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
   use mpi_setup
 
   integer,intent(in) :: ix,jx,kx,margin
   real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
   real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
-  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz,phi
+  real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz,phi,eta
 
-  integer,parameter :: mx = 9
+  integer,parameter :: mx = 10
   integer :: i,j,k,mmx,msend,mrecv
   real(8),dimension(margin,jx,kx,mx) :: bufsnd_x,bufrcv_x
 
@@ -1108,6 +1118,7 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
            bufsnd_x(i,j,k,7) = by(margin+i,j,k)
            bufsnd_x(i,j,k,8) = bz(margin+i,j,k)
            bufsnd_x(i,j,k,9) = phi(margin+i,j,k)
+           bufsnd_x(i,j,k,10) = eta(margin+i,j,k)
         enddo
      enddo
   enddo
@@ -1124,15 +1135,16 @@ subroutine bd_synpx(mbnd,margin,qq,ix,jx,kx)
      do k=1,kx
         do j=1,jx
            do i=1,margin
-              ro(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,1)
-              pr(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,2)
-              vx(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,3)
-              vy(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,4)
-              vz(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,5)
-              bx(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,6)
-              by(margin+1-i,jx-j+1,k)  = -bufrcv_x(i,j,k,7)
-              bz(margin+1-i,jx-j+1,k)  =  bufrcv_x(i,j,k,8)
-              phi(margin+1-i,jx-j+1,k) =  bufrcv_x(i,j,k,9)
+              ro(margin+1-i,j,k)  = +bufrcv_x(i,j,k,1)
+              pr(margin+1-i,j,k)  = +bufrcv_x(i,j,k,2)
+              vx(margin+1-i,j,k)  = -bufrcv_x(i,j,k,3)
+              vy(margin+1-i,j,k)  = -bufrcv_x(i,j,k,4)
+              vz(margin+1-i,j,k)  = +bufrcv_x(i,j,k,5)
+              bx(margin+1-i,j,k)  = -bufrcv_x(i,j,k,6)
+              by(margin+1-i,j,k)  = -bufrcv_x(i,j,k,7)
+              bz(margin+1-i,j,k)  = +bufrcv_x(i,j,k,8)
+              phi(margin+1-i,j,k) = +bufrcv_x(i,j,k,9)
+              eta(margin+1-i,j,k) = +bufrcv_x(i,j,k,10)
            enddo
         enddo
      enddo

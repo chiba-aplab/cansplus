@@ -29,7 +29,7 @@ contains
 !======================================================================
 ! inter-process communication by MPI
 ! in this model, x-, y-direction have periodic boundary
-    call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+    call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
 !----------------------------------------------------------------------|
 ! boundary in z

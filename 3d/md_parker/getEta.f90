@@ -59,12 +59,7 @@ contains
 
   integer :: i,j,k
   real(8) :: ddx,ddy,ddz
-  real(8) :: pi,hpi4,inhpi4
   real(8) :: line1,line2
-
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
 !-- start OpenMP----------------------------------------------------
   !$OMP PARALLEL
@@ -117,8 +112,6 @@ contains
 !-- end OpenMP
   !$OMP END PARALLEL DO
 
- 
- 
  end subroutine getcurrent
 
 

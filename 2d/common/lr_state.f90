@@ -250,7 +250,7 @@ contains
   else
      !$OMP PARALLEL DO &
      !$OMP PRIVATE(i,j,n,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
-     !$OMP         temp1,temp2,temp3,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,       &
+     !$OMP         temp1,temp2,temp3,dyl,dyr,dyc,dql,dqr,dqc,dqqy,wwc_w,       &
      !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do j=2,jx-1
         do i=2,ix-1

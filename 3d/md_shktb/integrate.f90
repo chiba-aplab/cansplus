@@ -77,12 +77,12 @@ contains
 !
   mdir = 1
 
-!  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
-!       ,vx,vy,vz,bx,by,bz,phi &
-!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
-  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
-       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
+       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
+!  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
+!       ,vx,vy,vz,bx,by,bz,phi &
+!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
 !  call lr_state__1st(mdir,ix,jx,kx,ro,pr &
 !       ,vx,vy,vz,bx,by,bz,phi &
 !       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
