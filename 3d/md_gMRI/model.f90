@@ -64,15 +64,21 @@ contains
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
 !
-     dxg(margin+1)=4.0d0*dxg0
+  dxg(margin+1)=4.0d0*dxg0
+
+!$OMP PARALLEL
+!$OMP DO
   do i=margin+2,margin+ugrid_xmax
      dxg(i) = dxg0
   enddo
+!$OMP END DO
+!$OMP END PARALLEL
 
   do i=margin+1+ugrid_xmax,igx-margin
      dxg(i) = dxg(i-1)*ratio_x
      if(dxg(i) > dxmax) dxg(i)=dxmax
   enddo
+
   do i=igx-margin+1,igx
      dxg(i)=dxg(igx-margin)
   enddo
@@ -90,37 +96,45 @@ contains
   do i=izero-1,0,-1
      xmg(i) = xmg(i+1)-dxg(i+1)
   enddo
+
+!$OMP PARALLEL DO
   do i=1,igx
      xg(i) = 0.5d0*(xmg(i)+xmg(i-1))
   enddo
+!$OMP END PARALLEL DO
 
 !---Step 1b.-------------------------------------------------------------|
 ! set global y-grid
+
+!$OMP PARALLEL DO
   do j=1,jgx
      dyg(j) = dyg0
   enddo
+!$OMP END PARALLEL DO
 
 ! Y origin
   jzero = margin+1
   ymg(jzero) = ymin+0.5d0*dyg(jzero)
-
   do j=jzero,jgx-1
      ymg(j+1) = ymg(j)+dyg(j+1)
   enddo
-
   do j=jzero-1,0,-1
      ymg(j) = ymg(j+1)-dyg(j+1)
   enddo
 
+!$OMP PARALLEL DO
   do j=1,jgx
      yg(j) = 0.5d0*(ymg(j)+ymg(j-1))
   enddo
+!$OMP END PARALLEL DO
 
 !---Step 1c.-------------------------------------------------------------|
 ! set global z-grid
+!$OMP PARALLEL DO
   do,k=1,kgx
      dzg(k) = dzg0
   enddo
+!$OMP END PARALLEL DO
 
   do k=int(kgx/2)+1+ugrid_zmax,kgx
      dzg(k) = dzg(k-1)*ratio_z
@@ -129,7 +143,6 @@ contains
   do k=kgx-margin,kgx
      dzg(k)=dzg(kgx-margin)
   enddo
-
   do k=int(kgx/2)-ugrid_zmax,margin,-1
      dzg(k) = dzg(k+1)*ratio_z
      if(dzg(k).gt.dzmax) dzg(k)=dzmax
@@ -141,62 +154,77 @@ contains
 ! Z origin
   kzero = kgx/2+1
   zmg(kzero) = zmin + dzg(kzero)
-
   do k=kzero,kgx-1
      zmg(k+1) = zmg(k)+dzg(k+1)
   enddo
-
   do k=kzero-1,0,-1
      zmg(k) = zmg(k+1)-dzg(k+1)
   enddo
-
+!$OMP PARALLEL DO
   do k=1,kgx
      zg(k) = 0.5d0*(zmg(k)+zmg(k-1))
   enddo
+!$OMP END PARALLEL DO
 
 !---Step 2a.-------------------------------------------------------------|
 ! set individual x-grid 
+!$OMP PARALLEL
+!$OMP DO PRIVATE(ig)
   do i=1,ix
      ig = mpid%mpirank_3d(1)*(ix-2*margin)+i
      x(i)=xg(ig)
      dx(i) = dxg(ig)
   enddo
+!$OMP END DO
+!$OMP DO PRIVATE(ig)
   do i=0,ix
      ig = mpid%mpirank_3d(1)*(ix-2*margin)+i
      xm(i) = xmg(ig)
   end do
+!$OMP END DO
 
 !---Step 2b.-------------------------------------------------------------|
 ! set individual y-grid 
+!$OMP DO PRIVATE(jg)
   do j=1,jx
      jg = mpid%mpirank_3d(2)*(jx-2*margin)+j
      y(j) = yg(jg)
      dy(j) = dyg(jg)
   enddo
+!$OMP END DO
+!$OMP DO PRIVATE(jg)
   do j=0,jx
      jg = mpid%mpirank_3d(2)*(jx-2*margin)+j
      ym(j) = ymg(jg)
   end do
+!$OMP END DO
 
 !---Step 2c.-------------------------------------------------------------|
 ! set individual z-grid 
+!$OMP DO PRIVATE(kg)
   do k=1,kx
      kg=mpid%mpirank_3d(3)*(kx-2*margin)+k
      z(k) = zg(kg)
      dz(k) = dzg(kg)
   enddo
+!$OMP END DO
+!$OMP DO PRIVATE(kg)
   do k=0,kx
      kg=mpid%mpirank_3d(3)*(kx-2*margin)+k
      zm(k) = zmg(kg)
   end do
+!$OMP END DO
+!$OMP END PARALLEL
 
 ! calculate min_dx
   min_dx = min(minval(dxg),minval(dzg))
+!$OMP PARALLEL DO REDUCTION(min:min_dx)
   do j=1,jgx
      do i=margin+1,igx
         min_dx=min(min_dx,xg(i)*dyg(j))
      enddo
   enddo
+!$OMP END PARALLEL DO
 
 !---Step 3a.----------------------------------------------------------|
   ! set gravitation
@@ -405,17 +433,6 @@ if(tor_3D)then
       enddo
    enddo
    !$OMP END PARALLEL DO
-
-   
-   roi = ro
-   pri = pr
-   vxi = 0.0d0
-   vyi = 0.0d0
-   vzi = 0.0d0
-   bxi = 0.0d0
-   byi = by
-   bzi = 0.0d0
-   phii = 0.0d0
 
   call perturb(1,bx,by,bz,x,dx,dy,dz,bbAbsMax)
 

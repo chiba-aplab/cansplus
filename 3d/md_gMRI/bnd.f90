@@ -22,11 +22,11 @@ contains
 
 !======================================================================
 ! inter-process communication by MPI
-  call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+  call boundary__mpi(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
 !======================================================================
 ! inner x-boundary
-  call boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi)
+  call boundary__mpi_cyl(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta)
 
 !======================================================================
 ! outer x-boudary

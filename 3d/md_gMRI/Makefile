@@ -21,7 +21,6 @@ $(CANS_LIB_DIR)/libcans3d.a :
 	cd $(CANS_LIB_DIR)/common; make
 
 #Dependencies
-params.txt : $(TARGET)
 init.o : $(CANS_LIB_DIR)/libcans3d.a const.o model.o bnd.o
 model.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 bnd.o : $(CANS_LIB_DIR)/libcans3d.a
@@ -30,4 +29,4 @@ main.o : $(CANS_LIB_DIR)/libcans3d.a init.o const.o openfile.o integrate.o
 openfile.o : $(CANS_LIB_DIR)/libcans3d.a const.o
 
 clean:
-	rm -f params.txt* *.o *.mod *.oo *.dac.* *.dat $(TARGET) $(OBJS)
+	rm -f *.mod data/* $(TARGET) $(OBJS)

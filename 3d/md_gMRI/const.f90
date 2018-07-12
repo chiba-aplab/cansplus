@@ -33,7 +33,7 @@ module const
 
   real(8),parameter :: swtch_t=pi2*1.d2    !  cooling switching 
 
-  real(8),parameter :: safety=0.2d0
+  real(8),parameter :: safety=0.3d0
   real(8),parameter :: dtmin=1.d-10
 
 !--------------------------------------------------------------------------
