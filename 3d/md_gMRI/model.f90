@@ -37,11 +37,8 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: phii
   real(8),                    intent(out) :: min_dx
 
-
-
-  integer :: i,j,k
+  integer :: i,j,k,kzero
   integer :: ig,jg,kg
-  integer :: izero,jzero,kzero
   real(8) :: ss
   real(8) :: tmp 
   real(8) :: psi0, pot0 
@@ -61,39 +58,26 @@ contains
   real(8),dimension(ix,jx,kx) :: pr_per, flag_torus
   real(8),parameter :: x0=1.d0
   real(8) :: Lnrml,L_r
+
 !---Step 1a.-------------------------------------------------------------|
 ! set global x-grid 
-!
-  dxg(margin+1)=4.0d0*dxg0
-
 !$OMP PARALLEL
 !$OMP DO
-  do i=margin+2,margin+ugrid_xmax
+  do i=1,igx
      dxg(i) = dxg0
   enddo
 !$OMP END DO
 !$OMP END PARALLEL
 
-  do i=margin+1+ugrid_xmax,igx-margin
-     dxg(i) = dxg(i-1)*ratio_x
-     if(dxg(i) > dxmax) dxg(i)=dxmax
+  dxg(margin+1)=4.0d0*dxg0
+  xmg(margin+1) = xmin + dxg(margin+1)
+  do i=margin+2,igx
+    xmg(i) = xmg(i-1)+dxg(i)
+    if(xmg(i) >= ugrid_x .and. i < igx)then
+      dxg(i+1) = min(dxg(i)*ratio_x,dxmax)
+    endif
   enddo
-
-  do i=igx-margin+1,igx
-     dxg(i)=dxg(igx-margin)
-  enddo
-  do i=0,margin-1
-     dxg(margin-i) = dxg(margin+i+1)
-  enddo
-
-! X origin
-  izero = margin+1
-  xmg(izero) = xmin + dxg(izero)
-
-  do i=izero,igx-1
-     xmg(i+1) = xmg(i)+dxg(i+1)
-  enddo
-  do i=izero-1,0,-1
+  do i=margin,0,-1
      xmg(i) = xmg(i+1)-dxg(i+1)
   enddo
 
@@ -113,12 +97,11 @@ contains
 !$OMP END PARALLEL DO
 
 ! Y origin
-  jzero = margin+1
-  ymg(jzero) = ymin+0.5d0*dyg(jzero)
-  do j=jzero,jgx-1
+  ymg(margin+1) = ymin+0.5d0*dyg(margin+1)
+  do j=margin+1,jgx-1
      ymg(j+1) = ymg(j)+dyg(j+1)
   enddo
-  do j=jzero-1,0,-1
+  do j=margin,0,-1
      ymg(j) = ymg(j+1)-dyg(j+1)
   enddo
 
@@ -136,30 +119,24 @@ contains
   enddo
 !$OMP END PARALLEL DO
 
-  do k=int(kgx/2)+1+ugrid_zmax,kgx
-     dzg(k) = dzg(k-1)*ratio_z
-     if(dzg(k).gt.dzmax) dzg(k)=dzmax
-  enddo
-  do k=kgx-margin,kgx
-     dzg(k)=dzg(kgx-margin)
-  enddo
-  do k=int(kgx/2)-ugrid_zmax,margin,-1
-     dzg(k) = dzg(k+1)*ratio_z
-     if(dzg(k).gt.dzmax) dzg(k)=dzmax
-  end do
-  do k=margin,1,-1
-     dzg(k) = dzg(k+1)
+  kzero = int(kgx/2.0)+1
+  zmg(kzero) = zmin+dzg(kzero)*(kzero-kgx/2.0)
+  do k=kzero+1,kgx
+     zmg(k) = zmg(k-1)+dzg(k)
+     if(zmg(k) >= ugrid_z .and. k < kgx)then
+       dzg(k+1) = min(dzg(k)*ratio_z,dzmax)
+     endif
   enddo
 
-! Z origin
-  kzero = kgx/2+1
-  zmg(kzero) = zmin + dzg(kzero)
-  do k=kzero,kgx-1
-     zmg(k+1) = zmg(k)+dzg(k+1)
-  enddo
-  do k=kzero-1,0,-1
+  kzero = int(kgx/2.0+0.5)-1
+  zmg(kzero) = zmin-dzg(kzero+1)*(kgx/2.0-kzero)
+  do k=kzero-1,1,-1
      zmg(k) = zmg(k+1)-dzg(k+1)
+     if(abs(zmg(k)) >= ugrid_z .and. k > 1)then
+       dzg(k) = min(dzg(k+1)*ratio_z,dzmax)
+     endif
   enddo
+
 !$OMP PARALLEL DO
   do k=1,kgx
      zg(k) = 0.5d0*(zmg(k)+zmg(k-1))

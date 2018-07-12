@@ -53,10 +53,10 @@ module const
   ! set global non-uniform grid  
   real(8),parameter :: dxmax = 10.0d0*dxg0
   real(8),parameter :: ratio_x = 1.05d0     ! in case of uniform, ratio_x=1.0d0
-  integer,parameter :: ugrid_xmax=96        ! in case of uniform, ugrid_xmax=0  
+  real(8),parameter :: ugrid_x = 1.0d0       !uniform grid spacing region in r
   real(8),parameter :: dzmax = 10.0d0*dxg0
   real(8),parameter :: ratio_z = 1.05d0     ! in case of uniform, ratio_z=1.0d0
-  integer,parameter :: ugrid_zmax=44        ! in case of uniform, ugrid_zmax=0 
+  real(8),parameter :: ugrid_z = 0.5d0       !uniform grid spacing region in |z|
 
 ! physical parameter
   real(8),parameter :: gm=5.d0/3.d0                ! specific heat retio
