@@ -11,16 +11,18 @@ contains
 
   subroutine integrate__TVDRK3(margin,ix,jx,kx,gm,dx,dy,dz,dt          &
                               ,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
-                              ,eta,ccx,ccy,ccz)
+                              ,eta0,vc,eta,ccx,ccy,ccz)
 
   use convert
   use lr_state, only : lr_state__MP5, lr_state__MSCL2, lr_state__1st
   use flux_calc
   use bnd
+  use getEta
 
   integer,intent(in) :: ix,jx,kx,margin
   real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm
+  real(8),intent(in) :: eta0,vc
   real(8),dimension(ix),intent(in) :: dx
   real(8),dimension(jx),intent(in) :: dy
   real(8),dimension(kx),intent(in) :: dz
@@ -81,8 +83,8 @@ contains
 
   do n=1,3
 
-!  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,dx,dy,dz, &
-!                         eta0,vc,eta,curx,cury,curz)
+  call getEta__anomalous(ix,jx,kx,ro,bx,by,bz,dx,dy,dz, &
+                         eta0,vc,eta,curx,cury,curz)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -107,12 +109,13 @@ contains
   call flux_calc__hlld(row,prw,vxw,vyw,vzw,bx_m,byw,bzw,gm,margin,ix,jx,kx &
        ,frox,feex,frxx,fryx,frzx,fbyx,fbzx)
 
-!  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
-!       ,fbyxr)
-!  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
-!       ,fbzxr)
-!  call flux_calc__feres(mdir,margin,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
-!       ,feexr)
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyx,curz,eta,-1.0d0 &
+       ,fbyxr)
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzx,cury,eta,+1.0d0 &
+       ,fbzxr)
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feex,curx,cury,curz,bx,by,bz,eta &
+       ,feexr)
+
 !-----Step 1b.---------------------------------------------------------|
 ! compute flux at y-direction
 ! set L/R state at y-direction
@@ -137,12 +140,12 @@ contains
   call flux_calc__hlld(row,prw,vyw,vzw,vxw,by_m,bzw,bxw,gm,margin,ix,jx,kx &
        ,froy,feey,fryy,frzy,frxy,fbzy,fbxy)
 
-!  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curx,eta,-1.0d0 &
-!       ,fbzyr)
-!  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curz,eta,+1.0d0 &
-!       ,fbxyr)
-!  call flux_calc__feres(mdir,margin,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
-!       ,feeyr)
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbzy,curx,eta,-1.0d0 &
+       ,fbzyr)
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxy,curz,eta,+1.0d0 &
+       ,fbxyr)
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feey,curx,cury,curz,bx,by,bz,eta &
+       ,feeyr)
 !-----Step 1c.---------------------------------------------------------|
 ! compute flux at z-direction
 ! set L/R state at z-direction
@@ -167,12 +170,12 @@ contains
   call flux_calc__hlld(row,prw,vzw,vxw,vyw,bz_m,bxw,byw,gm,margin,ix,jx,kx &
        ,froz,feez,frzz,frxz,fryz,fbxz,fbyz)
 
-!  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
-!       ,fbxzr)
-!  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
-!       ,fbyzr)
-!  call flux_calc__feres(mdir,margin,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
-!       ,feezr)
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbxz,cury,eta,-1.0d0 &
+       ,fbxzr)
+  call flux_calc__fbres(mdir,margin,ix,jx,kx,fbyz,curx,eta,+1.0d0 &
+       ,fbyzr)
+  call flux_calc__feres(mdir,margin,ix,jx,kx,feez,curx,cury,curz,bx,by,bz,eta &
+       ,feezr)
 
 !-----Step 2.---------------------------------------------------------|
 ! TVDRK substep
@@ -188,23 +191,23 @@ contains
 
            ro(i,j,k) = k1*ro1(i,j,k)+k2*(+ro(i,j,k) &
                 +dtodx*(frox(i-1,j,k)-frox(i,j,k))  &
-                +dtody*(froy(i,j-1,k)-froy(i,j,k)) )&
+                +dtody*(froy(i,j-1,k)-froy(i,j,k))  &
                 +dtodz*(froz(i,j,k-1)-froz(i,j,k)))
            ee(i,j,k) = k1*ee1(i,j,k)+k2*(+ee(i,j,k)  &
                 +dtodx*(feexr(i-1,j,k)-feexr(i,j,k)) &
-                +dtody*(feeyr(i,j-1,k)-feeyr(i,j,k)))&
+                +dtody*(feeyr(i,j-1,k)-feeyr(i,j,k)) &
                 +dtodz*(feezr(i,j,k-1)-feezr(i,j,k)))
            rx(i,j,k) = k1*rx1(i,j,k)+k2*(+rx(i,j,k) &
                 +dtodx*(frxx(i-1,j,k)-frxx(i,j,k))  &
-                +dtody*(frxy(i,j-1,k)-frxy(i,j,k)) )&
+                +dtody*(frxy(i,j-1,k)-frxy(i,j,k))  &
                 +dtodz*(frxz(i,j,k-1)-frxz(i,j,k)) )
            ry(i,j,k) = k1*ry1(i,j,k)+k2*(+ry(i,j,k) &
                 +dtodx*(fryx(i-1,j,k)-fryx(i,j,k))  &
-                +dtody*(fryy(i,j-1,k)-fryy(i,j,k)) )&
+                +dtody*(fryy(i,j-1,k)-fryy(i,j,k))  &
                 +dtodz*(fryz(i,j,k-1)-fryz(i,j,k)) )
            rz(i,j,k) = k1*rz1(i,j,k)+k2*(+rz(i,j,k) &
                 +dtodx*(frzx(i-1,j,k)-frzx(i,j,k))  &
-                +dtody*(frzy(i,j-1,k)-frzy(i,j,k)) )&
+                +dtody*(frzy(i,j-1,k)-frzy(i,j,k))  &
                 +dtodz*(frzz(i,j,k-1)-frzz(i,j,k)) )
            bx(i,j,k) = k1*bx1(i,j,k)+k2*(+bx(i,j,k)  &
                 +dtodx*(fbxx(i-1,j,k)-fbxx(i,j,k))   &

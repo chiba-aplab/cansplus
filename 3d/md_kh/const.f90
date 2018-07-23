@@ -38,5 +38,7 @@ module const
   real(8),parameter :: br    = 1.d0  !field strength ratio
   real(8),parameter :: theta = pi/2. !field elevation angle
   real(8),parameter :: lmd   = 1.d0  !velocity shear width
+  real(8),parameter :: vc    = 0.0d0
+  real(8),parameter :: eta0  = 0.0d0
 
 end module const

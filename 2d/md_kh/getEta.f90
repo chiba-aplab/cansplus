@@ -9,7 +9,7 @@ module getEta
 contains
 
 
-  subroutine getEta__anomalous(ix,jx,ro,bx,by,bz,dx,dy,dz,eta0,vc,eta,curx,cury,curz)
+  subroutine getEta__anomalous(ix,jx,ro,bx,by,bz,dx,dy,eta0,vc,eta,curx,cury,curz)
 
   integer,intent(in) :: ix,jx
   real(8),intent(in) :: eta0,vc
@@ -17,7 +17,6 @@ contains
   real(8),dimension(ix,jx),intent(in) :: ro
   real(8),dimension(ix),intent(in) :: dx
   real(8),dimension(jx),intent(in) :: dy
-  real(8),dimension(kx),intent(in) :: dz
   real(8),dimension(ix,jx),intent(out) :: eta,curx,cury,curz
 
   integer :: i,j
@@ -52,19 +51,14 @@ contains
 
   integer :: i,j
   real(8) :: dxm,dym,dzm
-  real(8) :: hpi4,pi,inhpi4
   real(8) :: sign_cur
-
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
 ! X-component
   do j=2,jx-1
      do i=2,ix-1
         dym = 0.5d0*dy(j-1)+dy(j)+0.5d0*dy(j+1)
 
-        curx(i,j) = inhpi4*((bz(i,j+1)-bz(i,j-1))/dym)
+        curx(i,j) = (bz(i,j+1)-bz(i,j-1))/dym
      end do
   end do
 
@@ -73,7 +67,7 @@ contains
      do i=2,ix-1
         dxm = 0.5d0*dx(i-1)+dx(i)+0.5d0*dx(i+1)
 
-        cury(i,j) = inhpi4*(-(bz(i+1,j)-bz(i-1,j))/dxm)
+        cury(i,j) = -(bz(i+1,j)-bz(i-1,j))/dxm
      end do
   end do
 
@@ -83,8 +77,8 @@ contains
         dxm = 0.5d0*dx(i-1)+dx(i)+0.5d0*dx(i+1)
         dym = 0.5d0*dy(j-1)+dy(j)+0.5d0*dy(j+1)
 
-        curz(i,j) = inhpi4*(+(by(i+1,j)-by(i-1,j))/dxm &
-                            -(bx(i,j+1)-bx(i,j-1))/dym)
+        curz(i,j) = +(by(i+1,j)-by(i-1,j))/dxm &
+                    -(bx(i,j+1)-bx(i,j-1))/dym
      end do
   end do
 

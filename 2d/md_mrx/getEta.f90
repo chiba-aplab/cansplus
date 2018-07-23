@@ -51,12 +51,7 @@ contains
 
   integer :: i,j
   real(8) :: dxm,dym
-  real(8) :: hpi4,pi,inhpi4
   real(8) :: sign_cur
-
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
 ! X-component
   do j=2,jx-1

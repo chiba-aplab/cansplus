@@ -592,7 +592,6 @@ contains
 !----parameter
   real(8),parameter :: B2 = 1.333333333333
   real(8),parameter :: Alpha = 4.0d0
-  real(8),parameter :: Epsm = 0.0000000001d0
 
 !----function
   integer :: i,j,k,l,n

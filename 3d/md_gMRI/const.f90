@@ -3,15 +3,16 @@ module const
   implicit none
  
   integer,parameter :: margin=3
-  integer,parameter :: ix = 32+2*margin,jx=1+2*margin,kx=32+2*margin
+!  integer,parameter :: ix = 64+2*margin,jx=16+2*margin,kx=64+2*margin
+  integer,parameter :: ix = 48+2*margin,jx=12+2*margin,kx=48+2*margin
   real(8),parameter :: pi= acos(-1.0d0)            ! circular constant
   real(8),parameter :: pi2=2.0d0*pi
 
 !--------------------------------------------------------------------------
 !  MPI
-  integer,parameter :: mpisize_x=8
-  integer,parameter :: mpisize_y=2
-  integer,parameter :: mpisize_z=8
+  integer,parameter :: mpisize_x=4*4
+  integer,parameter :: mpisize_y=4*4
+  integer,parameter :: mpisize_z=4*4
   integer,parameter :: igx = ix*mpisize_x-2*margin*(mpisize_x-1)
   integer,parameter :: jgx = jx*mpisize_y-2*margin*(mpisize_y-1)
   integer,parameter :: kgx = kx*mpisize_z-2*margin*(mpisize_z-1)
@@ -20,18 +21,18 @@ module const
 
 !--------------------------------------------------------------------------
 !   model of accretion flow
-  logical,parameter :: pol_2D = .true.     ! if ".true.", then 2D model with poloidal B-field is employed
-  logical,parameter :: tor_3D = .false.     ! if ".true.", then 3D model with toroidal B-field is employed
+  logical,parameter :: pol_2D = .false.     ! if ".true.", then 2D model with poloidal B-field is employed
+  logical,parameter :: tor_3D = .true.     ! if ".true.", then 3D model with toroidal B-field is employed
 !--------------------------------------------------------------------------
 !   time control parameters
 
-  logical :: restart = .false.     ! if ".true." then start from restart data
-  character(*),parameter :: input_dir = "./data/", output_dir = "./data/"
-  real(8),parameter :: tend  = pi2*7.d0
-  real(8),parameter :: dtout = pi2/1.d1
+  logical :: restart = .true.     ! if ".true." then start from restart data
+  character(*),parameter :: input_dir = "./", output_dir = "./"
+  real(8),parameter :: tend  = pi2*5.d1
+  real(8),parameter :: dtout = pi2/4.d0
   integer,parameter :: nstop = int(2.d6)       !number of total time steps for the run
 
-  real(8),parameter :: swtch_t=pi2*1.d2    !  cooling switching 
+  real(8),parameter :: swtch_t=pi2*1.d3    !  cooling switching 
 
   real(8),parameter :: safety=0.3d0
   real(8),parameter :: dtmin=1.d-10
@@ -46,17 +47,17 @@ module const
   real(8),parameter :: zmin = 0.0d0  
 
   ! set uniform grid
-  real(8),parameter :: dxg0 = 1.d-2
+  real(8),parameter :: dxg0 = 1.5d-2/2.0d0/1.5d0
   real(8),parameter :: dyg0 = (ymax-ymin)/real(jgx-margin*2)
-  real(8),parameter :: dzg0 = 1.d-2
+  real(8),parameter :: dzg0 = 1.5d-2/2.0d0/1.5d0
 
   ! set global non-uniform grid  
   real(8),parameter :: dxmax = 10.0d0*dxg0
   real(8),parameter :: ratio_x = 1.05d0     ! in case of uniform, ratio_x=1.0d0
-  real(8),parameter :: ugrid_x = 1.0d0       !uniform grid spacing region in r
+  real(8),parameter :: ugrid_x = 3.0d0       !uniform grid spacing region in r
   real(8),parameter :: dzmax = 10.0d0*dxg0
   real(8),parameter :: ratio_z = 1.05d0     ! in case of uniform, ratio_z=1.0d0
-  real(8),parameter :: ugrid_z = 0.5d0       !uniform grid spacing region in |z|
+  real(8),parameter :: ugrid_z = 1.0d0       !uniform grid spacing region in |z|
 
 ! physical parameter
   real(8),parameter :: gm=5.d0/3.d0                ! specific heat retio
@@ -69,7 +70,7 @@ module const
   real(8),parameter :: boltzmann_const = 1.3807d-16 !cgs
   real(8),parameter :: mmw = 1.0d0                                !mean molecular weight
   real(8),parameter :: rg = 3.0d0*1.0d5*mass_bh    !cgs Schwarzschild radius
-  real(8),parameter :: rg_nrmlx_inv = 4.0d1  ! nrmalized at r = rg_nrmlx_inv * rg
+  real(8),parameter :: rg_nrmlx_inv = 1.0d1  ! nrmalized at r = rg_nrmlx_inv * rg
   real(8),parameter :: rg_nrmlx = 1.0d0/rg_nrmlx_inv                    !per nrmlx
 
   real(8),parameter :: nrmlro = 0.29d0*8.3d-7/(mass_bh/10.0d0)  !normalized ro
@@ -86,7 +87,8 @@ module const
   real(8),parameter :: xin = 0.2d0   ! inner boundary
   ! resistivity
 !  real(8),parameter :: eta0 = 4.0d0*pi*1.0d-3      ! upper limit of resistivity
-  real(8),parameter :: eta0 = 4.0d0*pi*1.0d-5      ! upper limit of resistivity
+!  real(8),parameter :: eta0 = 4.0d0*pi*1.0d-5      ! upper limit of resistivity
+  real(8),parameter :: eta0 = 0.0      ! upper limit of resistivity
   real(8),parameter :: vc=0.9d0*2.998d10/nrmlv!here! threshold 
   ! gravity
   real(8),parameter :: ssg=rg_nrmlx    ! 
@@ -94,7 +96,7 @@ module const
   real(8),parameter :: grav = (1.0d0-ssg)**2
 
   ! corona (or halo)
-  real(8),parameter :: tec0 = 1.5d1
+  real(8),parameter :: tec0 = 0.5d1
   real(8),parameter :: rohalo = 3.0d-4  ! density ratio of halo to torus
   ! torus 
 !=== parameter for tor_3D ===

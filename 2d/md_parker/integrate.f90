@@ -16,7 +16,7 @@ contains
   use lr_state, only : lr_state__MP5, lr_state__MSCL2, lr_state__1st
   use flux_calc
   use bnd
-!  use getEta
+  use getEta
 
   integer,intent(in) :: ix,jx,margin
   real(8),intent(in) :: ch,cp
@@ -89,8 +89,8 @@ contains
 !------RK substeps-----!
   do n=1,3
 
-!  call getEta__anomalous(ix,jx,ro,bx,by,bz,x,dx,dy &
-!                         ,eta0,vc,eta,curx,cury)
+  call getEta__anomalous(ix,jx,ro,bx,by,bz,x,dx,dy &
+                         ,eta0,vc,eta,curx,cury,curz)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -211,8 +211,6 @@ contains
                 +dtodx*(fphix(i-1,j)-fphix(i,j))   &
                 +dtody*(fphiy(i,j-1)-fphiy(i,j))   &
                 +dt*sphi)*exp(-dt*ch**2/cp**2)
-!           eta(i,j) = ( (fphix(i-1,j)-fphix(i,j))/dx(i)   &
-!                         +(fphiy(i,j-1)-fphiy(i,j))/dy(j))/ch**2
      enddo
   enddo
   !$OMP END PARALLEL DO

@@ -11,16 +11,18 @@ contains
 
   subroutine integrate__TVDRK3(margin,ix,jx,gm,dx,dy,dt          &
                               ,ro,pr,vx,vy,vz,bx,by,bz,phi,ch,cp &
-                              ,eta,ccx,ccy)
+                              ,eta0,vc,eta,ccx,ccy)
 
   use convert
   use lr_state, only : lr_state__MP5, lr_state__MSCL2, lr_state__1st
   use flux_calc
   use bnd
+  use getEta
 
   integer,intent(in) :: ix,jx,margin
   real(8),intent(in) :: ch,cp
   real(8),intent(in) :: dt,gm
+  real(8),intent(in) :: eta0,vc
   real(8),dimension(ix),intent(in) :: dx
   real(8),dimension(jx),intent(in) :: dy
   real(8),dimension(5,2,ix),intent(in) :: ccx
@@ -83,8 +85,8 @@ contains
 
   do n=1,3
 
-!  call getEta__anomalous(ix,jx,ro,bx,by,bz,dx,dy,dz, &
-!                         eta0,vc,eta,curx,cury,curz)
+  call getEta__anomalous(ix,jx,ro,bx,by,bz,dx,dy, &
+                         eta0,vc,eta,curx,cury,curz)
 
 !-----Step 1a.---------------------------------------------------------|
 ! Compute flux in x-direction
@@ -92,12 +94,12 @@ contains
 !
   mdir = 1
 
-!  call lr_state__MP5(mdir,ix,jx,ro,pr &
-!       ,vx,vy,vz,bx,by,bz,phi &
-!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy)
-  call lr_state__MSCL2(mdir,ix,jx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
-       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy)
+       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy)
+!  call lr_state__MSCL2(mdir,ix,jx,ro,pr &
+!       ,vx,vy,vz,bx,by,bz,phi &
+!       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy)
 !  call lr_state__1st(mdir,ix,jx &
 !       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
 !       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
@@ -120,12 +122,12 @@ contains
 !
   mdir = 2
 
-!  call lr_state__MP5(mdir,ix,jx,ro,pr &
-!       ,vy,vz,vx,by,bz,bx,phi &
-!       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy)
-  call lr_state__MSCL2(mdir,ix,jx,ro,pr &
+  call lr_state__MP5(mdir,ix,jx,ro,pr &
        ,vy,vz,vx,by,bz,bx,phi &
-       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,dx,dy)
+       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,ccx,ccy)
+!  call lr_state__MSCL2(mdir,ix,jx,ro,pr &
+!       ,vy,vz,vx,by,bz,bx,phi &
+!       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,dx,dy)
 !  call lr_state__1st(mdir,ix,jx     &
 !       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
 !       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)

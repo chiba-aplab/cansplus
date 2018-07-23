@@ -25,7 +25,7 @@ contains
 
 
 ! In Cylindrical coordinate
-  call getcurrent(bx,by,bz,ix,jx,kx,x,dx,dy &
+  call getcurrent(bx,by,bz,ix,jx,x,dx,dy &
                       ,curx,cury,curz)
   
   etamax=0.01d0
@@ -44,10 +44,10 @@ contains
   end subroutine getEta__anomalous
 
 
-  subroutine getcurrent(bx,by,bz,ix,jx,kx,x,dx,dy &
+  subroutine getcurrent(bx,by,bz,ix,jx,x,dx,dy &
                             ,curx,cury,curz)
 
-  integer,intent(in) :: ix,jx,kx
+  integer,intent(in) :: ix,jx
   real(8),dimension(ix),intent(in) :: x,dx
   real(8),dimension(jx),intent(in) :: dy
   real(8),dimension(ix,jx),intent(in) :: bx,by,bz
@@ -55,12 +55,7 @@ contains
 
   integer :: i,j
   real(8) :: ddx,ddy
-  real(8) :: pi,hpi4,inhpi4
   real(8) :: line1,line2
-
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
 !-- start OpenMP----------------------------------------------------
   !$OMP PARALLEL
@@ -70,7 +65,7 @@ contains
   do j=2,jx-1
      do i=2,ix-1
         ddy = 0.5d0*dy(j-1)+dy(j)+0.5d0*dy(j+1)
-        curx(i,j) = inhpi4*(bz(i,j+1)-bz(i,j-1))/ddy 
+        curx(i,j) = (bz(i,j+1)-bz(i,j-1))/ddy 
      enddo
   enddo
   !$OMP END DO NOWAIT
@@ -80,7 +75,7 @@ contains
   do j=2,jx-1
      do i=2,ix-1
         ddx = 0.5d0*dx(i-1)+dx(i)+0.5d0*dx(i+1)
-        cury(i,j) = inhpi4*(-(bz(i+1,j)-bz(i-1,j))/ddx
+        cury(i,j) = -(bz(i+1,j)-bz(i-1,j))/ddx
      enddo
   enddo
   !$OMP END DO NOWAIT
@@ -91,8 +86,8 @@ contains
      do i=2,ix-1
         ddx = 0.5d0*dx(i-1)+dx(i)+0.5d0*dx(i+1)
         ddy = 0.5d0*dy(j-1)+dy(j)+0.5d0*dy(j+1)
-        curz(i,j) = inhpi4*(+(by(i+1,j)-by(i-1,j))/ddx &
-                            -(bx(i,j+1)-bx(i,j-1))/ddy )
+        curz(i,j) = +(by(i+1,j)-by(i-1,j))/ddx &
+                    -(bx(i,j+1)-bx(i,j-1))/ddy 
      enddo
   enddo
   !$OMP END DO NOWAIT

@@ -6,13 +6,23 @@ program main
   use init
   use getNewdt
   use integrate, only : integrate__TVDRK3
+  use omp_lib
 
   implicit none
+
+  real(8) :: etime, etlim, etime0
+
+  etlim = 23.*60.*60.+30.*60.
+!  etlim = 2.*60.*60.+30.*60.
+!  etlim = 5.*60.
 
 !----------------------------------------------------------------------|
 !  initialize
   call initialize
 !----------------------------------------------------------------------|
+
+  etime0 = omp_get_wtime()
+  call MPI_BCAST(etime0,1,mdp,0,mcomw,merr)
 
 !----------------------------------------------------------------------|
 !  file open
@@ -48,6 +58,13 @@ program main
 !     time integration 
 !======================================================================|
   loop: do ns=1,nstop
+
+  if(mpid%mpirank == 0) etime = omp_get_wtime()
+  call MPI_BCAST(etime,1,mdp,0,mcomw,merr)
+  if(etime-etime0 >= etlim) then
+     if(mpid%mpirank == 0) write(*,*) '*** elapse time over ***',ns,etime-etime0
+     exit loop
+  endif
 
   mwflag=0
   mw=0
@@ -109,15 +126,6 @@ program main
 !======================================================================|
 !  end of time integration 
 !======================================================================|
-
-!  data output
-  if(mwflag == 0)then
-     if(mpid%mpirank == 0)then
-        write(6,913) ns,time,nd
-     endif
-     call file_output(nd,mpid%mpirank,ro,pr,vx,vy,vz,bx,by,bz,phi,eta &
-                     ,ix,jx,kx)
-  endif
 
   call mpi_finalize(merr)
 
