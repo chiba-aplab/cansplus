@@ -23,8 +23,6 @@ contains
   integer :: i,j
   real(8) :: cur_abs,vd,etamax,flag
 
-
-! In Cylindrical coordinate
   call getcurrent(bx,by,bz,ix,jx,x,dx,dy &
                       ,curx,cury,curz)
   
