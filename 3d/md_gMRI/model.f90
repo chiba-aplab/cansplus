@@ -130,7 +130,7 @@ contains
 
   kzero = int(kgx/2.0+0.5)-1
   zmg(kzero) = zmin-dzg(kzero+1)*(kgx/2.0-kzero)
-  do k=kzero-1,1,-1
+  do k=kzero-1,0,-1
      zmg(k) = zmg(k+1)-dzg(k+1)
      if(abs(zmg(k)) >= ugrid_z .and. k > 1)then
        dzg(k) = min(dzg(k+1)*ratio_z,dzmax)
