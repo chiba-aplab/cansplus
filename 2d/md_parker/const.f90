@@ -50,6 +50,6 @@ module const
   real(8),parameter ::  wptb1=0.5d0,wptb2=0.5d0
   ! resistivity
   real(8),parameter :: eta0 = 0.0d0  ! upper limit of resistivity
-  real(8),parameter :: vc=0.0d0      ! threshold 
+  real(8),parameter :: vc=1.0d0-12      ! threshold 
 
 end module const 

@@ -38,7 +38,7 @@ module const
   real(8),parameter :: by_jet = sqrt(2d0*pr_jet*1d-2)
   real(8),parameter :: bz_jet = 0d0
   real(8),parameter :: r_jet = 1d0
-  real(8),parameter :: eta0 = 0d0, vc = 0d0
+  real(8),parameter :: eta0 = 0d0, vc = 1.0d-12
 
 ! gravity
   real(8),parameter :: grav = 0d0, ssg = 0.1d0, sseps = 0.2d0
