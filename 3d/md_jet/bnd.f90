@@ -9,8 +9,7 @@ module bnd
 contains
 
 
-  subroutine bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
+  subroutine bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
     
     use mpi_setup, only : mpid, mnull
     use const, only : r_jet,ro_jet,pr_jet,vx_jet,vy_jet,vz_jet,bx_jet,by_jet,bz_jet
@@ -18,14 +17,10 @@ contains
     
     integer,intent(in) :: margin,ix,jx,kx
     real(8),dimension(ix),intent(in) :: x
-    real(8),dimension(kx),intent(in) :: z
     real(8),dimension(ix,jx,kx),intent(inout) :: ro,pr
     real(8),dimension(ix,jx,kx),intent(inout) :: vx,vy,vz
     real(8),dimension(ix,jx,kx),intent(inout) :: bx,by,bz
     real(8),dimension(ix,jx,kx),intent(inout) :: phi,eta
-    real(8),dimension(ix,jx,kx),intent(in) :: roi,pri
-    real(8),dimension(ix,jx,kx),intent(in) :: vxi,vyi,vzi
-    real(8),dimension(ix,jx,kx),intent(in) :: bxi,byi,bzi
     integer :: i,j,k
 
 !======================================================================

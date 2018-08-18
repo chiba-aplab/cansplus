@@ -6,6 +6,7 @@ module init
   public :: initialize
 
   real(8),public,dimension(ix) :: x,dx
+  real(8),public,dimension(0:ix) :: xm
   real(8),public,dimension(jx) :: y,dy
   real(8),public,dimension(kx) :: z,dz
   real(8),public,dimension(5,2,ix) :: ccx
@@ -20,11 +21,6 @@ module init
 
 ! gravitation
   real(8),public,dimension(ix,jx,kx) :: gx,gy,gz
-
-  real(8),public,dimension(ix,jx,kx) :: roi,pri
-  real(8),public,dimension(ix,jx,kx) :: vxi,vyi,vzi
-  real(8),public,dimension(ix,jx,kx) :: bxi,byi,bzi
-  real(8),public,dimension(ix,jx,kx) :: phii
 
   real(8),public :: ch,cp,min_dx
 
@@ -49,7 +45,6 @@ contains
   use mpi_setup, only : mpi_setup__init, mpi_setup__init_cyl, mpid, mnull
   use bnd
 
-  real(8),dimension(0:ix) :: xm
   real(8),dimension(0:jx) :: ym
   real(8),dimension(0:kx) :: zm
 
@@ -63,23 +58,9 @@ contains
 !   setup numerical model (grid, initial conditions, etc.)
 !----------------------------------------------------------------------|
   call model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi &
-       ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
        ,x,dx,xm,y,dy,ym,z,dz,zm,gx,gz,eta,min_dx) 
 
-  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x,z &
-               ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi)
-
-!$OMP WORKSHARE
-  roi = ro
-  pri = pr
-  vxi = vx
-  vyi = vy
-  vzi = vz
-  bxi = bx
-  byi = by
-  bzi = bz
-  phii = phi
-!$OMP END WORKSHARE
+  call bnd__exec(margin,ix,jx,kx,ro,pr,vx,vy,vz,bx,by,bz,phi,eta,x)
 
 !----------------------------------------------------------------------|
 !  cal reconstruction constant for MP5

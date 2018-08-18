@@ -13,7 +13,6 @@ contains
 
   
   subroutine model_setup(ro,pr,vx,vy,vz,bx,by,bz,phi         &
-                      ,roi,pri,vxi,vyi,vzi,bxi,byi,bzi &
                       ,x,dx,xm,y,dy,ym,z,dz,zm &
                       ,gx,gz,eta,min_dx)
 
@@ -31,9 +30,6 @@ contains
   real(8),dimension(ix,jx,kx),intent(out) :: bx,by,bz
   real(8),dimension(ix,jx,kx),intent(out) :: eta,phi
   real(8),dimension(ix,jx,kx),intent(out) :: gx,gz
-  real(8),dimension(ix,jx,kx),intent(out) :: roi,pri
-  real(8),dimension(ix,jx,kx),intent(out) :: vxi,vyi,vzi
-  real(8),dimension(ix,jx,kx),intent(out) :: bxi,byi,bzi
   real(8),                    intent(out) :: min_dx
 
   integer :: i,j,k
@@ -260,16 +256,6 @@ contains
   !$OMP END DO
   !$OMP END PARALLEL
   
-  roi(1:ix,1:jx,1:kx) = ro(1:ix,1:jx,1:kx)
-  pri(1:ix,1:jx,1:kx) = pr(1:ix,1:jx,1:kx)
-  vxi(1:ix,1:jx,1:kx) = vx(1:ix,1:jx,1:kx)
-  vyi(1:ix,1:jx,1:kx) = vy(1:ix,1:jx,1:kx)
-  vzi(1:ix,1:jx,1:kx) = vz(1:ix,1:jx,1:kx)
-  bxi(1:ix,1:jx,1:kx) = bx(1:ix,1:jx,1:kx)
-  byi(1:ix,1:jx,1:kx) = by(1:ix,1:jx,1:kx)
-  bzi(1:ix,1:jx,1:kx) = bz(1:ix,1:jx,1:kx)
-
-  return
 end subroutine model_setup
 
 end module model
