@@ -148,7 +148,7 @@ def dac_read2d(filename):
 
   if len(flist) % mpirank != 0:
     print('Number of files and procs. is mismatch.')
-    return
+    return None, None, None
 
   nproc = mpirank
   nd = int(len(flist)/nproc)
@@ -224,7 +224,7 @@ def dac_read3d(filename):
 
   if len(flist) % mpirank != 0:
     print('Number of files and procs. is mismatch.')
-    return
+    return None, None, None, None
 
   nproc = mpirank
   nd = int(len(flist)/nproc)
