@@ -77,13 +77,8 @@ contains
   real(8) :: srx,sry,srz,see
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
-  real(8) :: pi,hpi4,inhpi4
   real(8) :: te
   real(8),dimension(ix,jx,kx) :: see_rad
-
-  pi = acos(-1.0d0)
-  hpi4 = sqrt(4.0d0*pi)
-  inhpi4 = 1.0d0/hpi4
 
 !-----Step 0.----------------------------------------------------------|
 ! primitive to conserve
@@ -117,12 +112,12 @@ contains
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
 
 !$OMP WORKSHARE
-row2=row
-prw2=prw
-vyw2=vyw
-bxw2=bxw
-byw2=byw
-bzw2=bzw
+  row2=row
+  prw2=prw
+  vyw2=vyw
+  bxw2=bxw
+  byw2=byw
+  bzw2=bzw
 !$OMP END WORKSHARE
 
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
