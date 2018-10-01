@@ -51,8 +51,6 @@ contains
 !-surface variables
   real(8),dimension(ix,jx,kx,2) :: row,prw,vxw,vyw,vzw
   real(8),dimension(ix,jx,kx,2) :: bxw,byw,bzw,phiw
-  real(8),dimension(ix,jx,kx,2) :: row2,prw2,vyw2
-  real(8),dimension(ix,jx,kx,2) :: bxw2,byw2,bzw2
   real(8),dimension(ix,jx,kx) :: bx_m,by_m,bz_m,phi_m
   real(8),dimension(ix,jx,kx) :: eta
 
@@ -74,7 +72,7 @@ contains
   integer :: mdir
   integer :: i,j,k,n
   real(8), parameter :: fac=1.D0/12.D0
-  real(8) :: srx,sry,srz,see
+  real(8) :: srx,srz,see
   real(8) :: dtodx,dtody,dtodz,k1,k2
   real(8) :: inversex             !1/x
   real(8) :: te
@@ -110,15 +108,6 @@ contains
   call lr_state__MP5(mdir,ix,jx,kx,ro,pr &
        ,vx,vy,vz,bx,by,bz,phi &
        ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,ccx,ccy,ccz)
-
-!$OMP WORKSHARE
-  row2=row
-  prw2=prw
-  vyw2=vyw
-  bxw2=bxw
-  byw2=byw
-  bzw2=bzw
-!$OMP END WORKSHARE
 
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -214,7 +203,7 @@ contains
   k2 = fac*(+7.D0*n*n-30.D0*n+35.D0)
   !$OMP PARALLEL DO &
   !$OMP PRIVATE(i,j) &
-  !$OMP PRIVATE(inversex,srx,sry,srz,see,dtodx,dtody,dtodz)  
+  !$OMP PRIVATE(inversex,srx,srz,see,dtodx,dtody,dtodz)  
   do k=margin+1,kx-margin
      do j=margin+1,jx-margin
         do i=margin+1,ix-margin
@@ -223,13 +212,8 @@ contains
 
 ! source terms
 ! x-momentum
-           srx = ( 0.5*(+prw2(i-1,j,k,2)+0.5*(bxw2(i-1,j,k,2)**2+byw2(i-1,j,k,2)**2+bzw2(i-1,j,k,2)**2) &
-                        +row2(i-1,j,k,2)*vyw2(i-1,j,k,2)**2-byw2(i-1,j,k,2)**2 )        &
-                  +0.5*(+prw2(i  ,j,k,1)+0.5*(bxw2(i  ,j,k,1)**2+byw2(i  ,j,k,1)**2+bzw2(i  ,j,k,1)**2) &
-                        +row2(i  ,j,k,1)*vyw2(i  ,j,k,1)**2-byw2(i  ,j,k,1)**2) )/x(i) &
-                 +ro(i,j,k)*gx(i,j,k)
-!! y-momentum
-           sry = -0.5*(fryx(i,j,k)+fryx(i-1,j,k))*inversex
+           srx = 0.5*(+fryy(i,j-1,k)+fryy(i,j,k))*inversex &
+                +ro(i,j,k)*gx(i,j,k)
 ! z-momentum
            srz = +ro(i,j,k)*gz(i,j,k)
 
@@ -256,11 +240,13 @@ contains
                 +dtody*(frxy(i,j-1,k)-frxy(i,j,k))  &
                 +dtodz*(frxz(i,j,k-1)-frxz(i,j,k))  &
                 +dt*srx)
-           ry(i,j,k) = k1*ry1(i,j,k)+k2*(+ry(i,j,k) &
-                +dtodx*inversex*(xm(i-1)*fryx(i-1,j,k)-xm(i)*fryx(i,j,k))  &
-                +dtody*(fryy(i,j-1,k)-fryy(i,j,k))  &
-                +dtodz*(fryz(i,j,k-1)-fryz(i,j,k))  &
-                +dt*sry)
+!!Angular Momentum
+           ry(i,j,k) = k1*ry1(i,j,k)*x(i)+k2*(+ry(i,j,k)*x(i) &
+                +dtodx*inversex*(xm(i-1)*xm(i-1)*fryx(i-1,j,k)-xm(i)*xm(i)*fryx(i,j,k))  &
+                +dtody*x(i)*(fryy(i,j-1,k)-fryy(i,j,k))  &
+                +dtodz*x(i)*(fryz(i,j,k-1)-fryz(i,j,k))  )
+!Angular Mom -> Vph
+           ry(i,j,k) = ry(i,j,k)*inversex
            rz(i,j,k) = k1*rz1(i,j,k)+k2*(+rz(i,j,k) &
                 +dtodx*inversex*(xm(i-1)*frzx(i-1,j,k)-xm(i)*frzx(i,j,k))  &
                 +dtody*(frzy(i,j-1,k)-frzy(i,j,k))  &
