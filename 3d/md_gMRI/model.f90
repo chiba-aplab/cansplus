@@ -116,6 +116,7 @@ contains
 !$OMP PARALLEL DO
   do,k=1,kgx
      dzg(k) = dzg0
+     zmg(k) = zmin
   enddo
 !$OMP END PARALLEL DO
 

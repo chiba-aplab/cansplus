@@ -240,12 +240,12 @@ contains
                 +dtody*(frxy(i,j-1,k)-frxy(i,j,k))  &
                 +dtodz*(frxz(i,j,k-1)-frxz(i,j,k))  &
                 +dt*srx)
-!!Angular Momentum
+!!Angular Momentum Consvation
            ry(i,j,k) = k1*ry1(i,j,k)*x(i)+k2*(+ry(i,j,k)*x(i) &
                 +dtodx*inversex*(xm(i-1)*xm(i-1)*fryx(i-1,j,k)-xm(i)*xm(i)*fryx(i,j,k))  &
                 +dtody*x(i)*(fryy(i,j-1,k)-fryy(i,j,k))  &
                 +dtodz*x(i)*(fryz(i,j,k-1)-fryz(i,j,k))  )
-!Angular Mom -> Vph
+!Angular Mom -> rho*Vph
            ry(i,j,k) = ry(i,j,k)*inversex
            rz(i,j,k) = k1*rz1(i,j,k)+k2*(+rz(i,j,k) &
                 +dtodx*inversex*(xm(i-1)*frzx(i-1,j,k)-xm(i)*frzx(i,j,k))  &

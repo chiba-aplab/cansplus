@@ -132,6 +132,7 @@ case n_params() of
 
      for l=0,ntask-1 do begin
        para_range,nzs,nze,0,n_elements(para8)-1,ntask,l
+       bridges[l].execute,"@"+pref_get('IDL_STARTUP')
        bridges[l].setvar,"nzs",nzs
        bridges[l].setvar,"nze",nze
        bridges[l].setvar,"dat_cyl",para5
