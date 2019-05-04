@@ -3,110 +3,10 @@ module lr_state
   implicit none
   private
 
-  public :: lr_state__1st, lr_state__MSCL2, lr_state__MP5, reconstructionConstant, reconstructionConstant_cyl
+  public :: lr_state__MSCL2, lr_state__MP5, reconstructionConstant, reconstructionConstant_cyl
 
 
 contains
-
-
-  subroutine lr_state__1st(mdir,ix,jx,kx,&
-                           ro,pr,vx,vy,vz,bx,by,bz,phi,&
-                           row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
-  integer,intent(in) :: mdir
-  integer,intent(in) :: ix,jx,kx
-  real(8),dimension(ix,jx,kx),intent(in) :: ro,pr,vx,vy,vz,bx,by,bz,phi
-  real(8),dimension(ix,jx,kx,2),intent(out) :: row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw
-
-  integer :: i,j,k
-
-  if(mdir == 1)then
-     !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
-     do k=2,kx-1
-        do j=2,jx-1
-           do i=2,ix-1
-              row(i-1,j,k,2) = ro(i,j,k)
-              row(i  ,j,k,1) = ro(i,j,k)
-              vxw(i-1,j,k,2) = vx(i,j,k)
-              vxw(i  ,j,k,1) = vx(i,j,k)
-              vyw(i-1,j,k,2) = vy(i,j,k)
-              vyw(i  ,j,k,1) = vy(i,j,k)
-              vzw(i-1,j,k,2) = vz(i,j,k)
-              vzw(i  ,j,k,1) = vz(i,j,k)
-              prw(i-1,j,k,2) = pr(i,j,k)
-              prw(i  ,j,k,1) = pr(i,j,k)
-              bxw(i-1,j,k,2) = bx(i,j,k)
-              bxw(i  ,j,k,1) = bx(i,j,k)
-              byw(i-1,j,k,2) = by(i,j,k)
-              byw(i  ,j,k,1) = by(i,j,k)
-              bzw(i-1,j,k,2) = bz(i,j,k)
-              bzw(i  ,j,k,1) = bz(i,j,k)
-              phiw(i-1,j,k,2) = phi(i,j,k)
-              phiw(i  ,j,k,1) = phi(i,j,k)
-           enddo
-        enddo
-     enddo
-     !$OMP END PARALLEL DO
-  else if(mdir == 2)then
-     !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
-     do k=2,kx-1
-        do j=2,jx-1
-           do i=2,ix-1
-              row(i,j-1,k,2) = ro(i,j,k)
-              row(i,j  ,k,1) = ro(i,j,k)
-              vxw(i,j-1,k,2) = vx(i,j,k)
-              vxw(i,j  ,k,1) = vx(i,j,k)
-              vyw(i,j-1,k,2) = vy(i,j,k)
-              vyw(i,j  ,k,1) = vy(i,j,k)
-              vzw(i,j-1,k,2) = vz(i,j,k)
-              vzw(i,j  ,k,1) = vz(i,j,k)
-              prw(i,j-1,k,2) = pr(i,j,k)
-              prw(i,j  ,k,1) = pr(i,j,k)
-              bxw(i,j-1,k,2) = bx(i,j,k)
-              bxw(i,j  ,k,1) = bx(i,j,k)
-              byw(i,j-1,k,2) = by(i,j,k)
-              byw(i,j  ,k,1) = by(i,j,k)
-              bzw(i,j-1,k,2) = bz(i,j,k)
-              bzw(i,j  ,k,1) = bz(i,j,k)
-              phiw(i,j-1,k,2) = phi(i,j,k)
-              phiw(i,j  ,k,1) = phi(i,j,k)
-           end do
-        end do
-     end do
-     !$OMP END PARALLEL DO
-  else
-     !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j)
-     do k=2,kx-1
-        do j=2,jx-1
-           do i=2,ix-1
-              row(i,j,k-1,2) = ro(i,j,k)
-              row(i,j,k  ,1) = ro(i,j,k)
-              vxw(i,j,k-1,2) = vx(i,j,k)
-              vxw(i,j,k  ,1) = vx(i,j,k)
-              vyw(i,j,k-1,2) = vy(i,j,k)
-              vyw(i,j,k  ,1) = vy(i,j,k)
-              vzw(i,j,k-1,2) = vz(i,j,k)
-              vzw(i,j,k  ,1) = vz(i,j,k)
-              prw(i,j,k-1,2) = pr(i,j,k)
-              prw(i,j,k  ,1) = pr(i,j,k)
-              bxw(i,j,k-1,2) = bx(i,j,k)
-              bxw(i,j,k  ,1) = bx(i,j,k)
-              byw(i,j,k-1,2) = by(i,j,k)
-              byw(i,j,k  ,1) = by(i,j,k)
-              bzw(i,j,k-1,2) = bz(i,j,k)
-              bzw(i,j,k  ,1) = bz(i,j,k)
-              phiw(i,j,k-1,2) = phi(i,j,k)
-              phiw(i,j,k  ,1) = phi(i,j,k)
-           end do
-        end do
-     end do
-     !$OMP END PARALLEL DO
-  endif
-
-  end subroutine lr_state__1st
-
 
 
   subroutine lr_state__MSCL2(mdir,ix,jx,kx,&
@@ -129,7 +29,6 @@ contains
   real(8),dimension(nwave,3) :: ww,wwc
   real(8),dimension(nwave,nwave) :: lem,rem
   real(8) :: minvalue,smv,psmv,msmv
-  real(8) :: ro1,pr1,vx1,vy1,vz1,bx1,by1,bz1,phi1
   real(8) :: temp1,temp2,temp3,ich
   real(8) :: dqqx,dqqy,dqqz
   real(8) :: dqc,dql,dqr
@@ -145,38 +44,45 @@ contains
 
   if(mdir == 1)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,l,n,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
-     !$OMP         temp1,temp2,temp3,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w,       &
+     !$OMP PRIVATE(i,j,l,n,ww,lem,rem,wwc,                               &
+     !$OMP         temp1,temp2,temp3,dxl,dxr,dxc,dql,dqr,dqc,dqqx,wwc_w, &
      !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
 
-              do l=1,3
-                 ww(1,l) = ro(i-2+l,j,k)
-                 ww(2,l) = vx(i-2+l,j,k)
-                 ww(3,l) = vy(i-2+l,j,k)
-                 ww(4,l) = vz(i-2+l,j,k)
-                 ww(5,l) = pr(i-2+l,j,k)
-                 ww(6,l) = bx(i-2+l,j,k)
-                 ww(7,l) = by(i-2+l,j,k)
-                 ww(8,l) = bz(i-2+l,j,k)
-                 ww(9,l) = phi(i-2+l,j,k)
-              end do
-              ro1 = ww(1,2)
-              vx1 = ww(2,2)
-              vy1 = ww(3,2)
-              vz1 = ww(4,2)
-              pr1 = ww(5,2)
-              bx1 = ww(6,2)
-              by1 = ww(7,2)
-              bz1 = ww(8,2)
-              phi1 = ww(9,2)
+              ww(1,1) = ro(i-1,j,k)
+              ww(2,1) = vx(i-1,j,k)
+              ww(3,1) = vy(i-1,j,k)
+              ww(4,1) = vz(i-1,j,k)
+              ww(5,1) = pr(i-1,j,k)
+              ww(6,1) = bx(i-1,j,k)
+              ww(7,1) = by(i-1,j,k)
+              ww(8,1) = bz(i-1,j,k)
+              ww(9,1) = phi(i-1,j,k)
+              ww(1,2) = ro(i,j,k)
+              ww(2,2) = vx(i,j,k)
+              ww(3,2) = vy(i,j,k)
+              ww(4,2) = vz(i,j,k)
+              ww(5,2) = pr(i,j,k)
+              ww(6,2) = bx(i,j,k)
+              ww(7,2) = by(i,j,k)
+              ww(8,2) = bz(i,j,k)
+              ww(9,2) = phi(i,j,k)
+              ww(1,3) = ro(i+1,j,k)
+              ww(2,3) = vx(i+1,j,k)
+              ww(3,3) = vy(i+1,j,k)
+              ww(4,3) = vz(i+1,j,k)
+              ww(5,3) = pr(i+1,j,k)
+              ww(6,3) = bx(i+1,j,k)
+              ww(7,3) = by(i+1,j,k)
+              ww(8,3) = bz(i+1,j,k)
+              ww(9,3) = phi(i+1,j,k)
 
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
+              call esystem_glmmhd(lem,rem,ww(1,2),ww(5,2),ww(6,2),ww(7,2),ww(8,2),gm)
 
-              do l=1,3
+              l=1
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
 
                  temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
@@ -198,10 +104,55 @@ contains
                  temp2 = ich*ww(9,l) 
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
-              enddo
+
+              l=2
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+              l=3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
               
               !MUSCL
-              do n=1,nwave
+              n=1
                  dxl = 0.5d0*(dx(i)+dx(i-1))
                  dxr = 0.5d0*(dx(i+1)+dx(i))
                  dxc = dxl+dxr
@@ -216,7 +167,134 @@ contains
                  wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
                  !left-hand right-state
                  wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
-              end do
+
+              n=2
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=3
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=4
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=5
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=6
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=7
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=8
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
+
+              n=9
+                 dxl = 0.5d0*(dx(i)+dx(i-1))
+                 dxr = 0.5d0*(dx(i+1)+dx(i))
+                 dxc = dxl+dxr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dxl
+                 dqr = (wwc(n,3)-wwc(n,2))/dxr
+                 dqc = (wwc(n,3)-wwc(n,1))/dxc
+
+                 dqqx = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqx*dx(i)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqx*dx(i)
 
               ! characteristic to primitive
               temp1 = wwc_w(1,1)-wwc_w(8,1)
@@ -256,67 +334,74 @@ contains
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3))
               prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3))
-              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              minvalue = min(minvalue,ww(1,2)-romaxvalue*floor,ww(5,2)-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
 
-              row(i-1,j,k,2) = qql(1)*psmv + ro1*msmv
-              row(i  ,j,k,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i-1,j,k,2) = qql(2)*psmv + vx1*msmv
-              vxw(i  ,j,k,1) = qqr(2)*psmv + vx1*msmv
+              row(i-1,j,k,2) = qql(1)*psmv + ww(1,2)*msmv
+              row(i  ,j,k,1) = qqr(1)*psmv + ww(1,2)*msmv
+              vxw(i-1,j,k,2) = qql(2)*psmv + ww(2,2)*msmv
+              vxw(i  ,j,k,1) = qqr(2)*psmv + ww(2,2)*msmv
               vyw(i-1,j,k,2) = qql(3)
               vyw(i  ,j,k,1) = qqr(3)
               vzw(i-1,j,k,2) = qql(4)
               vzw(i  ,j,k,1) = qqr(4)
-              prw(i-1,j,k,2) = qql(5)*psmv + pr1*msmv
-              prw(i  ,j,k,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i-1,j,k,2) = qql(6)*psmv + bx1*msmv
-              bxw(i  ,j,k,1) = qqr(6)*psmv + bx1*msmv
+              prw(i-1,j,k,2) = qql(5)*psmv + ww(5,2)*msmv
+              prw(i  ,j,k,1) = qqr(5)*psmv + ww(5,2)*msmv
+              bxw(i-1,j,k,2) = qql(6)*psmv + ww(6,2)*msmv
+              bxw(i  ,j,k,1) = qqr(6)*psmv + ww(6,2)*msmv
               byw(i-1,j,k,2) = qql(7)
               byw(i  ,j,k,1) = qqr(7)
               bzw(i-1,j,k,2) = qql(8)
               bzw(i  ,j,k,1) = qqr(8)
-              phiw(i-1,j,k,2) = qql(9)*psmv + phi1*msmv
-              phiw(i  ,j,k,1) = qqr(9)*psmv + phi1*msmv
+              phiw(i-1,j,k,2) = qql(9)*psmv + ww(9,2)*msmv
+              phiw(i  ,j,k,1) = qqr(9)*psmv + ww(9,2)*msmv
            end do
         end do
      end do
 !$OMP END PARALLEL DO
   else if(mdir == 2)then
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,n,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
-     !$OMP         temp1,temp2,temp3,dyl,dyr,dyc,dql,dqr,dqc,dqqy,wwc_w,       &
+     !$OMP PRIVATE(i,j,n,l,ww,lem,rem,wwc,                               &
+     !$OMP         temp1,temp2,temp3,dyl,dyr,dyc,dql,dqr,dqc,dqqy,wwc_w, &
      !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
 
-              do l=1,3
-                 ww(1,l) = ro(i,j-2+l,k)
-                 ww(2,l) = vx(i,j-2+l,k)
-                 ww(3,l) = vy(i,j-2+l,k)
-                 ww(4,l) = vz(i,j-2+l,k)
-                 ww(5,l) = pr(i,j-2+l,k)
-                 ww(6,l) = bx(i,j-2+l,k)
-                 ww(7,l) = by(i,j-2+l,k)
-                 ww(8,l) = bz(i,j-2+l,k)
-                 ww(9,l) = phi(i,j-2+l,k)
-              end do
-              ro1 = ww(1,2)
-              vx1 = ww(2,2)
-              vy1 = ww(3,2)
-              vz1 = ww(4,2)
-              pr1 = ww(5,2)
-              bx1 = ww(6,2)
-              by1 = ww(7,2)
-              bz1 = ww(8,2)
-              phi1 = ww(9,2)
+              ww(1,1) = ro(i,j-1,k)
+              ww(2,1) = vx(i,j-1,k)
+              ww(3,1) = vy(i,j-1,k)
+              ww(4,1) = vz(i,j-1,k)
+              ww(5,1) = pr(i,j-1,k)
+              ww(6,1) = bx(i,j-1,k)
+              ww(7,1) = by(i,j-1,k)
+              ww(8,1) = bz(i,j-1,k)
+              ww(9,1) = phi(i,j-1,k)
+              ww(1,2) = ro(i,j,k)
+              ww(2,2) = vx(i,j,k)
+              ww(3,2) = vy(i,j,k)
+              ww(4,2) = vz(i,j,k)
+              ww(5,2) = pr(i,j,k)
+              ww(6,2) = bx(i,j,k)
+              ww(7,2) = by(i,j,k)
+              ww(8,2) = bz(i,j,k)
+              ww(9,2) = phi(i,j,k)
+              ww(1,3) = ro(i,j+1,k)
+              ww(2,3) = vx(i,j+1,k)
+              ww(3,3) = vy(i,j+1,k)
+              ww(4,3) = vz(i,j+1,k)
+              ww(5,3) = pr(i,j+1,k)
+              ww(6,3) = bx(i,j+1,k)
+              ww(7,3) = by(i,j+1,k)
+              ww(8,3) = bz(i,j+1,k)
+              ww(9,3) = phi(i,j+1,k)
               
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
+              call esystem_glmmhd(lem,rem,ww(1,2),ww(5,2),ww(6,2),ww(7,2),ww(8,2),gm)
 
-              do l=1,3
+              l=1
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
 
                  temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
@@ -338,10 +423,55 @@ contains
                  temp2 = ich*ww(9,l) 
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
-              enddo
+
+              l=2
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+              l=3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
 
               !MUSCL
-              do n=1,nwave
+              n=1
                  dyl = 0.5d0*(dy(j)+dy(j-1))
                  dyr = 0.5d0*(dy(j+1)+dy(j))
                  dyc = dyl+dyr
@@ -356,8 +486,135 @@ contains
                  wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
                  !left-hand right-state
                  wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
-              end do
               
+              n=2
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=3
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=4
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=5
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=6
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=7
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=8
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
+              n=9
+                 dyl = 0.5d0*(dy(j)+dy(j-1))
+                 dyr = 0.5d0*(dy(j+1)+dy(j))
+                 dyc = dyl+dyr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dyl
+                 dqr = (wwc(n,3)-wwc(n,2))/dyr
+                 dqc = (wwc(n,3)-wwc(n,1))/dyc
+
+                 dqqy = MC2(2.*dqr,2.*dql,dqc)
+
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqy*dy(j)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqy*dy(j)
+
               ! characteristic to primitive
               temp1 = wwc_w(1,1)-wwc_w(8,1)
               temp2 = wwc_w(2,1)-wwc_w(7,1)
@@ -396,67 +653,74 @@ contains
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3))
               prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3))
-              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              minvalue = min(minvalue,ww(1,2)-romaxvalue*floor,ww(5,2)-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
 
-              row(i,j-1,k,2) = qql(1)*psmv + ro1*msmv
-              row(i,j  ,k,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j-1,k,2) = qql(2)*psmv + vx1*msmv
-              vxw(i,j  ,k,1) = qqr(2)*psmv + vx1*msmv
+              row(i,j-1,k,2) = qql(1)*psmv + ww(1,2)*msmv
+              row(i,j  ,k,1) = qqr(1)*psmv + ww(1,2)*msmv
+              vxw(i,j-1,k,2) = qql(2)*psmv + ww(2,2)*msmv
+              vxw(i,j  ,k,1) = qqr(2)*psmv + ww(2,2)*msmv
               vyw(i,j-1,k,2) = qql(3)
               vyw(i,j  ,k,1) = qqr(3)
               vzw(i,j-1,k,2) = qql(4)
               vzw(i,j  ,k,1) = qqr(4)
-              prw(i,j-1,k,2) = qql(5)*psmv + pr1*msmv
-              prw(i,j  ,k,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j-1,k,2) = qql(6)*psmv + bx1*msmv
-              bxw(i,j  ,k,1) = qqr(6)*psmv + bx1*msmv
+              prw(i,j-1,k,2) = qql(5)*psmv + ww(5,2)*msmv
+              prw(i,j  ,k,1) = qqr(5)*psmv + ww(5,2)*msmv
+              bxw(i,j-1,k,2) = qql(6)*psmv + ww(6,2)*msmv
+              bxw(i,j  ,k,1) = qqr(6)*psmv + ww(6,2)*msmv
               byw(i,j-1,k,2) = qql(7)
               byw(i,j  ,k,1) = qqr(7)
               bzw(i,j-1,k,2) = qql(8)
               bzw(i,j  ,k,1) = qqr(8)
-              phiw(i,j-1,k,2) = qql(9)*psmv + phi1*msmv
-              phiw(i,j  ,k,1) = qqr(9)*psmv + phi1*msmv
+              phiw(i,j-1,k,2) = qql(9)*psmv + ww(9,2)*msmv
+              phiw(i,j  ,k,1) = qqr(9)*psmv + ww(9,2)*msmv
            end do
         end do
      end do
      !$OMP END PARALLEL DO
   else
      !$OMP PARALLEL DO &
-     !$OMP PRIVATE(i,j,n,l,ww,ro1,vx1,vy1,vz1,pr1,bx1,by1,bz1,phi1,lem,rem,wwc,&
-     !$OMP         temp1,temp2,temp3,dzl,dzr,dzc,dql,dqr,dqc,dqqz,wwc_w,       &
+     !$OMP PRIVATE(i,j,n,l,ww,lem,rem,wwc,                               &
+     !$OMP         temp1,temp2,temp3,dzl,dzr,dzc,dql,dqr,dqc,dqqz,wwc_w, &
      !$OMP         qql,qqr,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=2,kx-1
         do j=2,jx-1
            do i=2,ix-1
 
-              do l=1,3
-                 ww(1,l) = ro(i,j,k-2+l)
-                 ww(2,l) = vx(i,j,k-2+l)
-                 ww(3,l) = vy(i,j,k-2+l)
-                 ww(4,l) = vz(i,j,k-2+l)
-                 ww(5,l) = pr(i,j,k-2+l)
-                 ww(6,l) = bx(i,j,k-2+l)
-                 ww(7,l) = by(i,j,k-2+l)
-                 ww(8,l) = bz(i,j,k-2+l)
-                 ww(9,l) = phi(i,j,k-2+l)
-              end do
-              ro1 = ww(1,2)
-              vx1 = ww(2,2)
-              vy1 = ww(3,2)
-              vz1 = ww(4,2)
-              pr1 = ww(5,2)
-              bx1 = ww(6,2)
-              by1 = ww(7,2)
-              bz1 = ww(8,2)
-              phi1 = ww(9,2)
+              ww(1,1) = ro(i,j,k-1)
+              ww(2,1) = vx(i,j,k-1)
+              ww(3,1) = vy(i,j,k-1)
+              ww(4,1) = vz(i,j,k-1)
+              ww(5,1) = pr(i,j,k-1)
+              ww(6,1) = bx(i,j,k-1)
+              ww(7,1) = by(i,j,k-1)
+              ww(8,1) = bz(i,j,k-1)
+              ww(9,1) = phi(i,j,k-1)
+              ww(1,2) = ro(i,j,k)
+              ww(2,2) = vx(i,j,k)
+              ww(3,2) = vy(i,j,k)
+              ww(4,2) = vz(i,j,k)
+              ww(5,2) = pr(i,j,k)
+              ww(6,2) = bx(i,j,k)
+              ww(7,2) = by(i,j,k)
+              ww(8,2) = bz(i,j,k)
+              ww(9,2) = phi(i,j,k)
+              ww(1,3) = ro(i,j,k+1)
+              ww(2,3) = vx(i,j,k+1)
+              ww(3,3) = vy(i,j,k+1)
+              ww(4,3) = vz(i,j,k+1)
+              ww(5,3) = pr(i,j,k+1)
+              ww(6,3) = bx(i,j,k+1)
+              ww(7,3) = by(i,j,k+1)
+              ww(8,3) = bz(i,j,k+1)
+              ww(9,3) = phi(i,j,k+1)
               
               ! primitive to characteristic
-              call esystem_glmmhd(lem,rem,ro1,pr1,bx1,by1,bz1,gm)
+              call esystem_glmmhd(lem,rem,ww(1,2),ww(5,2),ww(6,2),ww(7,2),ww(8,2),gm)
 
-              do l=1,3
+              l=1
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
 
                  temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
@@ -478,10 +742,55 @@ contains
                  temp2 = ich*ww(9,l) 
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
-              enddo
+
+              l=2
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+              l=3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
 
               !MUSCL
-              do n=1,nwave
+              n=1
                  dzl = 0.5d0*(dz(k)+dz(k-1))
                  dzr = 0.5d0*(dz(k+1)+dz(k))
                  dzc = dzl+dzr
@@ -496,8 +805,135 @@ contains
                  wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
                  !left-hand right-state
                  wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
-              end do
               
+              n=2
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=3
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=4
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=5
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=6
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=7
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=8
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
+              n=9
+                 dzl = 0.5d0*(dz(k)+dz(k-1))
+                 dzr = 0.5d0*(dz(k+1)+dz(k))
+                 dzc = dzl+dzr
+
+                 dql = (wwc(n,2)-wwc(n,1))/dzl
+                 dqr = (wwc(n,3)-wwc(n,2))/dzr
+                 dqc = (wwc(n,3)-wwc(n,1))/dzc
+
+                 dqqz = MC2(2.*dqr,2.*dql,dqc)
+              
+                 !right-hand left-state
+                 wwc_w(n,1) = wwc(n,2) + 0.5d0*dqqz*dz(k)
+                 !left-hand right-state
+                 wwc_w(n,2) = wwc(n,2) - 0.5d0*dqqz*dz(k)
+
               ! characteristic to primitive
               temp1 = wwc_w(1,1)-wwc_w(8,1)
               temp2 = wwc_w(2,1)-wwc_w(7,1)
@@ -536,29 +972,29 @@ contains
               minvalue = min(qql(1),qqr(1),qql(5),qqr(5))
               romaxvalue = max(ww(1,1),ww(1,2),ww(1,3))
               prmaxvalue = max(ww(5,1),ww(5,2),ww(5,3))
-              minvalue = min(minvalue,ro1-romaxvalue*floor,pr1-prmaxvalue*floor)
+              minvalue = min(minvalue,ww(1,2)-romaxvalue*floor,ww(5,2)-prmaxvalue*floor)
               smv = sign(1d0,minvalue)
               psmv = max(0d0,smv)
               msmv = max(0d0,-smv)
 
-              row(i,j,k-1,2) = qql(1)*psmv + ro1*msmv
-              row(i,j,k  ,1) = qqr(1)*psmv + ro1*msmv
-              vxw(i,j,k-1,2) = qql(2)*psmv + vx1*msmv
-              vxw(i,j,k  ,1) = qqr(2)*psmv + vx1*msmv
+              row(i,j,k-1,2) = qql(1)*psmv + ww(1,2)*msmv
+              row(i,j,k  ,1) = qqr(1)*psmv + ww(1,2)*msmv
+              vxw(i,j,k-1,2) = qql(2)*psmv + ww(2,2)*msmv
+              vxw(i,j,k  ,1) = qqr(2)*psmv + ww(2,2)*msmv
               vyw(i,j,k-1,2) = qql(3)
               vyw(i,j,k  ,1) = qqr(3)
               vzw(i,j,k-1,2) = qql(4)
               vzw(i,j,k  ,1) = qqr(4)
-              prw(i,j,k-1,2) = qql(5)*psmv + pr1*msmv
-              prw(i,j,k  ,1) = qqr(5)*psmv + pr1*msmv
-              bxw(i,j,k-1,2) = qql(6)*psmv + bx1*msmv
-              bxw(i,j,k  ,1) = qqr(6)*psmv + bx1*msmv
+              prw(i,j,k-1,2) = qql(5)*psmv + ww(5,2)*msmv
+              prw(i,j,k  ,1) = qqr(5)*psmv + ww(5,2)*msmv
+              bxw(i,j,k-1,2) = qql(6)*psmv + ww(6,2)*msmv
+              bxw(i,j,k  ,1) = qqr(6)*psmv + ww(6,2)*msmv
               byw(i,j,k-1,2) = qql(7)
               byw(i,j,k  ,1) = qqr(7)
               bzw(i,j,k-1,2) = qql(8)
               bzw(i,j,k  ,1) = qqr(8)
-              phiw(i,j,k-1,2) = qql(9)*psmv + phi1*msmv
-              phiw(i,j,k  ,1) = qqr(9)*psmv + phi1*msmv
+              phiw(i,j,k-1,2) = qql(9)*psmv + ww(9,2)*msmv
+              phiw(i,j,k  ,1) = qqr(9)*psmv + ww(9,2)*msmv
            end do
         end do
      end do
@@ -592,6 +1028,7 @@ contains
 !----parameter
   real(8),parameter :: B2 = 1.333333333333
   real(8),parameter :: Alpha = 4.0d0
+  real(8),parameter :: Epsm = 0.0000000001d0
 
 !----function
   integer :: i,j,k,l,n
@@ -612,22 +1049,43 @@ contains
      !$OMP         qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
         do j=3,jx-2
-           ww(1,2:5) = ro(1:4,j,k)
-           ww(2,2:5) = vx(1:4,j,k)
-           ww(3,2:5) = vy(1:4,j,k)
-           ww(4,2:5) = vz(1:4,j,k)
-           ww(5,2:5) = pr(1:4,j,k)
-           ww(6,2:5) = bx(1:4,j,k)
-           ww(7,2:5) = by(1:4,j,k)
-           ww(8,2:5) = bz(1:4,j,k)
-           ww(9,2:5) = phi(1:4,j,k)
            do i=3,ix-2
-
-              ww(1:9,1) = ww(1:9,2)
-              ww(1:9,2) = ww(1:9,3)
-              ww(1:9,3) = ww(1:9,4)
-              ww(1:9,4) = ww(1:9,5)
-
+              ww(1,1) = ro(i-2,j,k)
+              ww(2,1) = vx(i-2,j,k)
+              ww(3,1) = vy(i-2,j,k)
+              ww(4,1) = vz(i-2,j,k)
+              ww(5,1) = pr(i-2,j,k)
+              ww(6,1) = bx(i-2,j,k)
+              ww(7,1) = by(i-2,j,k)
+              ww(8,1) = bz(i-2,j,k)
+              ww(9,1) = phi(i-2,j,k)
+              ww(1,2) = ro(i-1,j,k)
+              ww(2,2) = vx(i-1,j,k)
+              ww(3,2) = vy(i-1,j,k)
+              ww(4,2) = vz(i-1,j,k)
+              ww(5,2) = pr(i-1,j,k)
+              ww(6,2) = bx(i-1,j,k)
+              ww(7,2) = by(i-1,j,k)
+              ww(8,2) = bz(i-1,j,k)
+              ww(9,2) = phi(i-1,j,k)
+              ww(1,3) = ro(i,j,k)
+              ww(2,3) = vx(i,j,k)
+              ww(3,3) = vy(i,j,k)
+              ww(4,3) = vz(i,j,k)
+              ww(5,3) = pr(i,j,k)
+              ww(6,3) = bx(i,j,k)
+              ww(7,3) = by(i,j,k)
+              ww(8,3) = bz(i,j,k)
+              ww(9,3) = phi(i,j,k)
+              ww(1,4) = ro(i+1,j,k)
+              ww(2,4) = vx(i+1,j,k)
+              ww(3,4) = vy(i+1,j,k)
+              ww(4,4) = vz(i+1,j,k)
+              ww(5,4) = pr(i+1,j,k)
+              ww(6,4) = bx(i+1,j,k)
+              ww(7,4) = by(i+1,j,k)
+              ww(8,4) = bz(i+1,j,k)
+              ww(9,4) = phi(i+1,j,k)
               ww(1,5) = ro(i+2,j,k)
               ww(2,5) = vx(i+2,j,k)
               ww(3,5) = vy(i+2,j,k)
@@ -641,7 +1099,7 @@ contains
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ww(1,3),ww(5,3),ww(6,3),ww(7,3),ww(8,3),gm)
 
-              do l=1,5
+               l=1
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
 
                  temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
@@ -663,11 +1121,101 @@ contains
                  temp2 = ich*ww(9,l) 
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
-              enddo
 
-              ! mp5
-              do n=1,nwave
-                 !right-hand left state
+               l=2
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=4
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=5
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+!              ! mp5
+               n=1
                  wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
                       + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
                       + ccx(5,2,i)*wwc(n,5))
@@ -699,7 +1247,270 @@ contains
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
                  wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-              end do
+
+               n=2
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=3
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=4
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=5
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=6
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=7
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=8
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=9
+                 wwor = (ccx(1,2,i)*wwc(n,1)+ccx(2,2,i)*wwc(n,2) &
+                      + ccx(3,2,i)*wwc(n,3) + ccx(4,2,i)*wwc(n,4) &
+                      + ccx(5,2,i)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccx(5,1,i)*wwc(n,5)+ccx(4,1,i)*wwc(n,4) &
+                      + ccx(3,1,i)*wwc(n,3) + ccx(2,1,i)*wwc(n,2) &
+                      + ccx(1,1,i)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
               ! characteristic to primitive
               temp1 = wwc_w(1,1)-wwc_w(8,1)
@@ -772,22 +1583,44 @@ contains
      !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
      !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
      do k=3,kx-2
-        do i=3,ix-2
-           ww(1,2:5) = ro(i,1:4,k)
-           ww(2,2:5) = vx(i,1:4,k)
-           ww(3,2:5) = vy(i,1:4,k)
-           ww(4,2:5) = vz(i,1:4,k)
-           ww(5,2:5) = pr(i,1:4,k)
-           ww(6,2:5) = bx(i,1:4,k)
-           ww(7,2:5) = by(i,1:4,k)
-           ww(8,2:5) = bz(i,1:4,k)
-           ww(9,2:5) = phi(i,1:4,k)
-           do j=3,jx-2
-              ww(1:9,1) = ww(1:9,2)
-              ww(1:9,2) = ww(1:9,3)
-              ww(1:9,3) = ww(1:9,4)
-              ww(1:9,4) = ww(1:9,5)
-
+       do j=3,jx-2 
+           do i=3,ix-2
+              ww(1,1) = ro(i,j-2,k)
+              ww(2,1) = vx(i,j-2,k)
+              ww(3,1) = vy(i,j-2,k)
+              ww(4,1) = vz(i,j-2,k)
+              ww(5,1) = pr(i,j-2,k)
+              ww(6,1) = bx(i,j-2,k)
+              ww(7,1) = by(i,j-2,k)
+              ww(8,1) = bz(i,j-2,k)
+              ww(9,1) = phi(i,j-2,k)
+              ww(1,2) = ro(i,j-1,k)
+              ww(2,2) = vx(i,j-1,k)
+              ww(3,2) = vy(i,j-1,k)
+              ww(4,2) = vz(i,j-1,k)
+              ww(5,2) = pr(i,j-1,k)
+              ww(6,2) = bx(i,j-1,k)
+              ww(7,2) = by(i,j-1,k)
+              ww(8,2) = bz(i,j-1,k)
+              ww(9,2) = phi(i,j-1,k)
+              ww(1,3) = ro(i,j,k)
+              ww(2,3) = vx(i,j,k)
+              ww(3,3) = vy(i,j,k)
+              ww(4,3) = vz(i,j,k)
+              ww(5,3) = pr(i,j,k)
+              ww(6,3) = bx(i,j,k)
+              ww(7,3) = by(i,j,k)
+              ww(8,3) = bz(i,j,k)
+              ww(9,3) = phi(i,j,k)
+              ww(1,4) = ro(i,j+1,k)
+              ww(2,4) = vx(i,j+1,k)
+              ww(3,4) = vy(i,j+1,k)
+              ww(4,4) = vz(i,j+1,k)
+              ww(5,4) = pr(i,j+1,k)
+              ww(6,4) = bx(i,j+1,k)
+              ww(7,4) = by(i,j+1,k)
+              ww(8,4) = bz(i,j+1,k)
+              ww(9,4) = phi(i,j+1,k)
               ww(1,5) = ro(i,j+2,k)
               ww(2,5) = vx(i,j+2,k)
               ww(3,5) = vy(i,j+2,k)
@@ -801,7 +1634,7 @@ contains
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ww(1,3),ww(5,3),ww(6,3),ww(7,3),ww(8,3),gm)
 
-              do l=1,5
+               l=1
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
 
                  temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
@@ -823,11 +1656,101 @@ contains
                  temp2 = ich*ww(9,l) 
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
-              enddo
+
+               l=2
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=4
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=5
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
 
               ! mp5
-              do n=1,nwave
-                 ! left state
+               n=1
                  wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
                       + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
                       + ccy(5,2,j)*wwc(n,5))
@@ -838,17 +1761,16 @@ contains
                  
                  dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
-                 
+
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
                  qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-
                  wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-                 
-                 ! right state
+
+                 !left-hand right state
                  wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
                       + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
                       + ccy(1,1,j)*wwc(n,1))
@@ -859,9 +1781,271 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 
                  wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-              end do
+
+               n=2
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=3
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=4
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=5
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=6
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=7
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=8
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=9
+                 wwor = (ccy(1,2,j)*wwc(n,1)+ccy(2,2,j)*wwc(n,2) &
+                      + ccy(3,2,j)*wwc(n,3) + ccy(4,2,j)*wwc(n,4) &
+                      + ccy(5,2,j)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccy(5,1,j)*wwc(n,5)+ccy(4,1,j)*wwc(n,4) &
+                      + ccy(3,1,j)*wwc(n,3) + ccy(2,1,j)*wwc(n,2) &
+                      + ccy(1,1,j)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               
               ! characteristic to primitive
               temp1 = wwc_w(1,1)-wwc_w(8,1)
@@ -933,23 +2117,45 @@ contains
      !$OMP PRIVATE(i,j,l,ww,lem,rem,wwc,&
      !$OMP         temp1,temp2,n,wwor,djm1,dj,djp1,dm4jph,dm4jmh,qqul,qqmd,qqlc,qqmin,qqmax,&
      !$OMP         wwc_w,qqlr,temp3,qqr,qql,minvalue,romaxvalue,prmaxvalue,smv,psmv,msmv)
-     do j=3,jx-2
-        do i=3,ix-2
-           ww(1,2:5) = ro(i,j,1:4)
-           ww(2,2:5) = vx(i,j,1:4)
-           ww(3,2:5) = vy(i,j,1:4)
-           ww(4,2:5) = vz(i,j,1:4)
-           ww(5,2:5) = pr(i,j,1:4)
-           ww(6,2:5) = bx(i,j,1:4)
-           ww(7,2:5) = by(i,j,1:4)
-           ww(8,2:5) = bz(i,j,1:4)
-           ww(9,2:5) = phi(i,j,1:4)
-           do k=3,kx-2
-              ww(1:9,1) = ww(1:9,2)
-              ww(1:9,2) = ww(1:9,3)
-              ww(1:9,3) = ww(1:9,4)
-              ww(1:9,4) = ww(1:9,5)
-
+     do k=3,kx-2
+        do j=3,jx-2
+           do i=3,ix-2
+              ww(1,1) = ro(i,j,k-2)
+              ww(2,1) = vx(i,j,k-2)
+              ww(3,1) = vy(i,j,k-2)
+              ww(4,1) = vz(i,j,k-2)
+              ww(5,1) = pr(i,j,k-2)
+              ww(6,1) = bx(i,j,k-2)
+              ww(7,1) = by(i,j,k-2)
+              ww(8,1) = bz(i,j,k-2)
+              ww(9,1) = phi(i,j,k-2)
+              ww(1,2) = ro(i,j,k-1)
+              ww(2,2) = vx(i,j,k-1)
+              ww(3,2) = vy(i,j,k-1)
+              ww(4,2) = vz(i,j,k-1)
+              ww(5,2) = pr(i,j,k-1)
+              ww(6,2) = bx(i,j,k-1)
+              ww(7,2) = by(i,j,k-1)
+              ww(8,2) = bz(i,j,k-1)
+              ww(9,2) = phi(i,j,k-1)
+              ww(1,3) = ro(i,j,k)
+              ww(2,3) = vx(i,j,k)
+              ww(3,3) = vy(i,j,k)
+              ww(4,3) = vz(i,j,k)
+              ww(5,3) = pr(i,j,k)
+              ww(6,3) = bx(i,j,k)
+              ww(7,3) = by(i,j,k)
+              ww(8,3) = bz(i,j,k)
+              ww(9,3) = phi(i,j,k)
+              ww(1,4) = ro(i,j,k+1)
+              ww(2,4) = vx(i,j,k+1)
+              ww(3,4) = vy(i,j,k+1)
+              ww(4,4) = vz(i,j,k+1)
+              ww(5,4) = pr(i,j,k+1)
+              ww(6,4) = bx(i,j,k+1)
+              ww(7,4) = by(i,j,k+1)
+              ww(8,4) = bz(i,j,k+1)
+              ww(9,4) = phi(i,j,k+1)
               ww(1,5) = ro(i,j,k+2)
               ww(2,5) = vx(i,j,k+2)
               ww(3,5) = vy(i,j,k+2)
@@ -963,7 +2169,7 @@ contains
               ! primitive to characteristic
               call esystem_glmmhd(lem,rem,ww(1,3),ww(5,3),ww(6,3),ww(7,3),ww(8,3),gm)
 
-              do l=1,5
+               l=1
                  wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
 
                  temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
@@ -985,11 +2191,101 @@ contains
                  temp2 = ich*ww(9,l) 
                  wwc(6,l) = temp1 - temp2
                  wwc(9,l) = temp1 + temp2
-              enddo
+
+               l=2
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=3
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=4
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
+
+               l=5
+                 wwc(4,l) = ww(1,l)+lem(4,5)*ww(5,l)
+
+                 temp1 = lem(1,2)*ww(2,l) + lem(1,3)*ww(3,l) + lem(1,4)*ww(4,l)
+                 temp2 = lem(1,5)*ww(5,l) + lem(1,7)*ww(7,l) + lem(1,8)*ww(8,l)
+                 wwc(1,l) = temp1 + temp2
+                 wwc(8,l) = -temp1 + temp2
+
+                 temp1 = lem(2,3)*ww(3,l) + lem(2,4)*ww(4,l)
+                 temp2 = lem(2,7)*ww(7,l) + lem(2,8)*ww(8,l)
+                 wwc(2,l) = temp1 + temp2
+                 wwc(7,l) = -temp1 + temp2
+                      
+                 temp1 = lem(3,2)*ww(2,l) + lem(3,3)*ww(3,l) + lem(3,4)*ww(4,l)
+                 temp2 = lem(3,5)*ww(5,l) + lem(3,7)*ww(7,l) + lem(3,8)*ww(8,l)
+                 wwc(3,l) = temp1 +temp2
+                 wwc(5,l) = -temp1 + temp2
+                 
+                 temp1 = 0.5d0*ww(6,l)
+                 temp2 = ich*ww(9,l) 
+                 wwc(6,l) = temp1 - temp2
+                 wwc(9,l) = temp1 + temp2
 
               ! mp5
-              do n=1,nwave
-                 ! left state
+               n=1
                  wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
                       + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
                       + ccz(5,2,k)*wwc(n,5))
@@ -1000,17 +2296,16 @@ contains
                  
                  dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
                  dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
-                 
+
                  qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
                  qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
                  qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
                  
                  qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
-
                  wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
 
-              ! right state
+                 !left-hand right state
                  wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
                       + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
                       + ccz(1,1,k)*wwc(n,1))
@@ -1021,9 +2316,271 @@ contains
                  
                  qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
                  qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
-                 
                  wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
-              end do
+
+               n=2
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=3
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=4
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=5
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=6
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=7
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=8
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+               n=9
+                 wwor = (ccz(1,2,k)*wwc(n,1)+ccz(2,2,k)*wwc(n,2) &
+                      + ccz(3,2,k)*wwc(n,3) + ccz(4,2,k)*wwc(n,4) &
+                      + ccz(5,2,k)*wwc(n,5))
+
+                 djm1 = wwc(n,1)-2.0d0*wwc(n,2)+wwc(n,3)
+                 dj = wwc(n,2)-2.0d0*wwc(n,3)+wwc(n,4)
+                 djp1 = wwc(n,3)-2.0d0*wwc(n,4)+wwc(n,5)
+                 
+                 dm4jph = minmod4(4.0d0*dj-djp1,4.0d0*djp1-dj,dj,djp1)
+                 dm4jmh = minmod4(4.0d0*dj-djm1,4.0d0*djm1-dj,dj,djm1)
+
+                 qqul = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,2))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,4) - dm4jph)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,2)) + B2*dm4jmh
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,4),qqmd),min(wwc(n,3),qqul,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,4),qqmd),max(wwc(n,3),qqul,qqlc))
+                 wwc_w(n,1) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
+
+                 !left-hand right state
+                 wwor = (ccz(5,1,k)*wwc(n,5)+ccz(4,1,k)*wwc(n,4) &
+                      + ccz(3,1,k)*wwc(n,3) + ccz(2,1,k)*wwc(n,2) &
+                      + ccz(1,1,k)*wwc(n,1))
+
+                 qqlr = wwc(n,3)+Alpha*(wwc(n,3)-wwc(n,4))
+                 qqmd = 0.5d0*(wwc(n,3)+wwc(n,2) - dm4jmh)
+                 qqlc = wwc(n,3) + 0.5d0*(wwc(n,3)-wwc(n,4)) + B2*dm4jph
+                 
+                 qqmin = max(min(wwc(n,3),wwc(n,2),qqmd),min(wwc(n,3),qqlr,qqlc))
+                 qqmax = min(max(wwc(n,3),wwc(n,2),qqmd),max(wwc(n,3),qqlr,qqlc))
+                 wwc_w(n,2) = wwor + minmod((qqmin-wwor),(qqmax-wwor))
               
               ! characteristic to primitive
               temp1 = wwc_w(1,1)-wwc_w(8,1)
@@ -1331,30 +2888,31 @@ contains
   end subroutine esystem_glmmhd
 
 
-  real(8) function minmod(x,y)
-    real(8), intent(in) :: x,y
+  function minmod(x,y)
+    real(8) :: x, y, minmod
    
-    minmod = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(dabs(x),dabs(y))
-
+!    minmod = 0.5d0*(sign(1.0d0,x)+sign(1.0d0,y))*min(abs(x),abs(y))
+     minmod = min(0.0d0,max(x,y))+max(0.0d0,min(x,y))
+  
   end function minmod
 
 
-  real(8) function minmod4(d1,d2,d3,d4)
-    real(8), intent(in) :: d1,d2,d3,d4
-    real(8) :: sign1
+  function minmod4(d1,d2,d3,d4)
+    real(8) :: d1,d2,d3,d4,minmod4!,sign1
 
-    sign1 = sign(1d0,d1)
-    minmod4 = 0.125d0*(sign1+sign(1.0d0,d2)) &
-              *dabs( (sign1+sign(1.0d0,d3)) &
-                    *(sign1+sign(1.0d0,d4))) &
-              *min(dabs(d1),dabs(d2),dabs(d3),dabs(d4))
+     minmod4 = min(0.0d0,max(d1,d2,d3,d4))+max(0.0d0,min(d1,d2,d3,d4))
+!    sign1 = sign(1d0,d1)
+!    minmod4 = 0.125d0*(sign1+sign(1.0d0,d2)) &
+!              *abs( (sign1+sign(1.0d0,d3)) &
+!                    *(sign1+sign(1.0d0,d4))) &
+!              *min(abs(d1),abs(d2),abs(d3),abs(d4))
 
   end function minmod4
 
 
-  real(8) function MC2(qqr,qql,qqc)
+  function MC2(qqr,qql,qqc)
 
-    real(8), intent(in) :: qqr,qql,qqc
+    real(8) :: qqr,qql,qqc,MC2
 
     MC2 = minmod(qqc,minmod(qql,qqr))
 
