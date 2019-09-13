@@ -1,0 +1,288 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>磁気リコネクション &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="パーカー不安定" href="application_parker.html" />
+    <link rel="prev" title="ケルビン・ヘルムホルツ不安定" href="application_kh.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application_parker.html" title="パーカー不安定"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_kh.html" title="ケルビン・ヘルムホルツ不安定"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>磁気リコネクション<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>銭谷誠司（国立天文台）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>背景<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>磁気リコネクションは、MHD スケールで起きる物理素過程である。ただし、理想 MHD 条件</p>
+<div class="math" id="equation-ohm1">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-ohm1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/202d9f274a99d964edcefeaf93fc2cf5057c0fac.png" alt="\mbox{\boldmath$E$} + \mbox{\boldmath$v$} \times \mbox{\boldmath$B$} = 0"/></p>
+</div><p>のもとでは磁力線は繋ぎ代わることができない（ <a class="reference internal" href="reference.html#newcomb58"><span class="std std-ref">Newcomb, 1958</span></a> ）。MHD リコネクションではオームの法則に電気抵抗項を追加して磁力線の繋ぎ代えを許している。</p>
+<div class="math" id="equation-ohm2">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-ohm2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/88b305192ec832447ce8902a4b57417381f28b61.png" alt="\mbox{\boldmath$E$} + \mbox{\boldmath$v$} \times \mbox{\boldmath$B$} = \eta\mbox{\boldmath$j$}"/></p>
+</div><p>電気抵抗効果を組み入れた MHD 方程式系を抵抗性磁気流体（resistive MHD）方程式系と呼ぶ。</p>
+<p>磁気リコネクションの resistive MHD シミュレーションは、我が国の鵜飼ら（ <a class="reference internal" href="reference.html#ugai-tsuda77"><span class="std std-ref">Ugai &amp; Tsuda, 1977</span></a> ）が初めて計算を行なって以来、世界中で活発に研究されているテーマである。現在、リコネクションの非線形発展は、 <a class="reference internal" href="#equation-ohm2">(2)</a> 式の電気抵抗 <img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> の設定方法によって大きく異なることがわかっている。</p>
+<p>（１）抵抗 <img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> が空間的に一様であれば、遅い Sweet--Parker 型リコネクションが起きる。そして、系のサイズが大きな場合には、磁気島（プラズモイド）が多数現れるプラズモイド型リコネクションに遷移する（ <a class="reference internal" href="reference.html#loureiro07"><span class="std std-ref">Loureiro et al., 2007</span></a> ; <a class="reference internal" href="reference.html#bhattacharjee09"><span class="std std-ref">Bhattacharjee et al., 2009</span></a> ）。</p>
+<p>（２）抵抗 <img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> が空間的に局在化しているとリコネクションジェットの両側にスローショックを伴うPetschek 型リコネクションが起きる（ <a class="reference internal" href="reference.html#petschek64"><span class="std std-ref">Petschek, 1964</span></a> ）。また、例えば <img class="math" src="_images/math/a11fc0a2438b35e928fe8dc15c3bd1bfc251790c.png" alt="\eta = \alpha_0 \max(0, |j|-j_{\rm threshold})"/> のように電気抵抗を物理量の関数（電流密度 <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> や電流強度 <img class="math" src="_images/math/466fd7193e49c73577cfd0f292c5a00fc1561d26.png" alt="j/\rho"/> を用いるものが多い）にする流儀もあって、総称して異常抵抗モデルと呼ぶ。電流が強い領域では MHD で記述できない物理が作用して抵抗も強くなる、と仮定するわけだが、その際は関数形を正当化する必要がある。異常抵抗モデルでも、非線形発展の結果として抵抗の大きな領域が局在化し、Petschek リコネクションになることが多い（ <a class="reference internal" href="reference.html#scholer89"><span class="std std-ref">Scholer 1989</span></a> ; <a class="reference internal" href="reference.html#ugai92"><span class="std std-ref">Ugai 1992</span></a> ）。</p>
+</div>
+<div class="section" id="id3">
+<h2>課題設定<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><a class="reference internal" href="reference.html#zenitani-miyoshi11"><span class="std std-ref">Zenitani &amp; Miyoshi, 2011</span></a> （以降 ZM11 と呼ぶ）に倣って、座標系の原点付近にリコネクション点を置く。プラズマと電磁場の初期設定は以下の通りである。</p>
+<div class="math" id="equation-application-mrx-0">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-application-mrx-0" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d9e98125ef11d211f988b1874a9c4dd3361a5570.png" alt="\mbox{\boldmath$B$}(y) = B_0 \tanh(y/L) \mbox{\boldmath$\hat{x}$},"/></p>
+</div><div class="math" id="equation-application-mrx-1">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-application-mrx-1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/23ea5cd385873b560502610e32ceaf74035bfe67.png" alt="\mbox{\boldmath$v$}=0,"/></p>
+</div><div class="math" id="equation-application-mrx-2">
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-application-mrx-2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/b83a51e02ba5226f9ad14ab547497f853521d716.png" alt="\rho(y) = \rho_0 ( 1 + \cosh^{-2}(y/L)/ \beta_{up} ),"/></p>
+</div><div class="math" id="equation-application-mrx-3">
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-application-mrx-3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3ba29e7cfe275b199f0f477e97baa89f6a1dd8e1.png" alt="p(y) = p_0 ( \beta_{up} + \cosh^{-2}(y/L) ),"/></p>
+</div><p>である。磁場の向きが反転する真ん中領域では磁気圧が働かない。そこでプラズマを真ん中に多めに入れて、全体の圧力バランスが成り立つようにしている。 <img class="math" src="_images/math/96cd697d8f017a694cfa352a0c54cdf442283a95.png" alt="\beta_{up}"/> は、プラズマベータ（磁気圧に対するプラズマ圧力の比）を</p>
+<div class="math" id="equation-application-mrx-4">
+<p><span class="eqno">(7)<a class="headerlink" href="#equation-application-mrx-4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5b869d178690aca433acf02e231ffdf638359830.png" alt="\beta=\frac{2p}{B^2}"/></p>
+</div><p>上流領域で評価したものある。簡単のため、系全体で温度（ <img class="math" src="_images/math/6af0bacf393925672c4db06cde1d5926e559a1c8.png" alt="T=p/\rho"/> ）を一定にしている。規格化は次の通り：</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 52%" />
+<col style="width: 48%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/5709ef8b342315871f87ef5c3a2be565e2149021.png" alt="B_0"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/2e0a2207815dc8e9c912464d162b33334fe57f77.png" alt="\rho_0"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/19eef1966f7c545af3ac8c0fa486974d873e3c65.png" alt="L"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/8968e4fd6ebe2d668010ed37e2172340daaefa2d.png" alt="p_0"/></p></td>
+<td><p><img class="math" src="_images/math/b44fd1b6dc8c77975b68a57eb25231239a15d7b5.png" alt="0.5"/></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>こうすると上流アルヴェン速度が <img class="math" src="_images/math/d27eb4f6492bd39d869a28b03cec72d1d25b9507.png" alt="c_{A,up}=1"/> 、典型距離をアルヴェン速度で横切るのにかかるアルヴェントランジット時間が <img class="math" src="_images/math/2998ae5143745e5d38ce325f3f4dd4eec02d76f9.png" alt="T=L/c_{A,up}=1"/> となるので、議論が簡単になる。電気抵抗は、次の式のように原点付近に局在化させる。</p>
+<div class="math" id="equation-ohm3">
+<p><span class="eqno">(8)<a class="headerlink" href="#equation-ohm3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c7b371c0a21e6273dbd1b4d3595b0ac3e15b458e.png" alt="\eta(x,y) = \eta_0 + (\eta_1-\eta_0)\cosh^{-2} ( \sqrt{x^2+y^2} )"/></p>
+</div><p>デフォルト値は <img class="math" src="_images/math/24a3ca2188184762895d8cf7173c104d2f832f56.png" alt="\eta_1=1/60"/> で、背景にも <img class="math" src="_images/math/837daf3cb9fb6ca11f5816482ce8d4327941acd8.png" alt="\eta_0=1/1000"/> の弱い抵抗を入れている。背景抵抗をゼロにすると、MHD の不連続面をよりシャープに解けるようになるだろう。反面、高解像度の数値解法では、磁気島（プラズモイド）内の乱流磁場の中に、グリッドスケールの数値振動が混じってしまうこともある。 <img class="math" src="_images/math/ceaf238f06c7feb5edde01998fd98422fd4f09bd.png" alt="\eta_0=0"/> にする場合は、念のため、計算後に面内磁場を確認してほしい。</p>
+<p>局在化した抵抗のため、放っておいてもリコネクションは起きる。しかし今回は磁場に擾乱を加えて早くリコネクションを起こすことにしよう。次の擾乱ポテンシャルは原点近傍に <img class="math" src="_images/math/5709ef8b342315871f87ef5c3a2be565e2149021.png" alt="B_0"/> の <img class="math" src="_images/math/b92ef71cae9d209f2e29916fbf29e667e2534c0e.png" alt="3\%"/> 程度の弱い擾乱を追加する。</p>
+<div class="math" id="equation-application-mrx-5">
+<p><span class="eqno">(9)<a class="headerlink" href="#equation-application-mrx-5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ad688fef5c86d68bfc77453e2f30666105e6be8f.png" alt="\delta A_z = 0.03 \times 2LB_0 \exp[-(x^2+y^2)/(2L)^2 ]"/></p>
+</div><p>さらに境界条件を工夫して、系の第一象限のみを解く。9-wave 法（hyperbolic divergence cleaning 法; Dedner 法）の仮想ポテンシャルψの境界条件は間違えやすいので注意する。</p>
+<p>計算領域のサイズは <img class="math" src="_images/math/1c79ce7f2c9a20125f72941307919dfb59156365.png" alt="[0,200] \times [0,50]"/> とした。これは ZM11 とほぼ同じで、解像度を 30 → 20 に変更している。</p>
+</div>
+<div class="section" id="id4">
+<h2>結果<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>図は t=250 でのプラズマの速度成分 <img class="math" src="_images/math/b318858b731da399cec64260303767a1e2651376.png" alt="v_x"/> をプロットしたものである。赤いアウトフロー領域の上下には、Petschek リコネクション（ <a class="reference internal" href="reference.html#petschek64"><span class="std std-ref">Petschek, 1964</span></a> ）特有のスローショックが出来ている。これに加えて、あちこちにシャープな構造が見える。</p>
+<div class="figure align-center" id="id17">
+<span id="mrx-result1"></span><a class="reference internal image-reference" href="_images/mrx_result1.png"><img alt="_images/mrx_result1.png" src="_images/mrx_result1.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">t=250 のアウトフロー速度成分 <img class="math" src="_images/math/b318858b731da399cec64260303767a1e2651376.png" alt="v_x"/></span><a class="headerlink" href="#id17" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>結果を下の図と見比べてみよう。この図は、ZM11 のサマリー図に、その後のアップデート（ <a class="reference internal" href="reference.html#zenitani15"><span class="std std-ref">Zenitani, 2015</span></a> ）を反映させたものである。</p>
+<div class="figure align-center" id="id18">
+<span id="mrx-plasmoidsummary"></span><a class="reference internal image-reference" href="_images/mrx_summary.png"><img alt="_images/mrx_summary.png" src="_images/mrx_summary.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">プラズモイド構造のサマリー</span><a class="headerlink" href="#id18" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>例えば、 <a class="reference internal" href="#mrx-result1"><span class="std std-ref">アウトフロー図</span></a> の <img class="math" src="_images/math/7b2b579ee250a727cb6e1f907ca56e061e6d361c.png" alt="x=50"/> あたり（ <a class="reference internal" href="#mrx-plasmoidsummary"><span class="std std-ref">サマリー図</span></a> の#7）に見える構造は、右側を上流とするスローショックである。この衝撃波は、音速程度の速度で磁気島（プラズモイド）が運動する時、後ろ側によく現れる。一方、航空工学では、飛行機の速度が音速の 0.8 倍を超えたあたりから、翼の上面の後ろ側に縦衝撃波が立つことが知られていて、これを recompression shock と呼ぶ。プラズモイドを翼面に見立てると、今回のスローショックは recompression shock に対応することがわかるだろう。また、 <a class="reference internal" href="#mrx-result1"><span class="std std-ref">アウトフロー図</span></a> をよく見ると、 <img class="math" src="_images/math/cb9f50cf845a4a80132b41d34ee227d8606724ae.png" alt="x=100"/> あたりにも衝撃波が立っている。プラズモイドの速度が超音速に達すると前面にも衝撃波が立ち、合計４本のスローショックが現れるわけである。衝撃波が交差するところにできる複雑な構造にも注目してみよう。</p>
+<div class="figure align-center" id="id19">
+<span id="mrx-result2"></span><a class="reference internal image-reference" href="_images/mrx_result2.png"><img alt="_images/mrx_result2.png" src="_images/mrx_result2.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">x=40 での <img class="math" src="_images/math/9c12c9f2a8349505839c288ba65d68e07392ab98.png" alt="v_y"/> のカット</span><a class="headerlink" href="#id19" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#mrx-result2"><span class="std std-ref">図</span></a> は、Petschekスローショックの t=250, x=40 の断面で <img class="math" src="_images/math/9c12c9f2a8349505839c288ba65d68e07392ab98.png" alt="v_y"/> を示したものである。参考のため、ZM11 のデータと三好先生のコード、そして、公開 HLLD コード <strong>OpenMHD</strong> <a class="footnote-reference brackets" href="#fn1" id="id5">3</a> の計算結果も示している。 <strong>CANS+</strong>  はスローショックを少ないグリッド数で解いているが、速度成分 <img class="math" src="_images/math/9c12c9f2a8349505839c288ba65d68e07392ab98.png" alt="v_y"/> がオーバーシュートしている。これは高精度解法に特有の数値振動だろう。また、 <img class="math" src="_images/math/9c12c9f2a8349505839c288ba65d68e07392ab98.png" alt="v_y"/> が <img class="math" src="_images/math/c2d3b8cfcf0089fab7b2311890352294e1d72f06.png" alt="0.5&lt;y&lt;1.2"/> で揃っていないのは、アウトフロー領域内を飛び交う微小波を見ているからである。この近くの <a class="reference internal" href="#mrx-result3"><span class="std std-ref">vyの２次元プロファイル</span></a> には斜めの波面が見えていて、Petschek スローショックで繰り返し反射しているように見える（ <a class="reference internal" href="reference.html#tanuma-shibata07"><span class="std std-ref">Tanuma &amp; Shibata, 2007</span></a> ）。微小波の成因は、グリッドとの関係から判断して数値的なものだと思うが、現時点ではわからない。そして、元が物理振動であれ数値振動であれ、 <strong>CANS+</strong> は高次精度なので波を減衰させないのだろう。</p>
+<div class="figure align-center" id="id20">
+<span id="mrx-result3"></span><a class="reference internal image-reference" href="_images/mrx_result3.png"><img alt="_images/mrx_result3.png" src="_images/mrx_result3.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text"><img class="math" src="_images/math/59bca3827b441c042c0522c5bf0bc7dcfa9ac952.png" alt="-0.005&lt;v_y&lt;0.005"/> の２次元プロファイル。</span><a class="headerlink" href="#id20" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn1"><span class="brackets"><a class="fn-backref" href="#id5">3</a></span></dt>
+<dd><p><a class="reference external" href="http://th.nao.ac.jp/MEMBER/zenitani/openmhd-j.html">http://th.nao.ac.jp/MEMBER/zenitani/openmhd-j.html</a></p>
+</dd>
+</dl>
+<p>また、磁気島（プラズモイド）の先頭側にも複雑な構造が現れる。
+<a class="reference internal" href="#mrx-result1"><span class="std std-ref">アウトフロー図</span></a> からはよくわからないので、表示領域やカラーバーを調整して
+<a class="reference internal" href="#mrx-plasmoidsummary"><span class="std std-ref">サマリー図</span></a> の #10 に相当するものを探してみてほしい。
+<a class="reference internal" href="#mrx-rrmhd"><span class="std std-ref">下の図</span></a> は、ZM11 のきっかけとなった
+相対論 MHD シミュレーション（ <a class="reference internal" href="reference.html#zenitani10"><span class="std std-ref">Zenitani et al. 2010</span></a>）の該当部分である。
+同じ現象が綺麗に見えているので、これを使って説明することにする。
+シミュレーションの初期設定では、圧力バランスを満たすために
+真ん中にプラズマ密度の高い領域（プラズマシート）を設置していた。
+そのため、リコネクションジェットのプラズマ流は、
+プラズマシートを避けて上下を流れてゆく（オレンジ色の矢印）。
+ジェット先端からは「FS」で示すように斜め衝撃波が伸びていて、
+その先にダイアモンドの形をした構造が連なっている。
+この構造を <a class="reference external" href="https://en.wikipedia.org/wiki/Shock_diamond">ショックダイアモンド</a> と呼ぶ。</p>
+<div class="figure align-center" id="id21">
+<span id="mrx-rrmhd"></span><a class="reference internal image-reference" href="_images/mrx_rrmhd.png"><img alt="_images/mrx_rrmhd.png" src="_images/mrx_rrmhd.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">プラズモイド先端部の構造（ <a class="reference internal" href="reference.html#zenitani10"><span class="std std-ref">Zenitani et al. 2010</span></a> ）</span><a class="headerlink" href="#id21" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>ショックダイアモンドは超音速流に特有の構造で、
+航空・ロケット分野でよく知られている。
+<a class="reference internal" href="#mrx-supersonic"><span class="std std-ref">下の図</span></a> のように
+ジェットエンジン（灰色）から高温・高速のガスが後方に吹き出しているとしよう。
+ジェット内の圧力 <img class="math" src="_images/math/5022954306621736b5db67b9daf4259ebaef6784.png" alt="P_{jet}"/> と外気の圧力 <img class="math" src="_images/math/27f7d5d03d43ddaacf4da77f5de2ef60e055d5ad.png" alt="P_{ambient}"/> はあまり変わらないとする。
+ジェットが排出口から外に出ると、その情報はジェット内を音速で伝わって、
+外気との圧力差を調整しようとする。
+しかし、排出速度がジェット内の音速を超えていると、
+<img class="math" src="_images/math/91682bea106a17dcf0fbdb56d41140c478fa693d.png" alt="P_{jet} &lt; P_{ambient}"/> の場合（過膨張; overexpanded と呼ぶ）は衝撃波が、
+<img class="math" src="_images/math/771ecbb924fe35170827d4a5e2b5c00fb9006dd7.png" alt="P_{jet} &gt; P_{ambient}"/> の場合（不足膨張; underexpanded と呼ぶ）は膨張波（希薄波）が
+斜めに伝わっていく。
+ジェットと外気との境界は自由境界であるから、
+反対側に到達した衝撃波は膨張波、膨張波は圧縮波（衝撃波）となって反射し、
+このサイクルを繰り返すことで、ダイアモンド状の領域を作っていくわけである。
+<a class="reference internal" href="#mrx-rrmhd"><span class="std std-ref">プラズモイドの先端</span></a> では右から左に入ってくるプラズマシートが、
+(a) 過膨張タイプの <a class="reference internal" href="#mrx-supersonic"><span class="std std-ref">超音速ジェット</span></a> に対応していることがわかる。
+<img class="math" src="_images/math/5022954306621736b5db67b9daf4259ebaef6784.png" alt="P_{jet}"/> と <img class="math" src="_images/math/27f7d5d03d43ddaacf4da77f5de2ef60e055d5ad.png" alt="P_{ambient}"/> の差が大きな場合は構造がさらに複雑になるが、
+高速流体力学・圧縮性流体力学の教科書（例えば <a class="reference internal" href="reference.html#shapiro53"><span class="std std-ref">Shapiro 1953</span></a> など）を起点に
+調べていただければ良いだろう。オンラインでは、フロリダ国際大学の
+<a class="reference external" href="http://www.allstar.fiu.edu/aero/rocket3.htm">解説ページ</a> も参考になる。
+また、この分野の日本語の入門書としては <a class="reference internal" href="reference.html#matsuo94"><span class="std std-ref">松尾 (1994)</span></a>　をお薦めする。</p>
+<div class="figure align-center" id="id22">
+<span id="mrx-supersonic"></span><a class="reference internal image-reference" href="_images/mrx_supersonic.png"><img alt="_images/mrx_supersonic.png" src="_images/mrx_supersonic.png" style="width: 75%;" /></a>
+<p class="caption"><span class="caption-text">超音速ジェットの基本構造</span><a class="headerlink" href="#id22" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>せっかくなので、ショックダイアモンドの実例をいくつか紹介しよう。アメリカ空軍の超音速偵察機 <a class="reference external" href="https://en.wikipedia.org/wiki/Lockheed_SR-71_Blackbird">SR-71（ブラックバード）</a> はマッハ 3.2 で飛ぶことができたが、 <a class="reference external" href="http://www.bbc.com/future/story/20130701-flying-the-worlds-fastest-plane">BBC の特集ページ</a> （特に 2:50 あたり）の映像を見ると、エンジン後方に超音速流に伴うショックダイアモンドが見えている。このショックダイアモンドは <a class="reference external" href="https://www.youtube.com/watch?v=S8QGaiE4yWc&amp;t=20s">リアリティを追い求める分野</a> （音が出るので注意）でも再現されている。次世代戦闘機 F-35 に搭載予定の超音速エンジンも <a class="reference external" href="http://www.jsf.mil/gallery/gal_photo_sdd_f135.htm">綺麗なダイアモンド</a> を生成する。もちろん、戦闘機だけではなく、ロケットエンジン（<a class="reference external" href="https://twitter.com/ina111/status/709577774088912897">1</a>, <a class="reference external" href="https://twitter.com/Galacticcccc/status/822753868102574080">2</a> ）や <a class="reference external" href="http://www.imdb.com/media/rm1461562368/tt1321870">映画の射撃シーン</a> でもショックダイアモンドを見ることができる。</p>
+<p>ショックダイアモンド構造は、活動銀河核から吹き出す宇宙ジェットともよく似ている。<a class="reference internal" href="#mrx-supersonic"><span class="std std-ref">超音速流の図</span></a> を 90 度回転させて、 <a class="reference external" href="http://www.astro.phys.s.chiba-u.ac.jp/cans/doc/application_jet.html">ジェット課題</a> の図と見比べてみよう。コクーンの中を超音速で突き抜けるジェットの中には、斜めの構造が見えていないだろうか？　少し考えると背景物理が共通であることがわかるだろう。ちなみに宇宙ジェット業界では、圧縮部分の斜め衝撃波を reconfinement shock あるいは recollimation shock と呼んでいる。観測的にもジェットの中に小さな塊（「ノット」と呼ぶ）構造が見えることが知られており（例えば <a class="reference internal" href="reference.html#godfrey12"><span class="std std-ref">Godfrey et al., 2012</span></a> ）、reconfinement/recollimation shock 下流側のダイアモンドに相当するのではないかと言われている。</p>
+</div>
+<div class="section" id="id14">
+<h2>まとめ<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>磁気リコネクションのアウトフロージェットやプラズモイドの運動に伴って、周辺にさまざまな衝撃波が発生する。このような構造を解くためには、衝撃波に対応した Godunov 型の数値解法が有効である。 <strong>CANS+</strong>  は、その中でも最も優れた HLLD 法（ <a class="reference internal" href="reference.html#miyoshi-kusano05"><span class="std std-ref">Miyoshi &amp; Kusano, 2005</span></a> ）を採用しているうえ、時間精度・空間精度も高いため、これまで解けなかった新しい構造も見える。その際、コードの特性を考慮して、数値的なものと物理的に意味のある結果を切り分け、後者を議論することが大切である。シミュレーション系で見える構造の中には、航空・ロケットや宇宙ジェットと共通なものもあり、物理法則の普遍性を体感することができるだろう。</p>
+</div>
+<div class="section" id="id15">
+<h2>謝辞<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>この課題のコードは、2014年のサマースクール期間中に柴山さん（名大）、岩本さん（茨城大）、河村さん（京大）、阪本さん（東北大）が作成して下さったものである。また、衝撃波問題も、柴山さんが期間中に報告して下さったものである。</p>
+</div>
+<div class="section" id="id16">
+<h2>参考文献<a class="headerlink" href="#id16" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#bhattacharjee09"><span class="std std-ref">Bhattacharjee et al., 2009</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#godfrey12"><span class="std std-ref">Godfrey et al., 2012</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#loureiro07"><span class="std std-ref">Loureiro et al., 2007</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#miyoshi-kusano05"><span class="std std-ref">Miyoshi &amp; Kusano, 2005</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#newcomb58"><span class="std std-ref">Newcomb, 1958</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#petschek64"><span class="std std-ref">Petschek, 1964</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#scholer89"><span class="std std-ref">Scholer, 1989</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#shapiro53"><span class="std std-ref">Shapiro, 1953</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#tanuma-shibata07"><span class="std std-ref">Tanuma &amp; Shibata, 2007</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#ugai92"><span class="std std-ref">Ugai, 1992</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#ugai-tsuda77"><span class="std std-ref">Ugai &amp; Tsuda, 1977</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#zenitani10"><span class="std std-ref">Zenitani et al., 2010</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#zenitani-miyoshi11"><span class="std std-ref">Zenitani &amp; Miyoshi, 2011</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#zenitani15"><span class="std std-ref">Zenitani, 2015</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#matsuo94"><span class="std std-ref">圧縮性流体力学：内部流れの理論と解析 (1994) 理工学社、松尾一泰著</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">磁気リコネクション</a><ul>
+<li><a class="reference internal" href="#id2">背景</a></li>
+<li><a class="reference internal" href="#id3">課題設定</a></li>
+<li><a class="reference internal" href="#id4">結果</a></li>
+<li><a class="reference internal" href="#id14">まとめ</a></li>
+<li><a class="reference internal" href="#id15">謝辞</a></li>
+<li><a class="reference internal" href="#id16">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application_parker.html" title="パーカー不安定"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_kh.html" title="ケルビン・ヘルムホルツ不安定"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

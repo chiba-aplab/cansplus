@@ -1,0 +1,213 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>イントロダクション &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="磁気流体力学波" href="mhdwave.html" />
+    <link rel="prev" title="はじめに" href="preface.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="mhdwave.html" title="磁気流体力学波"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="preface.html" title="はじめに"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>イントロダクション<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="section" id="id2">
+<h2>まずは始めましょう<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>CANS+</strong> はMercurialでバージョン管理されています。MercurialはWindows, linux, Mac OSに対応したバージョン管理ソフトウェアです。Mercurialのインストールは、FedoraなどRedhat系の場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ yum install mercurial
+</pre></div>
+</div>
+<p>UbuntuなどDebian系の場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ sudo apt-get install mercurial
+</pre></div>
+</div>
+<p>で簡単にできます。Mercurialのツールを利用してコードのインストール、アップデートを行います。</p>
+<p>まずは、 <strong>CANS+</strong> のレポジトリを以下のようにダウンロードします。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ hg clone https://bitbucket.org/aplab/cansplus directory-name
+</pre></div>
+</div>
+<p><strong>CANS+</strong> は開発途上なため、不定期に更新されます。最新版を反映させるためには、上記で指定した <em>directory-name</em> 内で、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ hg pull
+$ hg update
+</pre></div>
+</div>
+<p>とすれば、最新版の差分情報が反映されます。 <strong>この際、自分で修正を加えたファイルと更新ファイルが重なる場合はマージ（merge）する必要が出てきます。またその結果、衝突（conflict）する可能性もあります。</strong> その場合は出力に従って、テキストエディタ等で該当個所を編集してください。</p>
+<p>Mercurialによる分散バージョン管理の詳しい解説は、本家 ( <a class="reference external" href="https://www.mercurial-scm.org/">https://www.mercurial-scm.org/</a> ) もしくは日本語解説（ <a class="reference external" href="http://www.lares.dti.ne.jp/~foozy/fujiguruma/scm/mercurial.html">http://www.lares.dti.ne.jp/~foozy/fujiguruma/scm/mercurial.html</a> ）をご覧ください。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>mercurialをインストールできる環境にない場合は、最新版が <a class="reference external" href="https://bitbucket.org/aplab/cansplus/get/default.zip">https://bitbucket.org/aplab/cansplus/get/default.zip</a> よりダウンロードできます。</p>
+</div>
+</div>
+<div class="section" id="id3">
+<h2>動作環境<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下のソフトウェア・ライブラリがシステムにインストールされている必要があります。</p>
+<ul class="simple">
+<li><p>Mercurial。レポジトリのダウンロード、最新版のアップデートを行うのに必要です（上述）。</p></li>
+<li><p>MPI(Message Passing Interface)。コードはMPI並列化バージョンのみです。</p></li>
+<li><p>Fortranコンパイラ。ソースコードはFortran 90で書かれています。デフォルトはmpif90でコンパイルします。</p></li>
+<li><p>IDL(Interactive Data Language) バージョン8以降。データ読み込み・可視化ルーチンはIDLで用意されています。</p></li>
+<li><p>OSはLinuxで動作確認済み。上記ソフト・ライブラリがインストールされていれば、Windows、Mac-OSでもたぶん可だと思います。</p></li>
+</ul>
+<p>不具合等についての問い合わせは <a class="reference external" href="https://bitbucket.org/aplab/cansplus/issues/new">https://bitbucket.org/aplab/cansplus/issues/new</a> まで。</p>
+</div>
+<div class="section" id="id4">
+<h2>環境変数<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>環境変数$CANSPLUS_DIRを <strong>CANS+</strong> がインストールされたディレクトリの絶対パスとし、以下のように設定します（~/cansplusにインストールした場合）。</p>
+<p>bashの場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">CANSPLUS_DIR</span><span class="o">=</span>~/cansplus
+</pre></div>
+</div>
+<p>tcshの場合、</p>
+<div class="highlight-tcsh notranslate"><div class="highlight"><pre><span></span><span class="nb">setenv </span>CANSPLUS_DIR ~/cansplus
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>解析・可視化環境<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="idl">
+<h3>IDL<a class="headerlink" href="#idl" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>IDLによる解析・可視化プロシージャがあらかじめ用意されています。$CANSPLUS_DIR/3d/idl内には共通プロシージャ、各課題内には専用のプロシージャがあります。使うためには、環境変数$IDL_STARTUPに$CANSPLUS_DIR/idl/init.proを設定します。</p>
+<p>bashの場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IDL_STARTUP</span><span class="o">=</span><span class="nv">$CANSPLUS_DIR</span>/idl/init.pro
+</pre></div>
+</div>
+<p>cshの場合、</p>
+<div class="highlight-csh notranslate"><div class="highlight"><pre><span></span><span class="nb">setenv </span>IDL_STARTUP <span class="nv">$CANSPLUS_DIR</span>/idl/init.pro
+</pre></div>
+</div>
+<p>$CANSPLUS_DIR/idl/init.pro内には、pathの設定、IDL内の環境の設定等が含まれており、IDL起動時に自動的に設定されます。各自の好みに合わせて修正してください。</p>
+<p>さらなる詳細は <a class="reference internal" href="idl.html#idl"><span class="std std-ref">本テキストidlのページ</span></a> を参照ください。</p>
+</div>
+<div class="section" id="matplotlib">
+<h3>matplotlib<a class="headerlink" href="#matplotlib" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>matplotlibはpythonプログラム言語をベースとした解析・可視化ライブラリで、IDLと比べてライセンスフリーで使えるため、手頃な解析環境として人気があります。CANS+が出力するデータ形式であるDAC形式データを読み込むpythonスクリプトが用意されています。さらなる詳細は本テキストmatplotlibのページを参照ください。$CANSPLUS_DIR/python以下にあるスクリプトをpythonコマンドライン上で呼ぶために以下の設定を行います。</p>
+<p>bashの場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$CANSPLUS_DIR</span>/python
+</pre></div>
+</div>
+<p>cshの場合、</p>
+<div class="highlight-csh notranslate"><div class="highlight"><pre><span></span><span class="nb">setenv </span>PYTHONPATH <span class="nv">$CANSPLUS_DIR</span>/python
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>全体の構成<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>$CANSPLUS_DIR内は、以下のようにディレクトリとファイルで構成されています。</p>
+<div><img height="255" src="_images/blockdiag-fa1d9d4cddbe1707eb4191c7041f2bc7723429cf.png" width="360" /></div><p>2次元及び3次元のコードが用意されています（2016年8月現在）。&quot;README.md&quot;にはマークダウン形式で <strong>CANS+</strong> の簡単な説明が書かれています。</p>
+<p>&quot;2d/ (3d/)&quot;内には、コンパイル用のMakefile、コンパイル時の環境変数を設定したMakefile_incが用意されています。各自の環境によってコンパイラ、コンパイラオプションを指定したい場合は、Makefile_inc内に設定されている、&quot;$FC&quot;と&quot;$FFLAGS&quot;を変更してください。</p>
+<p>&quot;common/&quot;には共通エンジンが収められています。&quot;md_???&quot;は、各物理課題の初期設定等が含まれており、&quot;???&quot;に、物理現象の名前が付けられています。</p>
+<p>&quot;idl/&quot;内には、IDLによる可視化ルーチンが含まれています。各課題で使用する可視化のための共通プロシージャが含まれています。</p>
+<p>&quot;python/&quot;内には、データ読み込み用のpythonスクリプトが含まれています。</p>
+<p>&quot;notebook/&quot;内には、IDLとmatplotlibを使った解析・可視化ハンズオンのためのjupyter notebookが用意されています。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">イントロダクション</a><ul>
+<li><a class="reference internal" href="#id2">まずは始めましょう</a></li>
+<li><a class="reference internal" href="#id3">動作環境</a></li>
+<li><a class="reference internal" href="#id4">環境変数</a></li>
+<li><a class="reference internal" href="#id5">解析・可視化環境</a><ul>
+<li><a class="reference internal" href="#idl">IDL</a></li>
+<li><a class="reference internal" href="#matplotlib">matplotlib</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">全体の構成</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="mhdwave.html" title="磁気流体力学波"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="preface.html" title="はじめに"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

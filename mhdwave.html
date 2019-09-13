@@ -1,0 +1,706 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>磁気流体力学波 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="差分法の基礎" href="sabun.html" />
+    <link rel="prev" title="イントロダクション" href="introduction.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="sabun.html" title="差分法の基礎"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="introduction.html" title="イントロダクション"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>磁気流体力学波<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>花輪知幸（千葉大学）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>基礎方程式<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>連続の式</p>
+<div class="math" id="equation-cont">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-cont" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/88d9dcb412c2dc21f96e54e74dd17f23af58b937.png" alt="\frac{\partial \rho}{\partial t} \; + \;\frac{\partial}{\partial x _i} \, \left( \rho v _i \right) \; = \; 0"/></p>
+</div><p>運動方程式</p>
+<div class="math" id="equation-motion">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-motion" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fbb2ef10b7c4a737a46247707897f65c43eff733.png" alt="\rho \, \left( \frac{\partial v _i}{\partial t} \; + \;  v _k \frac{\partial v _i}{\partial x _k} \right)
+\; + \; \frac{\partial \pi _{ik}}{\partial x _k} \; - \; \frac{\left( \mbox{\boldmath$j$}
+\times \mbox{\boldmath$B$} \right) _i}{c} \; + \; \rho \, \frac{\partial \Phi}{\partial x _i} \; = \; 0"/></p>
+</div><div class="math" id="equation-viscos">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-viscos" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/cad7a06610b6f547b4f4f46a53c4b200c6aa6a54.png" alt="\pi _{ik}  = \; P \, \delta _{ik} \; + \; \eta \,
+\left( \frac{\partial v _i}{\partial x_k} \; + \; \frac{\partial v _k}{\partial x _i} \; - \;
+\frac{2}{3} \, \delta _{ik} \, \frac{\partial v _\ell}{\partial x _\ell} \right)
+\; +  \; \zeta \, \delta _{ik} \, \frac{\partial v _\ell}{\partial x_\ell}"/></p>
+</div><p>エネルギー収支</p>
+<div class="math" id="equation-energy">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-energy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/586b6e1fd54cf52f13a6de20de04df7c9b58ec81.png" alt="T \, \left( \frac{\partial s}{\partial t} \, + \, v _k \frac{\partial s}{\partial x _k} \right) \; = \; \Gamma \, - \, \Lambda"/></p>
+</div><p>マックスウェル方程式</p>
+<div class="math" id="equation-faraday">
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-faraday" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/57c6cf89845efa799c767552b82b5a9c349dae3e.png" alt="\frac{1}{c} \,
+\frac{\partial \mbox{\boldmath$B$}}{\partial t} = - \, \mbox{\boldmath$\nabla$}
+\times \mbox{\boldmath$E$}"/></p>
+</div><div class="math" id="equation-ampere">
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-ampere" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ecfc7af01ac17ac599357733a0d08b99ed329542.png" alt="\frac{1}{c} \, \left( \frac{\partial \mbox{\boldmath$E$}}{\partial t} \; + \; 4 \pi
+\mbox{\boldmath$j$} \right)
+= \mbox{\boldmath$\nabla$} \times \mbox{\boldmath$B$}"/></p>
+</div><p>オームの法則</p>
+<div class="math" id="equation-ohm">
+<p><span class="eqno">(7)<a class="headerlink" href="#equation-ohm" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5ce764407529abc146146651ac96d730b3ee519c.png" alt="\mbox{\boldmath$j$} \; = \; \sigma \,
+\left( \mbox{\boldmath$E$} \, + \, \frac{\mbox{\boldmath$v$}}{c} \,
+{\times}
+\mbox{\boldmath$B$} \right)"/></p>
+</div><p>ここではEinsteinの記法を採用して書いている。今回のサマースクールでは粘性が小さく ( <img class="math" src="_images/math/a613ba87dfc87d5caa05a0d4d25271b0cb948480.png" alt="\eta\sim\zeta\rightarrow 0"/> )、電気伝導度が無限大( <img class="math" src="_images/math/f7e80cbecfe127a7f99631fb750fdc903e45aaea.png" alt="\sigma \rightarrow \infty"/> ) である極限を考える。また変位電流を無視する。この近似は、平均自由行程が十分に短いと近似したことと同じである。また重力場や加熱・冷却も無視できると考える。この近似を行うと、運動方程式とマックスウェル方程式は</p>
+<div class="math" id="equation-motion2">
+<p><span class="eqno">(8)<a class="headerlink" href="#equation-motion2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/17ff3a786c5958dbba7caaa737fea9a61cc7cc1c.png" alt="\rho \, \left( \frac{\partial v _i}{\partial t} \, + \,  v _k \frac{\partial v _i}{\partial x _k} \right)
+\; + \; \frac{\partial P}{\partial x _i} \; - \;
+\frac{1}{4 \pi} \, \left[ \frac{\partial}{\partial x _k} \left(B _i B _k \right) \, - \,
+\frac{\partial}{\partial x_i} \, \left( \frac{B _\ell ^2}{2} \right) \right]
+\; = \; 0"/></p>
+</div><div class="math" id="equation-induction">
+<p><span class="eqno">(9)<a class="headerlink" href="#equation-induction" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fb39ead19d47c3fe0232fac592040f9cbb42fab9.png" alt="\frac{\partial \mbox{\boldmath$B$}}{\partial t} \; = \;
+\mbox{\boldmath$\nabla$} \times \left( \mbox{\boldmath$v$} \times
+\mbox{\boldmath$B$} \right)"/></p>
+</div><p>と書き換えられる。本章ではこのように近似した理想磁気流体力学方程式を使って磁気流体波を論じる。使用する変数名をテーブルにまとめる。</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 54%" />
+<col style="width: 46%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> 時刻</p></td>
+<td><p><img class="math" src="_images/math/78b0e69173376fa1fa72e9cb048f4f7bd0bf90f0.png" alt="x _i"/> 座標</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> 密度</p></td>
+<td><p><img class="math" src="_images/math/c2aa3dff9bffb099e9dff196fd36aed56ec16baf.png" alt="P"/> 圧力</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/e8dea8254118f111b5fb20895b03528c17566f06.png" alt="T"/> 温度</p></td>
+<td><p><img class="math" src="_images/math/106b04b320e75010b1d8029e59244f234f75e6f9.png" alt="s"/> 比エントロピー</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/e7003fd3463f843ee1e53385878369f078d362ad.png" alt="\Gamma"/> 単位質量あたりの加熱率</p></td>
+<td><p><img class="math" src="_images/math/65e60d95fc7bc06725cb967be10982e4bf310122.png" alt="\Lambda"/> 単位質量あたりの冷却率</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/14550fe0c73c6ca9eba48b480d1c846fbc3aa050.png" alt="\bf{j}"/> 電流密度</p></td>
+<td><p><img class="math" src="_images/math/b26232f1bb1ec09e97f196e3a8700b122e82f1e6.png" alt="\bf{B}"/> 磁場</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/ce47862a3592e78dbc2226487fbeb4825cb01432.png" alt="\bf{E}"/> 電場</p></td>
+<td><p><img class="math" src="_images/math/b52df27bfb0b1e3af0c2c68a7b9da459178c2a7d.png" alt="\sigma"/> 電気伝導度</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/d8ee85ac4d75924cdf4b18f5fb3b46550932fc26.png" alt="\Phi"/> 重力ポテンシャル</p></td>
+<td><p><img class="math" src="_images/math/d520a12f1579170834c32ad5f656de081bbb36fe.png" alt="c"/> 光速度</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> ずり粘性 (shear viscosity)</p></td>
+<td><p><img class="math" src="_images/math/3ef1157ea7221d7eda6098e1fd7a04a28a555e6d.png" alt="\zeta"/> 体積粘性 (bulk viscosity)</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/cc7cc8f478074da39b2a04d286fe2444178ba85e.png" alt="\varepsilon"/> 単位質量あたりの内部エネルギー</p></td>
+<td><p><img class="math" src="_images/math/347532bf516c300c58d29a403297f6cf1d178399.png" alt="\bf{v}"/> 速度</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/1815f600df7845409443aed470eac2d449e4ddb0.png" alt="E"/> 単位質量あたりのエネルギー</p></td>
+<td><p><img class="math" src="_images/math/cb5de54f699cf4b3c7c1a3e87313d11d536c0d88.png" alt="H"/> 単位質量あたりのエンタルピー</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/e8dea8254118f111b5fb20895b03528c17566f06.png" alt="T"/> 温度</p></td>
+<td><p><img class="math" src="_images/math/1ebe654cc7b8f2a0d8100aa5825cf2b9021adbbc.png" alt="R"/> 気体定数</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/7c9801cbbf9ee4d3f28f46e62b2d987a816252b1.png" alt="C _V"/> 定積比熱</p></td>
+<td><p><img class="math" src="_images/math/20927179685369924227acf0a67a610b19cb4b72.png" alt="C_P"/> 定圧比熱</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<div class="section" id="id3">
+<h3>理想気体の状態方程式<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="math" id="equation-eos0">
+<p><span class="eqno">(10)<a class="headerlink" href="#equation-eos0" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7ca034b0a46164dc109568121fed3b619b6ea59e.png" alt="P = R \rho T \\"/></p>
+</div><div class="math" id="equation-eos1">
+<p><span class="eqno">(11)<a class="headerlink" href="#equation-eos1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e8e07a03d5700ae2e2dea6cc81715bd34761fdc1.png" alt="\gamma =  \frac{ C  _P}{C _V} = \frac{C_V + R}{C_V}  \\"/></p>
+</div><div class="math" id="equation-eos2">
+<p><span class="eqno">(12)<a class="headerlink" href="#equation-eos2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/be711a847194e3a22ca6994cbe90b3a0c10fc236.png" alt="s = \frac{R}{\gamma - 1} \left( \ln P - \gamma \ln \rho \right) = C_V \left( \ln P - \gamma \, \ln \rho \right) \\"/></p>
+</div><div class="math" id="equation-eos3">
+<p><span class="eqno">(13)<a class="headerlink" href="#equation-eos3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e7d24903ffbf0d39ecb4f5b4971ff88db766242a.png" alt="\varepsilon = \frac{1}{\gamma - 1} \frac{P}{\rho} \\"/></p>
+</div><div class="math" id="equation-eos4">
+<p><span class="eqno">(14)<a class="headerlink" href="#equation-eos4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7dd3c87520f11edda08d4dea6eceaf16a286801b.png" alt="P = e ^{s/C_V} \rho ^\gamma = K \rho ^\gamma"/></p>
+</div><p>エントロピーにはこの他に定数項が加わる。</p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>保存形式<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>粘性が無視でき(inviscid)、電気伝導度が無限大である場合について考える。このとき流体力学方程式は次のようにまとめられる。</p>
+<div class="math" id="equation-mass-cnsv">
+<p><span class="eqno">(15)<a class="headerlink" href="#equation-mass-cnsv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/24d0997f6eadf602710aa181b802cb83fb1e8e65.png" alt="\frac{\partial \rho}{\partial t} + \frac{\partial}{\partial x _i} \left( \rho v_i \right) \; = \; 0"/></p>
+</div><div class="math" id="equation-moment-cnsv">
+<p><span class="eqno">(16)<a class="headerlink" href="#equation-moment-cnsv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d0cf3b3ed75e2e6f0294885fffa4b5b3050ea375.png" alt="\frac{\partial}{\partial t} \left( \rho v _j \right) +
+\frac{\partial}{\partial x _i} \,
+\left( \rho v _j v _i  \, - \, \frac{B _i B _j}{4 \pi} \right) \; + \;
+\frac{\partial}{\partial x _j} \left( P \, + \, \frac{\mbox{\boldmath$B$} ^2}{8 \pi}
+\right)
+\; = \; \rho g _j"/></p>
+</div><div class="math" id="equation-energy-cnsv">
+<p><span class="eqno">(17)<a class="headerlink" href="#equation-energy-cnsv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/44cdf354aff63e5bc52a4e0cdbb5133cb4f873c6.png" alt="\frac{\partial}{\partial t} \left( \rho E \right) +
+\frac{\partial}{\partial x _i} \left( \rho H v _i \, - \,
+\frac{B_i}{4\pi} \, \mbox{\boldmath$v$}\cdot \mbox{\boldmath$B$}
+\right) \; = \; \rho g _i v _i \; + \;
+\Gamma \, - \, \Lambda"/></p>
+</div><div class="math" id="equation-induction2">
+<p><span class="eqno">(18)<a class="headerlink" href="#equation-induction2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1fed87e44013fa07c235e2ac927e8c02f363338a.png" alt="\frac{\partial \mbox{\boldmath$B$}}{\partial t} = \mbox{\boldmath$\nabla$}
+\times \left( \mbox{\boldmath$v$} \times \mbox{\boldmath$B$} \right)"/></p>
+</div><div class="math" id="equation-total-e">
+<p><span class="eqno">(19)<a class="headerlink" href="#equation-total-e" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0e354cdf36354478bf3cf42d9633e2c056742a44.png" alt="E = \frac{|\mbox{\boldmath$v$}|^2}{2} \; + \; \varepsilon \; + \; \frac{|\mbox{\boldmath$B$}|^2}{8\pi \rho}"/></p>
+</div><div class="math" id="equation-entalpy">
+<p><span class="eqno">(20)<a class="headerlink" href="#equation-entalpy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6fc2c4fae5fb843b7ac84d56c01578b2ea633ff7.png" alt="H = \frac{|\mbox{\boldmath$v$}|^2}{2} \, + \, \varepsilon \; + \; \frac{P}{\rho} \; + \; \frac{|\mbox{\boldmath$B$}|^2}{4\pi \rho}"/></p>
+</div><p>式 <a class="reference internal" href="#equation-energy-cnsv">(17)</a> を導出するにあたり、 熱力学の関係式</p>
+<div class="math" id="equation-thermodynamics">
+<p><span class="eqno">(21)<a class="headerlink" href="#equation-thermodynamics" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9368213b045cc3200e47091e662c1ba8ebd552e0.png" alt="d\varepsilon \; = \; T ds \; - \; P d\left(\frac{1}{\rho} \right) = T ds + \frac{P}{\rho ^2} d\rho"/></p>
+</div><p>を用いた。</p>
+<p>ベクトルを用いると上記の流体力学方程式は</p>
+<div class="math" id="equation-system-eq">
+<p><span class="eqno">(22)<a class="headerlink" href="#equation-system-eq" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a577ed6cada627b14df0d5aa18812de29680b0ae.png" alt="\frac{\partial \mbox{\boldmath$U$}}{\partial t} \; + \;
+\frac{\partial \mbox{\boldmath$F$} _x}{\partial x}  \; + \;
+\frac{\partial \mbox{\boldmath$F$} _y}{\partial y}  \; + \;
+\frac{\partial \mbox{\boldmath$F$} _y}{\partial z}  \; = \; \mbox{\boldmath$S$}"/></p>
+</div><div class="math">
+<p><img src="_images/math/3605045531e873353952137d445d4a55ff3cef9a.png" alt="\begin{equation}
+\mbox{\boldmath$U$} \; = \;
+\left(
+\begin{array}{c}
+\rho \\ \rho v _x \\ \rho v _y \\ \rho v _z \\ B _x \\ B _y \\ B _z \\ \rho E
+\end{array}
+\right) \, , \hskip 0.5cm
+\mbox{\boldmath$F _x $} \; = \;
+\left(
+\begin{array}{c}
+\rho  v _x \\ \rho v _x ^2 \, + \, P \,  \displaystyle
+\, + \, \frac{\mbox{\boldmath$B$}^2}{8\pi} \, - \, \frac{B _x ^2}{4\pi} \\
+\rho v _x v _y \, \displaystyle - \,\frac{B _x B _y}{4\pi}
+\\ \rho v _x v _z \, \displaystyle - \, \frac{B _x B _z}{4\pi} \\  0  \\
+v _x B _y \, - \, v _y B _x  \\  v _x B _z \, - \, v _z B _x  \\ \rho H v _x  \, - \,
+\displaystyle \frac{B _x}{4\pi}
+(\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$})
+\end{array}
+\right)  \, , \hskip 0.5cm
+\mbox{\boldmath$F _y $} \; = \;
+\left(
+\begin{array}{c}
+\rho  v _y \\ \rho v _y v _x \, \displaystyle - \, \frac{B _y B _x}{4 \pi}
+\\ \rho v _y ^2 \, + \, P \,\displaystyle
++ \, \frac{\mbox{\boldmath$B$}^2}{8\pi} \, - \, \frac{B _y ^2}{4\pi}
+\\ \rho v _y v _z  \displaystyle - \, \frac{B _y B _z}{4 \pi}
+\\  v _y B _x \, - \, v _x B _y \\
+0 \\  v _y B _z \, - \, v _y B _z  \\ \rho H v _y  \, - \, \displaystyle
+\frac{B_y}{4\pi} \,  (\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$})
+\end{array}
+\right) \, , \nonumber
+\end{equation}
+\begin{equation}
+\mbox{\boldmath$F _z $} \; = \;
+\left(
+\begin{array}{c}
+\rho  v _{z} \\ \rho v _{z} v _x \, \displaystyle
+- \, \frac{B _z B _x}{4 \pi} \\
+\rho v _z v _y \, - \, \displaystyle \frac{B _z B _y}{4\pi}
+\\ \rho v _z ^2 \, + \, P \, + \, \displaystyle
+\frac{\mbox{\boldmath$B$} ^2}{8\pi}
+\, - \, \frac{B _z ^2}{4\pi}
+\\ \rho v _y v _z \\  v _z B _x \, - \, v _x B _z \\
+v _z B _y \, - \, v _y B _z  \\ 0 \\ \rho H v _z \, - \, \displaystyle \frac{B _z}{4\pi}  \,
+(\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$})
+\end{array}
+\right) \, ,  \hskip 0.5cm
+\mbox{\boldmath$S$}  \; = \;
+\left( \begin{array}{c}
+0 \\ \rho g _x \\ \rho g _y \\ \rho g _z \\ 0 \\ 0 \\ 0 \\ \rho \mbox{\boldmath$v$}
+\cdot \mbox{\boldmath$g$}
+\end{array} \right) \nonumber
+\end{equation}"/></p>
+</div><p>と表せる。ここで <img class="math" src="_images/math/3556377c92304722df740021672065422b26eff8.png" alt="\mbox{\boldmath$U$}"/> は状態ベクトル、 <img class="math" src="_images/math/563c16045c8a6bc725a13f7c16478f9c672fe8fb.png" alt="\mbox{\boldmath$F$} _x"/> , <img class="math" src="_images/math/84b0df30365a8db35ae5d2dce5085c91f7f06a5f.png" alt="\mbox{\boldmath$F$} _y"/> , <img class="math" src="_images/math/635aa25c6044e3f680cf640cd67d8e2b31f76a43.png" alt="\mbox{\boldmath$F$} _z"/> は流束、 <img class="math" src="_images/math/f0e819c06df3ee1e1eaeea55bc1bc366103b9eb5.png" alt="\mbox{\boldmath$S$}"/> は源泉項と呼ばれる。</p>
+</div>
+<div class="section" id="id5">
+<h2>線形波<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id6">
+<h3>流体力学波<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>すべての物理量は <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> や <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> に依らず、 <img class="math" src="_images/math/3932642e2b0e9f96a760b19aafb7f8527f480156.png" alt="(z,~t)"/> だけの関数とする。この状況では波は平面波に限られる。また最初は簡単のため磁場や重力場は存在しないとする。このとき運動方程式は</p>
+<div class="math" id="equation-eq-cont-1d">
+<p><span class="eqno">(23)<a class="headerlink" href="#equation-eq-cont-1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e74984c0ff2518fe9b2cf437a5595854bf888c3d.png" alt="\frac{\partial \rho}{\partial t} + \frac{\partial}{\partial  z} \left( \rho  v _z \right) \; = \; 0"/></p>
+</div><div class="math" id="equation-vx-1d">
+<p><span class="eqno">(24)<a class="headerlink" href="#equation-vx-1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/487afdf749e1a6cf84f61f6b033050afa35f94eb.png" alt="\frac{\partial v _x}{\partial t} + v _z \frac{\partial  v_x}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-vy-1d">
+<p><span class="eqno">(25)<a class="headerlink" href="#equation-vy-1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6184c655e1e76ef0f032c91035e270a55aa4559e.png" alt="\frac{\partial v _y}{\partial t} + v_z \frac{\partial  v_y}{\partial z} \;  = \; 0"/></p>
+</div><div class="math" id="equation-vz-1d">
+<p><span class="eqno">(26)<a class="headerlink" href="#equation-vz-1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1ce7c9479e1a25440aafb9e76439c3bb5772895e.png" alt="\frac{\partial v _z}{\partial t} + v _z \frac{\partial v _z}{\partial z} \; +
+\frac{1}{\rho} \frac{\partial P}{\partial z} \; = \; 0 \\"/></p>
+</div><div class="math" id="equation-entropy-1d">
+<p><span class="eqno">(27)<a class="headerlink" href="#equation-entropy-1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d6fb3a92af84d45ba7523e8a69ac476c72a999e2.png" alt="\frac{d s}{\partial t} + v _z\frac{\partial s}{\partial z} \; = \; 0"/></p>
+</div><p>このとき全ての変化は平面波と考えられる。</p>
+<p>もし時間変化がない定常状態では、 <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> , <img class="math" src="_images/math/106b04b320e75010b1d8029e59244f234f75e6f9.png" alt="s"/> , <img class="math" src="_images/math/1ec856633893bd20d69204ae410d4b068acfaf0b.png" alt="v _x"/> , <img class="math" src="_images/math/ffd82987cb46465b1d3d0b3b662aa460fdd59f67.png" alt="v _y"/> , <img class="math" src="_images/math/72439398939a181df0f319dfba720aa127b18947.png" alt="v _z"/> , <img class="math" src="_images/math/c2aa3dff9bffb099e9dff196fd36aed56ec16baf.png" alt="P"/> はすべて一定。この状態に対して摂動を考える。</p>
+<div class="math" id="equation-drho">
+<p><span class="eqno">(28)<a class="headerlink" href="#equation-drho" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d3b23e268d21aa17146e84a4c15c0247384d1228.png" alt="\rho = \rho _0 \, + \, \rho _1"/></p>
+</div><div class="math" id="equation-ds">
+<p><span class="eqno">(29)<a class="headerlink" href="#equation-ds" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/38545c1d7485e30d524bb5baccf89036292502b6.png" alt="s = s _0 \, + \, s _1"/></p>
+</div><div class="math" id="equation-dvx">
+<p><span class="eqno">(30)<a class="headerlink" href="#equation-dvx" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f1991b52fca2a8ac708d0af390680e551c599160.png" alt="v _x  = v _{x0} \, + \, v _{x1} \\"/></p>
+</div><div class="math" id="equation-dvy">
+<p><span class="eqno">(31)<a class="headerlink" href="#equation-dvy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f308eaf2d6462b9a3e6a01a877d63e3ef8149639.png" alt="v _y  = v _{y0} \, + \, v _{y1} \\"/></p>
+</div><div class="math" id="equation-dvz">
+<p><span class="eqno">(32)<a class="headerlink" href="#equation-dvz" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1039afcdde4c4b21050e20ca92a6d3dd1c256676.png" alt="v _z  = v _{z0} \, + \, v _{z1} \\"/></p>
+</div><div class="math" id="equation-dp">
+<p><span class="eqno">(33)<a class="headerlink" href="#equation-dp" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/441e276e3623d7f4c2698d2d3b931ccba533d0f1.png" alt="P  = P _0 \, + \, P _1"/></p>
+</div><p>ただし状態方程式を解くと <img class="math" src="_images/math/dbab9867da0b3c2d96eb3592bb9b8cd7d34ca3b2.png" alt="\rho~=~\rho(P,~s)"/> が得られるので、</p>
+<div class="math" id="equation-drho-ds">
+<p><span class="eqno">(34)<a class="headerlink" href="#equation-drho-ds" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/713af5906ce9c736490aa85fd4c252d4285ce8d3.png" alt="\rho _1 = \left( \frac{\partial \rho}{\partial P} \right)_s P _1 \; + \;
+\left( \frac{\partial \rho}{\partial s}  \right)_P s _1 \\
+= c _s ^{-2}  P _1 \; + \;  \left( \frac{\partial \rho}{\partial s}  \right)_P s _1"/></p>
+</div><p>ここで <img class="math" src="_images/math/fce99d613da92e6691028bebace14b0b1b91905d.png" alt="c _s"/> は音速を表す。</p>
+<div class="math" id="equation-cont-drho">
+<p><span class="eqno">(35)<a class="headerlink" href="#equation-cont-drho" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/cde94b4f26186a9a34fdac30ac43651c5b1a01b8.png" alt="\frac{\partial \rho _1}{\partial t} +  v _{z0} \frac{\partial \rho _1}{\partial  z}
+\; + \; \rho _0 \frac{\partial v _{z1}}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-shearx">
+<p><span class="eqno">(36)<a class="headerlink" href="#equation-shearx" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/348c4d1147f5260c17cabb9efdd24d4e68220b51.png" alt="\frac{\partial v _{x1}}{\partial t} + v _{z0} \frac{\partial  v_{x1}}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-sheary">
+<p><span class="eqno">(37)<a class="headerlink" href="#equation-sheary" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d1d419283029b23a98c48bc636c028a28dc21c98.png" alt="\frac{\partial v _{y1}}{\partial t} + v_{z0} \frac{\partial  v_{y1}}{\partial z} \;  = \; 0"/></p>
+</div><div class="math" id="equation-shearz">
+<p><span class="eqno">(38)<a class="headerlink" href="#equation-shearz" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6c604e2a23db3ae2bddcb7dba247c2f05ee6ed9f.png" alt="\frac{\partial v _{z1}}{\partial t} + v _{z0} \frac{\partial v _{z1} }{\partial z} \; +
+\frac{1}{\rho _0} \frac{\partial P _1}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-entropy-prtb">
+<p><span class="eqno">(39)<a class="headerlink" href="#equation-entropy-prtb" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/287211a8bc5e7e7d838f3de75aa77d1d2f20ed24.png" alt="\frac{d s _1}{\partial t} + v _{z0} \frac{\partial s _1}{\partial z} \; = \; 0"/></p>
+</div><p>方程式 <a class="reference internal" href="#equation-shearx">(36)</a> ,  <a class="reference internal" href="#equation-sheary">(37)</a> ,  <a class="reference internal" href="#equation-entropy-prtb">(39)</a> は波が <img class="math" src="_images/math/a0d2ffc2b1b057d8d59c7cc8bc81061c7fc7b7b6.png" alt="v _{z0}"/> で進行することを表している。</p>
+<div class="math" id="equation-dvx-sol">
+<p><span class="eqno">(40)<a class="headerlink" href="#equation-dvx-sol" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7eb681bf106fdd5343697f5908c1e6f273aaf24c.png" alt="v _{x1} (x,~t) = v _{x1} (x \, - \, v _{z0} \Delta t,~t \, - \, \Delta t) \\"/></p>
+</div><div class="math" id="equation-dvy-sol">
+<p><span class="eqno">(41)<a class="headerlink" href="#equation-dvy-sol" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6da2bc8e10d579816292e3e0b1d43ca1bded662e.png" alt="v _{y1} (x,~t) = v _{y1} (x \, - \, v _{z0} \Delta t,~t \, - \, \Delta t) \\"/></p>
+</div><div class="math" id="equation-dvz-sol">
+<p><span class="eqno">(42)<a class="headerlink" href="#equation-dvz-sol" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7c03102460e44788b433f21e9d7a0841745acf66.png" alt="s _{1} (x,~t) = s _{1} (x \, - \, v _{z0} \Delta t,~t \, - \, \Delta t)"/></p>
+</div><p>ここで <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> は任意の時間差。</p>
+<p>密度の変化は2成分に分け、式 <a class="reference internal" href="#equation-entropy-prtb">(39)</a> を代入すると</p>
+<div class="math" id="equation-pressure-prtb">
+<p><span class="eqno">(43)<a class="headerlink" href="#equation-pressure-prtb" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/374a527e7f6987c398fc629f0fb86d469f087a8b.png" alt="c _s ^{-2} \frac{\partial P_1}{\partial t} \; + \;  \frac{v _{z0}}{c _s ^2} \, \frac{\partial P _1}{\partial z} \; + \; \rho _0 \frac{\partial v _{z1}}{\partial z} \; = \; 0"/></p>
+</div><p>が得られる。式 <a class="reference internal" href="#equation-pressure-prtb">(43)</a> に <img class="math" src="_images/math/200f5faf4fc58fb4afb007d431ecd0118b9ebb1d.png" alt="c _s \rho _0"/> を掛けてから式 <a class="reference internal" href="#equation-shearz">(38)</a> との和をとると、</p>
+<div class="math" id="equation-pressure-prtb2">
+<p><span class="eqno">(44)<a class="headerlink" href="#equation-pressure-prtb2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8e5793599722a7a4d02546c0bfbf2e1511843d03.png" alt="\frac{\partial}{\partial t} \left( v _{1x} \, + \, \frac{P _1}{\rho _0 c _s} \right) \; +
+\; \left( v _{z0} \, + \, c _s \right)
+\frac{\partial}{\partial z} \left( v _{1x} \, + \, \frac{P _1}{\rho _0 c _s} \right) \; = \; 0"/></p>
+</div><p>が得られる。同様な操作で差をとると</p>
+<div class="math" id="equation-pressure-prtb3">
+<p><span class="eqno">(45)<a class="headerlink" href="#equation-pressure-prtb3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/86819b9880f76bf735dd89de3d0f55c7edd4c0f8.png" alt="\frac{\partial}{\partial t} \left( v _{1x} \, - \, \frac{P _1}{\rho _0 c _s} \right) \; +
+\; \left( v _{z0} \, - \, c _s \right)
+\frac{\partial}{\partial z} \left( v _{1x} \, - \, \frac{P _1}{\rho _0 c _s} \right) \; = \; 0"/></p>
+</div><p>が得られる。従って</p>
+<div class="math" id="equation-jpm">
+<p><span class="eqno">(46)<a class="headerlink" href="#equation-jpm" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/600d63bd53738dfa64e4c95c229088dc01bbf992.png" alt="J _+ =  v _{1x} \, + \, \frac{P _1}{\rho _0 c _s} \\
+J _- =  v _{1x} \, - \, \frac{P _1}{\rho _0 c _s}"/></p>
+</div><p>により定義される <img class="math" src="_images/math/cb1830fd479b0a51a4be5384c965894827c07c06.png" alt="J_\pm"/> は <img class="math" src="_images/math/a0d2ffc2b1b057d8d59c7cc8bc81061c7fc7b7b6.png" alt="v _{z0}"/> , <img class="math" src="_images/math/06b0e8ad5c61f4a82f645ac3eb2c66dc2171ab51.png" alt="\pm \, c _s"/> で伝播する。</p>
+</div>
+<div class="section" id="id7">
+<h3>磁気流体力学波<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>磁場を考慮した平面波を考える。再び全ての物理量は <img class="math" src="_images/math/3932642e2b0e9f96a760b19aafb7f8527f480156.png" alt="(z,~t)"/> だけに依存する場合、 <img class="math" src="_images/math/cb8569bec8e2e43a6a6df1456830dfcaf4bb4b10.png" alt="\mbox{\boldmath$\nabla$} \cdot \mbox{\boldmath$B$}~=~0"/> より、 <img class="math" src="_images/math/446603eaed55d324f333bafd6fdefa71858bf9e6.png" alt="B _z"/> は一定でなければならない。このことに注意して磁気流体方程式を書き直すと、</p>
+<div class="math" id="equation-eq-cont-mhd1d">
+<p><span class="eqno">(47)<a class="headerlink" href="#equation-eq-cont-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e74984c0ff2518fe9b2cf437a5595854bf888c3d.png" alt="\frac{\partial \rho}{\partial t} + \frac{\partial}{\partial  z} \left( \rho  v _z \right) \; = \; 0"/></p>
+</div><div class="math" id="equation-vx-mhd1d">
+<p><span class="eqno">(48)<a class="headerlink" href="#equation-vx-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f2df8faa986527579488bcaaabf696bcf9f5b381.png" alt="\frac{\partial v _x}{\partial t} + v _z \frac{\partial  v_x}{\partial z} \;  - \;
+\frac{B _z}{4\pi \rho} \frac{\partial B _x}{\partial z} = \; 0 \\"/></p>
+</div><div class="math" id="equation-vy-mhd1d">
+<p><span class="eqno">(49)<a class="headerlink" href="#equation-vy-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6a5b2f87dc63ab977ed1364b6311cf7a2aeca52f.png" alt="\frac{\partial v _y}{\partial t} +  v_z \frac{\partial  v_y}{\partial z} \;  - \;
+\frac{B _z}{4\pi \rho} \frac{\partial B _y}{\partial z} \; = \; 0 \\"/></p>
+</div><div class="math" id="equation-vz-mhd1d">
+<p><span class="eqno">(50)<a class="headerlink" href="#equation-vz-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4596b9ca486d6bd7049377f4d0752186bff9c128.png" alt="\frac{\partial v _z}{\partial t} +  v _z \frac{\partial v _z}{\partial z} \; +
+\frac{1}{\rho} \frac{\partial P}{\partial z} \; + \;
+\frac{1}{8 \pi \rho} \frac{\partial}{\partial z} \, \left( B _x ^2 \, + \, B _y ^2 \right)
+\; = \; 0 \\"/></p>
+</div><div class="math" id="equation-bx-mhd1d">
+<p><span class="eqno">(51)<a class="headerlink" href="#equation-bx-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/40b34069cf10f4d0c74f3c890844e97d43e2012d.png" alt="\frac{\partial B _x}{\partial t} = \frac{\partial}{\partial z}
+\left( v _x B _z \, - \, v _z  B _x \right) \\"/></p>
+</div><div class="math" id="equation-by-mhd1d">
+<p><span class="eqno">(52)<a class="headerlink" href="#equation-by-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a9d9c7e468351bc4dfd61b130245a8beb19b0006.png" alt="\frac{\partial B _y}{\partial t} =  \frac{\partial}{\partial z}
+\left( v _y B _z \, - \, v _z B _y \right) \\"/></p>
+</div><div class="math" id="equation-entropy-mhd1d">
+<p><span class="eqno">(53)<a class="headerlink" href="#equation-entropy-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d6fb3a92af84d45ba7523e8a69ac476c72a999e2.png" alt="\frac{d s}{\partial t} + v _z\frac{\partial s}{\partial z} \; = \; 0"/></p>
+</div><p>が得られる。</p>
+<p>定常状態では <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> , <img class="math" src="_images/math/c2aa3dff9bffb099e9dff196fd36aed56ec16baf.png" alt="P"/> , <img class="math" src="_images/math/1ec856633893bd20d69204ae410d4b068acfaf0b.png" alt="v _x"/> , <img class="math" src="_images/math/ffd82987cb46465b1d3d0b3b662aa460fdd59f67.png" alt="v _y"/> , <img class="math" src="_images/math/72439398939a181df0f319dfba720aa127b18947.png" alt="v _z"/> , <img class="math" src="_images/math/8f0f362150543baee8fcf847625e5c7b58233590.png" alt="B _x"/> , <img class="math" src="_images/math/96f6e5f98edc9fca4b9b257f4adba26a01297907.png" alt="B _y"/> は全て一定。ここでは平衡状態として <img class="math" src="_images/math/25ddd7ae7bff8fe2c45d3b3a33f107f22e662428.png" alt="v _x~=~v _y~=~0"/> で、 <img class="math" src="_images/math/3112a3bfdfe1d903724574399eb53366af68d43c.png" alt="B _y~=~0"/> <img class="math" src="_images/math/ac2d7bdd8cfdab5f324d2dcfcc041241c96111dc.png" alt="B _z \, \ge \, 0"/> である場合を考える。この状態の周りの摂動を考える。</p>
+<div class="math" id="equation-drho-mhd1d">
+<p><span class="eqno">(54)<a class="headerlink" href="#equation-drho-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6248c84800fa39d50d58c14d6fd844197e2ea416.png" alt="\rho = \rho _0 \, + \, \rho _1 \\"/></p>
+</div><div class="math" id="equation-ds-mhd1d">
+<p><span class="eqno">(55)<a class="headerlink" href="#equation-ds-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3fabecbc2267233e323faa6fe6d98e23b9c4d997.png" alt="s = s _0 \, + \, s _1 \\"/></p>
+</div><div class="math" id="equation-dvx-mhd1d">
+<p><span class="eqno">(56)<a class="headerlink" href="#equation-dvx-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6c555c1a9a6508e7d98994199ff951d1f94d0e87.png" alt="v _x  =  v _{x1} \\"/></p>
+</div><div class="math" id="equation-dvy-mhd1d">
+<p><span class="eqno">(57)<a class="headerlink" href="#equation-dvy-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/72a3f271a2cf710c48fc302bf75db23810199ce3.png" alt="v _y  =  v _{y1} \\"/></p>
+</div><div class="math" id="equation-dvz-mhd1">
+<p><span class="eqno">(58)<a class="headerlink" href="#equation-dvz-mhd1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1039afcdde4c4b21050e20ca92a6d3dd1c256676.png" alt="v _z  = v _{z0} \, + \, v _{z1} \\"/></p>
+</div><div class="math" id="equation-dbx-mhd1d">
+<p><span class="eqno">(59)<a class="headerlink" href="#equation-dbx-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/70aa6b7b4216a001b96559c1376c36f84336950e.png" alt="B _x = B _{x0} \, + \, B _{x1} \\"/></p>
+</div><div class="math" id="equation-dby-mhd1d">
+<p><span class="eqno">(60)<a class="headerlink" href="#equation-dby-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4b1d5cd3d039108f7f194066c5ce9e340f5584e8.png" alt="B _y = B _{y1} \\"/></p>
+</div><div class="math" id="equation-dbz-mhd1d">
+<p><span class="eqno">(61)<a class="headerlink" href="#equation-dbz-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/43bf29c499ea9273d3a6997d4b0c6e5675c31a96.png" alt="B _z = B _{z0} \\"/></p>
+</div><div class="math" id="equation-dp-mhdp1d">
+<p><span class="eqno">(62)<a class="headerlink" href="#equation-dp-mhdp1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/441e276e3623d7f4c2698d2d3b931ccba533d0f1.png" alt="P  = P _0 \, + \, P _1"/></p>
+</div><p>摂動方程式は</p>
+<div class="math" id="equation-eq-drho-mhd1d">
+<p><span class="eqno">(63)<a class="headerlink" href="#equation-eq-drho-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0ad8c12bfb6d5def5dad90714873d23a1a2da8bb.png" alt="\frac{\partial \rho _1}{\partial t} +  v _{z0} \frac{\partial \rho _1}{\partial  z}
+\; + \; \rho _0 \frac{\partial v _{z1}}{\partial z} \; = \; 0 \\"/></p>
+</div><div class="math" id="equation-eq-dvx-mhd1d">
+<p><span class="eqno">(64)<a class="headerlink" href="#equation-eq-dvx-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/dfea4fc1e24f01dbf97f83131e085ba342b3af37.png" alt="\frac{\partial v _{x1}}{\partial t} + v _{z0} \frac{\partial  v_{x1}}{\partial z}
+\; - \; \frac{B _{z0}}{4 \pi \rho _0} \frac{\partial B _{x1}}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-eq-dvy-mhd1d">
+<p><span class="eqno">(65)<a class="headerlink" href="#equation-eq-dvy-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/569d21f15090d4b71b004fa0cb3c8fb1b09a0dbb.png" alt="\frac{\partial v _{y1}}{\partial t} +  v_{z0} \frac{\partial  v_{y1}}{\partial z} \;
+\; - \; \frac{B _{z0}}{4 \pi \rho _0} \frac{\partial B _{y1}}{\partial z} \;  = \; 0"/></p>
+</div><div class="math" id="equation-eq-dvz-mhd1d">
+<p><span class="eqno">(66)<a class="headerlink" href="#equation-eq-dvz-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5f314cd7f8fb16d49db0b8c425ae6d77d77ee13a.png" alt="\frac{\partial v _{z1}}{\partial t} +  v _{z0} \frac{\partial v _{z1} }{\partial z} \; +
+\frac{1}{\rho _0} \frac{\partial P _1}{\partial z} \; + \;
+\frac{B _{x0}}{4 \pi \rho _0} \frac{\partial B _{x1}}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-eq-dbx-mhd1d">
+<p><span class="eqno">(67)<a class="headerlink" href="#equation-eq-dbx-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1939cef669fd518f9b1f130cced2eb6c08c51840.png" alt="\frac{\partial B _{x1}}{\partial t} + v _{z0} \frac{\partial B _{x1}}{\partial z} \;  + \;
+B _{x0} \frac{\partial v _{z1}}{\partial z} \;  = \;
+B _{z0} \frac{\partial v _{x1}}{\partial z} \\"/></p>
+</div><div class="math" id="equation-eq-dby-mhd1d">
+<p><span class="eqno">(68)<a class="headerlink" href="#equation-eq-dby-mhd1d" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/07d5c51eed2818e60ea0a4837bbfa8ed563297ce.png" alt="\frac{\partial B _{y1}}{\partial t} + v _{z0} \frac{\partial B _{y1}}{\partial z}
+\; = \; B _{z0} \frac{\partial v _{y1}}{\partial z} \\"/></p>
+</div><div class="math" id="equation-entropy-prtb2">
+<p><span class="eqno">(69)<a class="headerlink" href="#equation-entropy-prtb2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4c42dc9537a4382bdb8db7e190de26daa2fc26fe.png" alt="\frac{d s _1}{\partial t} + v _{z0} \frac{\partial s _1}{\partial z} \; = \;  0"/></p>
+</div><p>と書き表される。</p>
+<div class="section" id="id8">
+<h4>エントロピー波<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>式 <a class="reference internal" href="#equation-entropy-prtb2">(69)</a> は式 <a class="reference internal" href="#equation-entropy-prtb">(39)</a> と同一で、 <img class="math" src="_images/math/2a304e3c1a013c7732013ba0881530b917f374ff.png" alt="s _1"/> が <img class="math" src="_images/math/a0d2ffc2b1b057d8d59c7cc8bc81061c7fc7b7b6.png" alt="v _{z0}"/> で移流伝播することを表している。</p>
+</div>
+<div class="section" id="id9">
+<h4>アルフヴェン波<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>運動方程式と誘導方程式の <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 成分の線形結合をとると</p>
+<div class="math" id="equation-elsasser-p">
+<p><span class="eqno">(70)<a class="headerlink" href="#equation-elsasser-p" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/424aeac271f77587800e7c79749b09fbeef8515b.png" alt="\frac{\partial}{\partial t} \left( v _y \, + \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right )
++ \left( v _{z0} \, - \, \frac{B _{z0}}{\sqrt{4 \pi \rho _0}} \right)
+\frac{\partial}{\partial z} \left( v _y \, + \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right )
+\; = \; 0 \\"/></p>
+</div><div class="math" id="equation-elsasser-m">
+<p><span class="eqno">(71)<a class="headerlink" href="#equation-elsasser-m" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/434d2a77865d3fbbbe13cf0b0f5aa413e57de76f.png" alt="\frac{\partial}{\partial t} \left( v _y \, - \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right )
++ \left( v _{z0} \, + \, \frac{B _{z0}}{\sqrt{4 \pi \rho _0}} \right)
+\frac{\partial}{\partial z} \left( v _y \, - \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right )
+\; = \; 0"/></p>
+</div><p>ここで <img class="math" src="_images/math/3c6526867a3f1f69b90ad3aae23ab540e18da472.png" alt="v _y \, \pm \, B_{y1} /\sqrt{4 \pi \rho _0}"/> は Elsassaer variableである。平衡状態で磁場は <img class="math" src="_images/math/350ef06d9465a86c9825f45af0630067c5cff9d2.png" alt="xz"/> 平面内にあるとしたので、 <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向は平均磁場と波数のどちらにも垂直となっている。従ってこの方程式は、横波を表している。伝播速度はアルフヴェン速度と呼ばれ、波数ベクトル <img class="math" src="_images/math/6201d2b59b2af444b5d92754682f65cbd2a32cb5.png" alt="\mbox{\boldmath$k$}"/> を用いて次のように評価できる。</p>
+<div class="math" id="equation-alfven-speed">
+<p><span class="eqno">(72)<a class="headerlink" href="#equation-alfven-speed" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/23ff5371ac4c1f09f0785710e4828595792b7d85.png" alt="v _{Az} \; \equiv \; \frac{| B _{z0}|}{\sqrt{4 \pi \rho _0}} \; = \;
+\frac{| \mbox{\boldmath$k$} \cdot \mbox{\boldmath$B$} _0|}{k \, \sqrt{4 \pi \rho _0}}"/></p>
+</div></div>
+<div class="section" id="id10">
+<h4>磁気音波<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>残りの4本の微分方程式は</p>
+<div class="math" id="equation-ms1">
+<p><span class="eqno">(73)<a class="headerlink" href="#equation-ms1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/81aa1cf059772848b99c87fc182dc78b9afe8cdc.png" alt="c _s ^{-2} \frac{\partial P _1}{\partial t} + \frac{v _{z0}}{c _s ^2}
+\frac{\partial P _1}{\partial z}\; + \; \rho _0 \, \frac{\partial v _{z1}}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-ms2">
+<p><span class="eqno">(74)<a class="headerlink" href="#equation-ms2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ecf1df440603df3ed263e7244e4c36f53a2f8641.png" alt="\frac{\partial v _{x1}}{\partial t} + v _{z0} \frac{\partial v _{x1}}{\partial z}
+\; - \; \frac{B _{z0} }{4 \pi \rho _0} \frac{\partial B _{x1}}{\partial z} \; = \; 0 \\"/></p>
+</div><div class="math" id="equation-ms3">
+<p><span class="eqno">(75)<a class="headerlink" href="#equation-ms3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/38ad234d6d3e47774a3c3fd42e98f2c460807dbc.png" alt="\frac{\partial v _{z1}}{\partial t} + v _{z0} \frac{\partial v _{z1}}{\partial z}
+\; + \; \frac{1}{\rho _0} \frac{\partial P _1}{\partial z} \; +
+\; \frac{B _{x0}}{4 \pi \rho _0}  \frac{\partial B _{x1}}{\partial z} \; = \; 0  \\"/></p>
+</div><div class="math" id="equation-ms4">
+<p><span class="eqno">(76)<a class="headerlink" href="#equation-ms4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/663cb51fa8675409bd77f089237a5e589f986625.png" alt="\frac{\partial B _{x1}}{\partial t} + v _{z0} \frac{\partial B _{x1}}{\partial z} \;  + \;
+B _{x0} \frac{\partial v _{z1}}{\partial z} \; = \;
+B _{z0} \frac{\partial v _{x1}}{\partial z}"/></p>
+</div><div class="math" id="equation-ms-syseq">
+<p><span class="eqno">(77)<a class="headerlink" href="#equation-ms-syseq" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ff109c1df752081171d1f521e324077b16acc27c.png" alt="\frac{\partial \mbox{\boldmath$q$}}{\partial t} \; + \; v _{z0}
+\frac{\partial \mbox{\boldmath$q$}}{\partial z} \; + \;
+\left(
+\begin{array}{cccc}
+0 &amp; 0 &amp; c _s  &amp; 0 \\
+0 &amp; 0 &amp; 0 &amp; - v _{Az} \\
+c _s &amp;  0 &amp; 0 &amp;  v _{Ax} \\
+0 &amp; - v _{Az} &amp; v _{Ax} &amp; 0 \\
+\end{array}
+\right) \, \frac{\partial \mbox{\boldmath$q$}}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-qdef">
+<p><span class="eqno">(78)<a class="headerlink" href="#equation-qdef" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/09eca58066a8b6612f3b2f38a696229f0933ccfb.png" alt="\mbox{\boldmath$q$} \; = \;
+\left( \begin{array}{c}
+\displaystyle \frac{P _1}{c _s \rho _0} \\
+v _{x1} \\
+\displaystyle v _{z1} \\
+\displaystyle \frac{B _{x1}}{\sqrt{4 \pi \rho _0}}
+\end{array}
+\right)"/></p>
+</div><p>分散関係</p>
+<div class="math" id="equation-disp1">
+<p><span class="eqno">(79)<a class="headerlink" href="#equation-disp1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c6fc3b472ff30f5caa6aeff0e930c47fecfc2edb.png" alt="\frac{\partial}{\partial t} \rightarrow - i \omega \, , \hskip 1.0cm
+\frac{\partial}{\partial z} \rightarrow i k \, , \hskip1.0cm \lambda \; = \; \frac{\omega}{k}"/></p>
+</div><div class="math" id="equation-disp2">
+<p><span class="eqno">(80)<a class="headerlink" href="#equation-disp2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/af952612470fe803ee460b341408a27e3f96c2e0.png" alt="\left( \lambda \, - \, v _{z0} \right) ^4 \, - \,
+\left( c _s ^2 \, + \, v _{Ax}^2 \, + \,  v _{Az} ^2 \right) \left( \lambda \, - \, v _{z0} \right) ^2
+\, + \, c _s ^2 v _{Az} ^2"/></p>
+</div><div class="math" id="equation-disp3">
+<p><span class="eqno">(81)<a class="headerlink" href="#equation-disp3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/342ee484b9d7cd92932e4ab667e7eff43c955828.png" alt="\lambda \; = \; v _{z0} \, \pm \, v _{f} \, , \hskip 0.2cm v _{z0} \, \pm \, v _s"/></p>
+</div><div class="math" id="equation-disp4">
+<p><span class="eqno">(82)<a class="headerlink" href="#equation-disp4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/436c149cb8e631e0f846404a94394ad5a1639507.png" alt="v _f  ^2 = \frac{c _s ^2 \, + \, v _{Ax} ^2 \, + \, v _{Az} ^2 \, + \,
+\sqrt{ (c _s ^2 \, + \, v _{Ax} ^2 \, - \, v _{Az} ^2) ^2 \, + \, 4 v _{Ax} ^2 V _{Az} ^2}}{2}"/></p>
+</div><div class="math" id="equation-disp5">
+<p><span class="eqno">(83)<a class="headerlink" href="#equation-disp5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/dcda2900b463b348a22299116c54ab22a34d0f6c.png" alt="v _s  ^2 = \frac{c _s ^2 \, + \, v _{Ax} ^2 \, + \, v _{Az} ^2 \, - \,
+\sqrt{ (c _s ^2 \, + \, v _{Ax} ^2 \, - \, v _{Az} ^2) ^2 \, + \, 4 v _{Ax} ^2 V _{Az} ^2}}{2}"/></p>
+</div></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>非線形効果<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>伝播速度は位相により異なる。最も簡単な例は磁場がない等エントロピーの流れ。</p>
+<div class="math" id="equation-entropy-mode1">
+<p><span class="eqno">(84)<a class="headerlink" href="#equation-entropy-mode1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/58aebe3a935d9931043455e03c579073080df0f7.png" alt="\frac{\partial \rho}{\partial t} \; + \; \frac{\partial}{\partial z} ( \rho v _z) = 0"/></p>
+</div><div class="math" id="equation-entropy-mode2">
+<p><span class="eqno">(85)<a class="headerlink" href="#equation-entropy-mode2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1bf636aa4fec80670c5322ce5ad4a4b9119f830a.png" alt="\frac{\partial v _z}{\partial t} \; + \;
+v _z \frac{\partial v _z}{\partial z} \, + \, \frac{1}{\rho} \frac{\partial P}{\partial z}
+ = 0"/></p>
+</div><p>密度は圧力だけの関数であることに注意すると、連続の式は</p>
+<div class="math" id="equation-cont-variant">
+<p><span class="eqno">(86)<a class="headerlink" href="#equation-cont-variant" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/37fc9ef15206281772ee348feea7b636a35e9446.png" alt="\frac{1}{c _s \rho} \left( \frac{\partial P}{\partial t} \, + \, \frac{\partial P}{\partial z} \right)
+\; + \;  c _s \, \frac{\partial v _z}{\partial z} \; = \; 0"/></p>
+</div><p>と書き改められる。新しい変数として</p>
+<div class="math" id="equation-w-def">
+<p><span class="eqno">(87)<a class="headerlink" href="#equation-w-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/caa626194ba7592889905620621c0e5c8668648b.png" alt="w \; \equiv \; \int \frac{1}{c _s \rho} \, dP"/></p>
+</div><p>と置くと流体力学方程式は</p>
+<div class="math" id="equation-hd-sys1">
+<p><span class="eqno">(88)<a class="headerlink" href="#equation-hd-sys1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a5086f620c3c27e7c0160c69399be2bc5d7d010b.png" alt="\frac{\partial w}{\partial t} + v _z \, \frac{\partial w}{\partial z} \; + \; c _s
+\frac{\partial v _z}{\partial z} \; = \; 0 \\"/></p>
+</div><div class="math" id="equation-hd-sys2">
+<p><span class="eqno">(89)<a class="headerlink" href="#equation-hd-sys2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/103991e630332d604123ae394b0ca93e4a2e89f9.png" alt="\frac{\partial v _z}{\partial t} + v _z \frac{\partial v _z}{\partial z} \; + \; c _s
+\frac{\partial w}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-hd-sys3">
+<p><span class="eqno">(90)<a class="headerlink" href="#equation-hd-sys3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d0d67c175c418a57fbe0326401ea4182916de0c1.png" alt="\frac{\partial J _\pm}{\partial t} \; + \; \left( v _z \, \pm \,  c _s \right)
+\frac{\partial J _\pm}{\partial z} \; = \; 0"/></p>
+</div><div class="math" id="equation-jpm-def">
+<p><span class="eqno">(91)<a class="headerlink" href="#equation-jpm-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2db48e1d9b158bf006c7b57b5da4bd016a883fe4.png" alt="J _\pm \; = \; v _z \, \pm \, w"/></p>
+</div><p>ここで波の振幅を表す変数 <img class="math" src="_images/math/d0de838c88ad8f9f727d721ac305122eb0ecd1f5.png" alt="J _\pm"/> を Riemann 不変量と呼ぶ。エントロピーや Elsasser variable も Riemann 不変量である。</p>
+<div class="figure align-center" id="id15">
+<a class="reference internal image-reference" href="_images/t_hanawa_f1.png"><img alt="_images/t_hanawa_f1.png" src="_images/t_hanawa_f1.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">波の伝播による波頭の先鋭化</span><a class="headerlink" href="#id15" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>初期に <img class="math" src="_images/math/2d31913d6ed6bb3d47c8000563b37f1fc6481221.png" alt="J _-  ~=~0"/> であれば、つねに <img class="math" src="_images/math/0db43adeb2cff9b12255a4ca6df98198cc581899.png" alt="J _-~=~0"/> なので <img class="math" src="_images/math/723b8d4e4ebfd45fe11e20b2fd76df29ecc645ab.png" alt="J~=~2 v _z \; = \; 2 w"/> 。伝播速度 <img class="math" src="_images/math/e90c6f3178ecb64a6006af118c556de08f50e370.png" alt="v _z \, + \, w"/> は、 <img class="math" src="_images/math/32c06f8c59d4bd3d13eedea7765a8a74a11f2383.png" alt="J"/> が大きいほど大きい。従って初期の波形が正弦波も次第に切り立った波形に変わる。ついには衝撃波へと変化する。</p>
+<p>比熱比 <img class="math" src="_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/> が一定の理想気体の場合、</p>
+<div class="math" id="equation-w-ideal">
+<p><span class="eqno">(92)<a class="headerlink" href="#equation-w-ideal" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fcbfd9115fe343d29300dbd47569067b77a0d1d3.png" alt="w \; = \; \frac{2 c _s}{\gamma \, - \, 1} \; \propto \; \rho ^{(\gamma \, - \, 1)/2}"/></p>
+</div></div>
+<div class="section" id="id12">
+<h2>波の固有ベクトル<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id13">
+<h3>磁場のない場合<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="math" id="equation-u-hd">
+<p><span class="eqno">(93)<a class="headerlink" href="#equation-u-hd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fc4b143e7f58016b757788e5b399c1fab061f57e.png" alt="\mbox{\boldmath$U$} \; = \;
+\left( \begin{array}{c}
+\rho \\ \rho v _x \\ \rho v _y \\ \rho v _z \\ \rho E
+\end{array}
+\right)"/></p>
+</div><div class="math" id="equation-du-hd">
+<p><span class="eqno">(94)<a class="headerlink" href="#equation-du-hd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3fe60d5fc7246be04968794b1a754f326a848542.png" alt="\Delta \mbox{\boldmath$U$} =
+\left( \frac{\partial \rho}{\partial s} \right) _P s _1 \,
+\left( \begin{array}{c}
+1 \\ v _x \\ v_y \\ v _z \\ H \, - \, C _p  T
+\end{array}
+\right) \; + \; v _{x1} \,
+\left( \begin{array}{c}
+0 \\ \rho \\ 0 \\ 0 \\ \rho v _x
+\end{array} \right)
+\; + \; v _{y1} \,
+\left( \begin{array}{c}
+0 \\ 0  \\ \rho  \\ 0 \\ \rho v _y \end{array} \right)  \\
+\; + \;  v _{z1} \,
+\left( \begin{array}{c}
+0 \\ 0 \\ 0 \\ \rho \\ \rho v _z
+\end{array} \right) \; + \;
+c _s ^{-2} P _1 \,
+\left( \begin{array}{c}
+1 \\ v _x \\ v _y \\ v _z \\ H
+\end{array}
+\right) \\
+=
+\left( \rho _1 \, - \, \frac{P _1}{c _s ^2} \right)  \,
+\left( \begin{array}{c}
+1 \\ v _x \\ v_y \\ v _z \\ H \, - \, C _p  T
+\end{array}
+\right) \; + \; v _{x1} \,
+\left( \begin{array}{c}
+0 \\ \rho \\ 0 \\ 0 \\ \rho v _x
+\end{array} \right)
+\; + \; v _{y1} \,
+\left( \begin{array}{c}
+0 \\ 0  \\ \rho  \\ 0 \\ \rho v _y \end{array} \right)  \\
+\; + \;  \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  + \, \frac{\rho v _{z1}}{c _s} \right)
+\left( \begin{array}{c}
+1 \\ v _x \\ v _y \\ v _z  + c _s \\ H \, + \, c _s v _z
+\end{array}
+\right) \;  + \;  \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  - \, \frac{\rho v _{z1}}{c _s} \right)
+\left( \begin{array}{c}
+1 \\ v _x \\ v _y \\ v _z  -  c _s \\ H \, - \, c _s v _z
+\end{array}
+\right)"/></p>
+</div></div>
+<div class="section" id="id14">
+<h3>磁場のある場合<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="math" id="equation-du-mhd">
+<p><span class="eqno">(95)<a class="headerlink" href="#equation-du-mhd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/842d003cbcf81387cd09ec5f8d50e25dbb0cf0e1.png" alt="\Delta \mbox{\boldmath$U$} =
+\left( \frac{\partial \rho}{\partial s} \right) _P s _1 \,
+\left( \begin{array}{c}
+1 \\ v _x \\ v_y \\ v _z \\ 0 \\ 0 \\ 0 \\ H \, - \, C _p  T
+\end{array}
+\right) \; + \; v _{x1} \,
+\left( \begin{array}{c}
+0 \\ \rho \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ \rho v _x
+\end{array} \right)
+\; + \; v _{y1} \,
+\left( \begin{array}{c}
+0 \\ 0  \\ \rho  \\ 0 \\ 0 \\ 0 \\ 0 \\ \rho v _y \end{array} \right)  \\
++
+\frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  + \, \frac{\rho v _{z1}}{c _s} \right)
+\left( \begin{array}{c}
+1 \\ v _x \\ v _y \\ v _z  + c _s \\ 0 \\ 0 \\ 0 \\ H \, + \, c _s v _z
+\end{array}
+\right) \;  + \;  \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  - \, \frac{\rho v _{z1}}{c _s} \right)
+\left( \begin{array}{c}
+1 \\ v _x \\ v _y \\ v _z  -  c _s \\ 0 \\ 0 \\ 0 \\ H \, - \, c _s v _z
+\end{array} \right) \\
++ B _{1x} \left( \begin{array}{c}
+0 \\  0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ \displaystyle \frac{B_{0x}}{4\pi}
+\end{array} \right) \; + \;
+B _{1y} \left( \begin{array}{c}
+0 \\  0 \\ 0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0
+\end{array} \right)"/></p>
+</div><p>エントロピー波は流体のときと同じ。</p>
+<p>アルフヴェン波による変化は</p>
+<div class="math" id="equation-du-alfven">
+<p><span class="eqno">(96)<a class="headerlink" href="#equation-du-alfven" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8a0a550b8378316380686b8ec0ff8f36aaa2e357.png" alt="\Delta \mbox{\boldmath$U$} _{\rm Alfven} \; = \;
+\left( v _{y1} \, + \, \frac{B _{y1}}{\sqrt{4 \pi \rho _0}} \right)
+\, \left( \begin{array}{c}
+0 \\ 0 \\ 1 \\ 0 \\ 0 \\ \sqrt{4\pi \rho _0} \\ 0 \\ 0
+\end{array} \right) \; + \;
+\left( v _{y1} \, - \, \frac{B _{y1}}{\sqrt{4 \pi \rho _0}} \right)
+\, \left( \begin{array}{c}
+0 \\ 0 \\ 1 \\ 0 \\ 0 \\ - \sqrt{4\pi \rho _0} \\ 0 \\ 0
+\end{array} \right)"/></p>
+</div><p>と表される。</p>
+<p><img class="math" src="_images/math/caf9bd12b96b28ae7ac2c4e0cfafa6acd4fcb9a9.png" alt="\lambda ~=~v _{z0} \, + \, v _*"/> で伝播する磁気音波による変化 (固有ベクトル)</p>
+<div class="math" id="equation-eignv-ms">
+<p><span class="eqno">(97)<a class="headerlink" href="#equation-eignv-ms" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f81404e11e2a0fb0fc142520cf5c949c90ef6785.png" alt="d\mbox{\boldmath$q$} \; = \;
+\left( \begin{array}{c}
+c _s c _{Ax} v _*  \\  \left(c _s ^2 \, - \, v _*^2 \right) v _{Az} \\
+v _*^2  c _{Ax}  \\ (c _s ^2 \, - \, v _*^2)  v _*
+\end{array} \right)"/></p>
+</div><p>と表される。</p>
+<p>伝播速度の大小</p>
+<div class="math" id="equation-eign-order">
+<p><span class="eqno">(98)<a class="headerlink" href="#equation-eign-order" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/60e1e4dc53875fc815be54694da4c2dc77ddb325.png" alt="- v _f \, \le \, - v _{\rm Az} \, \le \, - v _s \, \le \, 0 \, \le \, v _s \, \le \, v _{Az} \, \le v _f"/></p>
+</div></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">磁気流体力学波</a><ul>
+<li><a class="reference internal" href="#id2">基礎方程式</a><ul>
+<li><a class="reference internal" href="#id3">理想気体の状態方程式</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id4">保存形式</a></li>
+<li><a class="reference internal" href="#id5">線形波</a><ul>
+<li><a class="reference internal" href="#id6">流体力学波</a></li>
+<li><a class="reference internal" href="#id7">磁気流体力学波</a><ul>
+<li><a class="reference internal" href="#id8">エントロピー波</a></li>
+<li><a class="reference internal" href="#id9">アルフヴェン波</a></li>
+<li><a class="reference internal" href="#id10">磁気音波</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id11">非線形効果</a></li>
+<li><a class="reference internal" href="#id12">波の固有ベクトル</a><ul>
+<li><a class="reference internal" href="#id13">磁場のない場合</a></li>
+<li><a class="reference internal" href="#id14">磁場のある場合</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="sabun.html" title="差分法の基礎"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="introduction.html" title="イントロダクション"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>Orszag-Tang 渦問題 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="ケルビン・ヘルムホルツ不安定" href="application_kh.html" />
+    <link rel="prev" title="衝撃波管問題" href="application_sktb.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application_kh.html" title="ケルビン・ヘルムホルツ不安定"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_sktb.html" title="衝撃波管問題"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="orszag-tang">
+<span id="otvortex"></span><h1>Orszag-Tang 渦問題<a class="headerlink" href="#orszag-tang" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>松本洋介（千葉大学）</p>
+</dd>
+</dl>
+<div class="section" id="id1">
+<h2>背景<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>多次元MHDシミュレーションコードの標準問題として、Orszag-Tang 渦問題（ <a class="reference internal" href="reference.html#orszag-tang79"><span class="std std-ref">Orszag &amp; Tang, 1979</span></a> ）が知られている。本問題では、複数の衝撃波の相互作用や渦形成などが含まれ、MHDシミュレーションコードの安定性および精度を比較する上でしばしばよく挙げられる。また、2次元計算のため、磁場のソレノイダル性（ <img class="math" src="_images/math/15d723513a33006b59863b1a836aa1d7c74a746e.png" alt="\nabla\cdot\mbox{\boldmath$B$}=0"/> ）を維持できないと計算が破綻する（ <a class="reference internal" href="riemann.html#divb"><span class="std std-ref">磁場の発散の数値的処理</span></a> を参照）。</p>
+</div>
+<div class="section" id="id2">
+<h2>課題設定<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>初期状態として、各物理量に対して下記のように設定する。</p>
+<div class="math">
+<p><img src="_images/math/1becc3dcea58f3bfc99a88f08b9081ecb0503878.png" alt="\rho &amp;= \gamma^2 \\
+P    &amp;= \gamma   \\
+V_x  &amp;= -\sin(Y) \\
+V_y  &amp;= +\sin(X) \\
+V_z  &amp;= 0.0 \\
+B_x  &amp;= -\sin(Y) \\
+B_y  &amp;= +\sin(2X) \\
+B_z  &amp;= 0.0 \\"/></p>
+</div><p>ここで、 <img class="math" src="_images/math/63b8350f663a62d8335d5526d55a30f618b9731c.png" alt="\gamma=5/3"/> は比熱比である。計算領域は <img class="math" src="_images/math/1d328df7704b586eb755387367e3e4ce155fb974.png" alt="0 \le X \le 2\pi"/> 、 <img class="math" src="_images/math/1aeb55f5cd1bc420177f0ab56e886b2ceb8ab2bf.png" alt="0 \le Y \le 2\pi"/> で、各方向に対して周期境界条件を与える。</p>
+</div>
+<div class="section" id="id3">
+<h2>結果<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="figure align-center" id="id5">
+<span id="otresult"></span><a class="reference internal image-reference" href="_images/OTvortex.png"><img alt="_images/OTvortex.png" src="_images/OTvortex.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text"><img class="math" src="_images/math/1e97a062b07cf7f870071d8bfc825840d9413034.png" alt="T=\pi"/> における結果。左が温度 ( <img class="math" src="_images/math/2a56557b4b93342c7d7b105c3bf069fd5e928c5d.png" alt="P/\rho"/> ）の2次元分布を表し、右は <img class="math" src="_images/math/ed5b2fc1c802a2fc766efbbeca90bb19404884c4.png" alt="Y=0.64\pi"/> における <img class="math" src="_images/math/ed38fa24f1c94891bd312012aab3f6673be3eb83.png" alt="X"/> 方向のプロファイル</span><a class="headerlink" href="#id5" title="この画像へのパーマリンク">¶</a></p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>参考文献<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#orszag-tang79"><span class="std std-ref">Orszag &amp; Tang, 1979</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Orszag-Tang 渦問題</a><ul>
+<li><a class="reference internal" href="#id1">背景</a></li>
+<li><a class="reference internal" href="#id2">課題設定</a></li>
+<li><a class="reference internal" href="#id3">結果</a></li>
+<li><a class="reference internal" href="#id4">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application_kh.html" title="ケルビン・ヘルムホルツ不安定"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_sktb.html" title="衝撃波管問題"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

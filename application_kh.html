@@ -1,0 +1,237 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>ケルビン・ヘルムホルツ不安定 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="磁気リコネクション" href="application_mrx.html" />
+    <link rel="prev" title="Orszag-Tang 渦問題" href="application_OTvortex.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application_mrx.html" title="磁気リコネクション"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_OTvortex.html" title="Orszag-Tang 渦問題"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="kh">
+<span id="id1"></span><h1>ケルビン・ヘルムホルツ不安定<a class="headerlink" href="#kh" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>松本洋介（千葉大学）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>背景<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>二つの運動している媒体が相対速度を持って接している場合、境界領域においては速度シア層が形成される。その速度シア境界は擾乱に対して不安定であることが19世紀後半より知られており、これを初期の研究者の名前から因んでケルビン−ヘルムホルツ（Kelvin-Helmholtz、以下KH）不安定と言う。速度シア境界は、地球大気中から天体現象において普遍的に存在し、KH不安定の発達は幅広い領域において応用されている。本巻で取り扱う実験室や宇宙空間でのプラズマ現象においても例外ではなく、速度シア層が存在するプラズマ物理領域に置いてKH不安定が成長し、各領域において重要な役割を果たしている。</p>
+<p>KH不安定自体は流体的不安定であるため、プラズマ中でのKH不安定の非線形発展については主にMHDシミュレーションによる研究が行われている。例えば、活動銀河核などから放出される宇宙ジェットのMHDシミュレーションが多く報告されているが、KH不安定がジェットの安定性に大きな影響を与えていることが明らかになっている （ <a class="reference internal" href="reference.html#ferrari98"><span class="std std-ref">Ferrari et al., 1998</span></a>; <a class="reference internal" href="reference.html#baty03"><span class="std std-ref">Baty et al., 2003</span></a> ） 。このようなMHDシミュレーションによるアプローチは、太陽風と接する地球磁気圏境界において成長するKH不安定に対しても適用されてきた。</p>
+</div>
+<div class="section" id="id3">
+<h2>線形理論<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>数値計算による非線形発展を示す前に、線形理論から導かれる不安定条件と成長率を示す。これらは数値計算の初期設定、計算結果の妥当性を確認するのに有益である。</p>
+<p>いま、プラズマが <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 方向に流れ、速度が <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向に差し渡し <img class="math" src="_images/math/3b91308a0751f9601ef49963a6a62565abff8ac7.png" alt="V_0"/> 変化している速度シア層を考える。また、背景磁場は <img class="math" src="_images/math/cdf4d881ead27b75f8f0c952abcb2555ce5fdd52.png" alt="{\bf B_0}=(B_{0x},0,B_{0z})"/> の成分を持つ。このようなプラズマ中でのKH不安定の成長は、磁場の存在とプラズマの圧縮性に大きく影響を受ける（詳しくは文献 <a class="reference internal" href="reference.html#chandrasekhar61"><span class="std std-ref">Chandrasekhar 1961,</span></a> ; <a class="reference internal" href="reference.html#miura-pritchett82"><span class="std std-ref">Miura &amp; Pritchett, 1982</span></a> を参照のこと）。</p>
+<p>ここで、2つの特別なケースを考えよう。まずは、背景磁場が背景速度と同じ方向に向いている場合、すなわち <img class="math" src="_images/math/bb992dd0bcade4bae4395dc62a037a89d0555558.png" alt="{\bf B_0}=(B_{0x},0,0)"/> の場合、速度シアの大きさについて</p>
+<div class="math" id="equation-unstable1">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-unstable1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/63ec20aa2c0a26a2e5ca3d2678f3a2faa9e23355.png" alt="V_A &lt; \frac{V_0}{2} &lt; C_S"/></p>
+</div><p>の条件を満たす場合に不安定となる。ここで <img class="math" src="_images/math/5f66e1dee634592fc89d5e8f4931a46e9000a6fe.png" alt="V_A=|{\bf B_0}|/\sqrt{\mu_0\rho_i}"/> はAlfven速度、 <img class="math" src="_images/math/3d4d595033910c0639161b40c8f515eea9130903.png" alt="C_S=\sqrt{\gamma P_i/\rho_i}"/> は音速である（ <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> 、 <img class="math" src="_images/math/c2aa3dff9bffb099e9dff196fd36aed56ec16baf.png" alt="P"/> 、 <img class="math" src="_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/> はそれぞれ質量密度、圧力、比熱比である）。速度シアの大きさ <img class="math" src="_images/math/880e42249ccc39ec467733ee716ba523b9099ae1.png" alt="(V_0/2)"/> が  <img class="math" src="_images/math/243653f2b565b327fb1329f25e69ef458b146f3a.png" alt="V_A"/> より大きい必要があるのは、速度場の面内に磁場が存在すると磁気張力が安定化の働きをもたらすためであると直感的にも理解できる。また音速で制限されているのは、プラズマの圧縮性による安定化の効果である。このことから、平行磁場（ <img class="math" src="_images/math/89be966e814b09b46e24780203438d46df134a6d.png" alt="{\bf V_0} // {\bf B_0}"/> ）の場合は高 <img class="math" src="_images/math/7138dad9ac96835665b17f5817eacfcaa9b834c9.png" alt="\beta"/> プラズマ、例えば、宇宙ジェットのような弱い磁場領域に適用される。ここで、 <img class="math" src="_images/math/7f7a7567cfb8f900b191dc5a31da207280fb91bc.png" alt="\beta = \frac{P}{P_{mag}}"/> はプラズマ圧力と磁気圧力 <img class="math" src="_images/math/abe06a2874968f1b02ad939ef8f279f012f8880c.png" alt="P_{mag} \equiv {|{\bf B}|^2}/{(2\mu_0)}"/> との比である。</p>
+<p>一方、垂直磁場（ <img class="math" src="_images/math/6367cac612ef0ed59e0694aea03d875850f7c45d.png" alt="{\bf V_0} \perp {\bf B_0}"/> ）の場合は</p>
+<div class="math" id="equation-unstable2">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-unstable2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3dadef8435de493679b018c372b54e1e85fd7905.png" alt="\frac{V_0}{2} &lt; V_f = \sqrt{V_A^2+C_S^2}"/></p>
+</div><p>が不安定条件であり、亜磁気音速の流れであれば常に不安定である。このような条件は様々なプラズマ <img class="math" src="_images/math/7138dad9ac96835665b17f5817eacfcaa9b834c9.png" alt="\beta"/> 領域に適用可能であり、特に低緯度磁気圏境界においてはこの条件が満たされていると考えられている。現実には波数ベクトル、磁場、流れの向きが様々であり、それぞれの状況において不安定条件は違うが、一般に垂直磁場条件が最も不安定であり、平行磁場条件が最も安定化されやすい。</p>
+<p>KH不安定の成長率は上記条件に加え、速度シアの厚みが時間スケールを決める。以下では、数値シミュレーションでも用いられる一般的な速度シアの関数に対する成長率を求める。シミュレーションでは初期条件として</p>
+<div class="math" id="equation-tanh">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-tanh" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/41ff6f1565fc7fef476f98cc1712a2ff1902d945.png" alt="V_x = -\frac{V_0}{2}\tanh{\left(\frac{y}{\lambda} \right)}"/></p>
+</div><p>の形で速度プロファイルがしばしば与えられる。また、ここでは垂直磁場配位 <img class="math" src="_images/math/8d360704bf58a7b9d443d2be8a94dad40bc5f6a5.png" alt="{\bf B}=(0,0,B_0)"/> を考えよう。プラズマの圧力はプラズマ <img class="math" src="_images/math/7138dad9ac96835665b17f5817eacfcaa9b834c9.png" alt="\beta"/> より決まり、密度と共に一様に与える。このような条件の下でMHD方程式を線形化し、得られた線形MHD方程式を固有値問題として数値的に解くことにより固有値（成長率）と固有関数が得られる（詳細は省く）。</p>
+<div class="figure align-center" id="id7">
+<span id="linear-kh"></span><a class="reference internal image-reference" href="_images/kh_linear.png"><img alt="_images/kh_linear.png" src="_images/kh_linear.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">KH不安定の成長率とそれに対応する不安定モード。横軸は速度シアの厚み <img class="math" src="_images/math/cefc603e5658facb747581f9567192993f21c7ab.png" alt="\lambda"/> で規格化された波数、縦軸は <img class="math" src="_images/math/7c4ee7bf9dafa4cb58846dd877fb50a82ad6b2dd.png" alt="\lambda/V_0"/> で規格化された成長率。</span><a class="headerlink" href="#id7" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#linear-kh"><span class="std std-ref">上図</span></a> は、 <img class="math" src="_images/math/20f69abdf6397c5c30e2774538a7c4e298d61fb2.png" alt="\beta=2.0"/> 、 <img class="math" src="_images/math/60e1ceb06de957033e799c90ebd666f132a6b2f4.png" alt="V_0/V_f=1.0"/> の場合の成長率とそれに対応する不安定モードを表す。これより、最大成長率は <img class="math" src="_images/math/4e05496f7a012273552bc994d8dc0bb8bd8c88ef.png" alt="\gamma \lambda/V_0=0.077"/> であり、対応する不安定モードは <img class="math" src="_images/math/b5a21cec806ce17e5a7e629bbec7e0af42fff371.png" alt="k_x\lambda=0.4"/> であることがわかる。これらを元に計算領域のサイズを決める。また、計算結果から得られた成長率を求めることにより、計算の妥当性のチェックを行う。</p>
+</div>
+<div class="section" id="id4">
+<h2>結果<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>上記線形解析結果のパラメタを用いてシミュレーション結果と線形理論との比較を行う。背景場は</p>
+<div class="math" id="equation-kh-init">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-kh-init" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d843b74216e4483fb14697eb531c064650bfd33a.png" alt="V_x(y)  &amp;= -\frac{V_0}{2}\tanh{\left(\frac{y}{\lambda} \right)}, \\
+ \rho(y) &amp;= \frac{\rho_0}{2}\left\{ (1-rr)\tanh{\left(\frac{y}{\lambda} \right)}+1+rr\right\}, \\
+ B_x(y)  &amp;= \frac{B_0}{2}\left\{ (1-br)\tanh{\left(\frac{y}{\lambda} \right)}+1+br\right\}\cos{(\theta)}, \\
+ B_z(y)  &amp;= \frac{B_0}{2}\left\{ (1-br)\tanh{\left(\frac{y}{\lambda} \right)}+1+br\right\}\sin{(\theta)},"/></p>
+</div><p>の関数で設定され（model.f90参照）、それぞれ使用するパラメタは、</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 39%" />
+<col style="width: 61%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/5709ef8b342315871f87ef5c3a2be565e2149021.png" alt="B_0"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/cefc603e5658facb747581f9567192993f21c7ab.png" alt="\lambda"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/7138dad9ac96835665b17f5817eacfcaa9b834c9.png" alt="\beta"/></p></td>
+<td><p><img class="math" src="_images/math/848e4e19ec9e30f034ccebffb2b0010de32fa30b.png" alt="2.0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/dc5dfaaa18e77b08d7b69a3fe3351fb8664b210e.png" alt="V_0/V_f"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/17f37c05c4ba34d9e267ca78d6407fc39639e155.png" alt="rr"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/32f73a5b59825ded52db77886578299c66f92407.png" alt="br"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/f4597c28f3c924e5650bf95286b4a8ae08a2f862.png" alt="theta"/></p></td>
+<td><p><img class="math" src="_images/math/a12be91d4eca50e5af2d9b3391db78c39266fb5d.png" alt="90^\circ"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/b83ade8364f8116b2a4028e5061ff8a2f8a21e67.png" alt="L_x"/></p></td>
+<td><p><img class="math" src="_images/math/f4492b0639ad222384687d572c79fbbe59be5133.png" alt="2\pi\lambda/0.4"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/0b85c685299ab1993562f93305f6cc639d0abf0d.png" alt="L_y"/></p></td>
+<td><p><img class="math" src="_images/math/519ba459e604dbb696148d7bdee425c234a2bc4d.png" alt="\pm 10\lambda"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/852b8ffc2553dfa818c2e131e468d82d26f1af1e.png" alt="\Delta h"/></p></td>
+<td><p><img class="math" src="_images/math/d1de33ea17e3b089291a2872fa2cf5171d8c7f33.png" alt="\lambda/8"/></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>である。境界条件は、 <img class="math" src="_images/math/d73b790870ede626cddb6fc0c83106f52bd6b48e.png" alt="x, z"/> 方向は周期境界、 <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向は反射端境界とした。</p>
+<div class="figure align-center" id="id8">
+<span id="kh-bench"></span><a class="reference internal image-reference" href="_images/kh_bench.png"><img alt="_images/kh_bench.png" src="_images/kh_bench.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text"><img class="math" src="_images/math/995ff4db09754e9028a24cec2188afef6d70a55e.png" alt="T=106 \lambda/V_0"/> におけるKH不安定の非線形発展結果。色は圧力、矢印は速度場ベクトルを表す。</span><a class="headerlink" href="#id8" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#kh-bench"><span class="std std-ref">図</span></a> はシミュレーション結果で、KH不安定に特徴的な渦形成とそれに伴った低圧・高圧ペアが確認できる。</p>
+<div class="figure align-center" id="id9">
+<span id="growth-rate"></span><a class="reference internal image-reference" href="_images/kh_linear_growth.png"><img alt="_images/kh_linear_growth.png" src="_images/kh_linear_growth.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">最大成長率モードのフーリエ振幅の時間発展</span><a class="headerlink" href="#id9" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>得られた計算結果の妥当性を調べるため、速度擾乱成分である <img class="math" src="_images/math/8635e2c57bfea61699be1718c8cd71617d7126dd.png" alt="V_y"/> を <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 方向にフーリエ変換し、 <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向に平均化した最大成長率モード(モード数１）のフーリエ振幅の時間発展を調べたのが <a class="reference internal" href="#growth-rate"><span class="std std-ref">上図</span></a> である。また比較のため、線形解析で得られた成長率（ <img class="math" src="_images/math/7fc732009608d0baa02af7ee37d4bbb8278ab002.png" alt="\gamma_{fgm} \lambda/V_0=0.077"/> ）の傾きを同時にプロットした。結果、シミュレーションで得られた最大成長率モードの線形成長率は、線形解析結果が予測した値に沿う。また系の発展の後半での振幅の振動はKH不安定の非線形現象として知られている（ <a class="reference internal" href="reference.html#miura-sato78"><span class="std std-ref">Miura &amp; Sato, 1978</span></a> ）。</p>
+</div>
+<div class="section" id="id5">
+<h2>まとめ<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以上のように、KH不安定は渦を生み出す元である。上記パラメタでは、コヒーレントな渦構造が安定に存在する。しかし、非一様な媒質中のKH不安定による渦は非線形段階で不安定化され乱流へと移行する。このような、KH不安定の非線形発展中に新たに励起される構造を、2次的不安定性と呼ぶ。特に密度成層中のKH不安定が2次的に励起する不安定性は、回転による遠心力が擬似的に重力の役割を果たすレイリーテイラー（Rayleigh-Taylor,以下R-T）不安定として知られている（ <a class="reference internal" href="reference.html#matsumoto-hoshino04"><span class="std std-ref">Matsumoto &amp; Hoshino, 2004</span></a> ）。この2次的R-T不安定により乱流へと移行した結果、無衝突プラズマの混合過程が促進されている。</p>
+<p>本例では垂直磁場配位のみを紹介したが、水平磁場でのKH不安定の発達も重要となる宇宙ジェットなどの研究領域もあり、MHDシミュレーション（ <a class="reference internal" href="reference.html#nykyri-otto01"><span class="std std-ref">Nykyri &amp; Otto, 2001</span></a> ）や2流体シミュレーション（ <a class="reference internal" href="reference.html#nykyri-otto04"><span class="std std-ref">Nykyri &amp; Otto 2004,</span></a> ; <a class="reference internal" href="reference.html#nakamura08"><span class="std std-ref">Nakamura et al., 2008</span></a> ）で示されている磁気リコネクションとのカップリングが注目される。さらに近年の3次元MHDシミュレーションでは3次元性による新たなKH不安定の乱流移行が見出されてきている（ <a class="reference internal" href="reference.html#matsumoto-seki07"><span class="std std-ref">Matsumoto &amp; Seki, 2007</span></a> ）。</p>
+</div>
+<div class="section" id="id6">
+<h2>参考文献<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#baty03"><span class="std std-ref">Baty et al. 2003</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#chandrasekhar61"><span class="std std-ref">Chandrasekhar 1961</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#ferrari98"><span class="std std-ref">Ferrari et al. 1998</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#matsumoto-hoshino04"><span class="std std-ref">Matsumoto &amp; Hoshino 2004</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#matsumoto-seki07"><span class="std std-ref">Matsumoto &amp; Seki 2007</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#miura-pritchett82"><span class="std std-ref">Miura &amp; Pritchett 1982</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#miura-sato78"><span class="std std-ref">Miura &amp; Sato 1978</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#nakamura08"><span class="std std-ref">Nakamura et al. 2008</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#nykyri-otto01"><span class="std std-ref">Nykyri &amp; Otto 2001</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#nykyri-otto04"><span class="std std-ref">Nykyri &amp; Otto 2004</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">ケルビン・ヘルムホルツ不安定</a><ul>
+<li><a class="reference internal" href="#id2">背景</a></li>
+<li><a class="reference internal" href="#id3">線形理論</a></li>
+<li><a class="reference internal" href="#id4">結果</a></li>
+<li><a class="reference internal" href="#id5">まとめ</a></li>
+<li><a class="reference internal" href="#id6">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application_mrx.html" title="磁気リコネクション"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_OTvortex.html" title="Orszag-Tang 渦問題"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

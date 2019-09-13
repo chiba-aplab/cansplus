@@ -1,0 +1,89 @@
+=============
+参考文献
+=============
+
+.. [Aloy00] `Aloy et al., Astrophys. J., 2000. <http://adsabs.harvard.edu/abs/2000ApJ...531L.119A>`_
+.. [Balbus-Hawley91] `Balbus and Hawley, Astrophys. J., 1991. <http://adsabs.harvard.edu/abs/1991ApJ...376..214B>`_
+.. [Balsara98] `Balsara, Astrophys. J. Suppl., 1998. <http://adsabs.harvard.edu/abs/1998ApJS..116..119B>`_
+.. [Balsara-Spicer99] `Balsara and Spicer, J. Comput. Phys., 1999. <http://adsabs.harvard.edu/abs/1999JCoPh.149..270B>`_
+.. [Bhattacharjee09] `Bhattacharjee et al., Phys. Plasmas, 2009. <http://adsabs.harvard.edu/abs/2009PhPl...16k2102B>`_
+.. [Baty03] `Baty et al., Phys. Plasmas, 2003. <http://adsabs.harvard.edu/abs/2003PhPl...10.4661B>`_
+.. [Bogdan03] `Bogdan et al., Astrophys. J., 2003. <http://adsabs.harvard.edu/abs/2003ApJ...599..626B>`_
+.. [Borges08] `Borges et al., J. Comput. Phys., 2008. <http://adsabs.harvard.edu/abs/2008JCoPh.227.3191B>`_
+.. [Brackbill-Barnes80] `Brackbill and Barnes, J. Comput. Phys., 1980. <http://adsabs.harvard.edu/abs/1980JCoPh..35..426B>`_
+.. [Blandford-Payne82] `Blandford and Payne, MNRAS, 1982. <http://adsabs.harvard.edu/abs/1982MNRAS.199..883B>`_
+.. [Blandford-Znajek77] `Blandford and Znajek, MNRAS, 1977. <http://adsabs.harvard.edu/abs/1977MNRAS.179..433B>`_
+.. [Brio-Wu88] `Brio and Wu, J. Comput. Phys., 1988. <http://adsabs.harvard.edu/abs/1988JCoPh..75..400B>`_
+.. [Cargo-Gallice97] `Cargo and Gallice, J. Comput. Phys., 1997. <http://adsabs.harvard.edu/abs/1997JCoPh.136..446C>`_
+.. [Chandrasekhar60] `Chandrasekhar, PNAS, 1960. <http://adsabs.harvard.edu/abs/1960PNAS...46..253C>`_
+.. [Chandrasekhar61] `Chandrasekhar, "Hydrodynamic and Hydromagnetic Stability", Dover, 1961. <http://adsabs.harvard.edu/abs/1961hhs..book.....C>`_
+.. [Dedner02] `Dedner et al., J. Comput. Phys., 2002. <http://adsabs.harvard.edu/abs/2002JCoPh.175..645D>`_
+.. [DelZanna07] `Del Zanna et al., Astronomy & Astrophys., 2007. <http://adsabs.harvard.edu/abs/2007A%26A...473...11D>`_
+.. [Evans-Hawley88] `Evans and Hawley, Astrophys. J., 1988. <http://adsabs.harvard.edu/abs/1988ApJ...332..659E>`_
+.. [Fender04] `Fender et al., MNRAS, 2004. <http://adsabs.harvard.edu/abs/2004MNRAS.355.1105F>`_
+.. [Ferrari98] `Ferrari et al., Annu. Rev. Astron. Astrophys., 1998. <http://adsabs.harvard.edu/abs/1998ARA%26A..36..539F>`_
+.. [Fujii94] `藤井孝蔵、「流体力学の数値計算法」、 東京大学出版会、1994年 <http://www.amazon.co.jp/gp/product/413062802X>`_
+.. [Gardiner-Stone05] `Gardiner and Stone, J. Comput. Phys., 2005. <http://adsabs.harvard.edu/abs/2005JCoPh.205..509G>`_
+.. [Godfrey12] `Godfrey et al., Astrophys. J., 2012. <http://adsabs.harvard.edu/abs/2012ApJ...758L..27G>`_
+.. [Gottlieb-Shu98] `Gottlieb and Shu, Mathematics of Computation, 1998. <http://adsabs.harvard.edu/abs/1998MaCom..67...73G>`_
+.. [Hawley-Balbus91] `Hawley and Balbus, Astrophys. J., 1991. <http://adsabs.harvard.edu/abs/1991ApJ...376..223H>`_
+.. [Hawley95] `Hawley et al., Astrophys. J., 1995. <http://adsabs.harvard.edu/abs/1995ApJ...440..742H>`_
+.. [Hawley00] `Hawley, Astrophys. J., 2000. <http://adsabs.harvard.edu/abs/2000ApJ...528..462H>`_
+.. [Henrick05] `Henrick et al., J. Comput. Phys., 2005. <http://adsabs.harvard.edu/abs/2005JCoPh.207..542H>`_
+.. [Hirsch90] `C. Hirsch, Numerical Computation of Internal and External Flows, 1990. <http://books.google.co.jp/books?id=bsrkrw5MdtUC&printsec=frontcover&dq=isbn:0080550029&hl=ja&sa=X&ei=pBTVUb-pLsilkgX0oIGADg&ved=0CDEQ6AEwAA#v=onepage&q&f=false>`_
+.. [Ichimaru77] `Ichimaru, Astrophys. J., 1977. <http://adsabs.harvard.edu/abs/1977ApJ...214..840I>`_
+.. [Jiang-Shu96] `Jiang and Shu, J. Comput. Phys., 1996. <http://adsabs.harvard.edu/abs/1996JCoPh.126..202J>`_
+.. [Kamaya96] `Kamaya et al., Astrophys. J., 1996. <http://adsabs.harvard.edu/abs/1996ApJ...458L..25K>`_
+.. [Kato04a] `Kato et al., Astrophys. J., 2004a. <http://adsabs.harvard.edu/abs/2004ApJ...600..338K>`_
+.. [Kato04b] `Kato et al., Astrophys. J., 2004b. <http://adsabs.harvard.edu/abs/2004ApJ...605..307K>`_
+.. [Kato08] `Kato et al., Black-hole accretion disks --- Towards a New Paradigm ---, Kyoto University Press, 2008. <http://adsabs.harvard.edu//abs/2008bhad.book.....K>`_
+.. [Kim97] `Kim et al., Astrophys. J., 1997. <http://adsabs.harvard.edu/abs/1997astro.ph..3072K>`_
+.. [Kim-Hong98] `Kim and Hong, Astrophys. J., 1998. <http://adsabs.harvard.edu/abs/1998ApJ...507..254K>`_
+.. [Liu94] `Liu et al., J. Comput. Phys., 1994. <http://adsabs.harvard.edu/abs/1994JCoPh.115..200L>`_
+.. [Londrillo-DelZanna04] `Londrillo and Del Zanna, J. Comput. Phys., 2004. <http://adsabs.harvard.edu/abs/2004JCoPh.195...17L>`_
+.. [Loureiro07] `Loureiro et al., Phys. Plasmas, 2007. <http://adsabs.harvard.edu/abs/2007PhPl...14j0703L>`_
+.. [Lynden-Bell96] `Lynden-Bell, MNRAS, 1996. <http://adsabs.harvard.edu/abs/1996MNRAS.279..389L>`_
+.. [Marti97] `Marti et al., Astrophys. J., 1997. <http://adsabs.harvard.edu/abs/1997ApJ...479..151M>`_
+.. [Machida00] `Machida et al., Astrophys. J., 2000. <http://adsabs.harvard.edu/abs/2000ApJ...532L..67M>`_
+.. [Matsumoto88] `Matsumoto et al., PASJ, 1988. <http://adsabs.harvard.edu/abs/1988PASJ...40..171M>`_
+.. [Matsumoto90] `Matsumoto et al., Astrophys. J., 1990. <http://adsabs.harvard.edu/abs/1990ApJ...356..259M>`_
+.. [Matsumoto99] `Matsumoto, in Astrophysics and Space Science Library, Vol. 240, Numerical Astrophysics, 1999. <http://adsabs.harvard.edu/abs/1999ASSL..240..195M>`_
+.. [Matsumoto-Hoshino04] `Matsumoto and Hoshino, Geophys. Res. Lett., 2004. <http://adsabs.harvard.edu/abs/2004GeoRL..3102807M>`_ 
+.. [Matsumoto-Seki07] `Matsumoto and Seki, J. Geophys. Res., 2007. <http://adsabs.harvard.edu/abs/2007JGRA..11206223M>`_ 
+.. [Matsuo94] `松尾一泰、「圧縮性流体力学：内部流れの理論と解析」、理工学社（オーム社）、1994年 <http://www.amazon.co.jp/gp/product/4274069699>`_
+.. [Miyoshi-Kusano05] `Miyoshi and Kusano, J. Comput. Phys., 2005. <http://adsabs.harvard.edu/abs/2005JCoPh.208..315M>`_
+.. [Miura-Pritchett82] `Miura and Pritchett, J. Geophys. Res. , 1982. <http://adsabs.harvard.edu/abs/1982JGR....87.7431M>`_
+.. [Miura-Sato78] `Miura and Sato, J. Fluid Mech., 1978. <http://adsabs.harvard.edu/abs/1978JFM....86...33M>`_
+.. [Mizuno07] `Mizuno et al., Astrophys. J., 2007. <http://adsabs.harvard.edu/abs/2007astro.ph..3190M>`_
+.. [Mizuno11] `Mizuno et al., Astrophys. J., 2011. <http://adsabs.harvard.edu/abs/2011arXiv1104.0549M>`_
+.. [Nakamura08] `Nakamura et al., J. Geophys. Res., 2008. <http://adsabs.harvard.edu/abs/2008JGRA..113.9204N>`_ 
+.. [Narayan12] `Narayan et al., MNRAS, 2012. <http://adsabs.harvard.edu/abs/2012MNRAS.426.3241N>`_
+.. [Narayan-Yi94] `Narayan and Yi, Astrophys. J., 1994. <http://adsabs.harvard.edu/abs/1994ApJ...428L..13N>`_
+.. [Narayan-Yi95] `Narayan and Yi, Astrophys. J., 1995. <http://adsabs.harvard.edu/abs/1995ApJ...452..710N>`_
+.. [Newcomb58] `Newcomb, Ann. Phys., 1958. <http://adsabs.harvard.edu/abs/1958AnPhy...3..347N>`_
+.. [Norman82] `Norman et al., Astron. & Astrophys., 1982. <http://adsabs.harvard.edu/abs/1982A%26A...113..285N>`_
+.. [Nykyri-Otto01] `Nykyri and Otto, Geophys. Res. Lett. , 2001. <http://adsabs.harvard.edu/abs/2001GeoRL..28.3565N>`_
+.. [Nykyri-Otto04] `Nykyri and Otto, Ann. Geophys. , 2004. <http://ads.nao.ac.jp/abs/2004AnGeo..22..935N>`_
+.. [Orszag-Tang79] `Orszag and Tang, J. Fluid Mech., 1979. <http://adsabs.harvard.edu/abs/1979JFM....90..129O>`_
+.. [Parker66] `Parker, Astrophys. J., 1966. <http://adsabs.harvard.edu/doi/10.1086/148828>`_ 
+.. [Parker67] `Parker, Astrophys. J., 1967. <http://adsabs.harvard.edu/abs/1967ApJ...149..535P>`_ 
+.. [Petschek64] `Petscek, in AAS/NASA Symposium on the Physics of Solar Flares, 1964. <http://adsabs.harvard.edu/abs/1964NASSP..50..425P>`_
+.. [Powell99] `Powell et al., J. Comput. Phys., 1999. <http://adsabs.harvard.edu/abs/1999JCoPh.154..284P>`_
+.. [Rosen99] `Rosen et al., Astrophys. J., 1999. <http://adsabs.harvard.edu/abs/1999astro.ph..1046R>`_
+.. [Ryu-Jones95] `Ryu and Jones, Astrophys. J., 1995. <http://adsabs.harvard.edu/abs/1994astro.ph..4074R>`_
+.. [Scholer89] `Scholer, J. Geophys. Res., 1989. <http://adsabs.harvard.edu/abs/1989JGR....94.8805S>`_
+.. [Shakura-Sunyaev73] `Shakura and Sunyaev, Astron. Astrophys., 1973. <http://adsabs.harvard.edu/abs/1973A%26A....24..337S>`_
+.. [Shapiro53] `Shapiro, The dynamics and thermodynamics of compressible fluid flow, John Wiley \& Sons, 1953. <http://adsabs.harvard.edu/abs/1953dtcf.book.....S>`_
+.. [Stone-Pringle01] `Stone and Pringle, MNRAS, 2001. <http://adsabs.harvard.edu/abs/2001MNRAS.322..461S>`_
+.. [Suresh-Huynh97] `Suresh and Huynh, J. Comput. Phys., 1997 <http://adsabs.harvard.edu/abs/1997JCoPh.136...83S>`_
+.. [Tanuma-Shibata07] `Tanuma and Shibata, PASJ, 2007. <http://adsabs.harvard.edu/abs/2007PASJ...59L...1T>`_
+.. [Todo92] `Todo et al., PASJ, 1992. <http://adsabs.harvard.edu/abs/1992PASJ...44..245T>`_
+.. [Todo93] `Todo et al., Astrophys. J., 1993. <http://adsabs.harvard.edu/abs/1993ApJ...403..164T>`_
+.. [Toth00] `Toth et al., J. Comput. Phys., 2000. <http://adsabs.harvard.edu/abs/2000JCoPh.161..605T>`_
+.. [Ugai-Tsuda77] `Ugai and Tsuda, J. Plasma Phys., 1977. <http://adsabs.harvard.edu/abs/1977JPlPh..17..337U>`_
+.. [Ugai92] `Ugai, Phys. Fluids, 1992. <http://adsabs.harvard.edu/abs/1992PhFlB...4.2953U>`_
+.. [vanLeer79] `van Leer, J. Comput. Phys., 1979. <http://adsabs.harvard.edu/abs/1979JCoPh..32..101V>`_
+.. [Zenitani10] `Zenitani et al., Astrophys. J., 2010. <http://adsabs.harvard.edu/abs/2010ApJ...716L.214Z>`_
+.. [Zenitani-Miyoshi11] `Zenitani and Miyoshi, Phys. Plasmas, 2011. <http://adsabs.harvard.edu/abs/2011PhPl...18b2105Z>`_
+.. [Zenitani15] `Zenitani, Phys. Plasmas, 2015. <http://adsabs.harvard.edu/abs/2015PhPl...22c2114Z>`_
+.. [Zhang03] `Zhang et al., Astrphys. J., 2003. <http://adsabs.harvard.edu/abs/2003ApJ...586..356Z>`_

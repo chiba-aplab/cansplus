@@ -1,0 +1,317 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>CANS+ 3次元コード &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="IDLによる解析・可視化" href="idl.html" />
+    <link rel="prev" title="CANS+ の使い方" href="cansplus.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="idl.html" title="IDLによる解析・可視化"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cansplus.html" title="CANS+ の使い方"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="cansplus.html" accesskey="U"><strong>CANS+</strong> の使い方</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cans-3">
+<span id="cans-3d"></span><h1><strong>CANS+</strong> 3次元コード<a class="headerlink" href="#cans-3" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<div class="section" id="id1">
+<h2>基礎方程式<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>CANS+は以下のような規格化されたMHD方程式を解いています。</p>
+<p>質量保存の式：</p>
+<div class="math" id="equation-mass">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-mass" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/84c09c23efe3c8c12e94edaee04966d7d81c07cc.png" alt="\frac{\partial \rho}{\partial t} + \nabla \cdot \left( \rho \mbox{\boldmath$v$} \right) = 0,"/></p>
+</div><p>運動量保存の式：</p>
+<div class="math" id="equation-momentum">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-momentum" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0f6c616685c37f03b71d12bac3a1dd0b1a3b8f58.png" alt="\frac{\partial \rho\mbox{\boldmath$v$}}{\partial t} + \nabla \cdot \left( \rho\mbox{\boldmath$vv$} + p_t\mbox{\boldmath$I$} - \mbox{\boldmath$BB$} \right) = 0,"/></p>
+</div><p>誘導方程式：</p>
+<div class="math" id="equation-indu">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-indu" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/48b2f987e04adbf2d4d286b3450061e4da28648d.png" alt="\frac{\partial \mbox{\boldmath$B$}}{\partial t} + \nabla \cdot \left( \mbox{\boldmath$vB$}-\mbox{\boldmath$Bv$} +\psi \mbox{\boldmath$I$}\right) = -\nabla \times \left( \eta \mbox{\boldmath$j$} \right),"/></p>
+</div><p>エネルギー保存の式：</p>
+<div class="math" id="equation-energy">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-energy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/986b8fa270030b9ececf250e709188cbaa9dfd7e.png" alt="\frac{\partial e}{\partial t} + \nabla \cdot \left( (e+p_t)\mbox{\boldmath$v$}-\mbox{\boldmath$B$}(\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$}) \right) = S(\rho,p),"/></p>
+</div><p><img class="math" src="_images/math/809bad0ed0912214a6bb79b96a99314df9fda775.png" alt="\nabla \cdot \mbox{\boldmath$B$}"/> 補正用のスカラポテンシャル：</p>
+<div class="math" id="equation-psi">
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-psi" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/13d250f15a2b9bfab69556f313ce2b6814c9545a.png" alt="\frac{\partial \psi}{\partial t} +c_h^2 \nabla \cdot \mbox{\boldmath$B$} = -\frac{c_h^2}{c_p^2}\psi ."/></p>
+</div><p>ここで、 <img class="math" src="_images/math/bf30c9d141df18fefd63fe4fd1a5dc75503bd830.png" alt="\mbox{\boldmath$I$}"/> は単位行列、 <img class="math" src="_images/math/413a07c7323f3426d33a0ca0dd90f8e87be627cc.png" alt="p_t"/> は</p>
+<div class="math" id="equation-tpressure">
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-tpressure" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c59e79fe1fe60ebefd07a2b1a0512788c7cfc823.png" alt="p_t = p + \frac{B^2}{2}"/></p>
+</div><p>で定義される、全圧力（プラズマ圧力＋磁気圧力）を表し、プラズマ圧は</p>
+<div class="math" id="equation-gpressure">
+<p><span class="eqno">(7)<a class="headerlink" href="#equation-gpressure" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/b32f4784700c41003be9a48cada05279453b6a72.png" alt="p = \left(\gamma-1\right) \left(e-\frac{1}{2}\rho v^2- \frac{B^2}{2} \right)"/></p>
+</div><p>より求められます（ここで <img class="math" src="_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/> は比熱比）。</p>
+<p>式 <a class="reference internal" href="mhdwave.html#equation-energy">(4)</a> の右辺はソース項となっており、課題によって冷却や加熱効果として（陽に）含まれます。また、低圧力領域への安定化としても（陰に）導入されています。従って、 <strong>厳密なエネルギー保存は数値的安定化のため成り立っていません</strong> 。</p>
+<p>また、式 <a class="reference internal" href="riemann.html#equation-indu">(4)</a> に含まれる <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> は</p>
+<div class="math" id="equation-gaus">
+<p><span class="eqno">(8)<a class="headerlink" href="#equation-gaus" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ff6cf2310e47b8175c07483d353df5c10763621f.png" alt="\nabla \cdot \mbox{\boldmath$B$} = 0"/></p>
+</div><p>からの誤差をなるべく小さいまま解き進めるために導入されたスカラ変数で、式 <a class="reference internal" href="#equation-psi">(5)</a> に従って解き進められます。式 <a class="reference internal" href="#equation-mass">(1)</a> - <a class="reference internal" href="#equation-psi">(5)</a> をGLM-MHD方程式系と呼びます（詳細は前章 <a class="reference internal" href="riemann.html#dc-divb"><span class="std std-ref">移流拡散法</span></a> 、 <a class="reference internal" href="reference.html#dedner02"><span class="std std-ref">Dedner et al., 2002</span></a> ）。</p>
+<p>保存系で書かれたGLM-MHD方程式系はシステム方程式</p>
+<div class="math" id="equation-system">
+<p><span class="eqno">(9)<a class="headerlink" href="#equation-system" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f0d258ce209f813039394ae2ff572954233749dd.png" alt="\frac{\partial \mbox{\boldmath$U$}}{\partial t} + \nabla \cdot \mbox{\boldmath$F$} = \mbox{\boldmath$S$}"/></p>
+</div><p>にまとめて、</p>
+<div class="math" id="equation-system2">
+<p><span class="eqno">(10)<a class="headerlink" href="#equation-system2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3ed13331d63e81d9bf3f9a320b6f978be12705f6.png" alt="\frac{\partial \mbox{\boldmath$U$}_{i,j,k}}{\partial t} + \sum_{s=i,j,k} \frac{\mbox{\boldmath$F$}^{*}_{s+1/2}-\mbox{\boldmath$F$}^{*}_{s-1/2}}{\Delta_s} = \mbox{\boldmath$S$}_{i,j,k}"/></p>
+</div><p>のように、有限体積法として解きます。ここで、 <img class="math" src="_images/math/ce6f04874e7520f48181ce50597f81afe03476d3.png" alt="\Delta_s"/> は各次元方向（ <img class="math" src="_images/math/80213942735aa86a63a1bf8a7b3aa6583a0edd43.png" alt="s=i,j,k"/> ）のセル幅、 <img class="math" src="_images/math/843cce624988282c61da8c18c75627dec877635d.png" alt="F^{*}_{s\pm1/2}"/> はセル境界における数値フラックスを表します。数値フラックスを、</p>
+<ul class="simple">
+<li><p>5次精度のMP5法によるセル境界への変数補間（ <a class="reference internal" href="riemann.html#mp5"><span class="std std-ref">前章MP5</span></a> , <a class="reference internal" href="reference.html#suresh-huynh97"><span class="std std-ref">Suresh and Huynh, 1997</span></a> ）</p></li>
+<li><p>HLLD（HLL)近似リーマン解法（ <a class="reference internal" href="riemann.html#hlld"><span class="std std-ref">前章HLLD</span></a> , <a class="reference internal" href="reference.html#miyoshi-kusano05"><span class="std std-ref">Miyoshi and Kusano, 2005</span></a> ）</p></li>
+</ul>
+<p>によって求めることにより、 <strong>CANS+</strong> は空間（5次）精度・安定性を確保したコードとなっています。ソース項も含めて、時間更新は3次精度のTVDルンゲ・クッタ法（ <a class="reference internal" href="reference.html#gottlieb-shu98"><span class="std std-ref">Gottlieb and Shu, 1998</span></a> ）を採用しています。</p>
+</div>
+<div class="section" id="id2">
+<h2>パッケージ構成<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下のような構成になっています。</p>
+<div><img height="495" src="_images/blockdiag-07b9c2f97de3045154d37995e08185188e258e2c.png" width="295" /></div><p>Makefileはコードのバイナリ生成、削除をコントロールしています。初期化するには$CANSPLUS_DIR/3d内で、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ make clean
+</pre></div>
+</div>
+<p>としてください。Makefile_incには、</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">FC</span> <span class="o">=</span> mpif90
+<span class="nv">FFLAGS</span> <span class="o">=</span> -O2
+</pre></div>
+</div>
+<p>のように、makeする際のコンパイラとコンパイラオプションの環境変数が設定されています。ここでは、&quot;$FC&quot;にはMPI版Fortranコンパイラのコマンド名、&quot;$FFLAGS&quot;にはコンパイラオプションが設定されています。コンパイラとコンパイラオプションを変更したい場合は、例えばとあるスパコン上では、</p>
+<div class="highlight-makefile notranslate"><div class="highlight"><pre><span></span><span class="nv">FC</span> <span class="o">=</span> mpifrt
+<span class="nv">FFLAGS</span> <span class="o">=</span> -Kfast
+</pre></div>
+</div>
+<p>のように修正してください（インテルコンパイラがない場合）。</p>
+<p>&quot;common&quot;には共通するMHD方程式数値解法のエンジン部分、&quot;idl&quot;にはポスト処理用として <a class="reference internal" href="idl.html#idl"><span class="std std-ref">IDLルーチン</span></a> が用意されています。</p>
+<p>物理課題として「衝撃波管問題 (md_shktb)」、「Orsarg-Tang渦問題（md_OTvortex）」、「ケルビン・ヘルムホルツ不安定（md_kh）」、「磁気リコネクション（md_mrx）」、「パーカー不安定 (md_paker）」、「ジェット伝搬（直交格子） (md_jet_car）」、「ジェット伝搬（円筒座標系）(
+md_jet）」、「降着円盤での磁気回転不安定（gMRI)」が用意されています（2018年8月現在）。</p>
+<p>各課題には、</p>
+<div><img height="375" src="_images/blockdiag-6905cf8baf378225f2ee2281f0717f383106e9ba.png" width="295" /></div><p>が主に含まれており、それぞれの課題に沿った初期設定のサンプルが置かれています。&quot;data/&quot;はデフォルトの計算結果の出力先です。</p>
+<p>例えば、衝撃波管問題の計算を行うには、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> <span class="nv">$CANSPLUS_DIR</span>/3d/md_shktb
+$ make
+$ mpiexec -n <span class="m">1</span> ./a.out
+</pre></div>
+</div>
+<p>とします。結果はDAC形式と呼ばれるオリジナル <strong>CANS</strong> で使われていたバイナリデータ形式で、&quot;data/&quot;内に出力されます。</p>
+</div>
+<div class="section" id="const">
+<span id="id3"></span><h2>パラメタ設定<a class="headerlink" href="#const" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>各課題において、ユーザーが編集する必要があるのは（基本的に）</p>
+<ul class="simple">
+<li><p>const.f90</p></li>
+<li><p>model.f90</p></li>
+</ul>
+<p>のみです。以下では、ケルビン・ヘルムホルツ不安定の課題ディレクトリ（md_kh/）を例にとって見ていきます。</p>
+<p>各課題に含まれる&quot;const.f90&quot;では、シミュレーションを行うのに必要な定数が設定されています。</p>
+<p><strong>const.f90:</strong></p>
+<div class="highlight-fortran notranslate"><div class="highlight"><pre><span></span><span class="k">module </span><span class="n">const</span>
+
+  <span class="k">implicit none</span>
+
+<span class="c">! physical constants</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">pi</span> <span class="o">=</span> <span class="nb">acos</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0d0</span><span class="p">),</span> <span class="n">pi2</span> <span class="o">=</span> <span class="mi">2</span><span class="n">d0</span><span class="o">*</span><span class="n">pi</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">gm</span> <span class="o">=</span> <span class="mi">5</span><span class="n">d0</span><span class="o">/</span><span class="mi">3</span><span class="n">d0</span> <span class="c">! specific heat retio</span>
+
+<span class="c">! time control parameters</span>
+  <span class="kt">logical</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">restart</span> <span class="o">=</span> <span class="p">.</span><span class="n">false</span><span class="p">.</span> <span class="c">! if .true. then start from restart data</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">nstop</span> <span class="o">=</span> <span class="mi">100000</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">tend</span> <span class="o">=</span> <span class="mi">20</span><span class="mf">0.0d0</span><span class="p">,</span> <span class="n">dtout</span> <span class="o">=</span> <span class="mi">4</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">safety</span> <span class="o">=</span> <span class="mf">0.3d0</span> <span class="c">! CFL number</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">dtmin</span> <span class="o">=</span> <span class="mi">1</span><span class="n">d</span><span class="o">-</span><span class="mi">10</span><span class="c">! minimum time step</span>
+
+<span class="c">! Output DIRs</span>
+  <span class="kt">character</span><span class="p">(</span><span class="o">*</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">input_dir</span> <span class="o">=</span> <span class="s2">&quot;./data/&quot;</span><span class="p">,</span> <span class="n">output_dir</span> <span class="o">=</span> <span class="s2">&quot;./data/&quot;</span>
+
+<span class="c">! Cell &amp; MPI</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">margin</span> <span class="o">=</span> <span class="mi">3</span> <span class="c">! for 5th order interpolation</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">ix</span> <span class="o">=</span> <span class="mi">90</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">,</span><span class="n">jx</span><span class="o">=</span><span class="mi">64</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="p">,</span><span class="n">kx</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">mpisize_x</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mpisize_y</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span><span class="n">mpisize_z</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">igx</span> <span class="o">=</span> <span class="n">ix</span><span class="o">*</span><span class="n">mpisize_x</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="o">*</span><span class="p">(</span><span class="n">mpisize_x</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">jgx</span> <span class="o">=</span> <span class="n">jx</span><span class="o">*</span><span class="n">mpisize_y</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="o">*</span><span class="p">(</span><span class="n">mpisize_y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+  <span class="kt">integer</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">kgx</span> <span class="o">=</span> <span class="n">kx</span><span class="o">*</span><span class="n">mpisize_z</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="n">margin</span><span class="o">*</span><span class="p">(</span><span class="n">mpisize_z</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">xmin</span> <span class="o">=</span> <span class="mf">0.d0</span><span class="p">,</span> <span class="n">ymin</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="mf">0.d0</span><span class="p">,</span> <span class="n">zmin</span> <span class="o">=</span><span class="mf">0.d0</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">xmax</span> <span class="o">=</span> <span class="mf">2.d0</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mf">0.56d0</span><span class="p">,</span> <span class="n">ymax</span> <span class="o">=</span> <span class="o">+</span><span class="mi">1</span><span class="mf">0.d0</span><span class="p">,</span> <span class="n">zmax</span> <span class="o">=</span> <span class="mf">1.d0</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">dxg0</span> <span class="o">=</span> <span class="p">(</span><span class="n">xmax</span><span class="o">-</span><span class="n">xmin</span><span class="p">)</span><span class="o">/</span><span class="kt">real</span><span class="p">(</span><span class="n">igx</span><span class="o">-</span><span class="n">margin</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">dyg0</span> <span class="o">=</span> <span class="p">(</span><span class="n">ymax</span><span class="o">-</span><span class="n">ymin</span><span class="p">)</span><span class="o">/</span><span class="kt">real</span><span class="p">(</span><span class="n">jgx</span><span class="o">-</span><span class="n">margin</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">dzg0</span> <span class="o">=</span> <span class="p">(</span><span class="n">zmax</span><span class="o">-</span><span class="n">zmin</span><span class="p">)</span><span class="o">/</span><span class="kt">real</span><span class="p">(</span><span class="n">kgx</span><span class="o">-</span><span class="n">margin</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+  <span class="c">!TRUE if periodic boundary condition is applied. (1:x, 2:y, 3:z)</span>
+  <span class="kt">logical</span><span class="p">,</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">pbcheck</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="o">/</span><span class="p">.</span><span class="n">true</span><span class="p">.,</span> <span class="p">.</span><span class="n">false</span><span class="p">.,</span> <span class="p">.</span><span class="n">true</span><span class="p">.</span><span class="o">/</span><span class="p">)</span>
+
+<span class="c">! Parameters for the Kelvin-Helmholtz instability</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">ro0</span>   <span class="o">=</span> <span class="mf">1.d0</span>  <span class="c">!at Y=ymax</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">b0</span>    <span class="o">=</span> <span class="mf">1.d0</span>  <span class="c">!at Y=ymax</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">beta</span>  <span class="o">=</span> <span class="mf">1.d0</span> <span class="c">!at Y=ymax, Pressure in B0^2/4pi = beta/2</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">v0</span>    <span class="o">=</span> <span class="nb">sqrt</span><span class="p">(</span><span class="mf">1.d0</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">gm</span><span class="o">*</span><span class="n">beta</span><span class="p">)</span>  <span class="c">!Velocity difference in VA0</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">rr</span>    <span class="o">=</span> <span class="mf">0.1d0</span> <span class="c">!rho ratio (ro(y=ymin)/ro(y=ymax))</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">br</span>    <span class="o">=</span> <span class="mf">1.d0</span>  <span class="c">!field strength ratio</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">theta</span> <span class="o">=</span> <span class="n">pi</span><span class="o">/</span><span class="mf">2.</span> <span class="c">!field elevation angle</span>
+  <span class="kt">real</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span><span class="k">parameter</span> <span class="kd">::</span> <span class="n">lmd</span>   <span class="o">=</span> <span class="mf">1.d0</span>  <span class="c">!velocity shear width</span>
+
+<span class="k">end module </span><span class="n">const</span>
+</pre></div>
+</div>
+<p>まずは定数。</p>
+<dl class="glossary simple">
+<dt id="term-pi-pi2">pi, pi2</dt><dd><p>定数 <img class="math" src="_images/math/9cc8517129c87252edd7fe2e4532af9dcf7a54d9.png" alt="\pi"/> , <img class="math" src="_images/math/2ef04e0a4bcc5f1840308dabe353cfe6e48632c4.png" alt="2\pi"/></p>
+</dd>
+<dt id="term-gm">gm</dt><dd><p>比熱比 <img class="math" src="_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/></p>
+</dd>
+</dl>
+<p>計算時間に関する制御変数の設定を行います。</p>
+<dl class="glossary simple">
+<dt id="term-restart">restart</dt><dd><p>直前の途中結果からリスタートするかどうか（.true. / .false.）を決める変数です。&quot;restart=.true.&quot;の場合、&quot;data/&quot;内にある&quot;readFileNumber.dat&quot;というファイルに記載された番号の出力データから計算を再開します。</p>
+</dd>
+<dt id="term-nstop">nstop</dt><dd><p>最大時間ステップ数。</p>
+</dd>
+<dt id="term-tend-dtout">tend, dtout</dt><dd><p>シミュレーションの終了時刻、データ出力時間間隔です。</p>
+</dd>
+<dt id="term-safety">safety</dt><dd><p>クーラン数。ここで定めたCFL条件を満たすように、系の発展と共に時間刻み幅を修正しています。</p>
+</dd>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">ご用心</p>
+<p><img class="math" src="_images/math/cc40e260833aee687767ce229ea3b26a73f2d060.png" alt="\rm safety \le 0.4"/> が安定条件です（cf. <a class="reference internal" href="reference.html#suresh-huynh97"><span class="std std-ref">Suresh and Huynh, 1997</span></a> ）。</p>
+</div>
+<dl class="glossary simple">
+<dt id="term-dtmin">dtmin</dt><dd><p>最小時間ステップ刻み幅です。これを下回ると、終了します。</p>
+</dd>
+<dt id="term-input-dir-output-dir">input_dir, output_dir</dt><dd><p>データの入出力先です。</p>
+</dd>
+</dl>
+<p>次に、主にセル数、MPIのパラメタ設定を行います。</p>
+<dl class="glossary simple">
+<dt id="term-margin">margin</dt><dd><p>境界のマージン用のセル数で、5次精度の多項式補間法を使っているので、3点必要になります。</p>
+</dd>
+<dt id="term-ix-jx-kx">ix, jx, kx</dt><dd><p>各プロセスが担当するセル数です。本課題設定では2次元計算を想定しているので、z方向のセル数を1（マージンを含めると7）としています。1次元テストを行う際には同様にy方向のセル数を1としてください。</p>
+</dd>
+<dt id="term-mpisize-x-mpisize-y-mpisize-z">mpisize_x, mpisize_y, mpisize_z</dt><dd><p>各次元方向の領域分割数です。全プロセス数はこの3つを掛けあわせた数となります。</p>
+</dd>
+</dl>
+<div class="admonition caution">
+<p class="admonition-title">ご用心</p>
+<p>円筒座標系（ <img class="math" src="_images/math/79a3d439d28652c547386f39b555d90d3aaf102d.png" alt="r"/> , <img class="math" src="_images/math/fffd2357ee88a9c50ba9e831ed64c39c73d54a07.png" alt="\phi"/> , <img class="math" src="_images/math/8d051150f8669295ecdbe92367941012175a824d.png" alt="z"/> ）の場合、 <img class="math" src="_images/math/fffd2357ee88a9c50ba9e831ed64c39c73d54a07.png" alt="\phi"/> 方向のプロセス数（mpisize_y）は、並列化の制約から、偶数である必要があります。</p>
+</div>
+<dl class="glossary simple">
+<dt id="term-igx-jgx-kgx">igx, jgx, kgx</dt><dd><p>全シミュレーション空間のセル数となります。</p>
+</dd>
+<dt id="term-xmin-xmax">xmin, xmax, ...</dt><dd><p>シミュレーション空間の各方向のサイズを表します。</p>
+</dd>
+<dt id="term-dxg0-dyg0-dzg0">dxg0, dyg0, dzg0</dt><dd><p>基本となるセル幅となります。一様セル幅ではこの値が使われます。</p>
+</dd>
+<dt id="term-pbcheck">pbcheck</dt><dd><p>各次元方向の境界条件を判定し、周期境界条件の場合は&quot;.true.&quot;、それ以外の場合は&quot;.false.&quot;としてください。</p>
+</dd>
+</dl>
+<p>以上が各課題に共通の初期設定・パラメタとなります。</p>
+<p>最後に、各課題固有のパラメタが（必要な場合）設定されています。&quot;model.f90&quot;を参照の上、パラメタを設定してください。また、モデルの初期プロファイルを変更したい場合も、&quot;model.f90&quot;を編集します。</p>
+</div>
+<div class="section" id="id4">
+<h2>領域分割法による並列化<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="figure align-center" id="id6">
+<span id="para1d"></span><a class="reference internal image-reference" href="_images/parallel.png"><img alt="_images/parallel.png" src="_images/parallel.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">3次元コードにおける領域分割法と各プロセスが担当する領域</span><a class="headerlink" href="#id6" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><strong>CANS+</strong> は、 <a class="reference internal" href="#para1d"><span class="std std-ref">領域分割法と各プロセスが担当する領域図</span></a> のように、各次元方向に領域を区分化し、各領域の発展を各プロセス（Rank）が分担することにより、並列化を行っています。図例では、 <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> , <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> , <img class="math" src="_images/math/8d051150f8669295ecdbe92367941012175a824d.png" alt="z"/> （<img class="math" src="_images/math/79a3d439d28652c547386f39b555d90d3aaf102d.png" alt="r"/> , <img class="math" src="_images/math/fffd2357ee88a9c50ba9e831ed64c39c73d54a07.png" alt="\phi"/> , <img class="math" src="_images/math/8d051150f8669295ecdbe92367941012175a824d.png" alt="z"/> ）方向にそれぞれ、 <img class="math" src="_images/math/9722c61c1622ab218c4bf3097764641f890a03fa.png" alt="3 \times2\times2"/> 分割し、計12並列計算の場合を表しています。各ノードが担当するセル数を&quot;ix&quot;, &quot;jx&quot;, &quot;kx&quot;で設定し、シミュレーション領域全体を&quot;igx&quot;, &quot;jgx&quot;, &quot;kgx&quot;で表します。これらパラメタの設定は <a class="reference internal" href="#const"><span class="std std-ref">パラメタ設定</span></a> を参照ください。</p>
+</div>
+<div class="section" id="id5">
+<h2>データフォーマット<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p><strong>CANS+</strong> では、DAC形式というオリジナル <a class="reference external" href="http://www-space.eps.s.u-tokyo.ac.jp/~yokoyama/etc/cans/">CANS</a> で使われていたデータフォーマット（ヘッダ付きのFotran Unformatted形式）をそのまま採用しています。また入出力データは、各プロセスごとに別れた個別のファイルとして扱われます。これらを読み込み、IDLでひとつの配列データとして格納するプロシージャが idl/ に用意されています。使い方はIDLの解析・可視化 <a class="reference internal" href="idl.html#idldac"><span class="std std-ref">データの読み込み</span></a> をご参照ください。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#"><strong>CANS+</strong> 3次元コード</a><ul>
+<li><a class="reference internal" href="#id1">基礎方程式</a></li>
+<li><a class="reference internal" href="#id2">パッケージ構成</a></li>
+<li><a class="reference internal" href="#const">パラメタ設定</a></li>
+<li><a class="reference internal" href="#id4">領域分割法による並列化</a></li>
+<li><a class="reference internal" href="#id5">データフォーマット</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="idl.html" title="IDLによる解析・可視化"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cansplus.html" title="CANS+ の使い方"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="cansplus.html" ><strong>CANS+</strong> の使い方</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

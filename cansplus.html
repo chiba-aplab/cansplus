@@ -1,0 +1,140 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>CANS+ の使い方 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="CANS+ 3次元コード" href="cans+3d.html" />
+    <link rel="prev" title="磁気流体力学方程式に対する近似リーマン解法" href="riemann.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="cans+3d.html" title="CANS+ 3次元コード"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="riemann.html" title="磁気流体力学方程式に対する近似リーマン解法"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cans">
+<h1><strong>CANS+</strong> の使い方<a class="headerlink" href="#cans" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p>本章では <strong>CANS+</strong> の具体的な使い方について説明をします。2次元及び3次元コードが用意されています。1,2次元課題については、不要な次元方向のセル数を1として計算することが可能です。また、コードはMPI並列化されていますので、簡単なテスト計算でもプロセス数を指定したMPI並列計算をする必要があります。以下では3次元コードをベースに説明します。</p>
+<p>データ出力は特殊なバイナリ形式となっているため、それを読み込むためのIDLプロシージャが予め用意されています。その他、可視化などの後処理プロシージャも用意しています。</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cans+3d.html"><strong>CANS+</strong> 3次元コード</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cans+3d.html#id1">基礎方程式</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cans+3d.html#id2">パッケージ構成</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cans+3d.html#const">パラメタ設定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cans+3d.html#id4">領域分割法による並列化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cans+3d.html#id5">データフォーマット</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="idl.html">IDLによる解析・可視化</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id3">環境変数の設定</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#idldac">データの読み込み</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id5">1次元プロット</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id6">2次元可視化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id10">ベクトル場の流線</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id11">フーリエ変換</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id12">図の出力</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id13">サンプルプロシージャ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="idl.html#id14">アニメーションの作り方</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="matplotlib.html">matplotlib (python) による解析・可視化</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="matplotlib.html#はじめに">はじめに</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matplotlib.html#python環境の準備">python環境の準備</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matplotlib.html#データの読み込み">データの読み込み</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matplotlib.html#matplotlibを使った可視化">matplotlibを使った可視化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="matplotlib.html#アニメーションの作り方">アニメーションの作り方</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="cans+3d.html" title="CANS+ 3次元コード"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="riemann.html" title="磁気流体力学方程式に対する近似リーマン解法"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

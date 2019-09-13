@@ -1,0 +1,506 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>IDLによる解析・可視化 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="matplotlib (python) による解析・可視化" href="matplotlib.html" />
+    <link rel="prev" title="CANS+ 3次元コード" href="cans+3d.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="matplotlib.html" title="matplotlib (python) による解析・可視化"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cans+3d.html" title="CANS+ 3次元コード"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="cansplus.html" accesskey="U"><strong>CANS+</strong> の使い方</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="idl">
+<span id="id1"></span><h1>IDLによる解析・可視化<a class="headerlink" href="#idl" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>松本洋介（千葉大学）、簑島敬（海洋開発研究機構）</p>
+</dd>
+</dl>
+<p>本章では、 <strong>CANS+</strong> での解析・可視化ツールであるIDL（Interactive Data Language）の基本的な使い方と、用意されているIDLプロシージャ及びアニメーションの作り方を説明します。IDLのバージョンが8.0以降では、グラフィックス環境が大きく変わり、可視化が容易かつ洗練されました。 <strong>CANS+</strong> のデータ読み込み、それらの可視化機能、解析手法の紹介をします。さらなる詳細は <a class="reference external" href="https://www.harrisgeospatial.com/docs/using_idl_home.html">IDLのドキュメントサイト</a> を参照してください。</p>
+<p>$CANSPLUS_DIR/idl内には、以下のようなIDLのプロシージャが用意されています。これらは各課題から共通して使えるものです。</p>
+<div><img height="255" src="_images/blockdiag-223234f09ec6a6af0095b87b2e3d736df66cbd7e.png" width="245" /></div><p>課題に固有のプロシージャは各課題ディレクトリ内に用意されており、共通プロシージャを内部で利用しています。</p>
+<div class="section" id="id3">
+<h2>環境変数の設定<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>環境変数$IDL_STARTUPに$CANSPLUS_DIR/idl/init.proを設定します。</p>
+<p>bashの場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">IDL_STARTUP</span><span class="o">=</span><span class="nv">$CANSPLUS_DIR</span>/idl/init.pro
+</pre></div>
+</div>
+<p>tcshの場合、</p>
+<div class="highlight-tcsh notranslate"><div class="highlight"><pre><span></span><span class="nb">setenv </span>IDL_STARTUP <span class="nv">$CANSPLUS_DIR</span>/idl/init.pro
+</pre></div>
+</div>
+<p>$CANSPLUS_DIR/idl/init.pro内には、pathの設定、IDL内の環境の設定等が含まれており、IDL起動時に自動的に設定されます。各自の好みに合わせて修正してください。</p>
+</div>
+<div class="section" id="idldac">
+<span id="id4"></span><h2>データの読み込み<a class="headerlink" href="#idldac" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>オリジナル <strong>CANS</strong> で使われていたバイナリデータフォーマットであるDAC形式データを読み込む共通プロシージャが用意されています。各MPIプロセスごとに出力されたデータをまとめて一つの配列に格納します。</p>
+<p><strong>dac_read.pro</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Name
+  dac_read
+  DACデータを読み込む
+
+Syntax
+  dac_read,data,x,y,filename 　　; 2D データ
+  dac_read,data,x,y,z,filename ; 3D データ
+
+Arguments
+  data
+    記録するデータ配列
+
+  x, y(, z)
+    シミュレーションのセル幅から計算した、ｘ，ｙ(，ｚ)軸
+
+  filename
+    読み込むデータのファイル名。ワイルドカードが使え、パターンに
+    マッチしたファイルを一度に読み込む。ただし、読みこむ全ての数
+    値データ配列数は等しい必要がある。
+
+Example1
+  IDL&gt; dac_read,bx,x,y,z,&#39;010000_bx_rank=*.dac&#39;
+
+Example2
+  IDL&gt; dac_read,allvars,x,y,&#39;010000_*_rank=*.dac&#39;
+
+Example3
+  IDL&gt; dac_read,bxall,x,y,z,&#39;0[1-5]0?00_bx_rank=*.dac&#39;
+</pre></div>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>1次元プロット<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>1次元のプロットを作成する方法を以下に簡単に示します。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; dac_read,data,x,y,z,&#39;0011_*_rank=*.dac&#39; ;; データ読み込み
+IDL&gt; pl=plot(x,data[*,6],xtitle=&#39;x&#39;,ytitle=&#39;$\rho$&#39;) ;; 軸のタイトルにLatexコマンドが使える！
+</pre></div>
+</div>
+<div class="figure align-center" id="id15">
+<a class="reference internal image-reference" href="_images/idl1dplot1.png"><img alt="_images/idl1dplot1.png" src="_images/idl1dplot1.png" style="width: 75%;" /></a>
+<p class="caption"><span class="caption-text">1次元プロットの例。左は修正前、右は後から修正を加えたもの。</span><a class="headerlink" href="#id15" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>これに修正を加える場合は、plのpropertyに値を代入します。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; pl.symbol=&#39;circle&#39; ;; ○の追加
+IDL&gt; pl.color=&#39;red&#39;     ;; 線を赤に
+IDL&gt; pl1.xstyle=3       ;; x方向の描画範囲を少し広げる
+IDL&gt; pl1.ystyle=3       ;; y方向の描画範囲を少し広げる
+IDL&gt; pl.font_size=16    ;; フォントサイズを16に
+IDL&gt; pl.font_name=&#39;Times&#39; ;; フォントをTimesに
+IDL&gt; leg=legend(target=pl,position=[0.85,0.85],/data,/auto_text_color)
+IDL&gt; leg.font_name = &#39;Times&#39;
+IDL&gt; leg.font_size = &#39;14&#39;
+IDL&gt; leg.label = &#39;$\rho$&#39;
+</pre></div>
+</div>
+<p>のようににして後からプロットの属性に変更を加えることができます。GUIでの操作も可能です。凡例を加えるには、legend関数を使います。</p>
+<p>複数のプロットを並べて表示する場合はlayoutオプションを使います。この例では2x2のパネル状に並べて表示します。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; pl1=plot(x,data[*,6],xstyle=1,ystyle=2,color=&#39;red&#39;,$
+IDL&gt;          layout=[2,2,1])
+IDL&gt; pl2=plot(x,data[*,5],xstyle=1,ystyle=2,color=&#39;blue&#39;,$
+IDL&gt;          layout=[2,2,2],/current)
+IDL&gt; pl3=plot(x,data[*,7],xstyle=1,ystyle=2,color=&#39;purple&#39;,$
+IDL&gt;          layout=[2,2,3],/current)
+IDL&gt; pl3=plot(x,data[*,8],xstyle=1,ystyle=2,color=&#39;green&#39;,$
+IDL&gt;          layout=[2,2,4],/current)
+IDL&gt; pl1.title=&#39;$\rho$&#39;
+IDL&gt; pl2.title=&#39;$P$&#39;
+IDL&gt; pl3.title=&#39;$V_x$&#39;
+IDL&gt; pl4.title=&#39;$V_y$&#39;
+</pre></div>
+</div>
+<div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="_images/idl1dplot2.png"><img alt="_images/idl1dplot2.png" src="_images/idl1dplot2.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">上記の設定の結果</span><a class="headerlink" href="#id16" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>するとこのように表示されます。</p>
+<p>その他の応用は、サンプルプロシージャ md_shktb/batch.proをご覧ください。また、plot, legend関数に関する情報は</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; ?plot
+IDL&gt; ?legend
+</pre></div>
+</div>
+<p>とすることで、ブラウザで見ることができます。</p>
+</div>
+<div class="section" id="id6">
+<h2>2次元可視化<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="colorimage">
+<span id="id7"></span><h3>カラーマップ図<a class="headerlink" href="#colorimage" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>物理量の２次元プロファイルを表示する方法を以下に示します。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; dac_read,data,x,y,z,&#39;0013*.dac&#39;
+IDL&gt; dx = abs(x[1]-x[0]) ;; 軸の位置の修正のため
+IDL&gt; dy = abs(y[1]-y[0]) ;; 軸の位置の修正のため
+IDL&gt; img = image(data[*,*,5],x-dx/2.,y-dy/2.,axis_style=2,$
+IDL              xtickdir=1,ytickdir=1,rgb_table=33)
+IDL&gt; cb  = colorbar(target=img,orientation=1,tickdir=1,$
+IDL                 position=[0.85,0.1,0.9,0.9])
+</pre></div>
+</div>
+<p>imageで２次元配列データを画像化し、colorbarでカラーバーを指定の場所に配置します。すると</p>
+<div class="figure align-center" id="id17">
+<a class="reference internal image-reference" href="_images/idl2dplot1.png"><img alt="_images/idl2dplot1.png" src="_images/idl2dplot1.png" style="width: 75%;" /></a>
+<p class="caption"><span class="caption-text">2次元カラー図の例。左が修正前、右が修正後。</span><a class="headerlink" href="#id17" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>これでは画像が小さいので拡大、フォント名・サイズを変更、軸にタイトルを付け加え見栄え良くします。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; img.font_name=&#39;Times&#39;
+IDL&gt; img.font_size=&#39;16&#39;
+IDL&gt; img.xtitle=&#39;$X (\lambda)$&#39; ;;CAN USE LATEX COMMANDS FOR TITLE
+IDL&gt; img.ytitle=&#39;$Y (\lambda)$&#39;
+IDL&gt; img.xstyle=1
+IDL&gt; img.ystyle=1
+IDL&gt; img.scale,2.0,2.0 ;; ENLARGE IF IMAGE IS SMALL
+IDL&gt; cb.font_name=&#39;Times&#39;
+IDL&gt; cb.font_size=&#39;14&#39;
+</pre></div>
+</div>
+<p>これらの属性の修正は、関数の引数として最初から渡すことも可能です。その他の応用は、サンプルプロシージャ md_OTvortex/batch.pro, md_kh/batch.pro をご覧ください。また、image、colorbar関数に関する情報は</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; ?image
+IDL&gt; ?colorbar
+</pre></div>
+</div>
+<p>とすることで、ブラウザで見ることができます。</p>
+</div>
+<div class="section" id="id8">
+<h3>ベクトル図<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>ベクトル場を矢印で表現することも可能です。例えば、上記で作成した2次元 <a class="reference internal" href="#colorimage"><span class="std std-ref">カラー図</span></a> に速度場ベクトルを付け加える場合は、</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; vct = vector(data[*,*,7],data[*,*,8],x-dx/2.,y-dy/2.,/overplot)
+</pre></div>
+</div>
+<p>のようにします（単体で表示する場合はoverplotオプションを外す）。</p>
+<div class="figure align-center" id="id18">
+<a class="reference internal image-reference" href="_images/idl2dplot2.png"><img alt="_images/idl2dplot2.png" src="_images/idl2dplot2.png" style="width: 75%;" /></a>
+<p class="caption"><span class="caption-text">2次元カラー図+速度場ベクトルの例。左が修正前、右が修正後。</span><a class="headerlink" href="#id18" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>しかし、そのままだと全ての情報を矢印で描くことになってしまうので、サンプリングして描画するように修正する。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; vct.x_subsample = 10
+IDL&gt; vct.y_subsample = 7
+IDL&gt; vct.transparency = 50 ;; ついでに矢印を透過（50%）
+</pre></div>
+</div>
+<p>その他の応用は、サンプルプロシージャ md_kh/batch.proをご覧ください。また、vector関数に関する情報は</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; ?vector
+</pre></div>
+</div>
+<p>とすることで、ブラウザで見ることができます。</p>
+</div>
+<div class="section" id="id9">
+<h3>等高線図<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>磁力線を描く（ベクトルポテンシャルの等高線）ためには、等高線を図示するのが便利です。例えば、上記で作成した2次元 <a class="reference internal" href="#colorimage"><span class="std std-ref">カラー図</span></a> に質量密度の等高線を描き加える（この例では圧力分布とほぼ同じ）場合は、</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; cnt = contour(data[*,*,6],x-dx/2.,y-dy/2.,/overplot,c_color=0)
+</pre></div>
+</div>
+<p>のようにして行います。</p>
+<div class="figure align-center" id="id19">
+<a class="reference internal image-reference" href="_images/idl2dplot3.png"><img alt="_images/idl2dplot3.png" src="_images/idl2dplot3.png" style="width: 75%;" /></a>
+<p class="caption"><span class="caption-text">2次元カラー図+等高線の例。左が修正前、右が修正後。</span><a class="headerlink" href="#id19" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>等高線ラベルを削除、等高線の数を増やす場合は、</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; cnt.c_label_show=0
+IDL&gt; cnt.n_levels=30
+</pre></div>
+</div>
+<p>のようにして後から修正ができます（関数に引数として渡すことも可能）。contour関数に関する情報は</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; ?contour
+</pre></div>
+</div>
+<p>とすることで、ブラウザで見ることができます。</p>
+</div>
+</div>
+<div class="section" id="id10">
+<h2>ベクトル場の流線<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ベクトルデータから流線を描くには、以下の共通プロシージャが利用できます。</p>
+<p><strong>field_lines_2d.pro</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Name
+  field_lines_2d
+    ２次元のベクトル量から流線（磁力線）を描く
+
+Syntax
+  fl = field_lines_2d(ux, uy, [npos=npos,] [nsteps=nsteps,] [len=len,]
+                      [r0=r0,] [dir=dir])
+
+Return Value
+  fl
+    描く流（磁力）線の２次元座標情報。位置を各方向のグリッド数で規格化。
+
+Arguments
+  ux, uy
+    描画する２次元ベクトル量
+
+Keywords
+  npos
+    線の数。デフォルトは100。
+
+  nsteps
+    トレースするステップ数。デフォルトは10000。
+
+  len
+    各方向１ステップあたりの長さ（グリッド単位）を指定する2次元配列
+
+  r0
+    各線のスタート位置（x、y）。与えられなければ、ランダムに決められる。
+    r0=r0[2,npos]である必要がある。
+
+  dir
+    トレースする方向。+1ならばベクトルの向き。-1ならば反対向き。デフォルトは+1。
+
+Example
+  IDL&gt; dac_read,data,x,y,z,&#39;0011*_rank=*.dac&#39;
+  IDL&gt; dx = abs(x[1]-x[0])
+  IDL&gt; dy = abs(y[1]-y[0])
+  IDL&gt; lx = max(x)-min(x)+dx
+  IDL&gt; ly = max(y)-min(y)+dy
+  IDL&gt; img = image(data[*,*,5],x-dx/2.,y-dy/2.,axis_style=2,$
+  IDL&gt;             xtickdir=1,ytickdir=1,rgb_table=33)
+  IDL&gt; npos=10 ;; Number of starting points
+  IDL&gt; fl=field_lines_2d(data[*,*,0],data[*,*,1],npos=npos)
+  IDL&gt; .run
+  - for k=0,npos-1 do begin
+  - pl = plot(fl[0,*,*,k]*lx,fl[1,*,*,k]*ly,/overplot,color=&#39;black&#39;)
+  - endfor
+  - end
+  IDL&gt;
+</pre></div>
+</div>
+</div>
+<div class="section" id="id11">
+<h2>フーリエ変換<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>現象の発展に伴ってどのようなモードが成長しているのかを把握するためには、フーリエ変換を行います。
+1次元データと2次元データをフーリエ変換する共通プロシージャを用意しています。</p>
+<p><strong>fftf.pro</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Name
+  fftf
+    1次元データをフーリエ変換し、振動数や波数に対して昇順にソートする。
+
+Syntax
+  f1d = fftf(data, time, direction, freq=freq)
+
+Return Value
+  f1d
+    入力された1次元データ data のフーリエ変換。振動数や波数に対して昇順にソートされている。
+    関数の平方の総和（積分）が、そのフーリエ変換の平方の総和（積分）と等しくなるように規格
+    化されている（パーセバルの定理）。
+
+  freq
+    独立変数 time に対応する振動数や波数が出力される。2$\pi$が掛かっていないことに注意。
+
+Arguments
+  data
+    1次元データ。
+
+  time
+    時刻や座標といった独立変数。
+
+  direction
+    フーリエ変換の方向。-1ならフーリエ変換、+1なら逆変換。指定しない場合は-1。
+
+Example
+  IDL&gt; data = randomu(systime(/sec), 512)
+  IDL&gt; time = findgen(512)
+  IDL&gt; f1d = fftf(data, time, freq=freq)
+  IDL&gt; plot, freq, abs(f1d), /yl
+</pre></div>
+</div>
+<p><strong>fft2d.pro</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Name
+  fft2d
+    2次元データをフーリエ変換し、振動数や波数に対して昇順にソートする。
+
+Syntax
+  f2d = fft2d(data, x, t, direction, wnum=wnum, freq=freq)
+
+Return Value
+  f2d
+    入力された2次元データ data のフーリエ変換。振動数や波数に対して昇順にソートされている。
+    関数の平方の総和（積分）が、そのフーリエ変換の平方の総和（積分）と等しくなるように規格
+    化されている（パーセバルの定理）。
+
+  wnum
+    独立変数 x に対応する振動数や波数。2$\pi$が掛かっていないことに注意。
+
+  freq
+    独立変数 t に対応する振動数や波数。2$\pi$が掛かっていないことに注意。
+
+Arguments
+  data
+    2次元データ。
+
+  x, t
+    時刻や座標といった独立変数。
+
+  direction
+    フーリエ変換の方向。-1ならフーリエ変換、+1なら逆変換。指定しない場合は-1。
+
+Example
+  IDL&gt; data = randomu(systime(/sec), 128, 128)
+  IDL&gt; x = findgen(128)
+  IDL&gt; t = findgen(128)
+  IDL&gt; f2d = fft2d(data, x, t, wnum=wnum, freq=freq)
+  IDL&gt; plot_clcnt, alog10(abs(f2d)), xax=wnum, yax=freq
+</pre></div>
+</div>
+</div>
+<div class="section" id="id12">
+<h2>図の出力<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>上記 <a class="reference internal" href="#colorimage"><span class="std std-ref">2次元カラー図</span></a> 等で作成した図をファイルに保存するには、</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; img = image(data[*,*,5],x-dx/2.,y-dy/2.,axis_style=2,$
+IDL&gt;             xtickdir=1,ytickdir=1,rgb_table=33)
+IDL&gt; img.save,&#39;result.png&#39; ;; 画像で保存
+IDL&gt; img.save,&#39;result.eps&#39; ;; ポストスクリプトで保存
+</pre></div>
+</div>
+<p>のようにして、saveメソッドを利用して保存します（plotでも同様）。ファイル形式は拡張子で自動判定します。</p>
+</div>
+<div class="section" id="id13">
+<h2>サンプルプロシージャ<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>IDLによる可視化のサンプルプロシージャ batch.pro が課題ディレクトリ &quot;md_shktb/&quot; , &quot;md_OTvortex/&quot; , &quot;md_kh/&quot; にありますので、適宜修正してお使いください。 batch.proは</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; .run batch
+</pre></div>
+</div>
+<p>で実行し、書かれている内容をバッチ処理します。使用例は各課題（ <a class="reference internal" href="application_sktb.html#shktb"><span class="std std-ref">衝撃波管問題</span></a> 、 <a class="reference internal" href="application_OTvortex.html#otvortex"><span class="std std-ref">Orszag-Tang渦問題</span></a> 、 <a class="reference internal" href="application_kh.html#kh"><span class="std std-ref">ケルビン・ヘルムホルツ不安定</span></a> ）のページをご覧ください。</p>
+</div>
+<div class="section" id="id14">
+<h2>アニメーションの作り方<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下の様に、IDL上で結果をpngファイルとして保存します。</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IDL&gt; dac_read,ro,x,y,z,&#39;*_ro_rank=*.dac&#39;
+IDL&gt; info=size(ro,/dimension)
+IDL&gt; nt = info[2]
+IDL&gt;.run
+- for i=0,nt-1 do begin
+-   if(i eq 0)then begin
+-     img = image(ro[*,*,i],x-dx/2.,y-dy/2.,axis_style=2,$
+-                 xtickdir=1,ytickdir=1,rgb_table=33)
+-   endif else begin
+-     img.setdata,ro[*,*,i]
+-   endelse
+-   img.save,&#39;result&#39;+strcompress(string(i,format=&#39;(i3.3)&#39;),/remove)+&#39;.png&#39;
+- endfor
+- end
+</pre></div>
+</div>
+<p>上記のようにすると、作業ディレクトリには&quot;result005.png&quot;のように連番でファイル名が付けられた画像ファイルが作成されます。</p>
+<p>結果をpngファイルに出力後、LinuxにインストールされているImagemagick (convert)やffmpegを使って、結果の図をアニメーション化します。まず、convertを使った方法を説明します。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ convert result???.png result.gif
+</pre></div>
+</div>
+<p>のようにすると、gifアニメーションが作成されます。convertの際の詳しいオプションは&quot;man convert&quot;に委ねます。</p>
+<p>次に、ffmpegを使ったアニメーション作成例を示します。</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ ffmpeg -i result%03d.png -sameq -vcodec mjpeg result.avi
+</pre></div>
+</div>
+<p>のように、gifアニメーション以外のフォーマット（この例では、元の画像と同じ画質で、エンコードにmjpeg、格納形式としてaviを指定している）の動画ファイルが作成可能です。更なるオプションは&quot;man ffmpeg&quot;に委ねます。</p>
+<p>上記の様に、IDL上での結果を連番で名前を付けた画像ファイルに保存すれば、Windows, Mac-OSでのその他のツールも利用可能だと思います。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">IDLによる解析・可視化</a><ul>
+<li><a class="reference internal" href="#id3">環境変数の設定</a></li>
+<li><a class="reference internal" href="#idldac">データの読み込み</a></li>
+<li><a class="reference internal" href="#id5">1次元プロット</a></li>
+<li><a class="reference internal" href="#id6">2次元可視化</a><ul>
+<li><a class="reference internal" href="#colorimage">カラーマップ図</a></li>
+<li><a class="reference internal" href="#id8">ベクトル図</a></li>
+<li><a class="reference internal" href="#id9">等高線図</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id10">ベクトル場の流線</a></li>
+<li><a class="reference internal" href="#id11">フーリエ変換</a></li>
+<li><a class="reference internal" href="#id12">図の出力</a></li>
+<li><a class="reference internal" href="#id13">サンプルプロシージャ</a></li>
+<li><a class="reference internal" href="#id14">アニメーションの作り方</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="matplotlib.html" title="matplotlib (python) による解析・可視化"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="cans+3d.html" title="CANS+ 3次元コード"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="cansplus.html" ><strong>CANS+</strong> の使い方</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

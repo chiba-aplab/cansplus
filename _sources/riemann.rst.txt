@@ -1,0 +1,2211 @@
+.. _riemann:
+
+==============================================
+磁気流体力学方程式に対する近似リーマン解法
+==============================================
+
+:著者: 三好隆博（広島大学）、簑島敬（海洋開発研究機構）、松本洋介（千葉大学）
+
+この章では、磁気流体力学(MHD)方程式に対する代表的な衝撃波捕獲法である近似リーマン解法について解説する。
+
+基礎方程式
+==============
+
+MHD方程式はプラズマの巨視的なダイナミクスを記述する基礎方程式である。特にここでは、電気抵抗率をゼロとした”理想”MHD方程式を考える。
+
+MHD方程式
+-------------
+
+MHD方程式は、外力としてローレンツ力を作用させた流体方程式と磁場の時間発展方程式の組み合わせによって与えられる。無次元化した抵抗性MHD方程式は、
+
+連続の式：
+
+.. math::
+ :label: cont
+
+ \frac{\partial \rho}{\partial t} + \nabla \cdot \left( \rho \mbox{\boldmath$v$} \right) = 0
+
+運動方程式：
+
+.. math::
+ :label: motion
+
+ \rho \frac{d \mbox{\boldmath$v$}}{dt} = - \nabla p + \mbox{\boldmath$j$} \times \mbox{\boldmath$B$}
+
+断熱の式：
+
+.. math::
+ :label: adiab
+
+ \frac{d}{dt} \left( \frac{p}{\rho^\gamma} \right)
+ = \frac{\left( \gamma - 1 \right) \eta j^2}{\rho^\gamma}
+
+誘導方程式：
+
+.. math::
+ :label: indu
+
+ \frac{\partial \mbox{\boldmath$B$}}{\partial t} = - \nabla \times \mbox{\boldmath$E$}
+
+オームの法則：
+
+.. math::
+ :label: ohm
+
+ \mbox{\boldmath$E$} = -\mbox{\boldmath$v$} \times \mbox{\boldmath$B$} + \eta \mbox{\boldmath$j$}
+
+アンペールの法則：
+
+.. math::
+ :label: amp
+
+ \mbox{\boldmath$j$} = \nabla \times \mbox{\boldmath$B$}
+
+磁場に関するガウスの法則：
+
+.. math::
+ :label: gaus
+
+ \nabla \cdot \mbox{\boldmath$B$} = 0
+
+となる。ここで、 :math:`\rho` 、 :math:`\mbox{\boldmath$v$}` 、 :math:`p` 、 :math:`\mbox{\boldmath$B$}` 、 :math:`\mbox{\boldmath$E$}` 、 :math:`\mbox{\boldmath$j$}` 、 :math:`\gamma` 、 :math:`\eta` は、密度、速度、圧力、磁場、電場、電流、比熱比、電気抵抗率をそれぞれ表す。ラグランジュ微分は、 :math:`d/dt = \partial / \partial t + \mbox{\boldmath$v$} \cdot \nabla` である。 :eq:`gaus` は磁束の保存を表わしており、 :eq:`indu` の初期条件を与える。また、 :eq:`ohm` 、 :eq:`amp` は見かけ上消去できる。したがって、最終的にMHD方程式は未知数8個の連立非線形偏微分方程式となる。特に電場が誘導電場のみで与えられるとき、すなわち :eq:`ohm` の :math:`\eta` がゼロのとき、散逸のない理想MHD方程式となる。
+
+理想MHD方程式 :eq:`cont` - :eq:`gaus` は、以下のとおり保存形式で書き直すことができる。
+
+.. math:: 
+ :label: mhd
+
+ \frac{\partial\mbox{\boldmath$U$}}{\partial t} + \nabla \cdot\mbox{\boldmath$F$} = 0,
+
+.. math::
+ :label: mhd_u_f
+
+ \mbox{\boldmath$U$} = \left(
+ \begin{array}{c}
+ \rho \\
+ \rho \mbox{\boldmath$v$} \\
+ \mbox{\boldmath$B$} \\
+ e
+ \end{array}
+ \right) , \quad
+ \mbox{\boldmath$F$} = \left(
+ \begin{array}{c}
+ \rho \mbox{\boldmath$v$} \\
+ \rho \mbox{\boldmath$v$} \mbox{\boldmath$v$} + p_T\mbox{\boldmath$I$} - \mbox{\boldmath$B$} \mbox{\boldmath$B$} \\
+ \mbox{\boldmath$v$} \mbox{\boldmath$B$} - \mbox{\boldmath$B$} \mbox{\boldmath$v$} \\
+ \left( e + p_T \right) \mbox{\boldmath$v$} - \mbox{\boldmath$B$} \left( \mbox{\boldmath$v$} \cdot \mbox{\boldmath$B$} \right)
+ \end{array}
+ \right).
+
+ここで、 :math:`\mbox{\boldmath$I$}` は単位行列を表す。全エネルギー密度 :math:`e` と全圧力 :math:`p_T` は、
+
+.. math::
+ :label: ene
+
+ e = \frac{p}{\gamma - 1} + \frac{\rho | \mbox{\boldmath$v$} |^2}{2} + \frac{|\mbox{\boldmath$B$}|^2}{2} ,
+
+.. math::
+ :label: pt
+
+ p_T = p + \frac{|\mbox{\boldmath$B$}|^2}{2} ,
+
+により関係付けられる。理想MHD方程式のヤコビアン :math:`\mbox{\boldmath$A$}` 、
+
+.. math::
+ :label: jac_def
+
+ \mbox{\boldmath$A$} = \frac{\partial\mbox{\boldmath$F$}}{\partial\mbox{\boldmath$U$}}
+
+は独立な実固有値(特性速度)を持つ [#eignv]_ 。したがって、理想MHD方程式は双曲型保存則系である。
+
+.. rubric:: Footnotes
+
+.. [#eignv] ただし、固有値が縮退し得るため、厳密には固有値は完全独立ではない。
+
+1次元理想MHD方程式
+--------------------------
+
+この後の議論のため、改めて1次元の理想MHD方程式を書き下す。
+
+.. math::
+ :label: 1dmhd
+
+ \frac{\partial\mbox{\boldmath$U$}}{\partial t} + \frac{\partial\mbox{\boldmath$F$}}{\partial x} = 0,
+
+.. math::
+ :label: 1dmhd_u_f
+
+ \mbox{\boldmath$U$} = \left(
+ \begin{array}{c}
+ \rho \\
+ \rho u \\
+ \rho v \\
+ \rho w \\
+ B_y \\
+ B_z \\
+ e
+ \end{array}
+ \right) , \quad
+ \mbox{\boldmath$F$} = \left(
+ \begin{array}{c}
+ \rho u \\
+ \rho u^2 + p_T - B_x^2 \\
+ \rho v u - B_x B_y \\
+ \rho w u - B_x B_z \\
+ B_y u - B_x v \\
+ B_z u - B_x w \\
+ \left( e + p_T \right) u - B_x \left( u B_x + v B_y + w B_z \right)
+ \end{array}
+ \right).
+
+ここで、 :math:`\mbox{\boldmath$v$} = (u,v,w)` 、 :math:`\mbox{\boldmath$B$} = (B_x,B_y,B_z)` とした。また、
+
+.. math::
+ :label: 1dpt
+
+ p_T = p + \frac{1}{2} \left( B_x^2 + B_y^2 + B_z^2 \right).
+
+.. math::
+ :label: 1dp
+
+ p = \left( \gamma - 1 \right)
+ \left[ e - \frac{1}{2} \rho \left( u^2 + v^2 + w^2 \right)
+ - \frac{1}{2} \left( B_x^2 + B_y^2 + B_z^2 \right) \right].
+
+ただし、ガウスの法則 :eq:`gaus` から、1次元問題では、 :math:`B_x` は **時間・空間的に一定** となる。
+
+ヤコビアン :math:`\mbox{\boldmath$A$}` の固有値 :math:`\lambda_{j \ (j=1 \cdots 7)}` は、 :eq:`1dmhd_u_f` から、2つのアルヴェン波、2つの速進磁気音波、2つの遅進磁気音波、1つのエントロピー波として、
+
+.. math::
+ :label: eval
+
+ \lambda_1 = u - c_f, \
+ \lambda_2 = u - c_a, \
+ \lambda_3 = u - c_s, \
+ \lambda_4 = u, \
+ \lambda_5 = u + c_s, \
+ \lambda_6 = u + c_a, \
+ \lambda_7 = u + c_f
+
+が得られる。ここで、
+
+.. math::
+ :label: eval_supl
+
+ \begin{array}{c}
+ c_a = |b_x|, \
+ c_{f/s} = \sqrt{ \frac{1}{2} \left[
+ a^2 + b^2 \pm \sqrt{ \left( a^2 + b^2 \right)^2 - 4 a^2 b_x^2 } \right] }, \\
+ a = \sqrt{\frac{\gamma p}{\rho}}, \
+ b_x = \frac{B_x}{\sqrt{\rho}}, \
+ b_y = \frac{B_y}{\sqrt{\rho}}, \
+ b_z = \frac{B_z}{\sqrt{\rho}}, \
+ b^2 = b_x^2+b_y^2+b_z^2.
+ \end{array}
+
+これから、
+
+.. math::
+ :label: eval_ineq
+
+ \lambda_1 \le
+ \lambda_2 \le
+ \lambda_3 \le
+ \lambda_4 \le
+ \lambda_5 \le
+ \lambda_6 \le
+ \lambda_7
+
+の不等式が成り立ち、磁場の向きや強さによって固有値が縮退し得ることがわかる。
+
+一般に双曲型保存則系は、弱解(積分形の保存則を満たす解)として衝撃波解や不連続解を持つことが知られている。特に理想MHD方程式では、磁場の強さや向きによって不連続解は全く異なる性質を持つ。衝撃波の後面で磁場が強められる速進衝撃波、磁場が弱められる遅進衝撃波、衝撃波面がアルヴェン速度で伝播するアルヴェン衝撃波が衝撃波解として存在する。ただし、アルヴェン衝撃波では、
+
+.. math::
+ :label: rd
+
+ \left[ \rho \right] = \left[ p \right] = \left[ B_y^2 + B_z^2 \right] = 0, \ \
+ \pm \sqrt{\rho} \left[ v \right] = \left[ B_y \right], \ \
+ \pm \sqrt{\rho} \left[ w \right] = \left[ B_z \right],
+
+の条件が成り立ち、衝撃波の前後で熱力学的量に変化がないので、回転不連続(rotational discontinuity)とも呼ばれる。ここで、 :math:`[ \cdot ]` は不連続前後の物理量の差を表す。
+
+また、エントロピー波と共に伝播する不連続解として、
+
+.. math::
+ :label: cd
+
+ \left[ B_y \right] = \left[ B_z \right] =
+ \left[ v \right] = \left[ w \right] = \left[ p \right] = 0, B_x \ne 0
+
+を満足する接触不連続(contact discontinuity)、
+
+.. math::
+ :label: td
+
+ \left[ p + \frac{B_y^2 + B_z^2}{2} \right] = 0, B_x =0
+
+を満足する接線不連続(tangential discontinuity)が存在する。この他にもMHD方程式では、複合波(compound wave)や過圧縮衝撃波(overcompressible shock)など普通の衝撃波でない衝撃波(非古典的衝撃波)の存在が指摘されている。
+
+
+近似リーマン解法
+=======================
+
+双曲型保存則系で生ずる不連続解を数値的に安定に解くため、特性の理論に基づく風上法が活発に開発研究され、大きな成功を収めてきた。このような衝撃波(不連続解)を鋭く捕らえることができる解法を衝撃波捕獲法と呼ぶ。特にオイラー方程式に対しては、近似リーマン解法や流束ベクトル分離法、さらにはAUSM(Advection Upstream Splitting Method)系スキームといった様々なタイプの衝撃波捕獲法が開発された。流束ベクトル分離法は、オイラー方程式の流束関数 :math:`\mbox{\boldmath$F$}` が保存変数 :math:`\mbox{\boldmath$U$}` の一次同次関数 :math:`\mbox{\boldmath$F$} = \mbox{\boldmath$A$}\mbox{\boldmath$U$}` であることを利用して、 :math:`\mbox{\boldmath$F$}` を正負の固有値を持つ流束関数 :math:`\mbox{\boldmath$F$}^\pm` に分離する方法である。一方、MHD方程式は :math:`\mbox{\boldmath$F$} \ne \mbox{\boldmath$A$}\mbox{\boldmath$U$}` であり、 :math:`\mbox{\boldmath$F$}^\pm` の構築は困難である。AUSM系スキームでは、流束関数を移流項と音波による擾乱項に分離し、それぞれを風上化する [#fn2]_ 。MHD方程式ではアルヴェン波が存在するため、既存のAUSM系スキームを素直に適用することはできない [#fn3]_ 。したがって、MHD方程式に対する実践的な衝撃波捕獲法としては、近似リーマン解法が用いられることがほとんどである。
+
+.. _fig1:
+.. figure:: riemann1.png
+ :align: center
+ :width: 60%
+
+ 近似リーマン解法のアルゴリズム。Step 1. 物理量を区分的定数関数によって近似する。Step 2. 各セル境界でリーマン問題を近似的に解く。Step 3. 各セル内でリーマン問題の解を積分する。
+
+流束ベクトル分離法がセル内の特性速度の符号により流束分離を行うのに対し、近似リーマン解法ではセル境界の特性速度の情報を用いて流束の風上化を行う。近似リーマン解法の手続きを :ref:`近似リーマン解法のアルゴリズム図 <fig1>` に示す。初期条件として、物理量を各セル内で一定となるよう区分的定数関数で与える。このとき各セル境界において物理量が不連続になるため、初期値問題は各セル境界におけるリーマン問題(衝撃波管問題)に帰着する。最終的に、各セル内でリーマン問題の解を積分することによって、ある区分的定数関数として次の時刻の解が近似的に求められる。この手続きを繰り返すことにより、双曲型方程式を数値的に解くことができる。特に、各セル境界でリーマン問題を厳密に解く方法をGodunov法と呼ぶ。
+
+.. _fig2:
+.. figure:: riemann2.png
+ :align: center
+ :width: 40%
+
+ :math:`[x_{i-1/2},x_{i+1/2}] \times [t^n,t^{n+1}]` における双曲型保存則系のリーマン問題。
+
+ここで、 :math:`[x_{i-1/2},x_{i+1/2}] \times [t^n,t^{n+1}]` における双曲型保存則系の時空間保存、
+
+.. math::
+ :label: x-t_int
+
+ \int_{x_{i-1/2}}^{x_{i+1/2}}\mbox{\boldmath$U$} (x,t^{n+1}) dx
+ - \int_{x_{i-1/2}}^{x_{i+1/2}}\mbox{\boldmath$U$} (x,t^{n}) dx
+ + \int_{t^n}^{t^{n+1}}\mbox{\boldmath$F$} \left(\mbox{\boldmath$U$} (x_{i+1/2},t) \right) dt
+ - \int_{t^n}^{t^{n+1}}\mbox{\boldmath$F$} \left(\mbox{\boldmath$U$} (x_{i-1/2},t) \right) dt = 0
+
+を考える。リーマン問題の解を :math:`\mbox{\boldmath$U$}(x/t;\mbox{\boldmath$U$}_i ,\mbox{\boldmath$U$}_{i+1})` とすると、 :eq:`x-t_int` は、
+
+.. math::
+ :label: cons
+
+ \mbox{\boldmath$U$}_i^{n+1} -\mbox{\boldmath$U$}_i^n + \frac{\Delta t}{\Delta x}
+ \left[\mbox{\boldmath$F$}_{i+1/2}^\ast -\mbox{\boldmath$F$}_{i-1/2}^\ast \right] = 0 ,
+
+ただし、
+
+.. math::
+ :label: flux
+
+ \mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$} \left(\mbox{\boldmath$U$}(0;\mbox{\boldmath$U$}_i,\mbox{\boldmath $U$}_{i+1}) \right) ,
+
+となる（ :ref:`リーマン問題の図<fig2>` ）。ここで、 :math:`\Delta x = x_{i+1/2} - x_{i-1/2}` 、 :math:`\Delta t = t^{n+1} - t^n` 。数値流束 :math:`\mbox{\boldmath$F$}_{i+1/2}^\ast` は、 :math:`[x_{i+1/2}+\lambda_1 \Delta t,x_{i+1/2}] \times [t^n , t^{n+1}]` 
+の時空間保存から、
+
+.. math::
+ :label: rflux_left
+
+ \mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$}_i^n
+ - \frac{1}{\Delta t} \int_{\lambda_1 \Delta t}^0
+ \mbox{\boldmath$U$}(x/t^{n+1};\mbox{\boldmath$U$}_i^n ,\mbox{\boldmath$U$}_{i+1}^n) dx
+ - \lambda_1\mbox{\boldmath$U$}_i^n
+
+と与えられる。ただし、 :math:`\lambda_1` は最小固有値(最小の特性速度)で負とする。 :math:`\lambda_1 > 0` の場合、超音速問題となるため、 :math:`\mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$}_i^n` と風上側の流束で置き換えられる。保存則の対称性から、
+
+.. math::
+ :label: rflux_right
+
+ \mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$}_{i+1}^n
+ + \frac{1}{\Delta t} \int_0^{\lambda_m \Delta t}
+ \mbox{\boldmath$U$}(x/t^{n+1};\mbox{\boldmath$U$}_i^n ,\mbox{\boldmath$U$}_{i+1}^n) dx
+ - \lambda_m\mbox{\boldmath$U$}_{i+1}^n
+
+も成立し、 :eq:`rflux_left` と一致する。ただし、 :math:`\lambda_m` は最大固有値(最大の特性速度)で正とする。
+
+オイラー方程式やMHD方程式は極めて高度な非線形システム方程式であり、リーマン問題の厳密解を求めるためにはニュートン法などの反復計算が必要になる。一方、Godunov法では最終的に各セル内でリーマン問題の解を平均化するため、 解の詳細な情報は失われる。そこで、リーマン問題の厳密解の代替えとなる性質のよい近似解の探索が重要となる。一般に、リーマン問題の近似解を用いて数値流束を評価する解法を近似リーマン解法、またはGodunov型解法と呼ぶ。
+
+これ以降、セル境界左右の状態を示す添え字をそれぞれ :math:`L` 、 :math:`R` とする。
+
+.. rubric:: Footnotes
+
+.. [#fn2] 発見的方法によって定式化される。
+.. [#fn3] 発見的方法によって定式化できる、かもしれない。パラメータ空間は無限である :math:`\cdots` 。
+
+線形近似リーマン解法
+---------------------
+
+:math:`[x_i,x_{i+1}] \times [t^n,t^{n+1}]` においてヤコビアン :math:`\mbox{\boldmath$A$}` を一定とする近似リーマン解法、つまり **局所的に基礎方程式を線形化** する近似法を線形近似リーマン解法と呼ぶ。
+
+ヤコビアン :math:`\mbox{\boldmath$A$}_{i+1/2}` を、正または負の固有値のみを持つヤコビアン :math:`\mbox{\boldmath$A$}_{i+1/2}^\pm` に分離する。ここで :math:`\mbox{\boldmath$A$}_{i+1/2}^\pm` は、 :math:`\mbox{\boldmath$A$}_{i+1/2}` に対する固有値行列 :math:`\mbox{\boldmath$\lambda$}_{i+1/2}` と右固有行列 :math:`\mbox{\boldmath$R_{i+1/2}$}` を利用して、
+
+.. math::
+ :label: Apm
+
+ \mbox{\boldmath$A$}_{i+1/2}^\pm =
+ \frac{\mbox{\boldmath$R_{i+1/2}$} \left( \mbox{\boldmath$\lambda$}_{i+1/2} \pm | \mbox{\boldmath$\lambda$}_{i+1/2} |   \right)
+ \mbox{\boldmath$R_{i+1/2}$}^{-1}}{2}
+
+と与えられる。したがって、
+
+.. math::
+ :label: Asol1
+
+ \mbox{\boldmath$A$}_{i+1/2} = \mbox{\boldmath$A$}_{i+1/2}^+ + \mbox{\boldmath$A$}_{i+1/2}^- , \
+ | \mbox{\boldmath$A$}_{i+1/2} | = \mbox{\boldmath$A$}_{i+1/2}^+ - \mbox{\boldmath$A$}_{i+1/2}^- ,
+
+ただし、
+
+.. math::
+ :label: Asol2
+
+ | \mbox{\boldmath$A$}_{i+1/2} | = \mbox{\boldmath$R_{i+1/2}$} | \mbox{\boldmath$\lambda$} | \mbox{\boldmath$R_{i+1/2}$} ^ {-1}
+
+である。右に進む波をまたぐジャンプ条件から、
+
+.. math::
+ :label: fr
+
+ \mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}^\ast = \mbox{\boldmath$A$}_{i+1/2}^+ (\mbox{\boldmath$U$}_R -\mbox{\boldmath $U$}_L),
+
+同様に左に進む波をまたぐジャンプ条件から、
+
+.. math::
+ :label: fl
+
+ \mbox{\boldmath$F$}^\ast -\mbox{\boldmath$F$}_L = \mbox{\boldmath$A$}_{i+1/2}^- (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L),
+
+が得られる。最終的に数値流束を対称化して表すと、
+
+.. math::
+ :label: nflux
+
+ \mbox{\boldmath$F$}^\ast = \frac{\mbox{\boldmath$F$}_R +\mbox{\boldmath$F$}_L}{2}
+ - \frac{1}{2} | \mbox{\boldmath$A$}_{i+1/2} | (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L)
+
+となる。一般に、この解法は線形近似リーマン解法と呼ばれる。流束の差 :math:`\Delta\mbox{\boldmath$F$}` を :math:`\Delta\mbox{\boldmath$F$}^+ + \Delta\mbox{\boldmath$F$}^-P` と分離することから流束差分離法とも呼ばれる。特に、ジャンプ条件が正しく評価されるよう、
+
+.. math::
+ :label: roe
+
+ \mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = \mbox{\boldmath$A$}_{i+1/2} (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L )
+
+を満足する :math:`\mbox{\boldmath$A$}_{i+1/2}` を与える解法はRoe法 [#fn4]_ と呼ばれ、最もスタンダードな近似リーマン解法としてよく知られている。 
+
+ただし、実際にMHD方程式に線形近似リーマン解法を適用するには様々な工夫が必要となる。MHD方程式では固有値( :eq:`eval` )が縮退し得るため、固有ベクトルに特異性が出現する。そのため固有ベクトルの適切な再規格化が必要となる [#fn5]_ 。また、 :math:`\gamma = 2` 以外の場合、Roe法に対するヤコビアン :math:`\mbox{\boldmath$A$}_{1/2}` を求めることは容易ではない [#fn6]_ 。
+
+線形近似リーマン解法では全ての波が考慮されており、各種不連続解を正しく解像できる。一方で、膨張波(希薄波)が無視されているため、密度および圧力の正値性が破れることが証明されている。特にMHD方程式では、磁気エネルギーの寄与分のため、オイラー方程式に比べてさらに正値性の条件は非常に厳しく、計算困難な初期条件が広く存在する。
+
+.. rubric:: Footnotes
+
+.. [#fn4] :eq:`roe` に加えて、 :math:`\mbox{\boldmath$A$}_{1/2}` が独立な実固有値を持ち、ヤコビアンの適合性 :math:`\mbox{\boldmath$A$}_{1/2}(\mbox{\boldmath$U$},\mbox{\boldmath$U$}) = \mbox{\boldmath$A$}(\mbox{\boldmath$U$})` を満足する必要がある。これらの性質は合わせてProperty Uと呼ばれる。
+.. [#fn5] ここでは参考文献をあげるにとどめる。 :ref:`Brio & Wu, JCP (1988)<Brio-Wu88>`
+.. [#fn6] ここでは参考文献をあげるにとどめる。 :ref:`Cargo & Gallice, JCP (1997)<Cargo-Gallice97>` , :ref:`Balsara, ApJS (1998)<Balsara98>` 
+
+HLL近似リーマン解法
+------------------------
+
+HLL型の近似リーマン解法 [#fn7]_ では、膨張波も含めて最も速い特性速度 :math:`S_R(>0)` と最も遅い速度 :math:`S_L(<0)` に囲まれた領域、 :math:`[S_L \Delta t , S_R \Delta t] \times [0 , \Delta t]` における時空間保存則、
+
+.. math::
+ :label: hlltype
+
+ \frac{1}{\Delta t}
+ \int_{S_L \Delta t}^{S_R \Delta t}\mbox{\boldmath$U$}(x,t) dx
+ - S_R\mbox{\boldmath$U$}_R + S_L\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = 0
+
+を満足するよう近似解が求められる。
+
+.. _fig3:
+.. figure:: riemann3.png
+ :align: center
+ :width: 60%
+
+ HLL近似リーマン解法における(a)近似解の模式図と(b)数値流束評価のための積分経路。
+
+特にHLL法では、 :math:`\mbox{\boldmath$S_R$}` **と** :math:`\mbox{\boldmath$S_L$}` **に囲まれた領域(リーマンファン)においてリーマン問題の解が単一状態** :math:`\mbox{\boldmath$U$}^\ast` **であると仮定** する。 :eq:`hlltype` から、
+
+.. math:: 
+ :label: srl_hll
+
+ (S_R - S_L)\mbox{\boldmath$U$}^\ast - S_R\mbox{\boldmath$U$}_R + S_L\mbox{\boldmath$U$}_L
+ +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = 0,
+
+したがって、
+
+.. math::
+ :label: u_hll
+
+ \mbox{\boldmath$U$}^\ast = \frac{S_R\mbox{\boldmath$U$}_R - S_L\mbox{\boldmath$U$}_L -\mbox{\boldmath$F$}_R +\mbox {\boldmath$F$}_L}{S_R - S_L}
+
+が得られる( :ref:`HLL近似リーマン解法図(a)<fig3>` )。続いて、 :math:`[0,S_R \Delta t] \times [0,\Delta t]` における時空間保存( :ref:`HLL近似リーマン解法図(b)<fig3>` )から、
+
+.. math::
+ :label: rhalf
+
+ S_R\mbox{\boldmath$U$}^\ast - S_R\mbox{\boldmath$U$} +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}^\ast = 0
+
+となる。ただし、数値流束 :math:`\mbox{\boldmath$F$}^\ast` は、
+
+.. math::
+ :label: f_hll0
+
+ \mbox{\boldmath$F$}^\ast = \frac{1}{\Delta t}\int_0^{\Delta t}\mbox{\boldmath$F$}(0,t) dt
+
+と定義される。 :eq:`u_hll` を :eq:`rhalf` に代入すると、 :math:`\mbox{\boldmath$F$}^\ast` は最終的に、
+
+.. math::
+ :label: f_hll
+
+ \mbox{\boldmath$F$}^\ast =
+ \frac{S_R\mbox{\boldmath$F$}_L - S_L\mbox{\boldmath$F$}_R + S_R S_L (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L)}
+ {S_R - S_L}
+
+となる。もちろん、 :math:`[S_L \Delta t,0] \times [0,\Delta t]` の保存則からも :eq:`f_hll` は得られる。HLL法は非線形の近似解法であり、 :math:`\mbox{\boldmath$F$}^\ast \ne\mbox{\boldmath$F$} (\mbox{\boldmath$U$}^\ast)` であることに注意する必要がある。
+
+HLL法の数値流束 :eq:`f_hll` を評価するためには、 :math:`S_R` と :math:`S_L` の情報が必要である。MHD方程式の特性速度は形式的には :eq:`eval` と与えられる。しかし、厳密な :math:`S_R` 、 :math:`S_L` を得るためには、リーマン問題を厳密に解く必要がある。そこで、 :math:`S_R` 、 :math:`S_L` を過小評価しないよう近似的に、
+
+.. math::
+ :label: sr_sl_1
+
+ S_R = \max( u_R+{c_f}_R , u_L+{c_f}_L ) \ , \
+ S_L = \min( u_R-{c_f}_R , u_L-{c_f}_L )
+
+または
+
+.. math::
+ :label: sr_sl_2
+
+ S_R = \max( u_R , u_L ) + \max( {c_f}_R , {c_f}_L ) \ , \
+ S_L = \min( u_R , u_L ) - \max( {c_f}_R , {c_f}_L )
+
+のように与えられる。また、特にRoe平均値 :eq:`roe` を用いて、
+
+.. math::
+ :label: sr_sl_3
+
+ S_R = \max( u^{Roe}+c_f^{Roe} , u_R+{c_f}_R ) \ , \
+ S_L = \min( u_L-{c_f}_L , u^{Roe}-c_f^{Roe} )
+
+とも評価される。 :math:`S_R < 0` 、 :math:`S_L > 0` の場合についても、 :eq:`f_hll` が片側の流束 :math:`\mbox{\boldmath$F$}_R:` 、 :math:`\mbox{\boldmath$F$}_L` に帰着できるよう、 :math:`S_R` 、 :math:`S_L` は一般に、
+
+.. math::
+ :label: sr_sl_4
+
+ S_R = \max(S_R , 0) \ , \ S_L = \min(S_L , 0)
+
+と拡張される。
+
+HLL法は :math:`\mbox{\boldmath$U$}` や :math:`\mbox{\boldmath$F$}` の詳細によらず非常にシンプルであり、固有ベクトルの計算も不要で計算効率が極めて高い。また、オイラー方程式およびMHD方程式に対して正値性が理論的に証明されており、極めてロバストである。しかし、リーマンファン内を単一状態と仮定しているため、接触不連続や回転不連続などを捕らえることができず、低解像度で数値的散逸が強い。
+
+.. rubric:: Footnotes
+
+.. [#fn7] HLL法の提案者であるHarten(TVD/ENOの提案者)、Lax (双曲型保存則系業界の創始者)、van Leer(MUSCLの提案者)の頭文字。
+
+.. _HLLD:
+
+HLLD近似リーマン解法
+--------------------------
+
+続いて、接触不連続や回転不連続を解像できる高解像度HLL型近似リーマン解法、HLLD法 [#fn8]_ （ :ref:`Miyoshi & Kusano, 2005<Miyoshi-Kusano05>` ） を検討する。
+
+.. _fig4:
+.. figure:: riemann4.png
+ :align: center
+ :width: 50%
+
+ HLLD近似リーマン解法における近似解の模式図。
+
+HLLD法では、 **リーマンファンにおいて速度** :math:`\mbox{\boldmath$u$}` **が一定と仮定** する。この仮定から、リーマンファン内で加速や減速が生じないよう、全圧力 :math:`p_T` が一定であることも要求される( :ref:`HLLD近似リーマン解法図(b)<fig4>` )。したがって、リーマンファン内は非圧縮状態となり、リーマン問題の解から遅進衝撃波は除外される。このことから、リーマン問題の近似解は、2つの速進衝撃波 :math:`S_R` 、 :math:`S_L` 、 2つのアルヴェン波 :math:`S_R^\ast` 、 :math:`S_L^\ast` 、1つのエントロピー波 :math:`S_M` で分割された4つの状態(リーマンファンの左から :math:`\mbox{\boldmath$U$}_L^\ast` 、 :math:`\mbox{\boldmath$U$}_L^{\ast \ast}` 、 :math:`\mbox{\boldmath$U$}_R^{\ast \ast}` 、 :math:`\mbox{\boldmath$U$}_R^\ast` と表記)となる(:ref:`HLLD近似リーマン解法図(a)<fig4>`)。
+
+リーマンファンにおける速度 :math:`u` はエントロピー波の速度 :math:`S_M` と一致する。ここで :math:`S_M` は、時空間保存則 :eq:`u_hll` を用いて、
+
+.. math::
+ :label: sassalld
+
+ S_M = \frac{(\rho u)^\ast}{\rho^\ast} = \frac{(S_R-u_R) \rho_R u_R - (S_L-u_L) \rho_L u_L - {p_T}_R + {p_T}_L}
+ {(S_R-u_R) \rho_R - (S_L-u_L) \rho_L}
+
+と与える。速度 :math:`u` はリーマンファン内で一定なので、
+
+.. math::
+ :label: ul_hlld
+
+ u_L^\ast = u_L^{\ast \ast} = u_R^{\ast \ast} = u_R^\ast = S_M
+
+となる。また全圧力 :math:`p_T` も、
+
+.. math::
+ :label: pt_hlld
+
+ {p_T}_L^\ast = {p_T}_L^{\ast \ast} = {p_T}_R^{\ast \ast} = {p_T}_R^\ast
+ = p_T^\ast
+
+と一定である。
+
+まず、速進衝撃波 :math:`S_\alpha` ( :math:`\alpha` は :math:`R` または :math:`L` )に対するジャンプ条件、
+
+.. math::
+ :label: rh_fast
+
+ S_\alpha \left(
+ \begin{array}{l}
+ \rho_\alpha^\ast \\
+ \rho_\alpha^\ast S_M \\
+ \rho_\alpha^\ast v_\alpha^\ast \\
+ \rho_\alpha^\ast w_\alpha^\ast \\
+ {B_y}_\alpha^\ast \\
+ {B_z}_\alpha^\ast \\
+ e_\alpha^\ast
+ \end{array}
+ \right)
+ - \left(
+ \begin{array}{l}
+ \rho_\alpha^\ast S_M \\
+ \rho_\alpha^\ast S_M^2 + p_T^\ast - B_x^2 \\
+ \rho_\alpha^\ast v_\alpha^\ast S_M - B_x {B_y}_\alpha^\ast \\
+ \rho_\alpha^\ast w_\alpha^\ast S_M - B_x {B_z}_\alpha^\ast \\
+ {B_y}_\alpha^\ast S_M - B_x v_\alpha^\ast \\
+ {B_z}_\alpha^\ast S_M - B_x w_\alpha^\ast \\
+ (e_\alpha^\ast + p_T^\ast) S_M
+ - B_x (\mbox{\boldmath$v$}_\alpha^\ast \cdot \mbox{\boldmath$B$}_\alpha^\ast)
+ \end{array}
+ \right)
+ = S_\alpha \left(
+ \begin{array}{l}
+ \rho_\alpha \\
+ \rho_\alpha u_\alpha \\
+ \rho_\alpha v_\alpha \\
+ \rho_\alpha w_\alpha \\
+ {B_y}_\alpha \\
+ {B_z}_\alpha \\
+ e_\alpha
+ \end{array}
+ \right)
+ - \left(
+ \begin{array}{l}
+ \rho_\alpha u_\alpha \\
+ \rho_\alpha u_\alpha^2 + {p_T}_\alpha - B_x^2 \\
+ \rho_\alpha v_\alpha u_\alpha - B_x {B_y}_\alpha \\
+ \rho_\alpha w_\alpha u_\alpha - B_x {B_z}_\alpha \\
+ {B_y}_\alpha u_\alpha - B_x v_\alpha \\
+ {B_z}_\alpha u_\alpha - B_x w_\alpha \\
+ (e_\alpha + {p_T}_\alpha) u_\alpha
+ - B_x (\mbox{\boldmath$v$}_\alpha \cdot \mbox{\boldmath$B$}_\alpha)
+ \end{array}
+ \right),
+
+を考えよう。第2式から、
+
+.. math::
+ :label: pt_hlld2
+
+ p_T^\ast
+ &= {p_T}_L + \rho_L (S_L-u_L)(S_M-u_L) \\
+ &= {p_T}_R + \rho_R (S_R-u_R)(S_M-u_R) \\
+ &=
+ \frac{(S_R-u_R) \rho_R {p_T}_L - (S_L-u_L) \rho_L {p_T}_R
+ + \rho_L \rho_R (S_R-u_R) (S_L-u_L) (u_R-u_L)}
+ {(S_R-u_R) \rho_R - (S_L-u_L) \rho_L}
+
+が得られる。続いて第1式から、
+
+.. math::
+ :label: rho_ast
+
+ \rho_\alpha^\ast = \rho_\alpha \frac{S_\alpha-u_\alpha}{S_\alpha-S_M}
+
+となる。第3式と第5式を連立させて、
+
+.. math::
+ :label: va_ast
+
+ v_\alpha^\ast = v_\alpha - B_x {B_y}_\alpha
+ \frac{S_M-u_\alpha}{\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}
+
+.. math::
+ :label: by_ast
+
+ {B_y}_\alpha^\ast = {B_y}_\alpha
+ \frac{\rho_\alpha (S_\alpha-u_\alpha)^2-B_x^2}
+ {\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}
+
+が得られる。同様に、第4式と第6式から、
+
+.. math::
+ :label: w_ast
+
+ w_\alpha^\ast = w_\alpha - B_x {B_z}_\alpha
+ \frac{S_M-u_\alpha}{\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}
+
+.. math::
+ :label: bz_ast
+
+ {B_z}_\alpha^\ast = {B_z}_\alpha
+ \frac{\rho_\alpha (S_\alpha-u_\alpha)^2-B_x^2}
+ {\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}
+
+が得られる。最後に第7式から、
+
+.. math::
+ :label: ene_ast
+
+ e_\alpha^\ast =
+ \frac{(S_\alpha-u_\alpha) e_\alpha - {p_T}_\alpha u_\alpha + p_T^\ast S_M
+ + B_x ( \mbox{\boldmath$v$}_\alpha \cdot \mbox{\boldmath$B$}_\alpha - \mbox{\boldmath$v$}_\alpha^\ast \cdot \mbox{\boldmath$B$} _\alpha^\ast)}
+ {S_\alpha-S_M}
+
+となる。
+
+続いて、アルヴェン波 :math:`S_\alpha^\ast` に対するジャンプ条件を考える。 :math:`\rho` のジャンプ条件、すなわち連続の式から明らかに、任意の :math:`S_\alpha^\ast` に対し、
+
+.. math::
+ :label: rho_ast2
+
+ \rho_\alpha^{\ast \ast} = \rho_\alpha^\ast
+
+が成り立つ( :ref:`HLLD近似リーマン解法図(c)<fig4>` )。したがって、アルヴェン波の速度は、
+
+.. math::
+ :label: hlld_alfven
+
+ S_R^\ast = S_M+\frac{|B_x|}{\sqrt{\rho_R^\ast}} \ , \ 
+ S_L^\ast = S_M-\frac{|B_x|}{\sqrt{\rho_L^\ast}} 
+
+と与えられる。ところが、 :eq:`hlld_alfven` を用いると、 :math:`\mbox{\boldmath$v$}_t = (0,v,w)` 、 :math:`\mbox{\boldmath$B$}_t = (0,B_y,B_z)` のジャンプ条件、
+
+.. math::
+ :label: rh_aflven
+
+ S_\alpha^\ast \left(
+ \begin{array}{l}
+ \rho_\alpha^\ast v_\alpha^{\ast \ast} \\
+ \rho_\alpha^\ast w_\alpha^{\ast \ast} \\
+ {B_y}_\alpha^{\ast \ast} \\
+ {B_z}_\alpha^{\ast \ast} \\
+ \end{array}
+ \right)
+ - \left(
+ \begin{array}{l}
+ \rho_\alpha^\ast v_\alpha^{\ast \ast} S_M - B_x {B_y}_\alpha^{\ast \ast} \\
+ \rho_\alpha^\ast w_\alpha^{\ast \ast} S_M - B_x {B_z}_\alpha^{\ast \ast} \\
+ {B_y}_\alpha^{\ast \ast} S_M - B_x v_\alpha^{\ast \ast} \\
+ {B_z}_\alpha^{\ast \ast} S_M - B_x w_\alpha^{\ast \ast} \\
+ \end{array}
+ \right)
+ = S_\alpha^\ast \left(
+ \begin{array}{l}
+ \rho_\alpha^\ast v_\alpha^\ast \\
+ \rho_\alpha^\ast w_\alpha^\ast \\
+ {B_y}_\alpha^\ast \\
+ {B_z}_\alpha^\ast \\
+ \end{array}
+ \right)
+ - \left(
+ \begin{array}{l}
+ \rho_\alpha^\ast v_\alpha^\ast S_M - B_x {B_y}_\alpha^\ast \\
+ \rho_\alpha^\ast w_\alpha^\ast S_M - B_x {B_z}_\alpha^\ast \\
+ {B_y}_\alpha^\ast S_M - B_x v_\alpha^\ast \\
+ {B_z}_\alpha^\ast S_M - B_x w_\alpha^\ast \\
+ \end{array}
+ \right),
+
+から、 :math:`{\mbox{\boldmath$v$}_t}_\alpha^{\ast \ast}` 、 :math:`{\mbox{\boldmath$B$}_t}_\alpha^{\ast \ast}` を解くことができない。一方、 :math:`S_M` に対する :math:`\mbox{\boldmath$v$}_t` 、 :math:`\mbox{\boldmath$B$}_t` のジャンプ条件、
+
+.. math::
+ :label: rh_entropy
+
+ S_M \left(
+ \begin{array}{l}
+ \rho_L^\ast v_L^{\ast \ast} \\
+ \rho_L^\ast w_L^{\ast \ast} \\
+ {B_y}_L^{\ast \ast} \\
+ {B_z}_L^{\ast \ast} \\
+ \end{array}
+ \right)
+ - \left(
+ \begin{array}{l}
+ \rho_L^\ast v_L^{\ast \ast} S_M - B_x {B_y}_L^{\ast \ast} \\
+ \rho_L^\ast w_L^{\ast \ast} S_M - B_x {B_z}_L^{\ast \ast} \\
+ {B_y}_L^{\ast \ast} S_M - B_x v_L^{\ast \ast} \\
+ {B_z}_L^{\ast \ast} S_M - B_x w_L^{\ast \ast} \\
+ \end{array}
+ \right)
+ = S_M \left(
+ \begin{array}{l}
+ \rho_R^\ast v_R^{\ast \ast} \\
+ \rho_R^\ast w_R^{\ast \ast} \\
+ {B_y}_R^{\ast \ast} \\
+ {B_z}_R^{\ast \ast} \\
+ \end{array}
+ \right)
+ - \left(
+ \begin{array}{l}
+ \rho_R^\ast v_R^{\ast \ast} S_M - B_x {B_y}_R^{\ast \ast} \\
+ \rho_L^\ast w_R^{\ast \ast} S_M - B_x {B_z}_R^{\ast \ast} \\
+ {B_y}_R^{\ast \ast} S_M - B_x v_R^{\ast \ast} \\
+ {B_z}_R^{\ast \ast} S_M - B_x w_R^{\ast \ast} \\
+ \end{array}
+ \right),
+
+から、
+
+.. math::
+ :label: vl_ast2
+
+ v_L^{\ast \ast} = v_R^{\ast \ast} \equiv v^{\ast \ast}
+
+.. math::
+ :label: wl_ast2
+
+ w_L^{\ast \ast} = w_R^{\ast \ast} \equiv w^{\ast \ast}
+
+.. math::
+ :label: by_ast2
+
+ {B_y}_L^{\ast \ast} = {B_y}_R^{\ast \ast} \equiv {B_y}^{\ast \ast}
+
+.. math::
+ :label: bz_ast2
+
+ {B_z}_L^{\ast \ast} = {B_z}_R^{\ast \ast} \equiv {B_z}^{\ast \ast}
+
+となる( :ref:`HLLD近似リーマン解法図(d)<fig4>` )。そこで、リーマンファンの時空間保存則 :eq:`hlltype` 、
+
+.. math::
+ :label: srsmsl_hlld
+
+ (S_R-S_R^\ast)\mbox{\boldmath$U$}_R^\ast
+ + (S_R^\ast-S_M)\mbox{\boldmath$U$}_R^{\ast \ast}
+ + (S_M-S_R^\ast)\mbox{\boldmath$U$}_L^{\ast \ast}
+ + (S_L^\ast-S_L)\mbox{\boldmath$U$}_L^\ast
+ - S_R\mbox{\boldmath$U$}_R + S_L\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = 0
+
+を利用すると、
+
+.. math::
+ :label: v_ast2_def
+
+ v^{\ast \ast} =
+ \frac{\sqrt{\rho_L^\ast} v_L^\ast + \sqrt{\rho_R^\ast} v_R^\ast
+ + ( {B_y}_R^\ast - {B_y}_L^\ast ) {\rm sgn} (B_x)}
+ {\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}
+
+.. math::
+ :label: w_ast2_def
+
+ w^{\ast \ast} =
+ \frac{\sqrt{\rho_L^\ast} w_L^\ast + \sqrt{\rho_R^\ast} w_R^\ast
+ + ( {B_z}_R^\ast - {B_z}_L^\ast ) {\rm sgn} (B_x)}
+ {\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}
+
+.. math::
+ :label: by_ast2_def
+
+ {B_y}^{\ast \ast} =
+ \frac{\sqrt{\rho_L^\ast} {B_y}_R^\ast + \sqrt{\rho_R^\ast} {B_y}_L^\ast
+ + \sqrt{\rho_L^\ast \rho_R^\ast}( v_R^\ast - v_L^\ast ) {\rm sgn} (B_x)}
+ {\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}
+
+.. math::
+ :label: bz_ast2_def
+
+ {B_z}^{\ast \ast} =
+ \frac{\sqrt{\rho_L^\ast} {B_z}_R^\ast + \sqrt{\rho_R^\ast} {B_z}_L^\ast
+ + \sqrt{\rho_L^\ast \rho_R^\ast}( w_R^\ast - w_L^\ast ) {\rm sgn} (B_x)}
+ {\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}
+
+が得られる。ここで、 :math:`{\rm sgn}` は符号関数である。最後に :math:`S_\alpha^\ast` に対する :math:`e` のジャンプ条件から、
+
+.. math::
+ :label: er_ast2_def
+
+ e_R^{\ast \ast} = e_R^\ast + \sqrt{\rho_R^\ast}
+ ( \mbox{\boldmath$v$}_R^\ast \cdot \mbox{\boldmath$B$}_R^\ast - \mbox{\boldmath$v$}^{\ast \ast} \cdot \mbox{\boldmath$B$}^{\ast  \ast} )
+ {\rm sgn} (B_x)
+
+.. math::
+ :label: el_ast2_def
+
+ e_L^{\ast \ast} = e_L^\ast - \sqrt{\rho_L^\ast}
+ ( \mbox{\boldmath$v$}_L^\ast \cdot \mbox{\boldmath$B$}_L^\ast - \mbox{\boldmath$v$}^{\ast \ast} \cdot \mbox{\boldmath$B$}^{\ast  \ast} )
+ {\rm sgn} (B_x)
+
+が得られる。ただし、 :math:`\mbox{\boldmath$v$}^{\ast \ast} = (S_M,v^{\ast \ast},w^{\ast \ast})` 、 :math:`\mbox{\boldmath$B$}^{\ast \ast} = (B_x,{B_y}^{\ast \ast},{B_z}^{\ast \ast})` 。
+
+以上、リーマンファンにおける4つの状態、 :math:`\mbox{\boldmath$U$}_L^\ast` 、 :math:`\mbox{\boldmath$U$}_L^{\ast \ast}` 、 :math:`\mbox{\boldmath$U$}_R^{\ast \ast}` 、 :math:`\mbox{\boldmath$U$}_L^\ast` が完全に代数的に得られた。
+
+数値流束 :math:`\mbox{\boldmath$F$}^\ast` は、HLL法と同様に、 :math:`[0,S_R \Delta t] \times [0,\Delta t]` または :math:`[S_L \Delta t,0] \times [0,\Delta t]` における時空間保存則から求められる。例えば、 :math:`S_L \leq 0 \leq S_L^\ast` の場合、
+
+.. math::
+ :label: f_hlld_sol1
+
+ (0-S_L)\mbox{\boldmath$U$}_L^\ast - (0-S_L)\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}^\ast -\mbox{\boldmath$F$}_L = 0
+
+から、 :math:`S_L^\ast \leq 0 \leq S_M` の場合、
+
+.. math::
+ :label: f_hlld_sol2
+
+ (0-S_L^\ast)\mbox{\boldmath$U$}_L^{\ast \ast} + (S_L^\ast-S_L)\mbox{\boldmath$U$}_L^\ast
+ - (0-S_L)\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}^\ast -\mbox{\boldmath$F$}_L = 0
+
+から :math:`\mbox{\boldmath$F$}^\ast` が得られる。最終的に、
+
+.. math::
+ :label: f_hlld_sol3
+
+ \mbox{\boldmath$F$}^\ast = \left\{
+ \begin{array}{ll}
+ \mbox{\boldmath$F$}_L & {\rm for} \ 0 \leq S_L \\
+ \mbox{\boldmath$F$}_L^\ast & {\rm for} \ S_L \leq 0 \leq S_L^\ast \\
+ \mbox{\boldmath$F$}_L^{\ast \ast} & {\rm for} \ S_L^\ast \leq 0 \leq S_M \\
+ \mbox{\boldmath$F$}_R^{\ast \ast} & {\rm for} \ S_M \leq 0 \leq S_R^\ast \\
+ \mbox{\boldmath$F$}_R^\ast & {\rm for} \ S_R^\ast \leq 0 \leq S_R \\
+ \mbox{\boldmath$F$}_R & {\rm for} \ S_R \leq 0 \\
+ \end{array}
+ \right.
+
+となる [#fn9]_ 。ただし、
+
+.. math:: 
+ :label: frl_ast_def
+
+ \mbox{\boldmath$F$}_{R / L}^{\ast / \ast \ast} =
+ \mbox{\boldmath$F$} \left(
+ \rho_{R / L}^{\ast / \ast \ast},
+ S_M,
+ v_{R / L}^{\ast / \ast \ast},
+ w_{R / L}^{\ast / \ast \ast},
+ B_x,
+ {B_y}_{R / L}^{\ast / \ast \ast},
+ {B_z}_{R / L}^{\ast / \ast \ast},
+ e_{R / L}^{\ast / \ast \ast},
+ p_T^\ast
+ \right)
+
+である。 :math:`S_R` と :math:`S_L` は、HLL法と同様に、例えば、 :eq:`sr_sl_1` から :eq:`sr_sl_4` のように評価する。特に磁場がゼロのとき、この解法はオイラー方程式に対するHLLC法に帰着する。
+
+HLL法と異なり、HLLD法ではMHD方程式の接触不連続や回転不連続、接線不連続を正確に解像できる。また、密度および圧力の正値性の保存性も理論的に保証される( :ref:`付録<positivity>` ) [#fn10]_ 。様々な数値実験の結果から、線形近似リーマン解法と同等の解像度を持ちつつ、線形近似リーマン解法に比べ計算効率が高いことも示されている。したがって、HLLD法は、解像度、ロバストさ、計算効率の全てに優れたMHD解法といえる。
+
+.. rubric:: Footnotes
+
+.. [#fn8] HLLD法の``D''は不連続(discontinuities)の頭文字を表す。HLLC法(接触不連続(contact discontinuity)を解像するHLL型の近似リーマン解法)の上位の解法である。
+.. [#fn9] ジャンプ条件 :math:`S[\mbox{\boldmath$U$}]-[\mbox{\boldmath$F$}]=0` を満足するように近似解を求めたので当然である。
+.. [#fn10] MHD方程式に対するHLL法の正値性保存性も合わせて証明できる。
+
+高次精度化
+============
+近似リーマン解を得るために必要な、あるセル境界 :math:`i+1/2` に対する左・右状態である :math:`U_L` と :math:`U_R` は、単純には :math:`U_L=U_i` 、 :math:`U_R=U_{i+1}` より与えられる。この解は最も安定（上記よりスカラ変数の正値性が保証）である一方、数値粘性が過多に含まれていることになり、得られる構造は時間と共に急速に散逸する。また空間1次精度である。本節では、 近接するより多くのセルの情報を取り入れることにより、:math:`U_L` 、 :math:`U_R` を高精度に求める方法を解説する。以下では、 :math:`i+1/2` における左・右状態をそれぞれ :math:`U_{L,i+1/2}` :math:`U_{R,i+1/2}` で表す。
+
+一般に、同じ解像度の結果を得るためには、多くのセル数を使って低次精度のスキームで解く場合に比べて、少ないセル数で高次精度スキームを用いたほうが必要な計算量は少なくてすむ。これは、セル幅（ :math:`\Delta h` ）に対して :math:`\Delta h^4` で計算量が増加する（3次元計算の場合）のに対して、高次精度化にともなう計算量の増加は、せいぜい数倍に留まるためである。また、近年のスカラ型スーパーコンピュータにおいては、セルあたりの演算量を増やした方がより効率的にCPUの能力を活用できることも、スキームの高次精度化に伴うメリットであると言える。
+
+高次精度化を図るためには多項式による数値補間が必要であるが、不連続面近傍において数値振動の元となる。2次以上の線形スキームでは解の単調性を維持できないことが知られている（Godunovの定理、 :ref:`前章「差分の基礎」<godunov_theorem>` ）。従って、不連続面近傍において単調性を維持することができるような（1次精度に落とす）非線形スキームの開発が必要となる。以下では、代表的な2次精度の :ref:`MUSCL法<muscl>` 、5次精度の :ref:`WENO法<weno5>` 、 **CANS+** で採用されている5次精度の :ref:`MP5法<mp5>` について解説する。
+
+.. _muscl:
+
+MUSCL補間
+----------
+:ref:`van Leer (1979) <vanLeer79>` が提唱した、MUSCL (Monotone Upstream-centered Schemes
+for Conservation Laws) 補間と呼ばれる。着目するセル内の物理量を関数 :math:`u(x)` で表し、
+
+.. math::
+ :label: muscl1 
+
+ u(x) = U_i + \frac{U_{i+1}-U_{i-1}}{2\Delta x}(x-x_i) + \frac{3\kappa}{2}\frac{U_{i+1}-2U_i+U_{i-1}}{\Delta x^2}\left[(x-x_i)^2-\frac{\Delta x^2}{12} \right],
+
+でセル内のプロファイルを構築する。ここで、
+
+.. math::
+ :label: muscl2
+
+ U_i = \frac{1}{\Delta x} \int_{x_{i-1/2}}^{x_{i+1/2}} u(x) dx
+
+である。 :math:`\kappa=1/3` のとき、セル内を2次関数で表現（3次精度）することに相当する。
+
+式 :eq:`muscl1` より、 :math:`U_{L,i+1/2}` 、 :math:`U_{R,i-1/2}` は、
+
+.. math::
+ :label: muscl3
+
+ U_{L,i+1/2} = u(x_{i+1/2}) = U_i + \frac{1-\kappa}{4}(U_i-U_{i-1})+\frac{1+\kappa}{4}(U_{i+1}-U_i),
+
+.. math::
+ :label: muscl4
+
+ U_{R,i-1/2} = u(x_{i-1/2}) = U_i - \frac{1-\kappa}{4}(U_{i+1}-U_i)-\frac{1+\kappa}{4}(U_i-U_{i-1}).
+
+式 :eq:`muscl3` 、 :eq:`muscl4` をそのまま採用すると不連続面近傍で数値振動が発生する。数値振動を発生させないためには、全変化量TV（Total Variation）
+
+.. math::
+ :label: muscl5
+
+ TV(U) = \sum_i |U_{i+1} - U_i|
+
+が時間と共に増加しない、TVD（Total Variation Diminishing）条件
+
+.. math::
+ :label: muscl6
+
+ TV(U^{n+1}) \le TV(U^n)
+
+を満たす必要がある。そこで、TVD条件を満たすような流束制限関数 :math:`\Phi` を以下のように導入する。
+
+.. math::
+ :label: muscl7a
+
+ U_{L,i+1/2} = u(x_{i+1/2}) = U_i + \frac{1-\kappa}{4}\Phi(r)(U_i-U_{i-1})+\frac{1+\kappa}{4}\Phi(1/r)(U_{i+1}-U_i)
+
+.. math::
+ :label: muscl7b
+
+ U_{R,i-1/2} = u(x_{i-1/2}) = U_i - \frac{1-\kappa}{4}\Phi(1/r)(U_{i+1}-U_i)-\frac{1+\kappa}{4}\Phi(r)(U_i-U_{i-1})
+
+ここで、流束制限関数 :math:`\Phi(r)` は :math:`r=(U_{i+1}-U_i)/(U_i-U_{i-1})` の関数である。以下では、数ある制限関数のうち代表的なminmod関数およびmonotonized centralを例に挙げる（ **CANS+** でも実装されている）。両制限関数は :math:`\Phi(r) = r\Phi(1/r)` の関係があるので、その場合、
+
+.. math::
+ :label: muscl6c
+
+ U_{L,i+1/2} = U_i + \frac{1}{2}\Phi(r)(U_i-U_{i-1})
+
+.. math::
+ :label: muscl7c
+
+ U_{R,i-1/2} = U_i - \frac{1}{2}\Phi(1/r)(U_{i+1}-U_i)
+
+となる。
+
+minmod limiter
+~~~~~~~~~~~~~~~~~~~~~~
+minmod 制限関数は
+
+.. math::
+ :label: minmod1
+
+ \Phi(r) = max[0,min(1,r)]
+
+で表される。実際の計算では、
+
+.. math::
+ :label: minmod2
+
+ U_{L,i+1/2} = U_i + \frac{1}{2}minmod(U_{i+1}-U_i,U_i-U_{i-1})
+
+.. math::
+ :label: minmod3
+
+ U_{R,i-1/2} = U_i - \frac{1}{2}minmod(U_{i+1}-U_i,U_i-U_{i-1})
+
+のように、minmod関数
+
+.. math::
+ :label: minmod4
+
+
+ minmod(a,b) = sign(a)max(0,min(|a|,sign(a)b))
+
+を定義して、 :math:`U_{L,i+1/2}` 、 :math:`U_{R,i-1/2}` を一度に求める。ここで、 :math:`sign(a)` は引数 :math:`a`
+の符号を返す関数である。
+
+monotonized central
+~~~~~~~~~~~~~~~~~~~~~~
+monotonized central 制限関数は
+
+.. math::
+ :label: mc1
+
+ \Phi(r) = max[0,min(2r,0.5(1+r),2)]
+
+で表される。実際の計算では、
+
+.. math::
+ :label: mc2
+
+ U_{L,i+1/2} = U_i + \frac{1}{2}MC(2(U_{i+1}-U_i),2(U_i-U_{i-1}),(U_{i+1}-U_{i-1})/2)
+
+.. math::
+ :label: mc3
+
+ U_{R,i-1/2} = U_i - \frac{1}{2}MC(2(U_{i+1}-U_i),2(U_i-U_{i-1}),(U_{i+1}-U_{i-1})/2)
+
+のように、MC関数
+
+.. math::
+ :label: mc4
+
+ MC(a,b,c) &= sign(a)max(0,min(|a|,sign(a)b,sign(a)c)) \\
+           &= minmod(a,minmod(b,c))
+
+を定義して、 :math:`U_{L,i+1/2}` 、 :math:`U_{R,i-1/2}` を一度に求める。
+
+.. _weno5:
+
+WENO法
+------------
+Weighted Essentially Non-Oscillatory （WENO）法とは、Liuら（ :ref:`Liu et al., 1994<Liu94>` ）によって開発され、その後Jiangら（ :ref:`Jiang & Shu, 1996 <Jiang-Shu96>` ）によって改良された、双曲型方程式を高精度かつ安定に解く数値手法であり、現在は特に圧縮性流体の高解像度シミュレーションに広く利用されている。WENO法では、物理量のセル平均値
+
+.. math::
+ :label: weno1
+
+ U_{i} = \frac{1}{\Delta} \int_{x_{i}-\Delta/2}^{x_{i}+\Delta/2} u(x)dx,
+
+を保持し、セル境界の物理量 :math:`U_{i+1/2}` を非線形補間で近似する。
+
+最もポピュラーな5次精度WENO法を例に挙げる。ステンシル :math:`[i-2,i+2]` において、左に偏りを持たせて、 :math:`i+1/2` の左状態 :math:`U_{L,i+1/2}` を求めよう（対称性から :math:`i-1/2` の右状態 :math:`U_{R,i-1/2}` も求めることが出来る）。ステンシルを次の3つのサブステンシル
+
+.. math::
+
+ &S^0: [i-2,i], \\
+ &S^1: [i-1,i+1], \\
+ &S^2: [i,i+2],
+
+に分割し、各サブステンシルにおいて :math:`U_{i+1/2}` を線形ラグランジュ補間で近似する。
+
+.. math::
+ :label: weno2
+
+ U_{i+1/2}^0 = \frac{2U_{i-2}-7U_{i-1}+11U_{i}}{6},
+
+.. math::
+ :label: weno3
+
+ U_{i+1/2}^1 = \frac{-U_{i-1}+5U_{i}+2U_{i+1}}{6},
+
+.. math::
+ :label: weno4
+
+ U_{i+1/2}^2 = \frac{2U_{i}+5U_{i+1}-U_{i+2}}{6}.
+
+
+これらを用いて、 :math:`U_{L,i+1/2}` を重み付き平均で近似する。
+
+.. math::
+ :label: weno5
+
+ U_{L,i+1/2} = \sum_{k=0}^{2} w^k U_{i+1/2}^k,
+
+ここで重み :math:`w^s` は :math:`w^s > 0, \sum_{k}w^k=1` を満たし（凸結合）、さらに以下のルールに基づいて決定される。
+
+* 滑らかなサブステンシルでは大きく、不連続を含むサブステンシルでは小さくする。
+* 全てのステンシルの滑らかさが同じならば、最大精度を達成する。これは5点を用いた線形ラグランジュ補間で与えられる。
+
+これらを満たす重み :math:`w^s` は様々あるが、ここでは標準的な例（ :ref:`Jiang & Shu, 1996<Jiang-Shu96>` ）を紹介しよう。
+
+.. math::
+ :label: weno6
+
+ & w^s = \frac{a^s}{\sum_{k}a^k},
+
+.. math::
+ :label: weno7
+
+ & a^0 = \frac{0.1}{\left(IS^0+\epsilon\right)^2}, \;\; a^1 = \frac{0.6}{\left(IS^1+\epsilon\right)^2}, \;\; a^2  = \frac{0.3}{\left(IS^2+\epsilon\right)^2},
+
+.. math::
+ :label: weno8
+
+ & IS^0 = \frac{13}{12} \left(U_{i-2}-2U_{i-1}+U_{i}\right)^2 + \frac{1}{4}\left(U_{i-2}-4U_{i-1}+3U_{i} \right)^2,
+
+.. math::
+ :label: weno9
+
+ & IS^1 = \frac{13}{12} \left(U_{i-1}-2U_{i}+U_{i+1}\right)^2 + \frac{1}{4}\left(U_{i-1}-U_{i+1}\right)^2,
+
+.. math::
+ :label: weno10
+
+ & IS^2 = \frac{13}{12} \left(U_{i}-2U_{i+1}+U_{i+2}\right)^2 + \frac{1}{4}\left(3U_{i}-4U_{i+1}+U_{i+2} \right)^2,
+
+ここで :math:`\epsilon` はゼロ除算防止のための小さな値（ :math:`10^{-6}` 程度）である。どうしてこのような表式が提案されたかについては、原論文をご覧頂きたい。
+
+重み :math:`w^s` が適切に与えられることで、不連続面近傍では振動が抑えられ（不連続面を含むサブステンシルの :math:`w \ll` 他の :math:`w` ）、滑らかな領域（ :math:`IS^0 \sim IS^1 \sim IS^2` ）では高精度が維持される。これまでの式からわかる通り、WENO法は全て代数計算のみを用いており、IF文などの論理計算を用いない。これはコンピュータにとって解読しやすく（ベクトル化されやすい）、計算効率に優れている。近年も改良が進められ、WENO-M（ :ref:`Henrick et al., 2005 <Henrick05>` ）やWENO-Z（ :ref:`Borges et al., 2008 <Borges08>` ）などの新しい手法が提案されている。
+
+.. _mp5:
+
+MP5法
+------------
+MP5法とは、5次精度のMonotonicity Preserving (MP) schemeで、SureshとHuynh（ :ref:`Suresh & Huynh, 1997<Suresh-Huynh97>` ）によって開発された手法であり、 **CANS+** の高次精度補間スキームとして採用されている。 :ref:`WENO法<weno5>` と同様に、物理量のセル平均値
+
+.. math::
+ :label: mp1
+
+ U_{i} = \frac{1}{\Delta} \int_{x_{i}-\Delta/2}^{x_{i}+\Delta/2} u(x)dx,
+
+を保持し、セル境界の物理量 :math:`U_{i+1/2}` を非線形補間で求めることを考える。以下では、ステンシル :math:`[i-2,i+2]` において、 :math:`i+1/2` の左状態 :math:`U_{L,i+1/2}` を求めよう（対称性から :math:`i-1/2` の右状態 :math:`U_{R,i-1/2}` も求めることができる）。
+
+MP5法では、5点のステンシルを使って4次多項式 :math:`u(x)` を構築する。多項式の係数は、 :math:`[i-2,i+2]` それぞれにおける式 :eq:`mp1` の束縛条件より決定される。それより、 :math:`U_{L,i+1/2}` における補間値は
+
+.. math::
+ :label: mp2
+
+ U_{L,i+1/2} = u(x_{i+1/2}) = \frac{2U_{i-2}-13U_{i-1}+47U_i+27U_{j+1}-3U_{j+2}}{60}
+
+で与えられる。得られた解は、スムーズな領域では5次の精度となるが、当然、不連続面では数値振動をもたらす。上記 :ref:`MUSCL法<muscl>` で議論したような、いわゆるTVDスキームを採用することで不連続面での数値振動は回避できるが、TVDスキームは波の伝搬を正確に解けないという弊害があることが知られている。これは、たかだか３点の情報では滑らかな関数の極値なのか、不連続面なのかの判定ができないからである（ :ref:`図参照<mp5_exp>` ）。
+
+.. _mp5_exp:
+.. figure:: mp5_exp.png
+ :align: center
+ :width: 60%
+
+ セル周辺のプロファイルの判定。着目するセル（ :math:`j` ）を中心とした３点（●）では、左のプロファイル（実線）と右のプロファイルとの区別ができない。外側２点（○）を加えた５点で初めて形状の判定を行うことができる。
+
+MP5法は、このように５つのセルの情報を使って周辺のプロファイルを判定し、 :ref:`図左<mp5_exp>` のような滑らかな曲線の場合は式 :eq:`mp2` で求められた値を採用し、 :ref:`図右<mp5_exp>` のような不連続形状であると判定された場合は、単調性が維持できるような値を補間値の代わりに使う、というものである。つまり、 :math:`U_{L,i+1/2}` がある許容範囲内に収まるように :math:`median` 関数を用いて :math:`U_{L,i+1/2}` を更新する。
+
+.. math::
+ :label: mp3
+
+ U_{L,i+1/2} = median(U_{L,i+1/2},U_{min},U_{max}).
+
+ここで、 :math:`median(a,b,c)` は3変数のうちの中央値を採択する関数で、上記 :math:`minmod` 関数を用いて
+
+.. math::
+ :label: mp4
+
+ median(a,b,c) = a+minmod(b-a,c-a)
+
+によって実装される。式 :eq:`mp2` で補間した :math:`U_{L,i+1/2}` が :math:`U_{min} \le U_{L,i+1/2} \le U_{max}` の場合はそのまま :math:`U_{L,i+1/2}` が採択され、例えば、:math:`U_{L,i+1/2} \le U_{min} \le U_{max}` の場合は :math:`U_{min}` が採択される。 :math:`U_{min}` , :math:`U_{max}` の求め方については、 :ref:`原論文<Suresh-Huynh97>` を参照いただきたい。
+
+.. どの変数を補間するか
+.. ----------------------
+.. （準備中）
+
+多次元化
+=========
+時間更新手順
+-------------------------
+式 :eq:`mhd` を時空間で差分化した方程式に基づき、セル :math:`(i,j,k)` における時間更新は、
+
+.. math::
+ :label: multidim_update
+
+ \frac{\mbox{\boldmath$U$}^{n+1}_{(i,j,k)}-\mbox{\boldmath$U$}^n_{(i,j,k)}}{\Delta t} = -\frac{\mbox{\boldmath$F$}_{x(i+1/2)}^{*}-\mbox{\boldmath$F$}_{x(i-1/2)}^{*}}{\Delta x}-\frac{\mbox{\boldmath$F$}_{y(j+1/2)}^{*}-\mbox{\boldmath$F$}_{y(j-1/2)}^{*}}{\Delta y}-\frac{\mbox{\boldmath$F$}_{z(k+1/2)}^{*}-\mbox{\boldmath$F$}_{z(k-1/2)}^{*}}{\Delta z}
+
+で行われる。（関連しない添字 :math:`i,j,k` は省略した。以下同様。）ここで、 :math:`\mbox{\boldmath$F$}_{x(i\pm1/2)}^{*}` 、 :math:`\mbox{\boldmath$F$}_{y(j\pm1/2)}^{*}` 、 :math:`\mbox{\boldmath$F$}_{z(k\pm1/2)}^{*}` は各方向のセル境界における数値フラックスで、それぞれ
+
+.. math::
+ :label: multidim_fluxx
+
+ \mbox{\boldmath$F$}_{x(i\pm1/2)}^{*} = Riemann(\mbox{\boldmath$U$}_{xL,i\pm1/2},\mbox{\boldmath$U$}_{xR,i\pm1/2}),
+
+.. math::
+ :label: multidim_fluxy
+
+ \mbox{\boldmath$F$}_{y(j\pm1/2)}^{*} = Riemann(\mbox{\boldmath$U$}_{yL,j\pm1/2},\mbox{\boldmath$U$}_{yR,j\pm1/2}),
+
+.. math::
+ :label: multidim_fluxz
+
+ \mbox{\boldmath$F$}_{z(k\pm1/2)}^{*} = Riemann(\mbox{\boldmath$U$}_{zL,k\pm1/2},\mbox{\boldmath$U$}_{zR,k\pm1/2}),
+
+で与えられ、また、 :math:`U_{xL}` , :math:`U_{xR}` , :math:`U_{yL}` , :math:`U_{yR}` , :math:`U_{zL}` , :math:`U_{zR}` は各次元方向周辺のセルから求める。例えば、 **CANS+** で採用されている :ref:`MP5法<mp5>` では
+
+.. math::
+ :label: multidim_interpx
+
+ \mbox{\boldmath$U$}_{xL,i\pm1/2} = MP5(\mbox{\boldmath$U$}_{i\mp2},\mbox{\boldmath$U$}_{i\mp1},\mbox{\boldmath$U$}_{i},\mbox{\boldmath$U$}_{i\pm1},\mbox{\boldmath$U$}_{i\pm2})
+
+.. math::
+ :label: multidim_interpxy
+
+ \mbox{\boldmath$U$}_{yL,j\pm1/2} = MP5(\mbox{\boldmath$U$}_{j\mp2},\mbox{\boldmath$U$}_{j\mp1},\mbox{\boldmath$U$}_{j},\mbox{\boldmath$U$}_{j\pm1},\mbox{\boldmath$U$}_{j\pm2})
+
+.. math::
+ :label: multidim_interpz
+
+ \mbox{\boldmath$U$}_{zL,k\pm1/2} = MP5(\mbox{\boldmath$U$}_{k\mp2},\mbox{\boldmath$U$}_{k\mp1},\mbox{\boldmath$U$}_{k},\mbox{\boldmath$U$}_{k\pm1},\mbox{\boldmath$U$}_{k\pm2})
+
+のようにして求める。
+
+.. _divb:
+
+磁場の発散の数値的処理
+-------------------------
+
+マクスウェル方程式は磁場のソレノイダル性
+
+.. math::
+ :label: divb0
+
+ \nabla \cdot \mbox{\boldmath$B$} = 0
+
+を保証しているが、多次元の数値計算においては必ずしも保証されていない（1次元（x方向）では :math:`B_x` を一定とすることにより満たされる）。計算の途中に有限の値が一度生じてしまうと、それは時間とともに増加していくため、いずれ計算の破綻をきたす。特に保存系での解法では運動方程式のローレンツ力項、
+
+.. math::
+ :label: lorentz
+
+ -\nabla \cdot \left( \frac{|\mbox{\boldmath$B$}|^2}{2}\mbox{\boldmath$I$}-\mbox{\boldmath$BB$}\right) = \left(\nabla \times \mbox{\boldmath$B$}\right) \times \mbox{\boldmath$B$} + \mbox{\boldmath$B$}\left(\nabla \cdot \mbox{\boldmath$B$}\right)
+
+より磁力線に水平方向への数値的加速が生じるため、数値計算上大きな影響を受ける。
+
+.. _divb_test:
+.. figure:: divb_test.png
+ :align: center
+ :width: 60%
+
+ Orszag-Tang渦問題のシミュレーション結果。(a)プロジェクション法（後述）による磁場補正をした場合。(b)磁場補正なし。
+
+例えば :ref:`Orszag-Tang渦問題の図<divb_test>` はOrszag-Tang渦問題を解いたもので、 :ref:`Orszag-Tang渦問題の図５(a)<divb_test>` はプロジェクション法（後述）による磁場補正をした場合、 :ref:`Orszag-Tang渦問題の図５(b)<divb_test>` は補正をしない場合である。補正しない場合は局所的に、特に、不連続面近傍で磁場のソレノイダル性が破れており、それが広範囲に影響を及ぼし補正した場合と違った結果を導くばかりか、それが原因となり計算が破綻する。したがって多次元のMHDシミュレーションにおいては、いかにして磁場のソレノイダル条件（ :math:`\nabla \cdot \mbox{\boldmath$B$}=0` ）を満たしながら計算を行うことかが重要な課題となっている。本小節では磁場のソレノイダル性を（ある程度）保証する手法について4つ手法を例にとり、紹介していく。
+
+プロジェクション法
+~~~~~~~~~~~~~~~~~~~~~~
+次の手法として :ref:`Brackbill & Barnes, 1980 <Brackbill-Barnes80>` らによって提唱されたプロジェクション法を挙げる。これは時間更新した磁場を補正することにより、ある精度で磁場のソレノイダル条件を満たす手法である。ある数値解法での時間更新後の磁場を :math:`\mbox{\boldmath$B$}^{\ast(n+1)}` と表記すると、ソレノイダル条件を満たす磁場 :math:`\mbox{\boldmath$B$}^{(n+1)}` を求めるには、スカラポテンシャル :math:`\psi` を導入して
+
+.. math::
+ :label: b_crct
+
+ \mbox{\boldmath$B$}^{(n+1)} = \mbox{\boldmath$B$}^{*(n+1)}-\nabla\psi
+
+のように磁場を補正し更新する。 :math:`\psi` は
+
+.. math::
+ :label: prjct
+
+ \nabla\cdot\mbox{\boldmath$B$}^{(n+1)} = \nabla\cdot\mbox{\boldmath$B$}^{*(n+1)}-\nabla^2\psi =0
+
+のポアソン方程式より求めることができる。この修正方法は一様なデカルト座標系においては最も補正量の少ない修正法であることが数学的に証明されている（ :ref:`Toth, 2000<Toth00>` ）。プロジェクション法は磁場自体を補正するため、どの数値計算手法とも相性がよい一方、ポアソン方程式を解く必要があるため、その分計算コストが増える。しかし必ずしも厳密に :math:`\psi` を求める必要はなく、ある程度の精度で :math:`\psi` が求まれば充分であることが多い。この場合SOR法や共役勾配法などの反復法が有効であり、さほど計算コストを増やすことなく磁場の補正が可能である。
+
+CT法
+~~~~~~~~~~~~~~~~~~~~~~
+プロジェクションでは磁場を補正したのに対して、以下に挙げるCT法では磁場の配置を工夫することにより磁場のソレノイダル条件が丸め誤差の範囲で満たされる（ :ref:`Evans & Hawley, 1988<Evans-Hawley88>` ）。
+
+.. _CT:
+.. figure:: CT_grid.png
+ :align: center
+ :width: 30%
+
+ CT法で使われる物理量のグリッド上への配置方法。
+
+:ref:`CT法でのグリッド配置図<CT>` はCT法で使われている物理量の配置方法を表したものである。磁場はセル境界面の中心に面に垂直な磁場成分を配置する。磁場の時間発展には電場の情報が必要であるが、セルの角に定義した電場を使って磁場の誘導方程式を解く。例えば2次元の場合、
+
+.. math::
+ :label: faraday_x
+
+ B^{(n+1)}_{x(i+1/2,j)} = B^{(n)}_{x(i+1/2,j)}-\Delta t \frac{E^{(n)}_{z(i+1/2,j+1/2)}-E^{(n)}_{z(i+1/2,j-1/2)}}{\Delta y}
+
+.. math::
+ :label: faraday_y
+
+ B^{(n+1)}_{y(i,j+1/2)} = B^{(n)}_{y(i,j+1/2)}+\Delta t \frac{E^{(n)}_{z(i+1/2,j+1/2)}-E^{(n)}_{z(i-1/2,j+1/2)}}{\Delta x}
+
+のように差分化した形で解く。その結果、差分化した :math:`\nabla \cdot \mbox{\boldmath$B$}` 、つまり、
+
+.. math::
+ :label: divb
+
+ \nabla \cdot \mbox{\boldmath$B$} = &+\frac{B_{x(i+1/2,j)}-B_{x(i-1/2,j)}}{\Delta x} \\
+ &+\frac{B_{y(i,j+1/2)}-B_{x(i,j-1/2)}}{\Delta y}
+
+は時間更新前後で維持される。これは、式 :eq:`faraday_x` 、 :eq:`faraday_y` の左辺を式 :eq:`divb` に代入すると明らかで、式 :eq:`faraday_x` 、 :eq:`faraday_y` の右辺の電場が相殺することにより
+
+.. math::
+ :label: divb_dt
+
+ \nabla \cdot \mbox{\boldmath$B$}^{(n+1)} = \nabla \cdot \mbox{\boldmath$B$}^n
+
+の関係が導かれる。CT法は磁場の離散化についてのみ規定しており、流体量（2次元の場合は面に垂直な磁場 :math:`B_z` も）の離散化は任意である。そこでこれらを有限体積法に基づいてセル中心に定義した場合の、CT法との組み合わせ方について述べる。
+
+有限体積法への実装
+^^^^^^^^^^^^^^^^^^^^^^
+以下は簡単のため2次元の場合だが、3次元への拡張は容易である。
+
+1. セル境界面の磁場 :math:`B_{x(i-1/2,j)},B_{y(i,j-1/2)}` からセル中心の磁場を補間する。例えば線形補間では :math:`B_{x(i,j)} = \left(B_{x(i-1/2,j)}+B_{x(i+1/2,j)}\right)/2,\ B_{y(i,j)} = \left(B_{y(i,j-1/2)}+B_{y(i,j+1/2)}\right)/2.` 
+2. 全ての物理量がセル中心に配置されたので、任意の衝撃波捕捉法を用いて、セル境界面における数値流束 :math:`\mbox{\boldmath$F$}_{i-1/2,j},\ \mbox{\boldmath$F$}_{i,j-1/2}` を求める。誘導方程式の :math:`x,\ y` 成分の数値流束は電場の :math:`z` 成分なので、 :math:`E_{z(i-1/2,j)},\ E_{z(i,j-1/2)}` が求められたことになる。
+3. セル境界面の電場を用いて、セルの角の電場 :math:`E_{z(i-1/2,j-1/2)}` を補間する。最も簡単なのは算術平均（ :ref:`Balsara & Spicer, 1999 <Balsara-Spicer99>` ）である。式 :eq:`ez_ave` は実装が容易だが、中心補間なので数値振動が発生する場合がある。これを抑制するために、例えば風上方向を考慮した補間方法（ :ref:`Gardiner & Stone, 2005 <Gardiner-Stone05>` ）や、セルの角で誘導方程式について再度衝撃波捕捉法を用いて電場を求める方法（ :ref:`Londrillo & Del Zanna, 2004 <Londrillo-DelZanna04>` , :ref:`Del Zanna et al., 2007 <DelZanna07>` ）など、様々な方法が提案されている。
+
+.. math::
+ :label: ez_ave
+
+ E_{z(i-1/2,j-1/2)} = \frac{\left(E_{z(i-1,j-1/2)}+E_{z(i,j-1/2)}+E_{z(i-1/2,j-1)}+E_{z(i-1/2,j)}\right)}{4}.
+
+4. 面内磁場を式 :eq:`faraday_x` , :eq:`faraday_y` に従って更新する。他の物理量は通常の有限体積法に従って更新する。
+
+.. _CTtest:
+.. figure:: ct_temp_divb.png
+ :align: center
+ :width: 60%
+
+ Orszag-Tang渦問題のシミュレーション結果。（左）温度。（右）磁場の発散。
+
+:ref:`CT法のOrszag-Tang渦問題テスト図<CTtest>` は式 :eq:`ez_ave` に基づいたCT法をOrszag-Tang渦問題に適用した結果である。右図より、磁場のソレノイダル条件が計算機精度の範囲で満たされていることがわかる。
+
+.. _dc_divb:
+
+移流拡散法
+~~~~~~~~~~~~~~~~~~~~~~
+移流拡散法は :math:`\nabla\cdot \mbox{\boldmath$B$}` の存在を許容しつつも、その場に留まらないように移流（伝搬）・拡散させて計算の破綻を回避しようという発想の手法である。
+
+.. _8wave:
+
+8 wave法
+^^^^^^^^^^^^
+Powell ( :ref:`cf. Powell et al., 1999 <Powell99>` )が提唱した手法は、MHD方程式 :eq:`mhd` に :math:`\nabla\cdot\mbox{\boldmath$B$}` に比例したソース項を導入して解く方法である。
+
+.. math:: 
+ :label: mhd2
+
+ \frac{\partial\mbox{\boldmath$U$}}{\partial t} + \nabla \cdot\mbox{\boldmath$F$} = \mbox{\boldmath$S$},
+
+.. math::
+ :label: divb_source
+
+ \mbox{\boldmath$S$} = -(\nabla \cdot \mbox{\boldmath$B$}) \left( 
+ \begin{array}{c}
+ 0 \\
+ \mbox{\boldmath$B$}\\
+ \mbox{\boldmath$v$} \\
+ \mbox{\boldmath$B$}\cdot\mbox{\boldmath$v$}
+ \end{array}
+ \right).
+
+本形式では、 :math:`\nabla\cdot\mbox{\boldmath$B$}` の移流（拡散）を含んでいるため、8 wave formulationと呼ぶ。Powellの手法は :math:`\nabla\cdot\mbox{\boldmath$B$}` 誤差を数値的に拡散させながら流れに乗せて逃すことに相当する。しかし、流れの澱み点では数値拡散しか効かず、 :math:`\nabla\cdot\mbox{\boldmath$B$}` が溜まってしまうという欠点がある。また、保存形で書かれていないため、衝撃波のジャンプ条件を正しく満たさない。一方で、本形式はガリレイ不変の形をしているという特性がある（通常のMHD方程式はガリレイ不変でない :ref:`Powell et al., 1999 <Powell99>` ）。
+
+.. _9wave:
+
+9 wave法
+^^^^^^^^^^
+Dedner ( :ref:`Dedner et al., 2002 <Dedner02>` )らが提案した方法は、
+
+.. math:: 
+ :label: glmmhd
+
+ \frac{\partial\mbox{\boldmath$U$}}{\partial t} + \nabla \cdot\mbox{\boldmath$F$} = \mbox{\boldmath$S$},
+
+.. math::
+ :label: glmmhd_ufs
+
+ \mbox{\boldmath$U$} = \left(
+ \begin{array}{c}
+ \rho \\
+ \rho \mbox{\boldmath$v$} \\
+ \mbox{\boldmath$B$} \\
+ e\\
+ \psi\\
+ \end{array}
+ \right) , \quad
+ \mbox{\boldmath$F$} = \left(
+ \begin{array}{c}
+ \rho \mbox{\boldmath$v$} \\
+ \rho \mbox{\boldmath$v$} \mbox{\boldmath$v$} + p_T\mbox{\boldmath$I$} - \mbox{\boldmath$B$} \mbox{\boldmath$B$} \\
+ \mbox{\boldmath$v$} \mbox{\boldmath$B$} - \mbox{\boldmath$B$} \mbox{\boldmath$v$} + \psi\mbox{\boldmath$I$}\\
+ \left( e + p_T \right) \mbox{\boldmath$v$} - \mbox{\boldmath$B$} \left( \mbox{\boldmath$v$} \cdot \mbox{\boldmath$B$} \right) \\
+ c_h^2 \mbox{\boldmath$B$}
+ \end{array}
+ \right), \quad
+ \mbox{\boldmath$S$} = \left(
+ \begin{array}{c}
+ 0 \\
+ \mbox{\boldmath$0$} \\
+ \mbox{\boldmath$0$} \\
+ 0\\
+ -\frac{c_h^2}{c_p^2}\psi
+ \end{array}
+ \right)
+
+の形式で、新たにスカラポテンシャル :math:`\psi` を導入して解く手法である。 :math:`\psi` 、 :math:`\nabla\cdot\mbox{\boldmath$B$}` は共に電信方程式（telegraph equation）
+
+.. math::
+ :label: dedner1
+
+ \frac{\partial^2 \psi}{\partial t^2} + \frac{c_h^2}{c_p^2}\frac{\partial \psi}{\partial t} - c_h^2 \nabla^2\psi=0
+
+.. math::
+ :label: dedner2
+
+ \frac{\partial^2 (\nabla\cdot\mbox{\boldmath$B$})}{\partial t^2} + \frac{c_h^2}{c_p^2}\frac{\partial (\nabla\cdot\mbox{\boldmath$B$})}{\partial t} - c_h^2 \nabla^2(\nabla\cdot\mbox{\boldmath$B$})=0 \\
+
+
+にしたがって時間発展することが導かれる。ここで :math:`c_h` 、 :math:`c_p` はそれぞれ任意の値を持つ伝搬速度、減衰係数を表す。
+
+ここで単純のため、１次元（ｘ方向）の場合のソース項がない（右辺が０）式 :eq:`glmmhd` 、 :eq:`glmmhd_ufs` を考えてみる。すると、
+
+.. math::
+ :label: dedner3
+
+ \frac{\partial}{\partial t} \left(
+ \begin{array}{c}
+ B_x\\
+ \psi\\
+ \end{array}
+ \right) +
+ \left(
+ \begin{array}{cc}
+ 0 & 1 \\
+ c_h^2 & 0 \\ 
+ \end{array}
+ \right)
+ \frac{\partial}{\partial x} \left(
+ \begin{array}{c}
+ B_x \\
+ \psi \\
+ \end{array}
+ \right)
+ = \left(
+ \begin{array}{c}
+ 0\\
+ 0\\
+ \end{array}
+ \right)
+
+のように、 :math:`B_x` と :math:`\psi` は他の変数とは分離して考えることができる。この方程式の固有値、右固有ベクトルはそれぞれ :math:`\pm c_h` 、 :math:`(1, \pm c_h)^{\mathrm T}` で、通常のMHD方程式に固有値が２つ（ :math:`\pm c_h` ）加わるため、9 wave法と呼ばれる。
+
+セル境界でのそれぞれの値 :math:`(B_{x,m}, \psi_m)^{\mathrm T}` は、 :math:`(B_{x,l}, \psi_l)^{\mathrm T}` 、 :math:`(B_{x,r}, \psi_r)^{\mathrm T}` をそれぞれ左・右状態とした近似リーマン問題の解から、
+
+.. math::
+ :label: dedner4
+
+ \left(
+ \begin{array}{c}
+ B_{x,m}\\
+ \psi_m\\
+ \end{array}
+ \right) =
+ \left(
+ \begin{array}{c}
+ B_{x,l} \\
+ \psi_l \\ 
+ \end{array}
+ \right)+
+ \left(
+ \begin{array}{c}
+ \frac{1}{2}(B_{x,r}-B_{x,l})-\frac{1}{2c_h}(\psi_r-\psi_l) \\
+ \frac{1}{2}(\psi_r-\psi_l)-\frac{c_h}{2}(B_{x,r}-B_{x,l}) \\
+ \end{array}
+ \right)
+
+のようにして求められる。これより、数値フラックス :math:`(\psi_m, c_h^2B_{x,m})^{\mathrm T}` を用いて、式 :eq:`dedner3` を有限体積法で解くことができる。式 :eq:`glmmhd` のソース項を含めた解は、有限体積法で解いた後の値を :math:`\psi^{*}` とすると、
+
+.. math::
+ :label: dedner5
+
+ \psi^{n+1} = \psi^{*}\exp\left(-\Delta t_n \frac{c_h^2}{c_p^2} \right)
+
+のように、演算子分離してソース項の寄与を解析的に求める。（ここで、 :math:`\Delta t_n` は時刻 :math:`t_n` における時間刻み幅、 :math:`\psi^{n+1}` は時刻 :math:`t_{n+1}` の時間更新後の値。）
+
+実際の数値計算では、 :math:`c_h` 、 :math:`c_p` はフリーパラメタとして与える。 :math:`c_h` は :math:`\nabla \cdot \mbox{\boldmath$B$}` 誤差の（物理的でない）伝搬速度を表す。したがって、数値計算上安定な範囲で任意に決めることができ、MHD方程式から決まるCFL条件となるような速度（ :math:`c_h(t_n)=\mathrm{CFL}\times min(\Delta h)/\Delta t_n` ）で与える。 :math:`c_p` については、伝搬と拡散のスケールの比較から、 :math:`c_r = c_p^2/c_h=const.` となるように :math:`c_p` を決めている。数値実験による検証から、 :math:`c_r=0.18` が空間解像度によらず最適な値としてしばしば採用される（cf. :ref:`Dedner et al. 2002<Dedner02>` ）。
+
+.. _9wavetest:
+.. figure:: 9wave_temp_divb.png
+ :align: center
+ :width: 60%
+
+ Orszag-Tang渦問題のシミュレーション結果。（左）温度。（右）磁場の発散。
+
+:ref:`9 wave法のOrszag-Tang渦問題テスト図<9wavetest>` は9 wave法を実装した場合のOrszag-Tang渦問題に適用した結果である。CT法（ :ref:`上図<CTtest>` ）に比べて磁場のソレノイダル条件誤差は大きいものの、物理的構造は同様の結果を得られていることがわかる。
+
+以上のように、9 wave法は伝搬速度についても任意に設定することができるため、8 wave法で問題となる流れの澱み点での :math:`\nabla\cdot\mbox{\boldmath$B$}` の蓄積の問題は解消される。いずれにしても、移流拡散法は元の方程式系に対して少しの変更を加えることで容易に導入できることから、計算効率がよい。ただし、8 wave法は保存系ではないので衝撃波捕獲法と組み合わせた場合に、衝撃波のジャンプ条件を正確に満たさないという欠点がある。一方、9 wave法は保存系なのでその問題が回避されるが、解が拡散的になりやすいことが経験的に知られている。
+
+付録
+===============
+
+.. _positivity:
+
+HLL型近似リーマン解法の正値性の証明
+-------------------------------------------
+
+MHD方程式の物理的な解の集合 :math:`G` 、
+
+.. math::
+ :label: g_def
+
+ G = \left\{\mbox{\boldmath$U$} \left| \ \rho > 0 ,
+ p = (\gamma-1) \left[
+ e-\frac{\rho (u^2+v^2+w^2)}{2}-\frac{B_x^2+B_y^2+B_z^2}{2} \right. \right] > 0
+ \right\}
+
+を考える。 :math:`G` に含まれる :math:`\mbox{\boldmath$U$}_1` と :math:`\mbox{\boldmath$U$}_2` の重み付き平均値 :math:`\mbox{\boldmath$U$}` 、
+
+.. math::
+ :label: u_ave
+
+ \mbox{\boldmath$U$} = (1-\theta)\mbox{\boldmath$U$}_1 + \theta\mbox{\boldmath$U$}_2 \ \ \
+ (\ 0 \leq \theta \leq 1)
+
+に対して、密度 :math:`\rho` と圧力 :math:`p` は、
+
+.. math::
+ :label: rho_ave
+
+ \rho = (1-\theta) \rho_1 + \theta \rho_2
+
+.. math::
+ :label: p_ave
+
+ p=(1-\theta) p_1 + \theta p_2 + \theta (1-\theta)(\gamma-1)
+ \left( \frac{\rho_1 \rho_2 |\mbox{\boldmath$v$}_1-\mbox{\boldmath$v$}_2|^2}{2 \rho}+
+ \frac{|\mbox{\boldmath$B$}_1-\mbox{\boldmath$B$}_2|^2}{2} \right)
+
+と表される。したがって、 :math:`\rho > 0` 、 :math:`p > 0` であり、 :math:`\mbox{\boldmath$U$}` も :math:`G` に含まれることがわかる。
+
+近似リーマン解法による数値解は、各セル境界におけるリーマン問題の近似解を各セル内で積分したものに等しい。一方、上で示されたとおり、 :math:`G` に含まれる :math:`\mbox{\boldmath$U$}` の重み付き平均値は :math:`G` に含まれる。したがって、近似リーマン解法の正値性の保存性を証明するためには、リーマン問題の近似解の正値性を調べればよいことになる。
+
+HLLD近似リーマン解法における :math:`\mbox{\boldmath$U$}_R^\ast` 、 :math:`\mbox{\boldmath$U$}_R^{\ast \ast}` の正値性の条件、
+
+.. math::
+ :label: rho_r
+
+ \rho_R^\ast > 0,
+
+.. math::
+ :label: rho_r2
+
+ \rho_R^{\ast \ast} > 0,
+
+.. math::
+ :label: pre_r
+
+ e_R^\ast - \frac{1}{2} \rho_R^\ast | \mbox{\boldmath$v$}_R^\ast |^2
+ - \frac{1}{2} | \mbox{\boldmath$B$}_R^\ast |^2 > 0,
+
+.. math::
+ :label: pre_r2
+
+ e_R^{\ast \ast} - \frac{1}{2} \rho_R^{\ast \ast}  | \mbox{\boldmath$v$}_R^{\ast \ast} |^2
+ - \frac{1}{2} | \mbox{\boldmath$B$}_R^{\ast \ast} |^2 > 0,
+
+について議論しよう。
+
+ここで、次のような変数、
+
+.. math::
+ :label: var_defs
+
+ \xi \equiv S_R-u_R , \ \eta \equiv S_R-S_M , \ \zeta \equiv S_M-u_R
+
+を導入する。 :math:`S_R` が、例えば :eq:`sr_sl_1` -- :eq:`sr_sl_3` のように、膨張波も含めた系最大の特性速度よりも小さくならないように与えられるので、 :math:`\xi` と :math:`\eta` は常に正である。一方、 :math:`\zeta` は正と負のどちらも取り得る。また、変数の定義から :math:`\xi - \eta = \zeta` である。
+
+密度の正値性の条件 :eq:`rho_r` 、 :eq:`rho_r2` は、 :eq:`rho_ast` 、 :eq:`rho_ast2` から、
+
+.. math::
+ :label: rho_posi
+
+ \rho_R^\ast = \rho_R^{\ast \ast} = \frac{\xi}{\eta} \rho_R > 0
+
+と常に満たされることがわかる。
+
+:math:`\mbox{\boldmath$U$}_R^\ast` における圧力の正値性の条件 :eq:`pre_r` を示すため、
+
+.. math::
+ :label: phi_def
+
+ \varphi \equiv \eta \left(
+ e_R^\ast - \frac{1}{2} \rho_R^\ast | \mbox{\boldmath$v$}_R^\ast |^2
+ - \frac{1}{2} | \mbox{\boldmath$B$}_R^\ast |^2 \right)
+
+の正値性を証明しよう。 :math:`\varphi` を整理すると、
+
+.. math::
+ :label: phi
+
+ \varphi &=
+ \xi e_R - {p_T}_R u_R + p_T^\ast S_M
+ + B_x (\mbox{\boldmath$v$}_R \cdot \mbox{\boldmath$B$}_R - \mbox{\boldmath$v$}_R^\ast \cdot \mbox{\boldmath$B$}_R^\ast)
+ -\eta \frac{\rho_R^\ast |\mbox{\boldmath$v$}_R^\ast|^2}{2}
+ -\eta \frac{|\mbox{\boldmath$B$}_R^\ast|^2}{2}
+  \\
+ &=
+ \xi
+ \left( \frac{p_R}{\gamma-1}+\frac{\rho_R |\mbox{\boldmath$v$}_R|^2}{2}+ \frac{|\mbox{\boldmath$B$}_R|^2}{2} \right)
+ - \left(p_R+\frac{|\mbox{\boldmath$B$}_R|^2}{2} \right) u_R
+ + \left(p_R+\frac{|\mbox{\boldmath$B$}_R|^2}{2}+\rho_R \xi \zeta \right) S_M
+  \\
+ &\ \ \ 
+ + B_x \left(
+ - B_x \zeta
+ - \frac{\rho_R \xi \zeta}{\rho_R \xi \eta - B_x^2} ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)
+ + \frac{B_x \zeta}{\rho_R \xi \eta - B_x^2} |{\mbox{\boldmath$B$}_t}_R|^2
+ + \frac{\rho_R B_x \xi \zeta^2}{(\rho_R \xi \eta - B_x^2)^2} |{\mbox{\boldmath$B$}_t}_R|^2 \right)
+  \\
+ &\ \ \ 
+ - \xi \frac{\rho_R |\mbox{\boldmath$v$}_R^\ast|^2}{2}
+ - (\xi-\zeta) \frac{|\mbox{\boldmath$B$}_R^\ast|^2}{2}
+  \\
+ &=
+ \frac{p_R \xi}{\gamma-1} + p_R \zeta + \frac{|\mbox{\boldmath$B$}_R|^2}{2} \zeta
+ + \rho_R S_M \xi \zeta
+  \\
+ &\ \ \ 
+ + \frac{\rho_R (|\mbox{\boldmath$v$}_R|^2-|\mbox{\boldmath$v$}_R^\ast|^2)}{2} \xi
+ + \frac{|\mbox{\boldmath$B$}_R|^2-|\mbox{\boldmath$B$}_R^\ast|^2}{2} \xi + \frac{|\mbox{\boldmath$B$}_R^\ast|^2}{2} \zeta
+  \\
+ &\ \ \ 
+ - B_x^2 \zeta
+ - \frac{\rho_R B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \xi \zeta
+ + \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \zeta
+ + \frac{\rho_R B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi \zeta^2
+  \\
+ &=
+ \frac{p_R \xi}{\gamma-1} + p_R \zeta
+ + \rho_R S_M \xi \zeta
+ + \frac{\rho_R (u_R^2-S_M^2)}{2} \xi
+  \\
+ &\ \ \ 
+ + \frac{\rho_R (|{\mbox{\boldmath$v$}_t}_R|^2-|{\mbox{\boldmath$v$}_t}_R^\ast|^2)}{2} \xi
+ + \frac{|{\mbox{\boldmath$B$}_t}_R|^2-|{\mbox{\boldmath$B$}_t}_R^\ast|^2}{2} \xi
+ + \frac{|{\mbox{\boldmath$B$}_t}_R|^2+|{\mbox{\boldmath$B$}_t}_R^\ast|^2}{2} \zeta
+  \\
+ &\ \ \ 
+ - \frac{\rho_R B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \xi \zeta
+ + \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \zeta
+ + \frac{\rho_R B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi \zeta^2
+  \\
+ &=
+ \frac{p_R \xi}{\gamma-1} + p_R \zeta
+ + \frac{\rho_R \xi}{2} \zeta^2
+  \\
+ &\ \ \ 
+ + \frac{\rho_R \xi}{2} \left(
+ \frac{2 B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \zeta
+ - \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \zeta^2 \right)
+  \\
+ &\ \ \ 
+ + \frac{\xi}{2} \left(
+ - \frac{2 \rho_R |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \xi \zeta
+ - \frac{\rho_R^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi^2 \zeta^2 \right)
+  \\
+ &\ \ \ 
+ + \frac{1}{2} \left(
+ 2 |{\mbox{\boldmath$B$}_t}_R|^2
+ + \frac{2 \rho_R |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \xi \zeta
+ + \frac{\rho_R^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi^2 \zeta^2 \right)
+ \zeta
+  \\
+ &\ \ \ 
+ - \frac{\rho_R B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \xi \zeta
+ + \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \zeta
+ + \frac{\rho_R B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi \zeta^2
+  \\
+ &=
+ \frac{p_R \xi}{\gamma-1} + p_R \zeta +
+ \frac{\rho_R \xi}{2} \left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \right)
+ \zeta^2
+
+となる。ただし、 :math:`{\mbox{\boldmath$v$}_t}_R = (0,v_R,w_R)` 、 :math:`{\mbox{\boldmath$B$}_t}_R = (0,{B_y}_R,{B_z}_R)` 。途中、 :eq:`pt_hlld`-- :eq:`ene_ast` 、
+
+.. math::
+ :label:
+
+ {p_T}_R^\ast = {p_T}_R+\rho_R \xi \zeta
+
+.. math::
+ :label:
+
+ \rho_R^\ast = \frac{\xi}{\eta} \rho_R
+
+.. math::
+ :label:
+
+ {\mbox{\boldmath$v$}_t}_R^\ast = {\mbox{\boldmath$v$}_t}_R - \frac{B_x \zeta}{\rho_R \xi \eta - B_x^2} {\mbox{\boldmath$B$}_t}_R
+
+.. math::
+ :label:
+
+ {\mbox{\boldmath$B$}_t}_R^\ast = \frac{\rho_R \xi^2 -B_x^2}{\rho_R \xi \eta - B_x^2} {\mbox{\boldmath$B$}_t}_R
+ = \left( 1+
+ \frac{\rho_R \xi \zeta}{\rho_R \xi \eta - B_x^2} \right) {\mbox{\boldmath$B$}_t}_R
+
+.. math::
+ :label:
+
+ e_R^\ast = \frac{\xi e_R - {p_T}_R u_R + {p_T}^\ast S_M +
+ B_x (\mbox{\boldmath$v$}_R \cdot \mbox{\boldmath$B$}_R - \mbox{\boldmath$v$}_R^\ast \cdot \mbox{\boldmath$B$}_R^\ast)}
+ {\eta}
+
+を利用した。ここで、 :math:`S_R` が系最大の特性速度であることから、 :math:`\xi \geq {c_f}_R` 、 :math:`\eta \geq {c_f}_R` となるので、
+
+.. math::
+ :label: phi_dash
+
+ \varphi' =
+ \frac{p_R \xi}{\gamma-1} + p_R \zeta +
+ \frac{\rho_R \xi}{2} \left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R {c_f}_R^2 - B_x^2} \right)
+ \zeta^2
+ \leq \varphi
+
+である。つまり、 :math:`\varphi'` が正であれば :math:`\varphi` は必ず正である。 :math:`\varphi'` は :math:`\zeta` の二次方程式であり、2次の項の係数は、
+
+.. math::
+ :label: coef_posi
+
+ \rho c_f^2-|\mbox{\boldmath$B$}|^2 = \rho c_f^2-B_x^2-|\mbox{\boldmath$B$}_t|^2 > 0
+
+から正である [#fn11]_ 。したがって、 :math:`\varphi'` の判別式 :math:`D` が負のとき、任意の :math:`\zeta` に対して :math:`\varphi'` は正となる。つまり、
+
+.. math::
+ :label: D_cond
+
+ D(\varphi') = p_R^2-\frac{2 \rho_R p_R}{\gamma-1}
+ \left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R {c_f}_R^2 - B_x^2} \right) \xi^2 < 0
+
+から、
+
+.. math::
+ :label: gzi_cond
+
+ \xi^2 > \frac{(\gamma-1) p_R}{2 \rho_R}
+ \left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R {c_f}_R^2 - B_x^2} \right)^{-1}
+ = \frac{\gamma-1}{2 \gamma} {c_f}_R^2
+
+のとき、正値性の条件 :eq:`pre_r` は満たされる。ただし、導出過程で、
+
+.. math::
+ :label: 
+
+ \rho c_s^2 - B_x^2 = - \frac{B_x^2 |\mbox{\boldmath$B$}_t|^2}{\rho c_f^2 - B_x^2} , \
+ c_f^2 c_s^2 = \frac{\gamma p B_x^2}{\rho^2}
+
+を利用した。最終的に正値性の条件は、
+
+.. math::
+ :label: posi_cond
+
+ S_R > u_R + \sqrt{\frac{\gamma-1}{2 \gamma}} {c_f}_R
+
+となり、 :math:`S_R` は明らかにこの条件を満たす。
+
+続いて、 :math:`\mbox{\boldmath$U$}_R^{\ast \ast}` における圧力の正値性の条件 :eq:`pre_r2` は、
+
+.. math::
+ :label: posi_cond2
+
+ p_R^{\ast \ast}
+ &=
+ (\gamma-1) \left(
+ e_R^{\ast \ast}
+ - \frac{\rho_R^\ast |\mbox{\boldmath$v$}^{\ast \ast}|^2}{2}
+ - \frac{|\mbox{\boldmath$B$}^{\ast \ast}|^2}{2}
+ \right)
+  \\
+ &= \mbox{}
+ p_R^\ast + \frac{\gamma-1}{2}
+ \left( \left| \sqrt{\rho_R^\ast} \mbox{\boldmath$v$}_R^\ast
+ + \mbox{\boldmath$B$}_R^\ast {\rm sgn} (B_x) \right|^2
+ - \left| \sqrt{\rho_R^\ast} \mbox{\boldmath$v$}^{\ast \ast}
+ + \mbox{\boldmath$B$}^{\ast \ast} {\rm sgn} (B_x) \right|^2
+ \right)
+  \\
+ &= \mbox{}
+ p_R^\ast > 0
+
+と示される。
+
+:math:`\mbox{\boldmath$U$}_L^\ast` 、 :math:`\mbox{\boldmath$U$}_L^{\ast \ast}` の正値性の条件は、対称性から、
+
+.. math::
+ :label: sl_cond
+
+ S_L < u_L - \sqrt{\frac{\gamma-1}{2 \gamma}} {c_f}_L
+
+となり、 :math:`S_L` は容易にこの条件を満たす。
+
+以上、リーマン問題の近似解、 :math:`\mbox{\boldmath$U$}_L^\ast` 、 :math:`\mbox{\boldmath$U$}_L^{\ast \ast}` 、 :math:`\mbox{\boldmath$U$}_R^{\ast \ast}` 、 :math:`\mbox{\boldmath$U$}_R^\ast` の正値性が示された。したがって、HLLD近似リーマン解法は正値性を保存する解法である。
+
+また、HLL近似リーマン解法における近似解は、HLLD近似リーマン解法における近似解の重み付き平均値として与えられる。したがって、HLL近似リーマン解法も正値性を保存する解法である。
+
+.. rubric:: Footnotes
+
+.. [#fn11] :math:`\mbox{\boldmath$B$}_t = 0` 、 :math:`B_x^2 \geq \gamma p` のとき、 :math:`|\mbox{\boldmath$B$}_t|^2/(\rho c_f^2-B_x^2)` は :math:`0/0` となる。ただし、 :math:`\mbox{\boldmath$B$}_t = 0` では、 :eq:`phi` はオイラー方程式に対するHLLC近似リーマン解法の正値性条件に一致する。
+
+HLLD近似リーマン解法のサンプルプログラム
+----------------------------------------------
+
+HLLD近似リーマン解法のサンプルプログラムを示す。
+
+Fortran90:
+
+.. code-block:: none
+
+ !-------------------------------------------------------------------------------
+ subroutine calc_flux_hlld(rol,vnl,vtl,vul,btl,bul,prl, &
+                           ror,vnr,vtr,vur,btr,bur,prr, &
+                           bnc,                         &
+                           fro,fmn,fmt,fmu,fbt,fbu,fen)
+ !-------------------------------------------------------------------------------
+   real(DP), intent(IN)  :: rol,vnl,vtl,vul,btl,bul,prl
+   real(DP), intent(IN)  :: ror,vnr,vtr,vur,btr,bur,prr
+   real(DP), intent(IN)  :: bnc
+   real(DP), intent(OUT) :: fro,fmn,fmt,fmu,fbt,fbu,fen
+   real(DP), parameter   :: eps=1.D-40
+   real(DP)              :: bnc2,sgn
+   real(DP)              :: roli,pml,ptl,enl,vbl
+   real(DP)              :: rori,pmr,ptr,enr,vbr
+   real(DP)              :: cl2,cal2,cbl2,cfl2,cfl
+   real(DP)              :: cr2,car2,cbr2,cfr2,cfr
+   real(DP               :: sr,sl
+   real(DP)              :: slvl,srvr,rslvl,rsrvr,drsvi
+   real(DP)              :: vnc,ptc
+   real(DP)              :: slvc,rhdl,rhdli,rhnvl,rhnbl
+   real(DP)              :: srvc,rhdr,rhdri,rhnvr,rhnbr
+   real(DP)              :: ro2l,vt2l,vu2l,bt2l,bu2l,vb2l,en2l
+   real(DP)              :: ro2r,vt2r,vu2r,bt2r,bu2r,vb2r,en2r
+   real(DP)              :: rro2l,rro2r,rro2i
+   real(DP)              :: vt3m,vu3m,bt3m,bu3m,vb3m,en3l,en3r
+   real(DP)              :: rou,vtu,vuu,btu,buu,enu
+ !...............................................................................
+ ! Bn at the interface
+ !...............................................................................
+   bnc2 = bnc**2
+   sgn  = sign(1.0_DP,bnc)
+ !...............................................................................
+ ! variables at the left-face
+ !...............................................................................
+   roli = 1.0_DP/rol
+   pml  = 0.5_DP*(btl**2+bul**2)
+   ptl  = prl+pml
+   enl  = gammam1i*prl+pml+0.5_DP*rol*(vnl**2+vtl**2+vul**2)
+   vbl  = vtl*btl+vul*bul
+ !...............................................................................
+ ! variables at the right-face
+ !...............................................................................
+   rori = 1.0_DP/ror
+   pmr  = 0.5_DP*(btr**2+bur**2)
+   ptr  = prr+pmr
+   enr  = gammam1i*prr+pmr+0.5_DP*ror*(vnr**2+vtr**2+vur**2)
+   vbr  = vtr*btr+vur*bur
+ !...............................................................................
+ ! maximum / minimum wave speeds
+ !...............................................................................
+   cl2  = gamma*prl*roli
+   cr2  = gamma*prr*rori
+   cal2 = bnc2*roli
+   car2 = bnc2*rori
+   cbl2 = cl2+cal2+2.0_DP*pml*roli
+   cbr2 = cr2+car2+2.0_DP*pmr*rori
+   cfl2 = 0.5_DP*(cbl2+sqrt(abs(cbl2**2-4.0_DP*cl2*cal2)))
+   cfr2 = 0.5_DP*(cbr2+sqrt(abs(cbr2**2-4.0_DP*cr2*car2)))
+   cfl  = sqrt(cfl2)
+   cfr  = sqrt(cfr2)
+   sl   = min(0.0_DP,min(vnl,vnr)-max(cfl,cfr))
+   sr   = max(0.0_DP,max(vnl,vnr)+max(cfl,cfr))
+ !...............................................................................
+ ! HLL average of the normal velocity and the total pressure
+ !...............................................................................
+   slvl  = sl-vnl
+   srvr  = sr-vnr
+   rslvl = rol*slvl
+   rsrvr = ror*srvr
+   drsvi = 1.0_DP/(rsrvr-rslvl)
+   vnc   = (rsrvr*vnr-rslvl*vnl-ptr+ptl)*drsvi
+   ptc   = (rsrvr*ptl-rslvl*ptr+rsrvr*rslvl*(vnr-vnl))*drsvi
+ !...............................................................................
+ ! variables of the outer sides in the Riemann fan
+ !...............................................................................
+   slvc  = sl-vnc
+   srvc  = sr-vnc
+   ro2l  = rslvl/slvc
+   ro2r  = rsrvr/srvc
+   rhdl  = rslvl*slvc-bnc2
+   rhdr  = rsrvr*srvc-bnc2
+   if(abs(rhdl) > eps) then
+     rhdli = 1.0_DP/rhdl
+     rhnvl = (vnl-vnc)*bnc
+     rhnbl = rslvl*slvl-bnc2
+     vt2l = vtl+rhnvl*rhdli*btl
+     vu2l = vul+rhnvl*rhdli*bul
+     bt2l =     rhnbl*rhdli*btl
+     bu2l =     rhnbl*rhdli*bul
+   else
+     vt2l = vtl
+     vu2l = vul
+     bt2l = btl
+     bu2l = bul
+   end if
+   if(abs(rhdr) > eps) then
+     rhdri = 1.0_DP/rhdr
+     rhnvr = (vnr-vnc)*bnc
+     rhnbr = rsrvr*srvr-bnc2
+     vt2r = vtr+rhnvr*rhdri*btr
+     vu2r = vur+rhnvr*rhdri*bur
+     bt2r =     rhnbr*rhdri*btr
+     bu2r =     rhnbr*rhdri*bur
+   else
+     vt2r = vtr
+     vu2r = vur
+     bt2r = btr
+     bu2r = bur
+   end if
+   vb2l = vt2l*bt2l+vu2l*bu2l
+   vb2r = vt2r*bt2r+vu2r*bu2r
+   en2l = (slvl*enl-ptl*vnl+ptc*vnc+bnc*(vbl-vb2l))/slvc
+   en2r = (srvr*enr-ptr*vnr+ptc*vnc+bnc*(vbr-vb2r))/srvc
+ !...............................................................................
+ ! variables of the inner sides in the Riemann fan
+ !...............................................................................
+   rro2l = sqrt(ro2l)
+   rro2r = sqrt(ro2r)
+   rro2i = 1.0_DP/(rro2r+rro2l)
+   vt3m  = (rro2r*vt2r+rro2l*vt2l+            (bt2r-bt2l)*sgn)*rro2i
+   vu3m  = (rro2r*vu2r+rro2l*vu2l+            (bu2r-bu2l)*sgn)*rro2i
+   bt3m  = (rro2l*bt2r+rro2r*bt2l+rro2r*rro2l*(vt2r-vt2l)*sgn)*rro2i
+   bu3m  = (rro2l*bu2r+rro2r*bu2l+rro2r*rro2l*(vu2r-vu2l)*sgn)*rro2i
+   vb3m  = vt3m*bt3m+vu3m*bu3m
+   en3l  = en2l-rro2l*(vb2l-vb3m)*sgn
+   en3r  = en2r+rro2r*(vb2r-vb3m)*sgn
+ !...............................................................................
+ ! variables at the interface
+ !...............................................................................
+   if(vnc-abs(bnc)/rro2l > 0.0_DP) then
+     rou = ro2l
+     vtu = vt2l
+     vuu = vu2l
+     btu = bt2l
+     buu = bu2l
+     enu = en2l
+   else if((vnc-abs(bnc)/rro2l <= 0.0_DP).and.(vnc >= 0.0_DP))then
+     rou = ro2l
+     vtu = vt3m
+     vuu = vu3m
+     btu = bt3m
+     buu = bu3m
+     enu = en3l
+   else if((vnc < 0.0_DP).and.(vnc+abs(bnc)/rro2r >= 0.0_DP))then
+     rou = ro2r
+     vtu = vt3m
+     vuu = vu3m
+     btu = bt3m
+     buu = bu3m
+     enu = en3r
+   else
+     rou = ro2r
+     vtu = vt2r
+     vuu = vu2r
+     btu = bt2r
+     buu = bu2r
+     enu = en2r
+   end if
+ !...............................................................................
+ ! HLLD fluxes
+ !...............................................................................
+   fro = rou*vnc
+   fmn = rou*vnc*vnc+ptc-bnc2*0.5_DP
+   fmt = rou*vtu*vnc-bnc*btu
+   fmu = rou*vuu*vnc-bnc*buu
+   fbt = btu*vnc-bnc*vtu
+   fbu = buu*vnc-bnc*vuu
+   fen = (enu+ptc)*vnc-bnc*(vtu*btu+vuu*buu)
+ !-------------------------------------------------------------------------------
+ end subroutine calc_flux_hlld
+ !-------------------------------------------------------------------------------
+
+C:
+
+.. code-block:: c
+
+ #include <math.h>
+ inline double max(double a, double b)
+ {
+   return( (a > b)?a:b );
+ }
+ inline double min(double a, double b)
+ {
+   return( (a > b)?b:a );
+ }
+
+ #define EPS (1e-8) 
+
+ void calc_flux_hlld(double rol, double vnl, double vtl, double vul, double btl, 
+                     double bul, double prl,
+ 		     double ror, double vnr, double vtr, double vur, double btr, 
+                     double bur, double prr, 
+ 		     double bnc, double gamma,
+ 		     double *fro, double *fmn, double *fmt, double *fmu, double *fbt, 
+                     double *fbu, double *fen)
+ /* Calculate HLLD fluxes */
+ /* rol,vnl,vtl,vul,btl,bul,prl: input primitive variables at the left side */
+ /* ror,vnr,vtr,vur,btr,bur,prr: input primitive variables at the right side */
+ /* bnc: input normal magnetic field at the interface */
+ /* gamma: specific heat ratio */
+ /* fro,fmn,fmt,fmu,fbt,fbu,fen: output HLLD fluxes at the interface*/
+ {
+   double gammam1i=1.0/(gamma-1.0);
+   /* Bn at the interface */
+   double bnc2=bnc*bnc;
+   int sgn=(bnc > 0)?(1):(-1);
+   /* Variables at the left-face */
+   double roli=1.0/rol;
+   double pml=0.5*(btl*btl+bul*bul);
+   double ptl=prl+pml;
+   double enl=gammam1i*prl+pml+0.5*rol*(vnl*vnl+vtl*vtl+vul*vul);
+   double vbl=vtl*btl+vul*bul;
+   /* Variables at the right-face */
+   double rori=1.0/ror;
+   double pmr=0.5*(btr*btr+bur*bur);
+   double ptr=prr+pmr;
+   double enr=gammam1i*prr+pmr+0.5*ror*(vnr*vnr+vtr*vtr+vur*vur);
+   double vbr=vtr*btr+vur*bur;
+   /* Maximum/minimum wave speeds */
+   double cl2=gamma*prl*roli;
+   double cr2=gamma*prr*rori;
+   double cal2=bnc2*roli;
+   double car2=bnc2*rori;
+   double cbl2=cl2+cal2+2.0*pml*roli;
+   double cbr2=cr2+car2+2.0*pmr*rori;
+   double cfl2=0.5*(cbl2+sqrt(fabs(cbl2*cbl2-4.0*cl2*cal2)));
+   double cfr2=0.5*(cbr2+sqrt(fabs(cbr2*cbr2-4.0*cr2*car2)));
+   double cfl=sqrt(cfl2);
+   double cfr=sqrt(cfr2);
+   double sl=min(0.0,min(vnl,vnr)-max(cfl,cfr));
+   double sr=max(0.0,max(vnl,vnr)+max(cfl,cfr));
+   /* HLL average of the normal velocity and the total pressure */
+   double slvl=sl-vnl;
+   double srvr=sr-vnr;
+   double rslvl=rol*slvl;
+   double rsrvr=ror*srvr;
+   double drsvi=1.0/(rsrvr-rslvl);
+   double vnc=(rsrvr*vnr-rslvl*vnl-ptr+ptl)*drsvi;
+   double ptc=(rsrvr*ptl-rslvl*ptr+rsrvr*rslvl*(vnr-vnl))*drsvi;
+   /* Variables of the outer sides in the Riemann fan */
+   double slvc=sl-vnc;
+   double srvc=sr-vnc;
+   double ro2l=rslvl/slvc;
+   double ro2r=rsrvr/srvc;
+   double rhdl=rslvl*slvc-bnc2;
+   double rhdr=rsrvr*srvc-bnc2;
+   double vt2l,vu2l,bt2l,bu2l;
+   double vt2r,vu2r,bt2r,bu2r;
+   if (fabs(rhdl) > EPS){
+     double rhdli=1.0/rhdl;
+     double rhnvl=(vnl-vnc)*bnc;
+     double rhnbl=rslvl*slvl-bnc2;
+     vt2l=vtl+rhnvl*rhdli*btl;
+     vu2l=vul+rhnvl*rhdli*bul;
+     bt2l=rhnbl*rhdli*btl;
+     bu2l=rhnbl*rhdli*bul;
+   } else{
+     vt2l=vtl;
+     vu2l=vul;
+     bt2l=btl;
+     bu2l=bul;
+   }
+   if (fabs(rhdr) > EPS){
+     double rhdri=1.0/rhdr;
+     double rhnvr=(vnr-vnc)*bnc;
+     double rhnbr=rsrvr*srvr-bnc2;
+     vt2r=vtr+rhnvr*rhdri*btr;
+     vu2r=vur+rhnvr*rhdri*bur;
+     bt2r=rhnbr*rhdri*btr;
+     bu2r=rhnbr*rhdri*bur;
+   } else{
+     vt2r=vtr;
+     vu2r=vur;
+     bt2r=btr;
+     bu2r=bur;
+   }
+   double vb2l=vt2l*bt2l+vu2l*bu2l;
+   double vb2r=vt2r*bt2r+vu2r*bu2r;
+   double en2l=(slvl*enl-ptl*vnl+ptc*vnc+bnc*(vbl-vb2l))/slvc;
+   double en2r=(srvr*enr-ptr*vnr+ptc*vnc+bnc*(vbr-vb2r))/srvc;
+   /* Variables of the inner sides in the Riemann fan */
+   double rro2l=sqrt(ro2l);
+   double rro2r=sqrt(ro2r);
+   double rro2i=1.0/(rro2r+rro2l);
+   double vt3m=(rro2r*vt2r+rro2l*vt2l+(bt2r-bt2l)*sgn)*rro2i;
+   double vu3m=(rro2r*vu2r+rro2l*vu2l+(bu2r-bu2l)*sgn)*rro2i;
+   double bt3m=(rro2l*bt2r+rro2r*bt2l+rro2r*rro2l*(vt2r-vt2l)*sgn)*rro2i;
+   double bu3m=(rro2l*bu2r+rro2r*bu2l+rro2r*rro2l*(vu2r-vu2l)*sgn)*rro2i;
+   double vb3m=vt3m*bt3m+vu3m*bu3m;
+   double en3l=en2l-rro2l*(vb2l-vb3m)*sgn;
+   double en3r=en2r+rro2r*(vb2r-vb3m)*sgn;
+  /* Variables at the interface */
+   double rou,vtu,vuu,btu,buu,enu;
+   if (vnc-fabs(bnc)/rro2l > 0){
+     rou=ro2l;
+     vtu=vt2l;
+     vuu=vu2l;
+     btu=bt2l;
+     buu=bu2l;
+     enu=en2l;
+   } else{
+     if (vnc >= 0){
+       rou=ro2l;
+       vtu=vt3m;
+       vuu=vu3m;
+       btu=bt3m;
+       buu=bu3m;
+       enu=en3l;
+     } else{
+       if (vnc+fabs(bnc)/rro2r >= 0){
+  	rou=ro2r; 
+ 	vtu=vt3m; 
+	vuu=vu3m; 
+	btu=bt3m;
+	buu=bu3m;
+	enu=en3r;
+       } else{ 
+ 	rou=ro2r;
+	vtu=vt2r;
+	vuu=vu2r;
+	btu=bt2r;
+	buu=bu2r;
+	enu=en2r;
+       }
+     }
+   }
+   /* HLLD fluxes */
+   *fro=rou*vnc;
+   *fmn=rou*vnc*vnc+ptc-bnc2*0.5;
+   *fmt=rou*vtu*vnc-bnc*btu;
+   *fmu=rou*vuu*vnc-bnc*buu;
+   *fbt=btu*vnc-bnc*vtu;
+   *fbu=buu*vnc-bnc*vuu;
+   *fen=(enu+ptc)*vnc-bnc*(vtu*btu+vuu*buu);
+ }
+
+.. note::
+
+ 数値計算量を削減するため、 :math:`p_T \rightarrow (B_t^2+B_u^2)/2` 、 :math:`\mbox{\boldmath$v$} \cdot \mbox{\boldmath$B$} \rightarrow (v_t B_t + v_u B_u)` とするなど、できるだけ代数的に整理している。
+
+.. note::
+
+ if文が計算が遅い場合は、sign関数を用いてプログラムを書き換えることができる。
+
+.. code-block:: none
+
+ rhdli = 1.0_DP/(rhdl+0.5_DP-sign(0.5_DP,abs(rhdl)-eps))
+ rhdri = 1.0_DP/(rhdr+0.5_DP-sign(0.5_DP,abs(rhdr)-eps))
+
+ hl  = 0.5_DP+sign(0.5_DP,vnc)
+ hr  = 1.0_DP-hl
+ h2l = 0.5_DP+sign(0.5_DP,vnc-dabs(bnc)/rro2l)
+ h3l = (1.0_DP-h2l)*hl
+ h2r = 0.5_DP-sign(0.5_DP,vnc+dabs(bnc)/rro2r)
+ h3r = (1.0_DP-h2r)*hr
+ rou = ro2l*hl+ro2r*hr
+ vsu = vs2l*h2l+vs3m*h3l+vs3m*h3r+vs2r*h2r
+ vtu = vt2l*h2l+vt3m*h3l+vt3m*h3r+vt2r*h2r
+ bsu = bs2l*h2l+bs3m*h3l+bs3m*h3r+bs2r*h2r
+ btu = bt2l*h2l+bt3m*h3l+bt3m*h3r+bt2r*h2r
+ enu = en2l*h2l+en3l*h3l+en3r*h3r+en2r*h2r
+
+.. note::
+
+ MHD方程式の流束は回転対称なので、上の1次元数値流束サブルーチンをそのまま多次元計算に利用できる。有限体積的なアプローチであれば、非構造格子も含むカーテシアン座標以外でも利用できる。
+
+.. code-block:: none
+
+ ・・・
+ vn = vy
+ vt = vz
+ vu = vx
+ ・・・
+ call calc_flux_hlld(rol,vnl,vtl,vul,・・・
+ ・・・
+ fmx_y = fmu
+ fmy_y = fmn
+ fmz_y = fmt
+ ・・・
+
+
+参考文献
+===============
+* :ref:`Balsara (1998)<Balsara98>`
+* :ref:`Balsara & Spicer (1999)<Balsara-Spicer99>`
+* :ref:`Borges et al. (2008)<Borges08>`
+* :ref:`Brackbill & Barnes (1980)<Brackbill-Barnes80>`
+* :ref:`Brio & Wu (1988)<Brio-Wu88>`
+* :ref:`Cargo & Gallice (1997)<Cargo-Gallice97>`
+* :ref:`Dedner et al., 2002 <Dedner02>`
+* :ref:`Del Zanna et al. (2007) <DelZanna07>`
+* :ref:`Evans & Hawley (1988)<Evans-Hawley88>`
+* :ref:`Gardiner & Stone (2005)<Gardiner-Stone05>`
+* :ref:`Henrick et al. (2005)<Henrick05>`
+* :ref:`Jiang & Shu (1996)<Jiang-Shu96>`
+* :ref:`Liu et al. (1994) <Liu94>`
+* :ref:`Londrillo & Del Zanna (2004) <Londrillo-DelZanna04>`
+* :ref:`Miyoshi & Kusano (2005)<Miyoshi-Kusano05>`
+* :ref:`Powell et al. (1999)<Powell99>`
+* :ref:`Suresh & Huynh, 1997<Suresh-Huynh97>` 
+* :ref:`Toth (2000)<Toth00>`
+* :ref:`van Leer (1979)<vanLeer79>` 

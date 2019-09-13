@@ -1,0 +1,799 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>差分法の基礎 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="磁気流体力学方程式に対する近似リーマン解法" href="riemann.html" />
+    <link rel="prev" title="磁気流体力学波" href="mhdwave.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="riemann.html" title="磁気流体力学方程式に対する近似リーマン解法"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="mhdwave.html" title="磁気流体力学波"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>差分法の基礎<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>松元亮治（千葉大学）</p>
+</dd>
+</dl>
+<p>流体・磁気流体方程式を差分法を用いて数値的に解く際に必要になる基礎的事項について解説する。波の伝播をあらわす線形移流方程式や非線形のBurgers方程式をとりあげ、差分解法の数値的な安定性や数値振動について論じる。特に、数値的な安定性に優れ、非物理的な数値振動を起こさない差分法として風上差分法を紹介する。</p>
+<div class="section" id="id2">
+<h2>差分近似<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>変数 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> が空間座標 <img class="math" src="_images/math/ca4d6b959c51322057cb9fc89f6417d450ba2a76.png" alt="x,y"/> に依存するという2次元問題を考える。</p>
+<div class="figure align-center" id="id16">
+<a class="reference internal image-reference" href="_images/mesh.png"><img alt="_images/mesh.png" src="_images/mesh.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">2次元メッシュの図</span><a class="headerlink" href="#id16" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>2次元空間を図のような格子に区切り、各格子点の座標を <img class="math" src="_images/math/24f4a4d13d537622d3212839c55130d6feff776b.png" alt="(x_i, y_j)"/> とする。格子間隔は <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 方向が <img class="math" src="_images/math/7c3282642d867109f551c02c4946b913e5c0a430.png" alt="\Delta x"/> 、 <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向が <img class="math" src="_images/math/09081834f13c72fb00b7cf764822a9e48ece7003.png" alt="\Delta y"/> とする。 <img class="math" src="_images/math/4214ca4422ee9002afea986765b9e1015cf1e79f.png" alt="x_{i \pm 1} = x_i \pm \Delta x"/> 、 <img class="math" src="_images/math/d6169f504a3a5bcbfa9d2cf39ccb9e11d759a4b8.png" alt="y_{j \pm 1} = y_j \pm \Delta y"/> である。以下、格子点番号 <img class="math" src="_images/math/fbe9c7293ddf4f78748f42b124db0d413169e320.png" alt="(i,j)"/> を用いて <img class="math" src="_images/math/514fc1ab43c5057964a2bcefd96a13833b3515e4.png" alt="u_{i,j} = u(x_i, y_j)"/> のように略記する。</p>
+<p>着目している点 <img class="math" src="_images/math/24f4a4d13d537622d3212839c55130d6feff776b.png" alt="(x_i, y_j)"/> のまわりでテイラー展開すると、</p>
+<div class="math" id="equation-taylor1">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-taylor1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9d5bc8feb9aa8309020599f41288e5e30875adc0.png" alt="u_{i+1,j} = u(x_i+\Delta x, y_j) = u_{i,j}
++\Delta x \left (\displaystyle{{\partial u} \over {\partial x}} \right)_i
++\displaystyle{{{\Delta x}^2} \over {2!}}
+\left (\displaystyle{{\partial^2 u} \over {\partial x^2}} \right)_i
++\displaystyle{{{\Delta x}^3} \over {3!}}
+\left (\displaystyle{{\partial^3 u} \over {\partial x^3}} \right)_i
++ ..."/></p>
+</div><div class="math" id="equation-taylor2">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-taylor2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c6d0a826cfb32b7fdd11ff0c7ce303c212b4541f.png" alt="u_{i-1,j} = u(x_i-\Delta x, y_j) = u_{i,j}
+-\Delta x \left (\displaystyle{{\partial u} \over {\partial x}} \right)_i
++\displaystyle{{{\Delta x}^2} \over {2!}}
+\left (\displaystyle{{\partial^2 u} \over {\partial x^2}} \right)_i
+-\displaystyle{{{\Delta x}^3} \over {3!}}
+\left (\displaystyle{{\partial^3 u} \over {\partial x^3}} \right)_i
++ ..."/></p>
+</div><p>式 <a class="reference internal" href="#equation-taylor1">(1)</a> から式 <a class="reference internal" href="#equation-taylor2">(2)</a> を引くと</p>
+<div class="math" id="equation-taylor3">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-taylor3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/36f3c160c6adf877704da507d678d589937aeb4e.png" alt="u_{i+1,j} - u_{i-1,j} = 2\Delta x
+\left (\displaystyle{{\partial u} \over {\partial x}}\right )_i + O(\Delta x^3)"/></p>
+</div><p>したがって、</p>
+<div class="math" id="equation-taylor4">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-taylor4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8c8682ba82f27757f267914f631667218abac0f9.png" alt="\left (\displaystyle{{\partial u} \over {\partial x}} \right )_i
+= \displaystyle{{u_{i+1,j} - u_{i-1,j}} \over {2\Delta x}}
++ O(\Delta x^2)"/></p>
+</div><p>すなわち、 <img class="math" src="_images/math/fbe9c7293ddf4f78748f42b124db0d413169e320.png" alt="(i,j)"/> 点における <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> の <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 方向の微分係数 <img class="math" src="_images/math/a1ec6142ddb09e6204a9a39f632c5930fd908b3b.png" alt="(\partial u/\partial x)_i"/> が <img class="math" src="_images/math/4a862585f1a6615648a78e481aca88e7680fa641.png" alt="\Delta x^2"/> の誤差を含む近似のもとで( <img class="math" src="_images/math/7c3282642d867109f551c02c4946b913e5c0a430.png" alt="\Delta x"/> について2次の精度で)以下のように求まる。</p>
+<div class="math" id="equation-central">
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-central" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6811e7feb501f8b1b951277eac81f156be841d5e.png" alt="\left (\displaystyle{{\partial u} \over {\partial x}} \right)_i
+= \displaystyle{{u_{i+1,j} - u_{i-1,j}} \over {2\Delta x}}"/></p>
+</div><p>これを中心差分の式と言う。</p>
+<p>同様にして、 <img class="math" src="_images/math/7c3282642d867109f551c02c4946b913e5c0a430.png" alt="\Delta x"/> について1次の精度で以下の差分近似式が得られる。</p>
+<p>前進差分：</p>
+<div class="math" id="equation-fsabun">
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-fsabun" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1b9534256f4cb769bbdef7be61ca159d0e6c8071.png" alt="\left (\displaystyle{{\partial u} \over {\partial x}}\right)_i
+= \displaystyle{{u_{i+1,j} - u_{i,j}} \over {\Delta x}}"/></p>
+</div><p>後退差分：</p>
+<div class="math" id="equation-bsabun">
+<p><span class="eqno">(7)<a class="headerlink" href="#equation-bsabun" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a2d782779142c80ba392a090ec360c4ae23dec07.png" alt="\left(\displaystyle{{\partial u} \over {\partial x}}\right)_i
+= \displaystyle{{u_{i,j} - u_{i-1,j}} \over {\Delta x}}"/></p>
+</div><p>式 <a class="reference internal" href="#equation-taylor1">(1)</a> と式 <a class="reference internal" href="#equation-taylor2">(2)</a> を加えると</p>
+<div class="math" id="equation-fb-sabun">
+<p><span class="eqno">(8)<a class="headerlink" href="#equation-fb-sabun" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2b867261a5ec0256278c3b7bc6332b6e715b88c8.png" alt="u_{i+1,j} + u_{i-1,j} = 2u_{i,j} + \Delta x^2
+\left(\displaystyle{{\partial^2 u} \over {\partial x^2}}\right)_i
++ O(\Delta x^4)"/></p>
+</div><p>したがって、</p>
+<div class="math" id="equation-taylor5">
+<p><span class="eqno">(9)<a class="headerlink" href="#equation-taylor5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/25a288fa57a2a49073659acfa4cdd7b38c9c69e4.png" alt="\left(\displaystyle{{\partial^2 u} \over {\partial x^2}}\right)_i
+= \displaystyle{{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}} \over {\Delta x^2}}
++ O(\Delta x^2)"/></p>
+</div><p>これより、 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> の <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> に関する2階微分の係数 <img class="math" src="_images/math/a2c93d8312cfb50073df08e36936e358a0770669.png" alt="(\partial^2 u/\partial x^2)_i"/> を <img class="math" src="_images/math/7c3282642d867109f551c02c4946b913e5c0a430.png" alt="\Delta x"/> について2次の精度で以下のように近似することができる。</p>
+<div class="math" id="equation-central2-x">
+<p><span class="eqno">(10)<a class="headerlink" href="#equation-central2-x" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/328179d1c1889b3ddeae17e7a5eec43544dc71c5.png" alt="\left(\displaystyle{{\partial^2 u} \over {\partial x^2}}\right)_i
+= \displaystyle{{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}} \over {\Delta x^2}}"/></p>
+</div><p>同様に、</p>
+<div class="math" id="equation-central2-y">
+<p><span class="eqno">(11)<a class="headerlink" href="#equation-central2-y" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ab004752fc21dba7123a7e9448d3ce76fb6678f7.png" alt="\left(\displaystyle{{\partial^2 u} \over {\partial y^2}}\right)_j
+= \displaystyle{{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}} \over {\Delta y^2}}."/></p>
+</div></div>
+<div class="section" id="id3">
+<h2>線形スカラー移流方程式の差分解法<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id4">
+<h3>１次元線形スカラー移流方程式<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>流体・磁気流体方程式の本質は波の伝播にある。この部分だけを取り出して次のような方程式を考える。</p>
+<div class="math" id="equation-scalaradv">
+<p><span class="eqno">(12)<a class="headerlink" href="#equation-scalaradv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f37fa31277e9fa92d71a91a2d4bde61a6c824e1c.png" alt="\displaystyle{{\partial u} \over {\partial t}} +
+c \displaystyle{{\partial u} \over {\partial x}} = 0"/></p>
+</div><p>ただし、 <img class="math" src="_images/math/d520a12f1579170834c32ad5f656de081bbb36fe.png" alt="c"/> は定数で <img class="math" src="_images/math/b6ca53a9a1d8ea3552ccb18db9c3b22e3e05da30.png" alt="c &gt; 0"/> とする。この方程式は、スカラー量 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> の空間分布が、一定の速度 <img class="math" src="_images/math/d520a12f1579170834c32ad5f656de081bbb36fe.png" alt="c"/> で伝播することをあらわす波動方程式である。</p>
+<p>方程式 <a class="reference internal" href="#equation-scalaradv">(12)</a> の厳密解は</p>
+<div class="math" id="equation-adv-sol">
+<p><span class="eqno">(13)<a class="headerlink" href="#equation-adv-sol" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e153b9d40f481b93453f03b8cf81c58bb4dd7f0e.png" alt="u(x,t) = u(x-ct,0)"/></p>
+</div><p>である。これは、時刻 <img class="math" src="_images/math/8cd39c71c2f33de29e19cc5121a404db27b62388.png" alt="t &gt; 0"/> におけるスカラー量 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> のプロフィールは <img class="math" src="_images/math/34656d3b192f255d26caf50b0ed5476d5d789d11.png" alt="t=0"/> のスカラー量 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> のプロフィールが形を保って <img class="math" src="_images/math/70c77c611a06bdf93fc69fb0c7553e744db2f0fb.png" alt="ct"/> だけ平行移動した形になることをあらわす。</p>
+<div class="figure align-center" id="id17">
+<span id="figscalaradv"></span><a class="reference internal image-reference" href="_images/scalaradvection.png"><img alt="_images/scalaradvection.png" src="_images/scalaradvection.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">1次元スカラー移流問題の初期条件と時間発展</span><a class="headerlink" href="#id17" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>いま、図 <a class="reference internal" href="#figscalaradv"><span class="std std-ref">1次元スカラー移流問題の初期条件と時間発展</span></a> のように初期に <img class="math" src="_images/math/8a9d2e66ac14bf840b4cd7189e21e9cd2a73f80f.png" alt="x \ge 0"/> で <img class="math" src="_images/math/cc2b9eeaa574dae784b8a86ca4b5058d95dbc591.png" alt="u=u_1"/> 、 <img class="math" src="_images/math/de7dc511b9898ddb53d24754a6d43a511d94e9e7.png" alt="x &lt; 0"/> で <img class="math" src="_images/math/763c297e698ce997e1a647c9c47081a889d8151f.png" alt="u=u_2"/> のように <img class="math" src="_images/math/c34170440d4046a9b3e1ef2635a2f5d6a529a421.png" alt="x=0"/> で不連続な分布を考えてみると <img class="math" src="_images/math/8cd39c71c2f33de29e19cc5121a404db27b62388.png" alt="t &gt; 0"/> での厳密解は右図のような形になる。</p>
+</div>
+<div class="section" id="ftcs">
+<h3>FTCSスキーム<a class="headerlink" href="#ftcs" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>1次元線形スカラー移流方程式 <a class="reference internal" href="#equation-scalaradv">(12)</a> を時間について現在の時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> と <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> 後の時刻 <img class="math" src="_images/math/cacbe56115b390f60d3b8a51f808f02fa918ccef.png" alt="t_{n+1}=t_n+\Delta t"/> の間で前進差分、空間については中心差分をとって差分化すると次式を得る。ここで、 <img class="math" src="_images/math/1f593d4c6b506e97655dfd2fa53d1f7aee7ef2fa.png" alt="u_j^n = u(x_j,t_n)"/> である。</p>
+<div class="math" id="equation-ftcs1">
+<p><span class="eqno">(14)<a class="headerlink" href="#equation-ftcs1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ed05ddba91f6d84729daea49b33d0e7592429f23.png" alt="\displaystyle{{u_{j}^{n+1}-u_{j}^{n}} \over {\Delta t}} +
+c \displaystyle{{u_{j+1}^{n}-u_{j-1}^n} \over {2\Delta x}} = 0"/></p>
+</div><p>このような差分のとり方をFTCSスキーム(Forward in Time and Centered Difference in Space)と言う。これを整理すると、</p>
+<div class="math" id="equation-advftcs">
+<p><span class="eqno">(15)<a class="headerlink" href="#equation-advftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e351eaeb414e4948aaa3f8acf34cd7a2585efb15.png" alt="u_j^{n+1} = u_j^n - \displaystyle{1 \over 2} \nu (u_{j+1}^n -
+u_{j-1}^n)"/></p>
+</div><p>ここで、 <img class="math" src="_images/math/14eb89266154200b9c81dcfc3bd058638fa221bf.png" alt="\nu"/> は次式で定義される数であり、 <strong>クーラン数</strong> と呼ばれる。</p>
+<div class="math" id="equation-cfl-def">
+<p><span class="eqno">(16)<a class="headerlink" href="#equation-cfl-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1c6c65426f16a486c4535cda985ebb70467b8994.png" alt="\nu \equiv c \displaystyle{{\Delta t} \over {\Delta x}}"/></p>
+</div><p>式 <a class="reference internal" href="#equation-advftcs">(15)</a> の右辺は時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> での値、左辺は時刻 <img class="math" src="_images/math/cacbe56115b390f60d3b8a51f808f02fa918ccef.png" alt="t_{n+1}=t_n+\Delta t"/> での値だけで書けている。したがって、時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> での各格子点での値がわかっていれば直ちに1タイムステップ後( <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> )の各格子点での値を計算することができる。このような解法のことを <strong>陽解法</strong> と言う。</p>
+<div class="figure align-center" id="id18">
+<span id="figftcs1"></span><a class="reference internal image-reference" href="_images/ftcs.png"><img alt="_images/ftcs.png" src="_images/ftcs.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">FTCSスキームにおける変数の依存関係</span><a class="headerlink" href="#id18" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>FTCSスキームにおける変数の依存関係を図示すると図 <a class="reference internal" href="#figftcs1"><span class="std std-ref">FTCSスキームにおける変数の依存関係</span></a> のようになる。矢印は時刻 <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> の白丸の点の値を計算するのに時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> の黒丸の格子点の値を使うことを示す。</p>
+<p>1次元波動伝播のシミュレーションを行うアルゴリズムは一般に次のようになる。</p>
+<ol class="arabic simple">
+<li><p>各メッシュ点の座標値 <img class="math" src="_images/math/ab9afdaf786ce53318d75d81f050af8560822fcd.png" alt="x_j"/> をセットする(メッシュ生成)</p></li>
+<li><p>各メッシュ点の初期値 <img class="math" src="_images/math/7ad8c5c5af392a9952fb2c42a6a23cb9381d083b.png" alt="u_j(t=0)"/> をセットする(初期条件)</p></li>
+<li><p>時刻 <img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> が、あらかじめ決められた終了時刻 <img class="math" src="_images/math/88974faf0d8f0a881babb49b46f2086b792a64c6.png" alt="t_{\rm end}"/> に達するまで、あるいは決められた回数だけ、以下を繰り返す</p></li>
+</ol>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>左右の境界を除く各格子点について <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> 後の値を差分式にもとづいて計算する(時間積分)。たとえばFTCSスキームの場合には計算式 <a class="reference internal" href="#equation-advftcs">(15)</a> を用いる。</p></li>
+<li><p>左右の境界の値を境界条件から決める。たとえば隣接点と同じ値を入れる (境界条件の適用)</p></li>
+<li><p>時刻を <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> だけ進める</p></li>
+</ol>
+</div></blockquote>
+<div class="figure align-center" id="id19">
+<span id="figftcsresult"></span><a class="reference internal image-reference" href="_images/ftcsi.png"><img alt="_images/ftcsi.png" src="_images/ftcsi.png" style="width: 80%;" /></a>
+<p class="caption"><span class="caption-text">左図：FTCSスキームで、初期値として、 <img class="math" src="_images/math/abd887006353c409410c11519b92a0d28994bbd3.png" alt="j=1,...,50"/> に対して <img class="math" src="_images/math/09150827f66a6ec25206d6194267262e717e2353.png" alt="u=1"/> 、 <img class="math" src="_images/math/7d726397e97624ef68cb48d7dccd86817134c8a7.png" alt="j=51,...,100"/> に対して <img class="math" src="_images/math/076c649db46dcc9dd32aa9e5000c936e8e369ee3.png" alt="u=0"/> とし、クーラン数 <img class="math" src="_images/math/15691d8b51691ee8e847a395d37870a3e8ecbe84.png" alt="\nu=c\Delta t/\Delta x=0.25"/> で1ステップ、2ステップ、3ステップ計算したときの <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> をプロットした図。右図：50ステップ、100ステップ計算したときの <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> をプロットした図。</span><a class="headerlink" href="#id19" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>FTCSスキームを用いて１次元線形スカラー移流方程式を解いた結果を <a class="reference internal" href="#figftcsresult"><span class="std std-ref">上図</span></a> に示す。波は形を保って伝わらずに振動が発生してしまっている。この振動は物理的な理由で発生しているのではなく、数値的不安定性によるものである。なぜこのような数値振動が発生してしまうのか、次節で説明する。</p>
+</div>
+<div class="section" id="id5">
+<h3>FTCSスキームの数値的安定性<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="von-neumann">
+<h4>Von Neumannの安定性解析<a class="headerlink" href="#von-neumann" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>前節のFTCSスキームによって1次元波動伝播のシミュレーションを行ってみると解が激しく振動して数値的に不安定になってしまうことがわかった（ <a class="reference internal" href="#figftcsresult"><span class="std std-ref">FTCSの結果の図</span></a> ）。この不安定性の原因を調べるために</p>
+<div class="math" id="equation-coswave">
+<p><span class="eqno">(17)<a class="headerlink" href="#equation-coswave" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0cc26a604f74031d898247ab7f84ff45066eb4ae.png" alt="u_j^n={\rm{cos}}(j\theta)"/></p>
+</div><p>を差分式 <a class="reference internal" href="#equation-advftcs">(15)</a> に代入してみる。ここで <img class="math" src="_images/math/8a87f04e7d7cca18343c084cceca5237fae62491.png" alt="\theta"/> は、波の波数を <img class="math" src="_images/math/9630132210b904754c9ab272b61cb527d12263ca.png" alt="k"/> として <img class="math" src="_images/math/a28379d3c6de7b1f075405110abbab40b0df355b.png" alt="\theta=k\Delta x"/> であらわされる量である。たとえば <img class="math" src="_images/math/50613364ce7d5f73a39481016800f8b2c8d46637.png" alt="\theta=\pi"/> のとき <img class="math" src="_images/math/1d34c0a2afa967dc61303fd61d389c115ff7a403.png" alt="u_j^n"/> は <a class="reference internal" href="#vonneuman"><span class="std std-ref">安定性解析結果</span></a> 左図のように2メッシュで1波長の波、 <img class="math" src="_images/math/2bb8bdad7995571352f7305d364aa9176b499796.png" alt="\theta=\pi/3"/> のときは右図のように6メッシュで1波長の波をあらわす。</p>
+<div class="figure align-center" id="id20">
+<span id="vonneuman"></span><a class="reference internal image-reference" href="_images/vonneumann.png"><img alt="_images/vonneumann.png" src="_images/vonneumann.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">安定性解析結果。メッシュ番号を <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> としたときの <img class="math" src="_images/math/75e846b3c92b71bd9d52492e168899e1b1f8efd0.png" alt="u_j^n={\rm cos}(j\theta)"/> のプロフィール。左図: <img class="math" src="_images/math/50613364ce7d5f73a39481016800f8b2c8d46637.png" alt="\theta=\pi"/> の場合。右図： <img class="math" src="_images/math/2bb8bdad7995571352f7305d364aa9176b499796.png" alt="\theta=\pi/3"/> の場合。</span><a class="headerlink" href="#id20" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>その結果は</p>
+<div class="math" id="equation-coswav-ftcs">
+<p><span class="eqno">(18)<a class="headerlink" href="#equation-coswav-ftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e2fa311f3c7d76a5f2aee82823984bd33d6eae3a.png" alt="u_j^{n+1}={\rm cos}(j\theta)+\nu {\rm sin}\theta {\rm sin}(j\theta)
+=Re \left[(1-i\nu{\rm sim}\theta) e^{ij\theta}\right]"/></p>
+</div><p>これをもう一度差分式に代入すると</p>
+<div class="math" id="equation-coswav-ftcs2">
+<p><span class="eqno">(19)<a class="headerlink" href="#equation-coswav-ftcs2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c7a93ad970d0b02899485202e3117699e4d1d71a.png" alt="u_j^{n+2}=(1-\nu^2{\rm sin}^2\theta){\rm cos}(j\theta)+2\nu {\rm sin}\theta {\rm sin}(j\theta)\\
+= Re \left[(1-i\nu{\rm sin}\theta)^2 e^{ij\theta}\right]"/></p>
+</div><p>である。ここで、 <img class="math" src="_images/math/5aa339d4daf45a810dda332e3c80a0698e526e04.png" alt="i"/> は虚数単位、 <img class="math" src="_images/math/68132fbd6f413bd35c80cc0f70f464cb95921a0c.png" alt="Re"/> は実部をとることをあらわす。以上からわかるように、</p>
+<div class="math" id="equation-coswav-ftcs3">
+<p><span class="eqno">(20)<a class="headerlink" href="#equation-coswav-ftcs3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/01af8c60aea51b6e08bba05b0db995f772dc7f59.png" alt="u_j^{n+k}=Re \left[(1-i\nu{\rm sin}\theta)^k e^{ij\theta}\right]"/></p>
+</div><p>が成り立つ。</p>
+<p>以上と同様に、式 <a class="reference internal" href="#equation-coswave">(17)</a> を複素数に拡張した <img class="math" src="_images/math/2ed39e48f0d86786ce5a964756fbb37b896c0601.png" alt="u_j^{n}=e^{ij\theta}"/> を差分式 <a class="reference internal" href="#equation-advftcs">(15)</a> に代入すると</p>
+<div class="math" id="equation-uj-rel">
+<p><span class="eqno">(21)<a class="headerlink" href="#equation-uj-rel" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/153c0c62741c0a37bf96f6b40f55b5230de1f497.png" alt="u_j^{n+k}=(1-i\nu{\rm sin}\theta)^k u_j^{n}"/></p>
+</div><p>が成り立つ。</p>
+<p>差分法(差分スキーム)の数値的安定性を導くひとつの方法として、</p>
+<div class="math" id="equation-vn-ana">
+<p><span class="eqno">(22)<a class="headerlink" href="#equation-vn-ana" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/eaeaa3aeb2b67dd984d775d791dca0764106ab28.png" alt="u_j^{n} = g^n e^{ij\theta}"/></p>
+</div><p>を差分式に代入して複素増幅率 <img class="math" src="_images/math/157ba5711de84b4c715a0478fd8ae440e596d96e.png" alt="g"/> を求め、1タイムステップ間の振幅の増幅率 <img class="math" src="_images/math/96dd6c6524066177a9358f2063bc2e2a2a62f9fb.png" alt="|g| \le 1"/> となる条件を求める方法がある。これを Von Neumann の安定性解析と言う。</p>
+<p><img class="math" src="_images/math/5a75d55067c419b6bf9124435e6ca9a3ca782747.png" alt="u_j^n = g^n {\rm exp} (i j \theta)"/> をFTCS差分式に代入すると</p>
+<div class="math" id="equation-g-ftcs">
+<p><span class="eqno">(23)<a class="headerlink" href="#equation-g-ftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/750b2f574d2fc96c2715e74dcd6159d925cf7699.png" alt="g = 1 - \displaystyle{1 \over 2} \nu (e^{i \theta} - e^{-i \theta})\\
+= 1 - i \nu {\rm sin} \theta"/></p>
+</div><p>したがって</p>
+<div class="math" id="equation-gnor2-ftcs">
+<p><span class="eqno">(24)<a class="headerlink" href="#equation-gnor2-ftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/41865b5c4f38958e925b60d9ed8c078850a7faf1.png" alt="|g|^2 = 1 + \nu^2 {\rm sin}^2 \theta \ge 1"/></p>
+</div><p>以上の結果より、 <img class="math" src="_images/math/176c8555978460d992bbdaead0d4015a4f7008da.png" alt="\theta=0"/> の場合を除いてFTCSスキームは常に不安定になる。</p>
+</div>
+<div class="section" id="id6">
+<h4>テイラー展開による方法<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>差分化した式にテイラー展開を適用して差分式が満たす偏微分方程式を導くことによってもFTCSスキームが数値的に不安定であることを示すことができる。 <img class="math" src="_images/math/f42eb2f21844d476955d4eec544e1f658146bf23.png" alt="t_{n+1} = t_n + \Delta t"/> 、 <img class="math" src="_images/math/f9285f0cc72f405d8c46037b4c463382a0cdce9c.png" alt="x_{j \pm 1} = x_j \pm \Delta x"/> を用いると、</p>
+<div class="math" id="equation-advtaylor1">
+<p><span class="eqno">(25)<a class="headerlink" href="#equation-advtaylor1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/dee4aa7906298eb782a9e65103f0664dc1b3da26.png" alt="u_j^{n+1} = u_j^n + \displaystyle{{\partial u} \over {\partial t}}
+\Delta t + \displaystyle{1 \over 2}
+\displaystyle{{\partial^2 u} \over {\partial t^2}} \Delta t^2 + ..."/></p>
+</div><div class="math" id="equation-advtaylor2">
+<p><span class="eqno">(26)<a class="headerlink" href="#equation-advtaylor2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2489e7631c845a7a61b863eac69c138688d9f7da.png" alt="u_{j+1}^n = u_j^n + \displaystyle{{\partial u} \over {\partial x}}
+\Delta x + \displaystyle{1 \over 2}
+\displaystyle{{\partial^2 u} \over {\partial x^2}} \Delta x^2
++ \displaystyle{1 \over 6} \displaystyle{{\partial^3 u}
+\over {\partial x^3}}\Delta x^3 + ..."/></p>
+</div><div class="math" id="equation-advtaylor3">
+<p><span class="eqno">(27)<a class="headerlink" href="#equation-advtaylor3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0a3caccb01a0b3b9af1db3cd6cc3c0d714085e5b.png" alt="u_{j-1}^n = u_j^n - \displaystyle{{\partial u} \over {\partial x}}
+\Delta x + \displaystyle{1 \over 2}
+\displaystyle{{\partial^2 u} \over {\partial x^2}} \Delta x^2
+- \displaystyle{1 \over 6} \displaystyle{{\partial^3 u}
+\over {\partial x^3}}\Delta x^3 + ..."/></p>
+</div><p>FTCSスキームの差分式</p>
+<div class="math" id="equation-ftcs-sabun">
+<p><span class="eqno">(28)<a class="headerlink" href="#equation-ftcs-sabun" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f7aaa16344dd6076176532031fb217d19979c1f5.png" alt="u_j^{n+1} - u_j^n = -\displaystyle{1 \over 2} \nu
+(u_{j+1}^n - u_{j-1}^n)"/></p>
+</div><p>の左辺に <a class="reference internal" href="#equation-advtaylor1">(25)</a> 、右辺に <a class="reference internal" href="#equation-advtaylor2">(26)</a> 、 <a class="reference internal" href="#equation-advtaylor3">(27)</a> を代入すると、</p>
+<div class="math" id="equation-ftcs-sabun2">
+<p><span class="eqno">(29)<a class="headerlink" href="#equation-ftcs-sabun2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d507a5d710786696478dc96a9797a4d2fb217111.png" alt="\displaystyle{{\partial u} \over {\partial t}}\Delta t
++ \displaystyle{1 \over 2} {{\partial ^2 u} \over {\partial t}^2}
+\Delta t^2  =  -\nu \left (\displaystyle{{\partial u} \over {\partial
+x}}\Delta x + \displaystyle{1 \over 6} \displaystyle{{\partial^3 u}
+\over {\partial x^3}}\Delta x^3 + ... \right)"/></p>
+</div><p>これを整理すると</p>
+<div class="math" id="equation-ftcs-sabun3">
+<p><span class="eqno">(30)<a class="headerlink" href="#equation-ftcs-sabun3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7419e6d8b7ddbf4d90c13dd1c7a21cb79072f1fb.png" alt="\displaystyle{{\partial u} \over {\partial t}}
++ c \displaystyle{{\partial u} \over {\partial x}}
+= -\displaystyle{1 \over 2} \displaystyle{
+{\partial^2 u} \over {\partial t^2}}\Delta t
+- \displaystyle{c \over 6}
+{{\partial^3 u} \over {\partial x^3}} \Delta x^2 + ..."/></p>
+</div><p>ここで、解くべき偏微分方程式</p>
+<div class="math" id="equation-beq">
+<p><span class="eqno">(31)<a class="headerlink" href="#equation-beq" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e17c0704ff00c31377a663b4872e09da1f588dcf.png" alt="\displaystyle{{\partial u} \over {\partial t}}
+= -c \displaystyle{{\partial u} \over {\partial x}}"/></p>
+</div><p>より</p>
+<div class="math" id="equation-beq2">
+<p><span class="eqno">(32)<a class="headerlink" href="#equation-beq2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/597f82ffb3bc40681a156b4ef5efc6e8ac849a79.png" alt="\displaystyle{{\partial^2 u} \over {\partial t^2}}
+= c^2 \displaystyle{{\partial^2 u} \over {\partial x^2}}"/></p>
+</div><p>であることを用いると</p>
+<div class="math" id="equation-beq3">
+<p><span class="eqno">(33)<a class="headerlink" href="#equation-beq3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e6224ced18928948e48fe7960a17c7395f9bfaea.png" alt="\displaystyle{{\partial u} \over {\partial t}}
++ c \displaystyle{{\partial u} \over {\partial x}}
+= -\displaystyle{{c^2} \over 2} \displaystyle{
+{\partial^2 u} \over {\partial x^2}}\Delta t
+- \displaystyle{c \over 6}
+{{\partial^3 u} \over {\partial x^3}} \Delta x^2 + ..."/></p>
+</div><p>右辺が差分化によって新たに加わった項である。右辺第1項は負の拡散係数を持つ拡散項になっている。「正の拡散」は物理量の値のピークをなまらせる働きがあるが、「負の拡散」では物理量が周囲よりもわずかに高い値を持つ部分があるとこのピークがどんどん大きくなるという不安定性を生ずる。</p>
+<p>よって、テイラー展開法からもスカラー移流方程式のFTCSスキームは数値的に不安定であることがわかる。</p>
+</div>
+</div>
+<div class="section" id="lax-friedrich">
+<h3>Lax-Friedrich のスキーム<a class="headerlink" href="#lax-friedrich" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>この方法ではFTCSスキームの右辺の <img class="math" src="_images/math/1d34c0a2afa967dc61303fd61d389c115ff7a403.png" alt="u_j^n"/> を <img class="math" src="_images/math/8bf9b73c72e1a195e02b9c6f0bd52d53bef30a50.png" alt="(u_{j+1}^n+u_{j-1}^n)/2"/> で置き換え、以下のように差分化する。</p>
+<div class="math" id="equation-laxfriedrich">
+<p><span class="eqno">(34)<a class="headerlink" href="#equation-laxfriedrich" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fdc581f5e1a42f6bd6b4d320503695e1c23cc4d3.png" alt="u_j^{n+1}=\displaystyle{1 \over 2}(u_{j+1}^n+u_{j-1}^n)
+-\displaystyle{\nu \over 2}(u_{j+1}^n-u_{j-1}^n)"/></p>
+</div><p><img class="math" src="_images/math/73a9fcd665cf12cca83ce6e0a72231d3bc5782cd.png" alt="u_j^n=g^n {\rm exp}(i j \theta)"/> を代入して増幅率 <img class="math" src="_images/math/157ba5711de84b4c715a0478fd8ae440e596d96e.png" alt="g"/> を求めると</p>
+<div class="math" id="equation-g-lf">
+<p><span class="eqno">(35)<a class="headerlink" href="#equation-g-lf" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0500d353ddd2be5e4a4d23d21abcd8ad97979011.png" alt="g = \displaystyle{1 \over 2}(e^{i\theta}+e^{-i\theta})-
+\displaystyle{1 \over 2}(e^{i\theta}-e^{-i\theta})\\
+= {\rm cos} \theta - i \nu {\rm sin} \theta"/></p>
+</div><p>したがって</p>
+<div class="math" id="equation-gnor2-lf">
+<p><span class="eqno">(36)<a class="headerlink" href="#equation-gnor2-lf" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d7018a2c028e62eec8000f2c1838721353b2d8cf.png" alt="|g|^2={\rm cos}^2{\theta}+\nu^2 {\rm sin}^2 \theta"/></p>
+</div><div class="figure align-center" id="id21">
+<span id="figlfphase"></span><a class="reference internal image-reference" href="_images/LFphase2.png"><img alt="_images/LFphase2.png" src="_images/LFphase2.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">Lax-Friedrichスキームの場合の増幅率</span><a class="headerlink" href="#id21" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#figlfphase"><span class="std std-ref">Lax-Friedrichスキームの場合の増幅率</span></a> に増幅率 <img class="math" src="_images/math/9066871d6e7f4ef7b22d501bb1dc2eb893da42e2.png" alt="|g|"/> を <img class="math" src="_images/math/8a87f04e7d7cca18343c084cceca5237fae62491.png" alt="\theta"/> の関数として極座標 <img class="math" src="_images/math/d6e963c7bbe4e060a8898fc418c3e348df118989.png" alt="(g,\theta)"/> で示す。Lax-Friedrich のスキームでは、クーラン数 <img class="math" src="_images/math/783ac344d4b6aec5c947486b4f561482701aeb09.png" alt="\nu=c\Delta t/\Delta x"/> が <img class="math" src="_images/math/bc0096f4a12026b917cc8b039c9adcc3d3faa8f5.png" alt="|\nu| \le 1"/> を満たす場合、安定に計算を進めることができる。この条件のことを Courant, Friedrich, Lewy 条件 ( <strong>CFL条件</strong> あるいはクーラン条件)と言う。</p>
+<div class="figure align-center" id="id22">
+<span id="figlaxf"></span><a class="reference internal image-reference" href="_images/laxf.png"><img alt="_images/laxf.png" src="_images/laxf.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">Lax-Friedrichスキームにおける依存関係。破線と点線はそれぞれ <img class="math" src="_images/math/4fa16055fb559aa7401f83ff8190e7e4b2958822.png" alt="\nu &lt; 1"/> 、 <img class="math" src="_images/math/45d6b45bb0b065c02e31eac4f599e5577c7c3afc.png" alt="\nu &gt; 1"/> の場合の波の伝播を示す。</span><a class="headerlink" href="#id22" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>クーラン条件の意味を考えてみよう。差分式 <a class="reference internal" href="#equation-laxfriedrich">(34)</a> を書き換えると以下の式を得る。</p>
+<div class="math" id="equation-uj-n1">
+<p><span class="eqno">(37)<a class="headerlink" href="#equation-uj-n1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4e152200cb43aa0297f9291013a8b6add5b7a69c.png" alt="u_j^{n+1}={{1-\nu} \over 2}u_{j+1}^n+{{1+\nu} \over 2}u_{j-1}^n"/></p>
+</div><p>クーラン条件 <img class="math" src="_images/math/7038d7dd3a421587588a6c6a2ac0583d5692cba6.png" alt="|\nu|\le 1"/> が満たされている場合、時刻 <img class="math" src="_images/math/7fe650523f9f85100af74a4a3d49cffeb42511a9.png" alt="t=t_{n+1}"/> の値 <img class="math" src="_images/math/5ee43e0e5ae2057ee9a766756f6838826b6e3e22.png" alt="u_j^{n+1}"/> は <img class="math" src="_images/math/bd96c6795685e0922d4e3e2c55fd7857ead26cc0.png" alt="t=t_n"/> の <img class="math" src="_images/math/db02d48a776877a23952b1b0629ccc255477be7a.png" alt="j-1"/> 点の値 <img class="math" src="_images/math/4a4ee29d0e0aa56139bd86690b2a3811426f411b.png" alt="u_{j-1}^n"/> と <img class="math" src="_images/math/7ba03ddc28b2395dbe094912567fb83fbd61f292.png" alt="j+1"/> 点の値 <img class="math" src="_images/math/0e9528157b2d2b8ec9de8c6ad535520aa9359169.png" alt="u_{j+1}^n"/> の内挿値になっている。 <a class="reference internal" href="#figlaxf"><span class="std std-ref">上図</span></a> にLax-Friedrichスキームにおける変数の依存関係を示す。実線は時刻 <img class="math" src="_images/math/7fe650523f9f85100af74a4a3d49cffeb42511a9.png" alt="t=t_{n+1}"/> の白丸の格子点の値を計算する際に用いられる時刻 <img class="math" src="_images/math/bd96c6795685e0922d4e3e2c55fd7857ead26cc0.png" alt="t=t_n"/> の格子点、破線は <img class="math" src="_images/math/767c691ebb2e14608fcc7f16ccd198d1bc4e24cd.png" alt="\nu=c\Delta t/\Delta x &lt; 1"/> の場合、点線は <img class="math" src="_images/math/45d6b45bb0b065c02e31eac4f599e5577c7c3afc.png" alt="\nu &gt; 1"/> の場合の波の伝播を示す。クーラン条件は <img class="math" src="_images/math/df3bbdaf3d89a039e3973882174cbb6986b5d8d7.png" alt="|c|\Delta t &lt; \Delta x"/> 、すなわち時間間隔 <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> の間に波が１メッシュ以上伝わってはいけないことを意味する。 <img class="math" src="_images/math/5ee43e0e5ae2057ee9a766756f6838826b6e3e22.png" alt="u_j^{n+1}"/> は <img class="math" src="_images/math/4a4ee29d0e0aa56139bd86690b2a3811426f411b.png" alt="u_{j-1}^n"/> と <img class="math" src="_images/math/0e9528157b2d2b8ec9de8c6ad535520aa9359169.png" alt="u_{j+1}^n"/> だけから計算されるが、時間間隔が <img class="math" src="_images/math/fbc78105759288545e5f31cb3bd63d4f525bc798.png" alt="\Delta t &gt; \Delta x/|c|"/> となると <img class="math" src="_images/math/d922ab00f33306db59cc4e2b26c70fbb83b1fea4.png" alt="x_{j-1} \le x \le x_{j+1}"/> より外側からも情報が伝わってくるため計算を安定に進めることができなくなるのである。</p>
+<div class="figure align-center" id="id23">
+<span id="figlfresult"></span><a class="reference internal image-reference" href="_images/lax.png"><img alt="_images/lax.png" src="_images/lax.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">Lax-Friedrichスキームを用いた１次元線形スカラー移流問題のシミュレーション結果。クーラン数 <img class="math" src="_images/math/d1f0b02ea65a485d8a75636aad3b33f177165b6a.png" alt="\nu=0.25"/> で50ステップ、100ステップ計算した結果を示す。</span><a class="headerlink" href="#id23" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#figlfresult"><span class="std std-ref">上図</span></a> にLax-Friedrichスキームを用いて１次元線形スカラー移流方程式の解を求めた結果を示す。数値振動のない解が得られている。Lax-Friedrichスキームの欠点は数値散逸が大きく、不連続面が時間とともになまってしまうことである。</p>
+</div>
+<div class="section" id="id7">
+<h3>1次精度風上差分法<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><a class="reference internal" href="#figupwindif"><span class="std std-ref">図</span></a> のように波が正の方向に伝わっている場合を考える。このとき、 <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> 点での空間微分を、 <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> 点と風上にあたる <img class="math" src="_images/math/db02d48a776877a23952b1b0629ccc255477be7a.png" alt="j-1"/> 点の間の差分で近似する方法が風上差分である。</p>
+<div class="figure align-center" id="id24">
+<span id="figupwindif"></span><a class="reference internal image-reference" href="_images/upwind1.png"><img alt="_images/upwind1.png" src="_images/upwind1.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">左図：右方向に伝わる波、右図：1次精度風上差分における依存関係。破線は波による情報の伝達を示す。</span><a class="headerlink" href="#id24" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>1次元スカラー移流方程式を時間については前進差分、空間については風上差分として差分化すると、 <img class="math" src="_images/math/b6ca53a9a1d8ea3552ccb18db9c3b22e3e05da30.png" alt="c &gt; 0"/> の場合、以下の差分式を得る。</p>
+<div class="math" id="equation-upw-sabun">
+<p><span class="eqno">(38)<a class="headerlink" href="#equation-upw-sabun" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/82bad5664b99982b4a904ffbbc0cd81aa313e10a.png" alt="\displaystyle{{u_j^{n+1}-u_j^n} \over {\Delta t}}
++ c \displaystyle{{u_j^n-u_{j-1}^n} \over \Delta x} = 0"/></p>
+</div><p>したがって</p>
+<div class="math" id="equation-upwind">
+<p><span class="eqno">(39)<a class="headerlink" href="#equation-upwind" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/96fa37ed2b1b7c812de0d86b3e2020351688ee11.png" alt="u_j^{n+1} = u_j^n - c \displaystyle{{\Delta t} \over {\Delta x}}
+(u_j^n - u_{j-1}^n)"/></p>
+</div><p><a class="reference internal" href="#figupwindif"><span class="std std-ref">右図</span></a> に1次精度風上差分における変数の依存関係を示す。黒丸は時刻 <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> の白丸の格子点の値を計算する際に用いられる時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> の格子点、破線は時刻 <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> に白丸の格子点に到達する波の伝播を示す。</p>
+<p>増幅率は</p>
+<div class="math" id="equation-g-upw">
+<p><span class="eqno">(40)<a class="headerlink" href="#equation-g-upw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/940e1b7d71f32b38bf01299dcc3312d0bb711952.png" alt="g = 1 - \nu (1-e^{-i\theta})\\
+=(1-\nu+\nu {\rm cos} \theta)-i\nu {\rm sin} \theta"/></p>
+</div><p>したがって</p>
+<div class="math" id="equation-gnor2-upw">
+<p><span class="eqno">(41)<a class="headerlink" href="#equation-gnor2-upw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4e0261b1cb225ba86705e022245a548838e9cde3.png" alt="|g|^2 = (1-\nu+\nu {\rm cos} \theta)^2+\nu^2 {\rm sin}^2 \theta\\
+ = 1-2\nu(1-\nu)(1-{\rm cos} \theta)"/></p>
+</div><p>これより、 <img class="math" src="_images/math/69e8ac48eb4f4da1015589e1994f000302c38214.png" alt="0 \le \nu \le 1"/> の場合、任意の <img class="math" src="_images/math/8a87f04e7d7cca18343c084cceca5237fae62491.png" alt="\theta"/> について <img class="math" src="_images/math/96dd6c6524066177a9358f2063bc2e2a2a62f9fb.png" alt="|g| \le 1"/> であり、安定であることがわかる。</p>
+<p>風上差分の差分式 <a class="reference internal" href="#equation-upwind">(39)</a> は次のようにも書ける。</p>
+<div class="math" id="equation-uj-n1-upw">
+<p><span class="eqno">(42)<a class="headerlink" href="#equation-uj-n1-upw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d2b0ac036429fe87e72ba56c700283c58f25e35e.png" alt="u_j^{n+1}=(1-\nu)u_j^n+\nu u_{j-1}^n ."/></p>
+</div><p>クーラン条件 <img class="math" src="_images/math/69e8ac48eb4f4da1015589e1994f000302c38214.png" alt="0 \le \nu \le 1"/> が満たされている場合、 <img class="math" src="_images/math/5ee43e0e5ae2057ee9a766756f6838826b6e3e22.png" alt="u_j^{n+1}"/> は時刻 <img class="math" src="_images/math/7fe650523f9f85100af74a4a3d49cffeb42511a9.png" alt="t=t_{n+1}"/> に <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> 番目の格子点に到達する波の <img class="math" src="_images/math/bd96c6795685e0922d4e3e2c55fd7857ead26cc0.png" alt="t=t_n"/> での位置（ <a class="reference internal" href="#figupwindif"><span class="std std-ref">右図</span></a> の破線矢印の出発点）における値 <img class="math" src="_images/math/e191fcc4b73d851cfff630f64be7aa9c328652a4.png" alt="u(x_j-c\Delta t,t_n)"/> を <img class="math" src="_images/math/4a4ee29d0e0aa56139bd86690b2a3811426f411b.png" alt="u_{j-1}^n"/> と <img class="math" src="_images/math/1d34c0a2afa967dc61303fd61d389c115ff7a403.png" alt="u_j^n"/> から線形内挿した値になっている。</p>
+<div class="figure align-center" id="id25">
+<span id="figupwind"></span><a class="reference internal image-reference" href="_images/upwind25-80.png"><img alt="_images/upwind25-80.png" src="_images/upwind25-80.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">1次精度風上差分法を用いた１次元線形スカラー移流問題のシミュレーション結果。左：クーラン数 <img class="math" src="_images/math/d1f0b02ea65a485d8a75636aad3b33f177165b6a.png" alt="\nu=0.25"/> で50ステップ、100ステップ計算した結果。右： <img class="math" src="_images/math/993d6da7d2b4c41ca1733fdbaa590b74bdb94a56.png" alt="\nu=0.80"/> で16ステップ、32ステップ計算した結果。</span><a class="headerlink" href="#id25" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#figupwind"><span class="std std-ref">上図</span></a> に１次精度風上差分法を用いたシミュレーション結果を示す。</p>
+<div class="section" id="id8">
+<h4>練習問題<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<ul class="simple">
+<li><p>クーラン数 <img class="math" src="_images/math/14eb89266154200b9c81dcfc3bd058638fa221bf.png" alt="\nu"/> が1,0.75,0.5 の場合について1次精度風上差分の増幅率 <img class="math" src="_images/math/9066871d6e7f4ef7b22d501bb1dc2eb893da42e2.png" alt="|g|"/> を位相 <img class="math" src="_images/math/8a87f04e7d7cca18343c084cceca5237fae62491.png" alt="\theta"/> の関数として求め、極座標 <img class="math" src="_images/math/531eb84d523554c59d8cce413f2652380e27edd0.png" alt="(|g|,\theta)"/> でプロットせよ。</p></li>
+<li><p>1次精度風上差分法の差分式 <a class="reference internal" href="#equation-upwind">(39)</a> にテイラー展開を適用することによって、以下の偏微分方程式が得られることを示せ。右辺第1項が拡散項であることに注意して、クーラン条件を導け。</p></li>
+</ul>
+<div class="math">
+<p><img src="_images/math/daaab3c713339e9b9fe701cfe9eda949d05b6df7.png" alt="\displaystyle{{\partial u} \over {\partial t}}
++c\displaystyle{{\partial u} \over {\partial x}}
+= \displaystyle{1 \over 2} c\Delta x (1-\nu)
+\displaystyle{{\partial^2 u} \over {\partial x^2}}
+-\displaystyle{1 \over 6} c (\Delta x)^2(2\nu^2-3\nu+1)
+\displaystyle{{\partial^3 u} \over {\partial x^3}} + ..."/></p>
+</div></div>
+</div>
+<div class="section" id="lax-wendroff">
+<h3>Lax-Wendroffのスキーム<a class="headerlink" href="#lax-wendroff" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>Lax-Wendroffスキームはテイラー展開にもとづく差分法であり、以下のようにして導かれる。</p>
+<div class="math" id="equation-sabun-lw">
+<p><span class="eqno">(43)<a class="headerlink" href="#equation-sabun-lw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/b0b8e5bcfe6d4bfe9f720b623702613db688598e.png" alt="u_j^{n+1} = u_j^n+\Delta t \displaystyle{{\partial u} \over {\partial
+t}} + \displaystyle{1 \over 2}\Delta t^2 \displaystyle
+{{\partial^2 u} \over {\partial t^2}} + O(\Delta t^3)"/></p>
+</div><p>右辺第2項、第3項に <img class="math" src="_images/math/845b6695a2ae71f89dcbf022462efd994e47d8af.png" alt="\partial u/\partial t = -c \partial u/\partial x"/> 、 <img class="math" src="_images/math/69a24274f8b6fc06dff64b002186de5158c061a1.png" alt="\partial^2 u/\partial t^2=c^2 \partial^2 u/\partial x^2"/> を代入すると</p>
+<div class="math" id="equation-sabun2-lw">
+<p><span class="eqno">(44)<a class="headerlink" href="#equation-sabun2-lw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4a1ce153efdeaad1fc690e43db336faf29516a16.png" alt="u_j^{n+1}=u_j^n-c\Delta t \displaystyle{{\partial u} \over {\partial
+x}}+\displaystyle{1 \over 2}c^2 \Delta t^2
+\displaystyle{{\partial^2 u} \over {\partial x^2}} + O(\Delta t^3)"/></p>
+</div><p>空間微分 <img class="math" src="_images/math/eb2bf4ec192c815b10142ebfcfc8741bda18fa6f.png" alt="\partial u/\partial x"/> 、 <img class="math" src="_images/math/1d6a65b0f9e3f18f7da13ef610689c4d1619c03e.png" alt="\partial^2 u/\partial x^2"/> をそれぞれ中心差分で近似すると</p>
+<div class="math" id="equation-uj-n1-lw">
+<p><span class="eqno">(45)<a class="headerlink" href="#equation-uj-n1-lw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a72f4d8b6336f0dea5933c013ee44191935bf675.png" alt="u_j^{n+1} = u_j^n - \displaystyle{1 \over 2}c\Delta t
+\displaystyle{{u_{j+1}^n-u_{j-1}^n} \over {\Delta x}}
++ \displaystyle{1 \over 2}c^2 \left(\displaystyle{{\Delta t} \over
+{\Delta x}} \right )^2 (u_{j+1}^n-2u_j^n+u_{j-1}^n)"/></p>
+</div><p>これがLax-Wendroffスキームである。以上の導出過程からわかるように、Lax-Wendroffスキームは空間、時間についていずれも2次精度の解法になっている。</p>
+<p>Lax-Wendroffスキームの安定性をvon Neumannの方法で調べてみる。増幅率は</p>
+<div class="math" id="equation-g-lw">
+<p><span class="eqno">(46)<a class="headerlink" href="#equation-g-lw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e6166e8a450cd7926a9331c4f9fd04d44be760c2.png" alt="g = 1 - \displaystyle{\nu \over 2}(e^{i\theta}-e^{-i\theta})
++\displaystyle{\nu^2 \over 2}(e^{i\theta}-2+e^{-i\theta})\\
+= 1 -i\nu {\rm sin} \theta + \nu^2 {\rm cos} \theta -\nu^2"/></p>
+</div><p>したがって、</p>
+<div class="math" id="equation-gnor2-lw">
+<p><span class="eqno">(47)<a class="headerlink" href="#equation-gnor2-lw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/01cbab1dc742c30e48f90228d20a7faa76fd00fb.png" alt="|g|^2 = [1-\nu^2(1-{\rm cos}\theta)]^2 + \nu^2 {\rm sin}^2 \theta\\
+= 1 - 2\nu^2(1-\nu^2)(1-{\rm cos}\theta)"/></p>
+</div><p>これより、 <img class="math" src="_images/math/bc0096f4a12026b917cc8b039c9adcc3d3faa8f5.png" alt="|\nu| \le 1"/> であれば任意の <img class="math" src="_images/math/8a87f04e7d7cca18343c084cceca5237fae62491.png" alt="\theta"/> について <img class="math" src="_images/math/96dd6c6524066177a9358f2063bc2e2a2a62f9fb.png" alt="|g| \le 1"/> であり、安定であることがわかる。</p>
+<div class="figure align-center" id="id26">
+<span id="figlw2"></span><a class="reference internal image-reference" href="_images/figLW.png"><img alt="_images/figLW.png" src="_images/figLW.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">2段階Lax-Wendroffスキームにおける依存関係。第一段階で時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> における格子点 <img class="math" src="_images/math/db02d48a776877a23952b1b0629ccc255477be7a.png" alt="j-1"/> 、 <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> 、 <img class="math" src="_images/math/7ba03ddc28b2395dbe094912567fb83fbd61f292.png" alt="j+1"/> の値から時刻 <img class="math" src="_images/math/5d66a3fd36505d7d239a5ea6568f93d0a2809b3d.png" alt="t_{n+1/2}"/> における格子点 <img class="math" src="_images/math/3f40651aef0267cb7e7646e1054625f9f709b97e.png" alt="j-1/2"/> 、 <img class="math" src="_images/math/df5834b882413b9b118e8a71c4730592ab70cd22.png" alt="j+1/2"/> の値が計算される。第二段階ではこれらの点の値を用いて時刻 <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> の白丸の格子点の値が求まる。</span><a class="headerlink" href="#id26" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>1次元スカラー方程式の場合、Lax-Wendroffスキームは以下のように2段階に分けたスキームと同等である。この方法を <strong>2段階Lax-Wendroff法</strong> と呼ぶ。</p>
+<div class="math" id="equation-lw2">
+<p><span class="eqno">(48)<a class="headerlink" href="#equation-lw2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ed7bfeeb76bab9b1dc3e38c1ad32836df9a0d75b.png" alt="u_{j+1/2}^{n+1/2} = \displaystyle{{u_{j+1}^n+u_j^n} \over 2}
+- {1 \over 2} c \displaystyle{{\Delta t} \over {\Delta x}}
+(u_{j+1}^n - u_j^n)"/></p>
+</div><div class="math" id="equation-uj-n1-lw2">
+<p><span class="eqno">(49)<a class="headerlink" href="#equation-uj-n1-lw2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/40addb777f8601b5625aa81a8f5617bae3c828c4.png" alt="u_j^{n+1} = u_j^n - c \displaystyle{{\Delta t} \over {\Delta x}}
+(u_{j+1/2}^{n+1/2}-u_{j-1/2}^{n+1/2})"/></p>
+</div><p>これを図示すると <a class="reference internal" href="#figlw2"><span class="std std-ref">上図</span></a> のようになる。</p>
+<div class="figure align-center" id="id27">
+<span id="figlwresult"></span><a class="reference internal image-reference" href="_images/figLWresult.png"><img alt="_images/figLWresult.png" src="_images/figLWresult.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">2段階Lax-Wendroff法による１次元線形スカラー移流方程式のシミュレーション結果。左図：クーラン数 <img class="math" src="_images/math/d1f0b02ea65a485d8a75636aad3b33f177165b6a.png" alt="\nu=0.25"/> で50ステップ、100ステップ計算した結果。右図：クーラン数 <img class="math" src="_images/math/993d6da7d2b4c41ca1733fdbaa590b74bdb94a56.png" alt="\nu=0.80"/> で16ステップ、32ステップ計算した結果。</span><a class="headerlink" href="#id27" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#figlwresult"><span class="std std-ref">図</span></a> にLax-Wendroff法を用いて1次元線形スカラー移流方程式の数値解を求めた結果を示す。Lax-Wendroff法は空間、時間についていずれも2次精度の方法であるが、不連続面近傍で数値振動を生じるという欠点を持つ。これに関して、以下の定理が知られている。</p>
+<div class="section" id="godunov">
+<span id="godunov-theorem"></span><h4>Godunov の定理<a class="headerlink" href="#godunov" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>1次元スカラー移流方程式 <img class="math" src="_images/math/d87fe8f23d54d1bb158dfa6b7b6864bccf25d608.png" alt="\partial u/\partial t + c \partial u /\partial x = 0"/> に対して、</p>
+<div class="math" id="equation-gd-theorem">
+<p><span class="eqno">(50)<a class="headerlink" href="#equation-gd-theorem" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/283955b56749079f38829118b6dcae6f01ba4b21.png" alt="u_j^{n+1} = \sum_k a_k u_{j+k}^n"/></p>
+</div><p>の形の2次精度以上の精度を持つどのようなスキームも解の単調性を維持することはできない。</p>
+<p>ここで、「解の単調性を維持する」とは、時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> におけるプロフィール <img class="math" src="_images/math/d045843425f023489f7da3a2a27fd26bccd38f69.png" alt="u(x,t_n)"/> が <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> に関して単調増加または単調減少する関数であるならば時刻 <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> における関数 <img class="math" src="_images/math/2bc6bfd6efe1aadeced56501c03ee77df272de6e.png" alt="u(x,t_{n+1})"/> も単調増加または単調減少関数でなければならないことを意味する。たとえば１次精度風上差分の場合、 <img class="math" src="_images/math/69e8ac48eb4f4da1015589e1994f000302c38214.png" alt="0 \le \nu \le 1"/> なら <img class="math" src="_images/math/5ee43e0e5ae2057ee9a766756f6838826b6e3e22.png" alt="u_j^{n+1}"/> は必ず <img class="math" src="_images/math/4a4ee29d0e0aa56139bd86690b2a3811426f411b.png" alt="u_{j-1}^n"/> と <img class="math" src="_images/math/1d34c0a2afa967dc61303fd61d389c115ff7a403.png" alt="u_j^n"/> の間の値をとるため、もしも <img class="math" src="_images/math/1ca7b553cfa44b85ec61339b7f7bd375be7a30ce.png" alt="u_{j-1}^n \le u_j^n \le u_{j+1}^n"/> なら <img class="math" src="_images/math/abfea75877910f5f5a5ac72f14a75900421f0351.png" alt="u_j^{n+1} \le u_{j+1}^{n+1}"/> となり、単調性が維持される。Godunovの定理の証明については、たとえば <a class="reference internal" href="reference.html#fujii94"><span class="std std-ref">藤井 (1994)</span></a> を参照されたい。</p>
+<p>数値振動を抑える方法には以下のものがある。</p>
+<ul class="simple">
+<li><p>人工粘性を加える</p></li>
+</ul>
+<blockquote>
+<div><p>粘性係数を <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> として、</p>
+</div></blockquote>
+<div class="math" id="equation-aviscos">
+<p><span class="eqno">(51)<a class="headerlink" href="#equation-aviscos" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fd140cede143bcb5fb352d437c521cd268e15203.png" alt="\tilde{u}_j^{n+1}  = u_j^{n+1} +  \kappa \displaystyle
+{{\Delta t} \over {{\Delta x}^2}} (u_{j+1}^n - 2u_j^n + u_{j-1}^n)"/></p>
+</div><div class="math" id="equation-kappa-def">
+<p><span class="eqno">(52)<a class="headerlink" href="#equation-kappa-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5861a15031ded4b92128d58bc98bf6a668ea5164.png" alt="\kappa_{j+1/2}= Q_v \Delta x |u_{j+1}^n-u_j^n|"/></p>
+</div><p>とする。拡散係数 <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> は、たとえば以下のように不連続面付近で大きな値をとるように決める。 <img class="math" src="_images/math/b1ef86b46630f9d7482e359cc3257e9528ea58eb.png" alt="Q_v"/> はパラメータである。</p>
+<ul class="simple">
+<li><p>流束制限関数を用いる</p></li>
+</ul>
+<blockquote>
+<div><p>これについては後述する。</p>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="id9">
+<h2>保存形表示と数値流束<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>1次元スカラー移流方程式</p>
+<div class="math" id="equation-scalar-adv">
+<p><span class="eqno">(53)<a class="headerlink" href="#equation-scalar-adv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8e70b6fbbd867ed773851494811b32b5c22a2e76.png" alt="\displaystyle{{\partial u} \over {\partial t}} +
+c \displaystyle{{\partial u} \over {\partial x}} =0"/></p>
+</div><p>を以下の形に変形する。</p>
+<div class="math" id="equation-conserv">
+<p><span class="eqno">(54)<a class="headerlink" href="#equation-conserv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e04cd8bcf511f06fad3da59fb9c925817a1521e1.png" alt="\displaystyle{{\partial u} \over {\partial t}} +
+\displaystyle{{\partial f} \over {\partial x}} = 0"/></p>
+</div><p>ここで、</p>
+<div class="math" id="equation-flux-def">
+<p><span class="eqno">(55)<a class="headerlink" href="#equation-flux-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/82ef72f8fa72ef941c3827b6fe1f513f3824709d.png" alt="f = cu"/></p>
+</div><p>は流束をあらわす。式 <a class="reference internal" href="#equation-conserv">(54)</a> の形を保存形と呼ぶ。</p>
+<div class="figure align-center" id="id28">
+<span id="figflux"></span><a class="reference internal image-reference" href="_images/conserv.png"><img alt="_images/conserv.png" src="_images/conserv.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">メッシュ点とメッシュ境界を通って出入りする流束の関係</span><a class="headerlink" href="#id28" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>保存形式の物理的意味を考えるために、 <a class="reference internal" href="#figflux"><span class="std std-ref">図</span></a> に四角で囲って示した領域 ( <img class="math" src="_images/math/b82a73d4eb9039f51007428fd7d937565dc0d979.png" alt="x_{j-1/2} &lt; x &lt; x_{j+1/2}"/> )における保存量 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> の時間変化を求めてみよう。方程式 <a class="reference internal" href="#equation-conserv">(54)</a> を <img class="math" src="_images/math/f9c302c0da371a258993e9f1e3baa7ce6f52f27c.png" alt="x=x_{j-1/2}"/> から <img class="math" src="_images/math/bb9fbb736cff830f6a6232e97460ee4e849ef459.png" alt="x=x_{j+1/2}"/> まで積分すると次式を得る。</p>
+<div class="math" id="equation-int-form">
+<p><span class="eqno">(56)<a class="headerlink" href="#equation-int-form" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a4cb5565f0a242dad999ce3dfc86b8c6a4e33a06.png" alt="\displaystyle{\partial \over {\partial t}}
+\int_{x_{j-1/2}}^{x_{j+1/2}}
+u dx + f(x_{j+1/2})-f(x_{j-1/2}) = 0 ."/></p>
+</div><p>したがって、保存量 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> の積分量</p>
+<div class="math" id="equation-u-int">
+<p><span class="eqno">(57)<a class="headerlink" href="#equation-u-int" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6ca0d32cd12a8a525f1274e353aed196ede077de.png" alt="u_j^n = \int_{x_{j-1/2}}^{x_{j+1/2}} u(x,t_n) dx"/></p>
+</div><p>の時間変化は、この時間の間に左右の境界 <img class="math" src="_images/math/49e27e7ad98f5d5845b4dae2650bc2aa1bb2c40b.png" alt="x_{j \pm 1/2}"/> を通って出入りする流束 <img class="math" src="_images/math/6590c1d6ffcef2c27daffbf5d63906454b834f70.png" alt="f_{j \pm 1/2}"/> の差に等しい。これより次式を得る。</p>
+<div class="math" id="equation-conservdif">
+<p><span class="eqno">(58)<a class="headerlink" href="#equation-conservdif" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/372e3dd326fd368bdfae7c5fad535281ba6f6778.png" alt="u_j^{n+1} = u_j^n - \displaystyle{{\Delta t} \over {\Delta x}}
+(f_{j+1/2}^n - f_{j-1/2}^n)"/></p>
+</div><p>差分式 <a class="reference internal" href="#equation-conservdif">(58)</a> は保存則を厳密に満たす。これが保存形式を用いる利点である。</p>
+<p>メッシュ境界の流束 <img class="math" src="_images/math/6fb71ff02b4f7a8c322387cf10258ff6895225f1.png" alt="f_{j \pm 1/2}^n"/> は各メッシュ点での流束から近似的に計算することができる。これを <strong>数値流束</strong> と言い、 <img class="math" src="_images/math/c3b88a164e45edc3352f51eee349827a970cc872.png" alt="\tilde{f}_{j \pm 1/2}^n"/> であらわす。各種差分スキームの差分式から数値流束を求めると以下のようになる。</p>
+<ul class="simple">
+<li><p>FTCS</p></li>
+</ul>
+<div class="math" id="equation-nflux-ftcs">
+<p><span class="eqno">(59)<a class="headerlink" href="#equation-nflux-ftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/cc370865744ffd923a6f31b02aaf4026524a0cec.png" alt="\tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2}(f_{j+1}^n+f_j^n)"/></p>
+</div><ul class="simple">
+<li><p>Lax-Friedrich</p></li>
+</ul>
+<div class="math" id="equation-nflux-lf">
+<p><span class="eqno">(60)<a class="headerlink" href="#equation-nflux-lf" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/059c8c05f0a09024e5c38f9e850fa3063d7892f3.png" alt="\tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2}
+\left [(1-\displaystyle{1 \over \nu})f_{j+1}^n+(1+\displaystyle{1 \over \nu})
+f_j^n \right ]"/></p>
+</div><ul class="simple">
+<li><p>Upwind (風上差分)</p></li>
+</ul>
+<div class="math" id="equation-nflux-upw">
+<p><span class="eqno">(61)<a class="headerlink" href="#equation-nflux-upw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/96ee1e7322ae54b3a13b1a11f5bf42a4b4b1e8a8.png" alt="\tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2}
+\left [(f_{j+1}^n + f_j^n)-|c|(u_{j+1}^n-u_j^n) \right ]"/></p>
+</div><dl class="simple">
+<dt></dt><dd><p>この式は、 <img class="math" src="_images/math/b6ca53a9a1d8ea3552ccb18db9c3b22e3e05da30.png" alt="c &gt; 0"/> の場合は <img class="math" src="_images/math/238164e21207def81c58edf68398551eb6c37e7c.png" alt="\tilde{f}_{j+1/2}^n= f_j^n"/> 、 <img class="math" src="_images/math/53f2344b4d6dd1513f9e441bfc7d6b69c6ef2255.png" alt="c &lt; 0"/> の場合は <img class="math" src="_images/math/63e7397d35614aa39c84e01dd83637f188ddcd4b.png" alt="\tilde{f}_{j+1/2}=f_{j+1}^n"/> と一致する。</p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>Lax-Wendroff</p></li>
+</ul>
+<div class="math" id="equation-nflux-lw">
+<p><span class="eqno">(62)<a class="headerlink" href="#equation-nflux-lw" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a4f1c9349d297d38f7a10c93fdf11b355cc3dd0b.png" alt="\tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2}
+\left [ (1-\nu)f_{j+1}^n+(1+\nu)f_j^n \right ]"/></p>
+</div></div>
+<div class="section" id="burgers">
+<h2>Burgers方程式の数値解法<a class="headerlink" href="#burgers" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ここまでは、移流の速さ <img class="math" src="_images/math/d520a12f1579170834c32ad5f656de081bbb36fe.png" alt="c"/> が一定の場合の１次元線形スカラー移流方程式を扱ってきた。本節では、以下のような <strong>非線形</strong> 波動方程式を差分近似によって解くことを考える。これは、非粘性の場合のBurgers方程式である。</p>
+<div class="math" id="equation-burgs-eq">
+<p><span class="eqno">(63)<a class="headerlink" href="#equation-burgs-eq" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/75297669e7360382013b293af27970b12bb94d1e.png" alt="\displaystyle{{\partial u} \over {\partial t}}
++ u \displaystyle{{\partial u} \over {\partial x}} = 0"/></p>
+</div><p>この方程式は流線に沿うラグランジュ微分 <img class="math" src="_images/math/1e0bc902846f07c7d1d2c1b47fa2fef8b6a5e268.png" alt="d/dt=\partial /\partial t+ u \partial /\partial x"/> を用いると次のように表現できる。</p>
+<div class="math" id="equation-lag-form">
+<p><span class="eqno">(64)<a class="headerlink" href="#equation-lag-form" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/97efc308ac9cb961f59b939ae0d29bf6efe2f0da.png" alt="\displaystyle{{du} \over {dt}} = 0"/></p>
+</div><div class="figure align-center" id="id29">
+<span id="figparticle"></span><a class="reference internal image-reference" href="_images/burgers_particle.png"><img alt="_images/burgers_particle.png" src="_images/burgers_particle.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">Burgers方程式の解の様子。ある有限の時刻で後ろからきた粒子が前の粒子に追いつく。</span><a class="headerlink" href="#id29" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>粒子的な描像に立てば、この方程式は力を受けていない粒子の運動を記述しており、その解はもちろん <img class="math" src="_images/math/5026451f0e92720e58c7b8600148e6bccefedf72.png" alt="u=const."/> である。初期速度分布が正弦波的な場合、 <a class="reference internal" href="#figparticle"><span class="std std-ref">上図</span></a> に示すように、振幅が正の領域は <img class="math" src="_images/math/cd503a58daa4ccf2833f61e9a6d305c12e85c527.png" alt="+x"/> 方向に、負の領域は <img class="math" src="_images/math/7d6495fa9cfffb1558b902cbe5b8f24f76e03773.png" alt="-x"/> 方向に移動してしだいに波が突っ立ち、有限の時刻で後からきた粒子が前の粒子に追いついてしまう。連続系では空間の１点で速度が多価になることはできないため、このような場合に解に不連続が生じる。</p>
+<div class="figure align-center" id="id30">
+<span id="figburgers"></span><a class="reference internal image-reference" href="_images/burgers1-2.png"><img alt="_images/burgers1-2.png" src="_images/burgers1-2.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">Burgers方程式を１次精度風上差分法で解いた結果の例。左：初期に <img class="math" src="_images/math/17381e0f7ff2ea4c3b7188252198c22bef79a556.png" alt="u&gt;0"/> の場合。右：初期に <img class="math" src="_images/math/a2c80d550dccedecef561e0f5f9d13468c71f3c5.png" alt="u&lt;0"/> の場合。図中の数字は時間ステップ数。時間きざみは <img class="math" src="_images/math/1cb990fa4b751a550092f31f622447f687fafaf3.png" alt="\Delta t/\Delta x=0.8"/> とした。</span><a class="headerlink" href="#id30" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>Burgers方程式を差分法によって解くため、方程式をまず、以下のような保存系に変形する。</p>
+<div class="math" id="equation-burgs-cnsv">
+<p><span class="eqno">(65)<a class="headerlink" href="#equation-burgs-cnsv" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1ede6834dd1ced71f117e37327e3f4cf8769f679.png" alt="\displaystyle{{\partial u} \over {\partial t}}
++ \displaystyle{{\partial} \over {\partial x}} \left(\displaystyle
+{{u^2} \over 2} \right)=0"/></p>
+</div><p>これは、流束 <img class="math" src="_images/math/95aabe3d9002fe03d54b9b9d9fbfc27c0eaeb56f.png" alt="f(x)"/> が <img class="math" src="_images/math/650c2ad9532a96ef9a68291ec901592ba663b3eb.png" alt="f(x)=u^2/2"/> の場合に相当し、各種差分スキームを適用することができる。たとえば１次精度の風上差分法を適用する場合、線形スカラー方程式で移流の速さ <img class="math" src="_images/math/d520a12f1579170834c32ad5f656de081bbb36fe.png" alt="c"/> が一定である場合には <img class="math" src="_images/math/b6ca53a9a1d8ea3552ccb18db9c3b22e3e05da30.png" alt="c &gt; 0"/> のとき <img class="math" src="_images/math/f5866430352057b52d5492f6af5061ebd9335fb8.png" alt="f_{j+1/2}^n=f_j^n"/> であったことに注意し、メッシュ境界の <img class="math" src="_images/math/df5834b882413b9b118e8a71c4730592ab70cd22.png" alt="j+1/2"/> 点での速さを <img class="math" src="_images/math/398cf477aa508543d0a8c856e2073a33aaf5089b.png" alt="(u_j(t)+u_{j+1}(t))/2"/> で近似すると、</p>
+<ul class="simple">
+<li><p><img class="math" src="_images/math/0b9907e4642e285132f273196ae5a0342253935c.png" alt="u_{j+1}(t)+u_j(t) &gt; 0"/> のとき、 <img class="math" src="_images/math/24dbda0180573185f96f725da2288efe2de416f8.png" alt="f_{j+1/2}^n = f_j^n=|u_j(t)|^2/2"/></p></li>
+<li><p><img class="math" src="_images/math/1b2c42c6c8b7b9c235fd810b145f9a48aee9cc50.png" alt="u_{j+1}(t)+u_j(t) \le 0"/> のとき、 <img class="math" src="_images/math/2805685dc2780c81f2b1f5e8a4f0f6115d58813e.png" alt="f_{j+1/2}^n = f_{j+1}^n=|u_{j+1}(t)|^2/2"/></p></li>
+</ul>
+<p><a class="reference internal" href="#figburgers"><span class="std std-ref">図</span></a> に初期に <img class="math" src="_images/math/8961b0e3636b21cc5b96872bb84b960818ace44a.png" alt="u(x)=1+\epsilon {\rm sin}(kx)"/> ( <img class="math" src="_images/math/446c8d93f7ae81d51e5673e3f9307171ccd8c2ce.png" alt="\epsilon=0.01"/> , <img class="math" src="_images/math/302c8684457b58b9ad5019b9954061ef0aa4a84e.png" alt="0 \le kx \le 2\pi"/> ) のような速度分布を与えた場合のBurgers方程式の解を1次精度の風上差分法で計算した結果を示す。 <a class="reference internal" href="#figburgers"><span class="std std-ref">左図</span></a> の場合、初期に <img class="math" src="_images/math/3448ea0821333daf5a44f3a048cead5b1b340016.png" alt="u \sim 1"/> であることから予想できるように非線形効果が小さい間の解は波の速さが <img class="math" src="_images/math/35ad4877117b474fed380b998ab8f1a4d8293ddf.png" alt="c=1"/> の場合の線形スカラー移流方程式の解とほぼ一致し、波はほぼその形を保ちながら右側に伝わっていく。 <a class="reference internal" href="#figburgers"><span class="std std-ref">右図</span></a> では初期に <img class="math" src="_images/math/c4fcbd704e07c8e1625f4c1b88276cf3977f936f.png" alt="u \sim -1"/> であり、波は左に伝わる。</p>
+<div class="figure align-center" id="id31">
+<span id="figburgers2"></span><a class="reference internal image-reference" href="_images/burgers3.png"><img alt="_images/burgers3.png" src="_images/burgers3.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">初期に <img class="math" src="_images/math/596392cd42dd0477648b2a1071ded6bc8fdb9b95.png" alt="u(x)=1+0.1 {\rm sin}(kx)"/> の速度分布から始めた場合のBurgers方程式の数値解。図中の数字は時間ステップ数。１次精度風上差分法で時間きざみは <img class="math" src="_images/math/1cb990fa4b751a550092f31f622447f687fafaf3.png" alt="\Delta t/\Delta x=0.8"/> とした。</span><a class="headerlink" href="#id31" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>非線形性が強くなる場合のBurgers方程式の数値解の例を <a class="reference internal" href="#figburgers2"><span class="std std-ref">図</span></a> に示す。この例では初期に <img class="math" src="_images/math/596392cd42dd0477648b2a1071ded6bc8fdb9b95.png" alt="u(x)=1+0.1 {\rm sin}(kx)"/> のような速度分布を与え、その後の時間発展を１次精度の風上差分法によって解いた。Burgers方程式の非線形項 <img class="math" src="_images/math/c1652bc373d34baba2897c6948b5e0f63d72b9c8.png" alt="u\partial u/\partial x"/> の効果により波がしだいに突っ立ち、不連続（衝撃波）が形成されることがわかる。</p>
+</div>
+<div class="section" id="id10">
+<h2>流束制限関数<a class="headerlink" href="#id10" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以上、線形スカラー移流方程式とBurgers方程式を例にして差分解法について解説してきた。１次精度の風上差分法を用いるとこれらの方程式の解にあらわれる不連続面を数値振動を起こすことなくとらえることができる。しかしながら、Godunovの定理が示すように、空間２次精度以上の解法では数値振動があらわれてしまうことがわかった。</p>
+<p>Lax-Wendroff法の数値流束を補正することによって、不連続面近傍での振動を抑えることができないかどうか考えてみよう。Lax-Wendroff法の
+数値流束は次のようにも書ける。</p>
+<div class="math" id="equation-nflux-lw2">
+<p><span class="eqno">(66)<a class="headerlink" href="#equation-nflux-lw2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6f85220ff1705c9577913aaedc08e3eb2e556a30.png" alt="\tilde{f}_{j+1/2}^n = c[u_j^n + \displaystyle{1 \over 2}
+(1-\nu)(u_{j+1}^n - u_j^n)]"/></p>
+</div><p>数値振動が生じない1次精度の風上差分の数値流束は <img class="math" src="_images/math/b6ca53a9a1d8ea3552ccb18db9c3b22e3e05da30.png" alt="c &gt; 0"/> のとき <img class="math" src="_images/math/92f07cf10c20013f0efa38e85adc99561f02b71a.png" alt="\tilde{f}_{j+1/2}^n=cu_j"/> であり、Lax-Wendroff法の数値流束の右辺第1項と一致している。そこで、Lax-Wendroff法の数値流束の右辺第2項を次のように補正してみる。</p>
+<div class="math" id="equation-correctflux">
+<p><span class="eqno">(67)<a class="headerlink" href="#equation-correctflux" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/51d055705484b93d7ec770ae8a2d7c77d29fdb38.png" alt="\tilde{f}_{j+1/2}^n = c[u_j^n + \displaystyle{1 \over 2}
+(1-\nu)B_{j+1/2}(u_{j+1}^n - u_j^n)]"/></p>
+</div><p>ここで導入した <img class="math" src="_images/math/e14e6ac1f2e3528d2176866926469364a2235540.png" alt="B_{j+1/2}"/> のことを <strong>流束制限関数</strong> と呼ぶ。数値流束 <a class="reference internal" href="#equation-correctflux">(67)</a> を差分式 <a class="reference internal" href="#equation-conservdif">(58)</a> に代入して変形すると次式を得る。</p>
+<div class="math" id="equation-limiter">
+<p><span class="eqno">(68)<a class="headerlink" href="#equation-limiter" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/879bfdb1f59e57c031148d585c127ba4362898ef.png" alt="\displaystyle{{u_j^{n+1}-u_j^n} \over {u_{j-1}^n-u_j^n}}
+= \nu [1-\displaystyle{1 \over 2}(1-\nu)B_{j-1/2}]
++\displaystyle{1 \over 2}\nu(1-\nu) \displaystyle
+{{B_{j+1/2} \over r_j}}"/></p>
+</div><p>ここで、</p>
+<div class="math" id="equation-rf-def">
+<p><span class="eqno">(69)<a class="headerlink" href="#equation-rf-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/aa87958be167adde97e428c841ad049584112c3f.png" alt="r_j \equiv \displaystyle{{u_j^n-u_{j-1}^n} \over {u_{j+1}^n-u_j^n}}"/></p>
+</div><p>である。</p>
+<div class="figure align-center" id="id32">
+<span id="figlimiter"></span><a class="reference internal image-reference" href="_images/seigen.png"><img alt="_images/seigen.png" src="_images/seigen.png" style="width: 30%;" /></a>
+<p class="caption"><span class="caption-text">数値振動が生じないようにするために <img class="math" src="_images/math/5ee43e0e5ae2057ee9a766756f6838826b6e3e22.png" alt="u_j^{n+1}"/> の値を制限する範囲</span><a class="headerlink" href="#id32" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>数値振動が生じないようにするために、 <a class="reference internal" href="#figlimiter"><span class="std std-ref">図</span></a> に示したように <img class="math" src="_images/math/4b6eb2a4ea1689f61ad9b87fdd2354fb1a06aaa2.png" alt="u_{j}^{n+1}"/> が <img class="math" src="_images/math/1d34c0a2afa967dc61303fd61d389c115ff7a403.png" alt="u_j^n"/> と <img class="math" src="_images/math/307e6e629f7b45ff3558128df5f62005a45818f7.png" alt="u_{j-1}^{n}"/> の間の値をとるように制限を加えることにしよう。これには、式 <a class="reference internal" href="#equation-limiter">(68)</a> の左辺の値を以下のように制限すればよい。</p>
+<div class="math" id="equation-uj-range">
+<p><span class="eqno">(70)<a class="headerlink" href="#equation-uj-range" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/bf81ae25fea4e5587f5af43ede3da59de67271d2.png" alt="0 \le \displaystyle{{u_j^{n+1}-u_j^n} \over {u_{j-1}^n-u_j^n}} \le 1"/></p>
+</div><p>式 <a class="reference internal" href="#equation-limiter">(68)</a> の右辺を代入すると以下の条件を得る。</p>
+<div class="math" id="equation-uj-range2">
+<p><span class="eqno">(71)<a class="headerlink" href="#equation-uj-range2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/199880fd53e05e04fb50648aedc33486dfcef3d1.png" alt="-\displaystyle{2 \over \nu} \le B_{j-1/2} - \displaystyle
+{{B_{j+1/2}} \over {r_j}} \le \displaystyle{2 \over {1-\nu}}"/></p>
+</div><p>CFL条件が満たされている場合 <img class="math" src="_images/math/69e8ac48eb4f4da1015589e1994f000302c38214.png" alt="0 \le \nu \le 1"/> なので、</p>
+<div class="math" id="equation-uj-range3">
+<p><span class="eqno">(72)<a class="headerlink" href="#equation-uj-range3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d9fe5803d43dbd4cbe7ed4ec9fe7c229e301f171.png" alt="-2 \le B_{j-1/2}-\displaystyle{{B_{j+1/2}} \over {r_j}} \le 2"/></p>
+</div><p>この関係式は、以下のふたつの条件がともに満たされれば成立する。</p>
+<div class="math" id="equation-uj-range4">
+<p><span class="eqno">(73)<a class="headerlink" href="#equation-uj-range4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/267be3225c9a49ba187e6882471ac36cf4d1c2c2.png" alt="0 \le B_{j+1/2} \le 2"/></p>
+</div><p>かつ</p>
+<div class="math" id="equation-uj-range5">
+<p><span class="eqno">(74)<a class="headerlink" href="#equation-uj-range5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5ebc207817ae71a34cf1cb3c240df9218a663d7d.png" alt="0 \le \displaystyle{{B_{j+1/2}} \over {r_j}} \le 2"/></p>
+</div><p>この範囲を図示すると <a class="reference internal" href="#figlimitarea"><span class="std std-ref">流束制限関数の許容範囲図</span></a> の斜線のない領域になる。</p>
+<div class="figure align-center" id="id33">
+<span id="figlimitarea"></span><a class="reference internal image-reference" href="_images/limitarea.png"><img alt="_images/limitarea.png" src="_images/limitarea.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text">流束制限関数 <img class="math" src="_images/math/ba3915fa516aa8188c2f82be4cc4d82aeff765d5.png" alt="B_{j+1/2}(r)"/> の許容範囲。LWはLax-Wendroffスキームの数値流束に対応する制限関数。minmodは minmod関数。</span><a class="headerlink" href="#id33" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><img class="math" src="_images/math/50dbe36d29d15af0f37c44cd9928b9b908dff293.png" alt="r &lt; 0"/> の場合は <img class="math" src="_images/math/ba59c65d4bb40282430a453a15936eaa8912be47.png" alt="B_{j+1/2}=0"/> のみが許される。Lax-Wendroff法の数値流束では <img class="math" src="_images/math/6d3833569f1a3f6240583fbe7d6bbc2c3e8fc05e.png" alt="B_{j+1/2}=1"/> (図のLW)であるため、 <img class="math" src="_images/math/cea37f01bfba18bc1e7a45598b54d7e05c77c40c.png" alt="r &lt; 1/2"/> の領域で許容範囲外となり、数値振動が生じる。図の許容範囲内にある流束制限関数を用いることにより、数値振動が起こらないようにすることができる。その一例は以下のminmod関数(図のminmod)である。</p>
+<div class="math" id="equation-minmod-def">
+<p><span class="eqno">(75)<a class="headerlink" href="#equation-minmod-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/aaeca3dc6d965a2ca58934cd1248ca0f67751044.png" alt="{\rm minmod}(r) = \left\{ \begin{array}{ll}
+0 &amp; (r &lt; 0)\\
+r &amp; (0 \le r \le 1)\\
+1 &amp; (r &gt; 1)
+\end{array}
+\right."/></p>
+</div></div>
+<div class="section" id="tvd">
+<h2>TVDスキーム<a class="headerlink" href="#tvd" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>前節では、数値振動をおさえる方法として流束制限関数を導入した。ここでは、数値振動の発生を定量化する方法について考える。</p>
+<p>このために、1次元線形スカラー移流方程式において以下の量を定義する。</p>
+<div class="math" id="equation-u-def-tvd">
+<p><span class="eqno">(76)<a class="headerlink" href="#equation-u-def-tvd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c6bdc38def6508a8afa2f4e0efd5e9eaec9551d8.png" alt="U = \int \left |\displaystyle{{du} \over {dx}}\right | dx ."/></p>
+</div><p>この量は波の振幅の総和に等しく、移流方程式の厳密解では波のプロフィールが保たれるため、 <img class="math" src="_images/math/58df6cfdcb944841d91e6a41d521e64a4825fb0d.png" alt="dU/dt = 0"/> である。</p>
+<p>以上との類推により、メッシュ点ごとの物理量の変化量の総和を次式のように定義し、これをTotal Variation (TV)と言う。</p>
+<div class="math" id="equation-tv-def">
+<p><span class="eqno">(77)<a class="headerlink" href="#equation-tv-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1c95412ca9e59521cde829e00c78b5daf167ff60.png" alt="TV(u^n) \equiv \sum_j |u_{j+1}^n-u_j^n|"/></p>
+</div><p>Total Variation が時間とともに増大しないという条件</p>
+<div class="math" id="equation-tvd-cond">
+<p><span class="eqno">(78)<a class="headerlink" href="#equation-tvd-cond" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7f885262856c8a7da694f204569ecf5402f40c94.png" alt="TV(u^{n+1}) \le TV(u^n)"/></p>
+</div><p>のことをTotal Variation Diminishing (TVD)条件と呼ぶ。</p>
+<p>流束制限関数を導入することによって、差分スキームがTVD条件を満たすようにすることができる。</p>
+</div>
+<div class="section" id="id11">
+<h2>放物型方程式の差分解法<a class="headerlink" href="#id11" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id12">
+<h3>天体シミュレーションにあらわれる放物型方程式<a class="headerlink" href="#id12" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<ul class="simple">
+<li><p>熱伝導方程式</p></li>
+</ul>
+<blockquote>
+<div><p><img class="math" src="_images/math/6c640e8ce8804cab653e84dbc608cca20e241d0d.png" alt="\centerline{$\displaystyle{{\partial T} \over {\partial t}}= \kappa {\bf \nabla}^2 T$}"/></p>
+</div></blockquote>
+<ul class="simple">
+<li><p>磁気拡散方程式</p></li>
+</ul>
+<blockquote>
+<div><p><img class="math" src="_images/math/81a4c93ec484b31401b5788c101ba1dc71684e98.png" alt="\centerline{$\displaystyle{{\partial \boldmath{B}} \over {\partial t}}= \eta {\bf \nabla}^2 \boldmath{B}$}"/></p>
+</div></blockquote>
+<p>以下のような1次元拡散方程式を差分近似によって初期値問題として解くことを考えてみよう。すなわち、時刻 <img class="math" src="_images/math/34656d3b192f255d26caf50b0ed5476d5d789d11.png" alt="t=0"/> における <img class="math" src="_images/math/20c59767aaf24f2bc8d7c3c83111202116de7e72.png" alt="u(x,t)"/> の値 <img class="math" src="_images/math/2dad21c3ee7bc16746222128c7a98e34a7445cdd.png" alt="u(x,0)"/> を与えて、任意の時刻 <img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/> ( <img class="math" src="_images/math/5d74586ac5e280e37f097dbfeace9bc66cda9330.png" alt="&gt; 0"/> )における <img class="math" src="_images/math/20c59767aaf24f2bc8d7c3c83111202116de7e72.png" alt="u(x,t)"/> を求める。</p>
+<div class="math" id="equation-diffusion">
+<p><span class="eqno">(79)<a class="headerlink" href="#equation-diffusion" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8d3df4b9ef637122769564c4a858ee687bad4691.png" alt="\displaystyle{{\partial u} \over {\partial t}}
+= \kappa \displaystyle{{\partial^2 u} \over {\partial x^2}}"/></p>
+</div><p>拡散係数 <img class="math" src="_images/math/261e3eb56c1757dd003745ee4cc53aa595565af1.png" alt="\kappa"/> は <cite>x</cite> に依らないとする。よく知られているように、この方程式の解は初期条件をフーリエ変換することによって解析的に求めることができる。</p>
+<div class="figure align-center" id="id34">
+<a class="reference internal image-reference" href="_images/diffusion.png"><img alt="_images/diffusion.png" src="_images/diffusion.png" style="width: 30%;" /></a>
+<p class="caption"><span class="caption-text">拡散方程式の解の時間発展の様子</span><a class="headerlink" href="#id34" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>解のおおまかな様子を図に示す。</p>
+</div>
+<div class="section" id="explicit">
+<h3>拡散方程式の陽解法 (explicit法)<a class="headerlink" href="#explicit" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>1次元拡散方程式 <a class="reference internal" href="#equation-diffusion">(79)</a> を時間について現在の時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> と <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> 後の時刻 <img class="math" src="_images/math/cacbe56115b390f60d3b8a51f808f02fa918ccef.png" alt="t_{n+1}=t_n+\Delta t"/> の間で前進差分、空間については中心差分（FTCS差分）をとって差分化すると次式を得る。ここで、 <img class="math" src="_images/math/1f593d4c6b506e97655dfd2fa53d1f7aee7ef2fa.png" alt="u_j^n = u(x_j,t_n)"/> である。</p>
+<div class="math" id="equation-ftcs-diffusion">
+<p><span class="eqno">(80)<a class="headerlink" href="#equation-ftcs-diffusion" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/70aa2d8f80aaa91141e2da5c143ee7a51b4125df.png" alt="\displaystyle{{u_{j}^{n+1}-u_{j}^{n}} \over {\Delta t}}
+= \kappa \displaystyle{{u_{j+1}^{n}-2u_j^n+u_{j-1}^n} \over {\Delta x^2}}"/></p>
+</div><p>式 <a class="reference internal" href="#equation-ftcs-diffusion">(80)</a> を変形して次式を得る</p>
+<div class="math" id="equation-ftcs-diffusion2">
+<p><span class="eqno">(81)<a class="headerlink" href="#equation-ftcs-diffusion2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1d9ec796cd97896859af7293611a3b296babc6ef.png" alt="u_j^{n+1} = u_j^n + \displaystyle{{\kappa \Delta t} \over {\Delta x^2}}
+(u_{j+1}^n - 2u_j^n + u_{j-1}^n)"/></p>
+</div><p>右辺は時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> での値、左辺は時刻 <img class="math" src="_images/math/cacbe56115b390f60d3b8a51f808f02fa918ccef.png" alt="t_{n+1}=t_n+\Delta t"/> での値だけで書けている。したがって、時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> での各格子点での値がわかっていれば直ちに1タイムステップ後( <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> )の各格子点での値を計算することができる（陽解法）。</p>
+</div>
+<div class="section" id="id13">
+<h3>Von Neumannの安定性解析<a class="headerlink" href="#id13" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>FTCSスキームの数値的安定性を調べるために <img class="math" src="_images/math/5a75d55067c419b6bf9124435e6ca9a3ca782747.png" alt="u_j^n = g^n {\rm exp} (i j \theta)"/> をFTCS差分式に代入すると</p>
+<div class="math" id="equation-vn-diff-ftcs">
+<p><span class="eqno">(82)<a class="headerlink" href="#equation-vn-diff-ftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3662fd233b2d2fd01ccacb1e6094c050caef1325.png" alt="g^{n+1}e^{i j \theta} = g^n e^{i j \theta} +
+\displaystyle{{\kappa \Delta t} \over {\Delta x^2}} g^n
+[e^{i (j+1) \theta} - 2 e^{i j \theta} + e^{i (j-1) \theta}]."/></p>
+</div><p>よって、</p>
+<div class="math" id="equation-g-diff-ftcs">
+<p><span class="eqno">(83)<a class="headerlink" href="#equation-g-diff-ftcs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6856f88c5dd75d23ce5ed1eca4e5e841088bfa2b.png" alt="g = 1 - 2 \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} (1-{\rm cos} \theta)."/></p>
+</div><p>増幅率が <img class="math" src="_images/math/96dd6c6524066177a9358f2063bc2e2a2a62f9fb.png" alt="|g| \le 1"/> であるためには</p>
+<div class="math" id="equation-st-cond-diff-ftcs1">
+<p><span class="eqno">(84)<a class="headerlink" href="#equation-st-cond-diff-ftcs1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c95983032afa19fea459575eba8aeb8968f08a28.png" alt="-1 \le 1 - 2 \displaystyle{{\kappa \Delta t} \over {\Delta x^2}}
+(1-{\rm cos} \theta) \le 1 ."/></p>
+</div><p>したがって、</p>
+<div class="math" id="equation-st-cond-diff-ftcs2">
+<p><span class="eqno">(85)<a class="headerlink" href="#equation-st-cond-diff-ftcs2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/cc799e829532cca57654c45e40a34efe83bc1b2a.png" alt="0 \le \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} (1-{\rm cos}
+\theta) = \displaystyle{{\kappa \Delta t} \over {\Delta x^2}}
+2{\rm sin}^2 {\theta \over 2} \le 1 ."/></p>
+</div><p>任意の <img class="math" src="_images/math/8a87f04e7d7cca18343c084cceca5237fae62491.png" alt="\theta"/> (任意の波長の波)について安定であるためには</p>
+<div class="math" id="equation-st-cond-diff-ftcs3">
+<p><span class="eqno">(86)<a class="headerlink" href="#equation-st-cond-diff-ftcs3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e0c0b558a93b92bdc9a4d00a7e6eb5fce0d91778.png" alt="0 \le \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} \le
+\displaystyle{1 \over 2} ."/></p>
+</div><p>以上により、FTCSスキームにより1次元拡散方程式のシミュレーションを行う場合、時間ステップ <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> が上式を満たすようにコントロールする必要があることがわかる。たとえばメッシュサイズを半分にした場合、 <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> は1/4にしなければならない。</p>
+</div>
+<div class="section" id="implicit">
+<h3>拡散方程式の陰解法 (implicit法)<a class="headerlink" href="#implicit" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>拡散方程式を差分化する際に右辺の空間差分の部分に、求めるべき <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> での <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> の値を含めて差分化する方法がある。このような方法を <strong>陰解法（implicit法）</strong> と呼び、explicit法とは安定性条件が異ってくる。代表的な陰解法である Crank-Nicolson 法では、パラメータ <img class="math" src="_images/math/cefc603e5658facb747581f9567192993f21c7ab.png" alt="\lambda"/> を導入して、以下のように差分化する。</p>
+<div class="math" id="equation-c-n">
+<p><span class="eqno">(87)<a class="headerlink" href="#equation-c-n" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f3f9530ea8ebcbea507750f1cd34764b5f8b5137.png" alt="\displaystyle{{u_{j}^{n+1}-u_{j}^{n}} \over {\Delta t}}
+= \kappa \left [ \lambda \displaystyle{{u_{j+1}^{n+1}-2u_j^{n+1}+
+u_{j-1}^{n+1}} \over {\Delta x^2}}
++ (1-\lambda) \displaystyle{{u_{j+1}^{n}-2u_j^{n}+
+u_{j-1}^{n}} \over {\Delta x^2}} \right ]"/></p>
+</div><p>これを整理すると次のような行列を含む式になる。</p>
+<div class="math" id="equation-c-n2">
+<p><span class="eqno">(88)<a class="headerlink" href="#equation-c-n2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/73dbc3ccac51383c48271430a39b5e34c07cd134.png" alt="\boldmath{A} \boldmath{u}^{n+1} = \boldmath{b}(\boldmath{u}^n) ."/></p>
+</div><p>これを解いて <img class="math" src="_images/math/8b84a652836cc1fdab792239ff2668741eb11b63.png" alt="\boldmath{u}^{n+1}"/> を求めればよい。</p>
+<div class="section" id="id14">
+<h4>練習問題<a class="headerlink" href="#id14" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<ol class="arabic simple">
+<li><p>行列 <img class="math" src="_images/math/4303d7d6375dc14cad5fbd4faba0c18518b01093.png" alt="\boldmath{A}"/> とベクトル <img class="math" src="_images/math/c3e409287926328c683c766cb7ef4bdac568a01f.png" alt="\boldmath{b}"/> の各要素を求めなさい。</p></li>
+<li><p>Von Neumann の安定性解析により、 <img class="math" src="_images/math/c5541f38e3ddb215321e1ba21d522051fbaec00a.png" alt="\lambda &gt; 1/2"/> ならば <img class="math" src="_images/math/b0a1ecf07f2ac7fc2d2ca6a5726a79231821510d.png" alt="\kappa \Delta t/\Delta x^2 &gt; 0"/> を満たす任意の <img class="math" src="_images/math/b4ed9c2e208e08edeca8b1550ec0840acd090276.png" alt="\Delta t"/> についてCrank-Nicolsonスキームは数値的に安定であることを示しなさい。</p></li>
+</ol>
+</div>
+</div>
+</div>
+<div class="section" id="id15">
+<h2>参考文献<a class="headerlink" href="#id15" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="reference.html#fujii94"><span class="std std-ref">流体力学の数値計算法 (1994) 東京大学出版会、藤井孝蔵著</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#hirsch90"><span class="std std-ref">Numerical Computation of Internal and External Flows,
+C. Hirsch, John Wiley &amp; Sons, 1990</span></a></p></li>
+</ol>
+<p>[1]は、数値流体力学全般についてまとめられたテキストであり、必読文献である。</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">差分法の基礎</a><ul>
+<li><a class="reference internal" href="#id2">差分近似</a></li>
+<li><a class="reference internal" href="#id3">線形スカラー移流方程式の差分解法</a><ul>
+<li><a class="reference internal" href="#id4">１次元線形スカラー移流方程式</a></li>
+<li><a class="reference internal" href="#ftcs">FTCSスキーム</a></li>
+<li><a class="reference internal" href="#id5">FTCSスキームの数値的安定性</a><ul>
+<li><a class="reference internal" href="#von-neumann">Von Neumannの安定性解析</a></li>
+<li><a class="reference internal" href="#id6">テイラー展開による方法</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lax-friedrich">Lax-Friedrich のスキーム</a></li>
+<li><a class="reference internal" href="#id7">1次精度風上差分法</a><ul>
+<li><a class="reference internal" href="#id8">練習問題</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#lax-wendroff">Lax-Wendroffのスキーム</a><ul>
+<li><a class="reference internal" href="#godunov">Godunov の定理</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id9">保存形表示と数値流束</a></li>
+<li><a class="reference internal" href="#burgers">Burgers方程式の数値解法</a></li>
+<li><a class="reference internal" href="#id10">流束制限関数</a></li>
+<li><a class="reference internal" href="#tvd">TVDスキーム</a></li>
+<li><a class="reference internal" href="#id11">放物型方程式の差分解法</a><ul>
+<li><a class="reference internal" href="#id12">天体シミュレーションにあらわれる放物型方程式</a></li>
+<li><a class="reference internal" href="#explicit">拡散方程式の陽解法 (explicit法)</a></li>
+<li><a class="reference internal" href="#id13">Von Neumannの安定性解析</a></li>
+<li><a class="reference internal" href="#implicit">拡散方程式の陰解法 (implicit法)</a><ul>
+<li><a class="reference internal" href="#id14">練習問題</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id15">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="riemann.html" title="磁気流体力学方程式に対する近似リーマン解法"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="mhdwave.html" title="磁気流体力学波"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

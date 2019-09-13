@@ -1,0 +1,142 @@
+===================
+イントロダクション
+===================
+
+まずは始めましょう
+==================
+**CANS+** はMercurialでバージョン管理されています。MercurialはWindows, linux, Mac OSに対応したバージョン管理ソフトウェアです。Mercurialのインストールは、FedoraなどRedhat系の場合、
+
+.. code-block:: bash
+
+   $ yum install mercurial
+
+UbuntuなどDebian系の場合、
+
+.. code-block:: bash
+
+   $ sudo apt-get install mercurial
+
+で簡単にできます。Mercurialのツールを利用してコードのインストール、アップデートを行います。
+
+
+まずは、 **CANS+** のレポジトリを以下のようにダウンロードします。
+
+.. code-block:: bash
+
+ $ hg clone https://bitbucket.org/aplab/cansplus directory-name
+
+**CANS+** は開発途上なため、不定期に更新されます。最新版を反映させるためには、上記で指定した *directory-name* 内で、
+
+.. code-block:: bash
+
+ $ hg pull
+ $ hg update
+
+とすれば、最新版の差分情報が反映されます。 **この際、自分で修正を加えたファイルと更新ファイルが重なる場合はマージ（merge）する必要が出てきます。またその結果、衝突（conflict）する可能性もあります。** その場合は出力に従って、テキストエディタ等で該当個所を編集してください。
+
+Mercurialによる分散バージョン管理の詳しい解説は、本家 ( https://www.mercurial-scm.org/ ) もしくは日本語解説（ http://www.lares.dti.ne.jp/~foozy/fujiguruma/scm/mercurial.html ）をご覧ください。
+
+.. note::
+ mercurialをインストールできる環境にない場合は、最新版が https://bitbucket.org/aplab/cansplus/get/default.zip よりダウンロードできます。
+
+動作環境
+========
+以下のソフトウェア・ライブラリがシステムにインストールされている必要があります。
+
+- Mercurial。レポジトリのダウンロード、最新版のアップデートを行うのに必要です（上述）。
+- MPI(Message Passing Interface)。コードはMPI並列化バージョンのみです。
+- Fortranコンパイラ。ソースコードはFortran 90で書かれています。デフォルトはmpif90でコンパイルします。
+- IDL(Interactive Data Language) バージョン8以降。データ読み込み・可視化ルーチンはIDLで用意されています。 
+- OSはLinuxで動作確認済み。上記ソフト・ライブラリがインストールされていれば、Windows、Mac-OSでもたぶん可だと思います。
+
+不具合等についての問い合わせは https://bitbucket.org/aplab/cansplus/issues/new まで。
+
+環境変数
+========
+環境変数$CANSPLUS_DIRを **CANS+** がインストールされたディレクトリの絶対パスとし、以下のように設定します（~/cansplusにインストールした場合）。
+
+bashの場合、
+
+.. code-block:: bash
+
+ export CANSPLUS_DIR=~/cansplus
+
+tcshの場合、
+
+.. code-block:: tcsh
+
+ setenv CANSPLUS_DIR ~/cansplus
+
+解析・可視化環境
+================
+IDL
+^^^^^^
+IDLによる解析・可視化プロシージャがあらかじめ用意されています。$CANSPLUS_DIR/3d/idl内には共通プロシージャ、各課題内には専用のプロシージャがあります。使うためには、環境変数$IDL_STARTUPに$CANSPLUS_DIR/idl/init.proを設定します。
+
+bashの場合、
+
+.. code-block:: bash
+
+ export IDL_STARTUP=$CANSPLUS_DIR/idl/init.pro
+
+cshの場合、
+
+.. code-block:: csh
+
+ setenv IDL_STARTUP $CANSPLUS_DIR/idl/init.pro
+
+$CANSPLUS_DIR/idl/init.pro内には、pathの設定、IDL内の環境の設定等が含まれており、IDL起動時に自動的に設定されます。各自の好みに合わせて修正してください。
+
+さらなる詳細は :ref:`本テキストidlのページ<idl>` を参照ください。
+
+matplotlib
+^^^^^^^^^^^^^
+matplotlibはpythonプログラム言語をベースとした解析・可視化ライブラリで、IDLと比べてライセンスフリーで使えるため、手頃な解析環境として人気があります。CANS+が出力するデータ形式であるDAC形式データを読み込むpythonスクリプトが用意されています。さらなる詳細は本テキストmatplotlibのページを参照ください。$CANSPLUS_DIR/python以下にあるスクリプトをpythonコマンドライン上で呼ぶために以下の設定を行います。
+
+bashの場合、
+
+.. code-block:: bash
+
+ export PYTHONPATH=$CANSPLUS_DIR/python
+
+cshの場合、
+
+.. code-block:: csh
+
+ setenv PYTHONPATH $CANSPLUS_DIR/python
+
+
+全体の構成
+===========
+$CANSPLUS_DIR内は、以下のようにディレクトリとファイルで構成されています。
+
+.. blockdiag::
+
+   diagram {
+    node_width = 100;
+    node_height = 25;
+    span_width = 15;
+    span_height = 15;
+
+    "$CANSPLUS_DIR/" -- "2d/" -- "Makefile","Makefile_inc";
+    "$CANSPLUS_DIR/" -- "2d/" -- "common/" ;
+    "$CANSPLUS_DIR/" -- "2d/" -- "md_???/" ;
+    "$CANSPLUS_DIR/" -- "3d/" ;
+    "$CANSPLUS_DIR/" -- "idl/" ;
+    "$CANSPLUS_DIR/" -- "python/" ;
+    "$CANSPLUS_DIR/" -- "notebook/" ;
+    "$CANSPLUS_DIR/" -- "README.md" ;
+   }
+
+2次元及び3次元のコードが用意されています（2016年8月現在）。"README.md"にはマークダウン形式で **CANS+** の簡単な説明が書かれています。
+
+"2d/ (3d/)"内には、コンパイル用のMakefile、コンパイル時の環境変数を設定したMakefile_incが用意されています。各自の環境によってコンパイラ、コンパイラオプションを指定したい場合は、Makefile_inc内に設定されている、"$FC"と"$FFLAGS"を変更してください。
+
+"common/"には共通エンジンが収められています。"\md_???"は、各物理課題の初期設定等が含まれており、"???"に、物理現象の名前が付けられています。
+
+"idl/"内には、IDLによる可視化ルーチンが含まれています。各課題で使用する可視化のための共通プロシージャが含まれています。
+
+"python/"内には、データ読み込み用のpythonスクリプトが含まれています。
+
+"notebook/"内には、IDLとmatplotlibを使った解析・可視化ハンズオンのためのjupyter notebookが用意されています。
+

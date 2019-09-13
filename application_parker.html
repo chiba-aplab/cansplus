@@ -1,0 +1,315 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>パーカー不安定 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="ジェット伝搬" href="application_jet.html" />
+    <link rel="prev" title="磁気リコネクション" href="application_mrx.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application_jet.html" title="ジェット伝搬"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_mrx.html" title="磁気リコネクション"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>パーカー不安定<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>工藤祐己（千葉大学）、工藤哲洋（国立天文台）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>背景<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>磁場に貫かれた電離ガスが重力によって成層化している場合、擾乱を与えると系は線形不安定である。この不安定性は、曲げられた磁力線に沿ってガスが落下することで発生した浮力が磁気張力に打ち勝つ場合に成長する、磁気浮力不安定性の一種である。 <a class="reference internal" href="reference.html#parker66"><span class="std std-ref">Parker(1966,</span></a> <a class="reference internal" href="reference.html#parker67"><span class="std std-ref">1967)</span></a>
+は、銀河においてこの不安定性によって低温で高密度な星間ガス雲が形成されるというモデルの提唱と不安定性の安定性解析をしたことからパーカー不安定性と呼ばれている。パーカー不安定性は、銀河・降着円盤のような円盤天体や太陽大気に代表されるような恒星大気において、天体内部の磁場強度に制限を与える増幅・維持機構(ダイナモ機構)や磁束浮上によるエネルギー輸送とコロナ加熱といった磁気的活動性に重要な物理機構であると考えられている。</p>
+<p>本課題では回転によるシアやコリオリ力を無視した、円盤の一部を切り取った局所2次元計算を行う（z方向のセル数を1として計算する）。</p>
+</div>
+<div class="section" id="id3">
+<h2>課題設定<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id4">
+<h3>無次元化<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>計算コードの中において、変数は次の表１のように無次元化して扱われている。長さ、速度、時間の単位はそれぞれ <img class="math" src="_images/math/65a316948d1058e73aa3299124cfb5a9ddda8d11.png" alt="H_0"/> 、 <img class="math" src="_images/math/bb22ca63c322bb712e3ae8d247f673c2265ab5d0.png" alt="C_{s0}"/> 、 <img class="math" src="_images/math/6994fe80ea06d886ff46b8e95362d5a883999de7.png" alt="T_0=H_0/C_{s0}"/> 。ここで、 <img class="math" src="_images/math/bcfcacdfc33bc6feb762d16421ef27c18c557567.png" alt="H_0,~C_{s0}"/> はそれぞれスケールハイトと音速を表す。表１に各物理量とその規格化単位をまとめる（ <img class="math" src="_images/math/344ef8221981e3df78cb7876dc9b1c8c53fbf46e.png" alt="k_B"/> はボルツマン定数、 <img class="math" src="_images/math/e9bc7da808d33a16a8347f27a519bd067186aa66.png" alt="m"/> は平均粒子質量を表す）。</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 63%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>変数</p></th>
+<th class="head"><p>規格化単位</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img class="math" src="_images/math/84038dd82cd8eb59190dea53114a91b450f8dbb6.png" alt="x, y, z"/></p></td>
+<td><p><img class="math" src="_images/math/65a316948d1058e73aa3299124cfb5a9ddda8d11.png" alt="H_0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/8e21610faf530eb558853140d4effe94653569ad.png" alt="v_x, v_y, v_z"/></p></td>
+<td><p><img class="math" src="_images/math/bb22ca63c322bb712e3ae8d247f673c2265ab5d0.png" alt="C_{s0}"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/907a4add6d5db5b7f197f7924f1371b8ac404fe6.png" alt="t"/></p></td>
+<td><p><img class="math" src="_images/math/f10a30cf72605b8f494f7033282e8539759d7b48.png" alt="H_0/C_{s0}"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/></p></td>
+<td><p><img class="math" src="_images/math/2e0a2207815dc8e9c912464d162b33334fe57f77.png" alt="\rho_0"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/141bbefb74014fc5e43499901bf78607ae335583.png" alt="p"/></p></td>
+<td><p><img class="math" src="_images/math/1dd11dd5d9b96f2cb019643e3cd5db020e442922.png" alt="\rho_0 C_{s0}^2"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/dbae2306301a47fee4ca53a9eb9f0aac966ee0a7.png" alt="B_x, B_y, B_z"/></p></td>
+<td><p><img class="math" src="_images/math/e6bbbb366e84d3efef04af69a167587e9ebaee70.png" alt="\sqrt{4 \pi \rho_0 C_{s0}^2}"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/e8dea8254118f111b5fb20895b03528c17566f06.png" alt="T"/></p></td>
+<td><p><img class="math" src="_images/math/0fd7b2be4a462c64a7fb1bbbc917dc7d91a4ed88.png" alt="C_{s0}^2/(\gamma k_B/m)"/></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>以降、変数は無次元量として記述する。</p>
+</div>
+<div class="section" id="id5">
+<h3>パラメータ・初期条件・境界条件<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>初期条件として、ガスは次のような重力・温度・プラズマベータの分布のもとで密度・圧力分布を決める。重力分布は赤道面( <img class="math" src="_images/math/3d1a457388b366a4cf4757043bd645ba9f19eea9.png" alt="y=0"/> )に対して反対称となるよう与える。</p>
+<div class="math">
+<p><img src="_images/math/9dc9d4cb7b20b5829d332826307de0414c54c407.png" alt="g_y=-g_0 \tanh(y/w_g)"/></p>
+</div><p>温度分布は、円盤部(低温ガス)とコロナ(高温ガス)からなる。それぞれ <img class="math" src="_images/math/5b2ec47e64d7874c9892d96064bee62f13dc4c1e.png" alt="|y|&lt;y_{\mbox{tr}}"/> に低温ガス( <img class="math" src="_images/math/e34a1b031a138965671cf521ade17793401d7f9b.png" alt="T=1"/> )、 <img class="math" src="_images/math/94834204492b1a26d4de0203ac5f7af8f04a8ed5.png" alt="|y|&gt;y_{\mbox{tr}}"/> に高温ガス( <img class="math" src="_images/math/0eb4e69893e15eb8ab9d56d2a726ece6ae3ca343.png" alt="T=T_{\mbox{cor}}"/> )となるように与える。</p>
+<div class="math">
+<p><img src="_images/math/f49ed1930fe39a26b75bc651e0b7a291819b45b2.png" alt="T = 1+ \frac{1}{2} (T_{\mbox{cor}} -1 )\left[ \tanh\left( \frac{|y|-y_{\mbox{tr}}}{w_{\mbox{tr}}} \right) +1 \right]"/></p>
+</div><p>プラズマベータは <img class="math" src="_images/math/bde99f06d6bad8e31c0b17bdaa621813ef4ab5b4.png" alt="\beta=1/\alpha"/> であるような磁気シートが <img class="math" src="_images/math/22376e7b5db2f836366274354bd70445233c3ed4.png" alt="y_{\mbox{f1}}&lt;y&lt;y_{\mbox{f2}}"/> に分布するように与える。</p>
+<div class="math">
+<p><img src="_images/math/03d7af70a995795ca48f131f03e7d80ed9687831.png" alt="\beta^{-1} = \left| \alpha
+\frac{1}{2} \left[ \tanh\left( \frac{|y|-y_{\mbox{f1}}}{w_{\mbox{f0}}} \right) +1 \right]
+\frac{1}{2} \left[ \tanh\left( \frac{|y|-y_{\mbox{f2}}}{w_{\mbox{f0}}} \right) +1 \right]
+\right|"/></p>
+</div><p>これらの条件のもと、 <img class="math" src="_images/math/3d1a457388b366a4cf4757043bd645ba9f19eea9.png" alt="y=0"/> での密度の値 <img class="math" src="_images/math/2e0a2207815dc8e9c912464d162b33334fe57f77.png" alt="\rho_0"/> を決めることで密度・圧力分布は次の式を解く。</p>
+<div class="math">
+<p><img src="_images/math/334d100ed0718e07e82abecc2599b46014c2a1ad.png" alt="\frac{d}{dy} [(1+\alpha) p ] &amp;= \rho g_y \\
+p &amp;= \rho T / \gamma"/></p>
+</div><p>初期磁場は <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 成分のみとし</p>
+<div class="math">
+<p><img src="_images/math/8c657c99c7e5b061eaf325cff1af07f765924098.png" alt="B_x = \sqrt{2 p \alpha},~ B_y = 0,~B_z=0"/></p>
+</div><p>また、この初期状態に、赤道面( <img class="math" src="_images/math/3d1a457388b366a4cf4757043bd645ba9f19eea9.png" alt="y=0"/> )に対して反対称となるような速度擾乱を加える。</p>
+<div class="math">
+<p><img src="_images/math/b06389272f1b7986a346bc21e7c37e822cd1b51e.png" alt="v_x = A \sin(2\pi x /\lambda_p) \frac{1}{2} \left[ \left(\tanh \frac{y-y_{\mbox{ptb1}}}{w_{\mbox{ptb1}}} -\tanh \frac{y-y_{\mbox{ptb2}}}{w_{\mbox{ptb2}}} \right) -\left(\tanh \frac{y-y_{\mbox{ptb3}}}{w_{\mbox{ptb2}}} -\tanh \frac{y-y_{\mbox{ptb4}}}{w_{\mbox{ptb1}}} \right)\right]"/></p>
+</div><p>パラメータについては&quot;const.f90&quot;の中で表のように設定されている。</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 64%" />
+<col style="width: 16%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>パラメタ</p></th>
+<th class="head"><p>値</p></th>
+<th class="head"><p>コードの中の変数名</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>y=0の重力 <img class="math" src="_images/math/692e826e4032f481da882ecad13dd17e2c758de2.png" alt="g_0"/></p></td>
+<td><p><img class="math" src="_images/math/34a20996bbe507860c13b82d8cf7d8482be13a78.png" alt="1/\gamma"/></p></td>
+<td><p>g0</p></td>
+</tr>
+<tr class="row-odd"><td><p>重力の変化の遷移幅 <img class="math" src="_images/math/7bc768b8badd93d62ec6f7127474d4cbdbc40e7a.png" alt="w_g"/></p></td>
+<td><p><img class="math" src="_images/math/b44fd1b6dc8c77975b68a57eb25231239a15d7b5.png" alt="0.5"/></p></td>
+<td><p>wg</p></td>
+</tr>
+<tr class="row-even"><td><p>低温・高温ガスの遷移する位置 <img class="math" src="_images/math/f4fc85d8959595114f8d71a6f0cd320bea7dcd58.png" alt="y_{\mbox{tr}}"/></p></td>
+<td><p><img class="math" src="_images/math/ba290a7507ee9018f2b149b2746103b05b4cc4ee.png" alt="6"/></p></td>
+<td><p>ytr</p></td>
+</tr>
+<tr class="row-odd"><td><p>遷移幅 <img class="math" src="_images/math/d4704199aead027c2de76629911f8955c214fe53.png" alt="w_{\mbox{tr}}"/></p></td>
+<td><p><img class="math" src="_images/math/b44fd1b6dc8c77975b68a57eb25231239a15d7b5.png" alt="0.5"/></p></td>
+<td><p>wtr</p></td>
+</tr>
+<tr class="row-even"><td><p>高温ガス温度 <img class="math" src="_images/math/74bdd498b525a1c15f88f65d33cb32a7c510d1da.png" alt="T_{\mbox{cor}}"/></p></td>
+<td><p><img class="math" src="_images/math/6f07f11bdfb5c599401978feec50c6e676005ea9.png" alt="25"/></p></td>
+<td><p>tcor</p></td>
+</tr>
+<tr class="row-odd"><td><p>円盤部のプラズマベータの逆数 <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+<td><p>alpha</p></td>
+</tr>
+<tr class="row-even"><td><p>磁気シートの範囲と遷移幅 <img class="math" src="_images/math/33ddb54e21ea3dcafd8ca7b89b348d69c615e3bd.png" alt="y_{\mbox{f1}}, y_{\mbox{f2}}, w_{\mbox{f0}}"/></p></td>
+<td><p><img class="math" src="_images/math/06ed42acb14835a4865d81026f66fedef16a758e.png" alt="-2.5, 2.5, 0.5"/></p></td>
+<td><p>yf1, yf2, wf0</p></td>
+</tr>
+<tr class="row-odd"><td><p>比熱比 <img class="math" src="_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/></p></td>
+<td><p><img class="math" src="_images/math/5aad210104953430c637bbcf2788897338669c8c.png" alt="5/3"/></p></td>
+<td><p>gm</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/3d1a457388b366a4cf4757043bd645ba9f19eea9.png" alt="y=0"/> の密度 <img class="math" src="_images/math/2e0a2207815dc8e9c912464d162b33334fe57f77.png" alt="\rho_0"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+<td><p>ro0</p></td>
+</tr>
+<tr class="row-odd"><td><p>擾乱の振幅 <img class="math" src="_images/math/211284f68205c3e66773eaf026f32a0acdd3dfb3.png" alt="A"/></p></td>
+<td><p><img class="math" src="_images/math/cd53b1398e9c86ebea6c66a6cc4dc8da5529f071.png" alt="0.05"/></p></td>
+<td><p>amp</p></td>
+</tr>
+<tr class="row-even"><td><p>擾乱の <img class="math" src="_images/math/c1456346031b4501339cfc13c421875bd62a18aa.png" alt="x, y"/> 方向の波長 <img class="math" src="_images/math/cf7ce0901342e4cc0b68f262e3731e6dfc9c2a3b.png" alt="\lambda_x, \lambda_y"/></p></td>
+<td><p><img class="math" src="_images/math/c43e69f48bf993a715656053f15ac0f878774c44.png" alt="20, 0"/></p></td>
+<td><p>xlamd, ylamd</p></td>
+</tr>
+<tr class="row-odd"><td><p>擾乱の <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向の印加範囲 <img class="math" src="_images/math/6c47c1903b1dddbd9ed82d70f93fabc443f9d6d1.png" alt="y_{\mbox{ptb1}}, y_{\mbox{ptb2}}, y_{\mbox{ptb3}}, y_{\mbox{ptb4}}"/></p></td>
+<td><p><img class="math" src="_images/math/945714bad9be9cca269db4838af5d1acae6da933.png" alt="-4, -1, 1, 4"/></p></td>
+<td><p>yptb1, yptb2, yptb3, yptb4</p></td>
+</tr>
+<tr class="row-even"><td><p>擾乱の <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向の遷移幅 <img class="math" src="_images/math/1c4c21b6959b8caea611725adb0b150076a26a39.png" alt="w_{\mbox{ptb1}}, w_{\mbox{ptb2}}"/></p></td>
+<td><p><img class="math" src="_images/math/cde267965ce54d420d2b51d46a19ad19990fcfda.png" alt="0.5, 0.5"/></p></td>
+<td><p>wptb1, wptb2</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 方向計算領域</p></td>
+<td><p><img class="math" src="_images/math/29a0de49bb9a3908c6bf74b5415e5aa55c240fe3.png" alt="[-20, 20]"/></p></td>
+<td><p>[xmin, xmax]</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 方向計算領域</p></td>
+<td><p><img class="math" src="_images/math/be05469628b5693f4e6b8fbc1ed9438bc6f15647.png" alt="[-25, 25]"/></p></td>
+<td><p>[ymin, ymax]</p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/8d051150f8669295ecdbe92367941012175a824d.png" alt="z"/> 方向計算領域</p></td>
+<td><p><img class="math" src="_images/math/cbe1ccede37b3dfeed9ddb84f91fa1b73f6f9622.png" alt="[-0.5, 0.5]"/></p></td>
+<td><p>[zmin, zmax]</p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>境界条件は、 <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 境界に周期境界、 <img class="math" src="_images/math/1b5e577d6216dca3af7d87aa122a0b9b360d6cb3.png" alt="y"/> 境界に初期値を代入するような境界条件をおいた。</p>
+</div>
+</div>
+<div class="section" id="id6">
+<h2>結果<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>計算結果を以下に示す。</p>
+<p>パーカー不安定性の線形段階において線形解析とシミュレーションの結果を比較した。</p>
+<div class="figure align-center" id="id8">
+<span id="linear"></span><a class="reference internal image-reference" href="_images/parker_linear.png"><img alt="_images/parker_linear.png" src="_images/parker_linear.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">左は縦軸を <img class="math" src="_images/math/888f7c323ac0341871e867220ae2d76467d74d6e.png" alt="x"/> 方向の波数、横軸を成長率にとった、線形解析によるパーカー不安定性の分散関係。右は線形段階による摂動 <img class="math" src="_images/math/b318858b731da399cec64260303767a1e2651376.png" alt="v_x"/> の線形成長と線形解析との比較。</span><a class="headerlink" href="#id8" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#linear"><span class="std std-ref">図左</span></a> は、線形理論によって課題設定のパラメータ(温度、重力、磁気シートに従う)を用いて計算された不安定性モードの分散関係である。成長率が最大となるのは <img class="math" src="_images/math/a0c4461946fe973196fec6048ade12e9aaa6903c.png" alt="(k_x, \sigma)=(0.345, 0.175)"/> 、 :臨界波数は <img class="math" src="_images/math/17493c3a4fec5af57c95292e7e066d9f30762931.png" alt="k_{\textit{crit}} \sim 0.598"/> と求まった。線形理論による計算手法は <a class="reference internal" href="reference.html#matsumoto88"><span class="std std-ref">Matsumoto et al. (1988)</span></a> に従った（線形理論の詳細については <a class="reference internal" href="reference.html#parker66"><span class="std std-ref">Parker 1966</span></a> ; <a class="reference internal" href="reference.html#matsumoto88"><span class="std std-ref">Matsumoto et al. 1988</span></a> ; <a class="reference internal" href="reference.html#kim97"><span class="std std-ref">Kim et al. 1997</span></a> ）。パーカー不安定性の分散関係はパラメータ（温度、重力、磁気シートの空間分布等）に依存する（例えば、 <a class="reference internal" href="reference.html#kim-hong98"><span class="std std-ref">Kim &amp; Hong, 1998</span></a> , <a class="reference internal" href="reference.html#kamaya96"><span class="std std-ref">Kamaya et al. 1996</span></a> ）。</p>
+<p><a class="reference internal" href="#linear"><span class="std std-ref">図右</span></a> はシミュレーションから得られた、初期の摂動振幅が最大となる位置における <img class="math" src="_images/math/b318858b731da399cec64260303767a1e2651376.png" alt="v_x"/> の時間発展(実線)と線形解析による成長率(破線)を示した。線形解析の結果、初期摂動の波長 <img class="math" src="_images/math/b5e797d515e03243cefe8e89ef9569eabdb942b7.png" alt="\lambda=20"/> に対して成長率は <img class="math" src="_images/math/522c996375225cfaa165e8b79c157f0e7ea0b4c5.png" alt="\sigma \sim 0.174"/> と求まり、シミュレーション結果とほぼ一致していることがわかる。</p>
+<div class="figure align-center" id="id9">
+<span id="nonlinear"></span><a class="reference internal image-reference" href="_images/parker_nonlinear.png"><img alt="_images/parker_nonlinear.png" src="_images/parker_nonlinear.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">非線形段階( <img class="math" src="_images/math/7d1536673e33e54f7d7d84e66470eaecd1f0fd68.png" alt="t=30"/> )のシミュレーション結果。カラーコントアは左が圧力、右が密度を表し、曲線が磁力線、矢印は速度ベクトルを表す。</span><a class="headerlink" href="#id9" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#nonlinear"><span class="std std-ref">図</span></a> は非線形段階 <img class="math" src="_images/math/7d1536673e33e54f7d7d84e66470eaecd1f0fd68.png" alt="t=30"/> における結果を示した。パーカー不安定性によって磁力線がループ状に曲げられている。ループの頂上では磁力線に沿ったガスの落下に伴って密度と圧力が減少し、磁力線に沿った落下速度が大きくなることで生じた衝撃波が見られる。一方ループの足元では、落下してガスが集まり増加している。様々なプラズマベータにおける非線形段階の振る舞いについては <a class="reference internal" href="reference.html#matsumoto90"><span class="std std-ref">Matsumoto et al. (1990)</span></a> で詳しく議論されている。</p>
+</div>
+<div class="section" id="id7">
+<h2>参考文献<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#kamaya96"><span class="std std-ref">Kamaya et al., 1996</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#kim97"><span class="std std-ref">Kim et al., 1997</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#kim-hong98"><span class="std std-ref">Kim &amp; Hong, 1998</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#matsumoto88"><span class="std std-ref">Matsumoto et al., 1988</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#matsumoto90"><span class="std std-ref">Matsumoto et al., 1990</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#parker66"><span class="std std-ref">Parker, 1966</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#parker67"><span class="std std-ref">Parker, 1967</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">パーカー不安定</a><ul>
+<li><a class="reference internal" href="#id2">背景</a></li>
+<li><a class="reference internal" href="#id3">課題設定</a><ul>
+<li><a class="reference internal" href="#id4">無次元化</a></li>
+<li><a class="reference internal" href="#id5">パラメータ・初期条件・境界条件</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id6">結果</a></li>
+<li><a class="reference internal" href="#id7">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application_jet.html" title="ジェット伝搬"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_mrx.html" title="磁気リコネクション"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

@@ -1,0 +1,1691 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>磁気流体力学方程式に対する近似リーマン解法 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="CANS+ の使い方" href="cansplus.html" />
+    <link rel="prev" title="差分法の基礎" href="sabun.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="cansplus.html" title="CANS+ の使い方"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="sabun.html" title="差分法の基礎"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="riemann">
+<span id="id1"></span><h1>磁気流体力学方程式に対する近似リーマン解法<a class="headerlink" href="#riemann" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>三好隆博（広島大学）、簑島敬（海洋開発研究機構）、松本洋介（千葉大学）</p>
+</dd>
+</dl>
+<p>この章では、磁気流体力学(MHD)方程式に対する代表的な衝撃波捕獲法である近似リーマン解法について解説する。</p>
+<div class="section" id="id2">
+<h2>基礎方程式<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>MHD方程式はプラズマの巨視的なダイナミクスを記述する基礎方程式である。特にここでは、電気抵抗率をゼロとした”理想”MHD方程式を考える。</p>
+<div class="section" id="mhd">
+<h3>MHD方程式<a class="headerlink" href="#mhd" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>MHD方程式は、外力としてローレンツ力を作用させた流体方程式と磁場の時間発展方程式の組み合わせによって与えられる。無次元化した抵抗性MHD方程式は、</p>
+<p>連続の式：</p>
+<div class="math" id="equation-cont">
+<p><span class="eqno">(1)<a class="headerlink" href="#equation-cont" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ea2c24fc8dad6d4f2cc7616d080dde278ba96c73.png" alt="\frac{\partial \rho}{\partial t} + \nabla \cdot \left( \rho \mbox{\boldmath$v$} \right) = 0"/></p>
+</div><p>運動方程式：</p>
+<div class="math" id="equation-motion">
+<p><span class="eqno">(2)<a class="headerlink" href="#equation-motion" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5dc37a107f96d979e8091077a2fda71c69e67217.png" alt="\rho \frac{d \mbox{\boldmath$v$}}{dt} = - \nabla p + \mbox{\boldmath$j$} \times \mbox{\boldmath$B$}"/></p>
+</div><p>断熱の式：</p>
+<div class="math" id="equation-adiab">
+<p><span class="eqno">(3)<a class="headerlink" href="#equation-adiab" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fe3fb448acb1b34e22db567bd6e5bf35943334e0.png" alt="\frac{d}{dt} \left( \frac{p}{\rho^\gamma} \right)
+= \frac{\left( \gamma - 1 \right) \eta j^2}{\rho^\gamma}"/></p>
+</div><p>誘導方程式：</p>
+<div class="math" id="equation-indu">
+<p><span class="eqno">(4)<a class="headerlink" href="#equation-indu" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/658cd5fff9b27af93fc64cec3afca284a23cb3c9.png" alt="\frac{\partial \mbox{\boldmath$B$}}{\partial t} = - \nabla \times \mbox{\boldmath$E$}"/></p>
+</div><p>オームの法則：</p>
+<div class="math" id="equation-ohm">
+<p><span class="eqno">(5)<a class="headerlink" href="#equation-ohm" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2825e33f6c632916e2eead73fb4805127e65909c.png" alt="\mbox{\boldmath$E$} = -\mbox{\boldmath$v$} \times \mbox{\boldmath$B$} + \eta \mbox{\boldmath$j$}"/></p>
+</div><p>アンペールの法則：</p>
+<div class="math" id="equation-amp">
+<p><span class="eqno">(6)<a class="headerlink" href="#equation-amp" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/b3cd7bb7caaf3422c386c9509e652edec3af721f.png" alt="\mbox{\boldmath$j$} = \nabla \times \mbox{\boldmath$B$}"/></p>
+</div><p>磁場に関するガウスの法則：</p>
+<div class="math" id="equation-gaus">
+<p><span class="eqno">(7)<a class="headerlink" href="#equation-gaus" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ff6cf2310e47b8175c07483d353df5c10763621f.png" alt="\nabla \cdot \mbox{\boldmath$B$} = 0"/></p>
+</div><p>となる。ここで、 <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> 、 <img class="math" src="_images/math/c8e459377164f627b0a6062a26ad7c0c66fa2c28.png" alt="\mbox{\boldmath$v$}"/> 、 <img class="math" src="_images/math/141bbefb74014fc5e43499901bf78607ae335583.png" alt="p"/> 、 <img class="math" src="_images/math/1f54cc32e2bc89b78ea6508c9e6af5a10b35c1d6.png" alt="\mbox{\boldmath$B$}"/> 、 <img class="math" src="_images/math/6778ad408dcb72ad406638c5b1b7e0f0d1bb2a2f.png" alt="\mbox{\boldmath$E$}"/> 、 <img class="math" src="_images/math/5eecc884b1d05ba49191e96b2043215a875e2409.png" alt="\mbox{\boldmath$j$}"/> 、 <img class="math" src="_images/math/34d137cf01c787ecda732761c3f95b0f65a6c3e9.png" alt="\gamma"/> 、 <img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> は、密度、速度、圧力、磁場、電場、電流、比熱比、電気抵抗率をそれぞれ表す。ラグランジュ微分は、 <img class="math" src="_images/math/a753999e84d677b808e51f0c69cc35a20abc49d0.png" alt="d/dt = \partial / \partial t + \mbox{\boldmath$v$} \cdot \nabla"/> である。 <a class="reference internal" href="#equation-gaus">(7)</a> は磁束の保存を表わしており、 <a class="reference internal" href="#equation-indu">(4)</a> の初期条件を与える。また、 <a class="reference internal" href="#equation-ohm">(5)</a> 、 <a class="reference internal" href="#equation-amp">(6)</a> は見かけ上消去できる。したがって、最終的にMHD方程式は未知数8個の連立非線形偏微分方程式となる。特に電場が誘導電場のみで与えられるとき、すなわち <a class="reference internal" href="#equation-ohm">(5)</a> の <img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> がゼロのとき、散逸のない理想MHD方程式となる。</p>
+<p>理想MHD方程式 <a class="reference internal" href="#equation-cont">(1)</a> - <a class="reference internal" href="#equation-gaus">(7)</a> は、以下のとおり保存形式で書き直すことができる。</p>
+<div class="math" id="equation-mhd">
+<p><span class="eqno">(8)<a class="headerlink" href="#equation-mhd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c6b66520f7ac5aa92b2ca08ff0bfbfd782b5e94f.png" alt="\frac{\partial\mbox{\boldmath$U$}}{\partial t} + \nabla \cdot\mbox{\boldmath$F$} = 0,"/></p>
+</div><div class="math" id="equation-mhd-u-f">
+<p><span class="eqno">(9)<a class="headerlink" href="#equation-mhd-u-f" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/15d1890950a05091b6e018fb784cd83ad2084e6f.png" alt="\mbox{\boldmath$U$} = \left(
+\begin{array}{c}
+\rho \\
+\rho \mbox{\boldmath$v$} \\
+\mbox{\boldmath$B$} \\
+e
+\end{array}
+\right) , \quad
+\mbox{\boldmath$F$} = \left(
+\begin{array}{c}
+\rho \mbox{\boldmath$v$} \\
+\rho \mbox{\boldmath$v$} \mbox{\boldmath$v$} + p_T\mbox{\boldmath$I$} - \mbox{\boldmath$B$} \mbox{\boldmath$B$} \\
+\mbox{\boldmath$v$} \mbox{\boldmath$B$} - \mbox{\boldmath$B$} \mbox{\boldmath$v$} \\
+\left( e + p_T \right) \mbox{\boldmath$v$} - \mbox{\boldmath$B$} \left( \mbox{\boldmath$v$} \cdot \mbox{\boldmath$B$} \right)
+\end{array}
+\right)."/></p>
+</div><p>ここで、 <img class="math" src="_images/math/bf30c9d141df18fefd63fe4fd1a5dc75503bd830.png" alt="\mbox{\boldmath$I$}"/> は単位行列を表す。全エネルギー密度 <img class="math" src="_images/math/60f4822f02b44d931c5d0595da71dcf34e270437.png" alt="e"/> と全圧力 <img class="math" src="_images/math/375144497db89b9107fee3e97cde70b8ea25f782.png" alt="p_T"/> は、</p>
+<div class="math" id="equation-ene">
+<p><span class="eqno">(10)<a class="headerlink" href="#equation-ene" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2bef0a5f5a51ececdda3b6f005eb808540f66b31.png" alt="e = \frac{p}{\gamma - 1} + \frac{\rho | \mbox{\boldmath$v$} |^2}{2} + \frac{|\mbox{\boldmath$B$}|^2}{2} ,"/></p>
+</div><div class="math" id="equation-pt">
+<p><span class="eqno">(11)<a class="headerlink" href="#equation-pt" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9a8ab58f3407685b532d87673fbf9dd9bc8a25ce.png" alt="p_T = p + \frac{|\mbox{\boldmath$B$}|^2}{2} ,"/></p>
+</div><p>により関係付けられる。理想MHD方程式のヤコビアン <img class="math" src="_images/math/aa637fb62d45bcc3ff8a7431dc781a947465cfba.png" alt="\mbox{\boldmath$A$}"/> 、</p>
+<div class="math" id="equation-jac-def">
+<p><span class="eqno">(12)<a class="headerlink" href="#equation-jac-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/12cd894a0f649232f7077f093bacfd9d688f808c.png" alt="\mbox{\boldmath$A$} = \frac{\partial\mbox{\boldmath$F$}}{\partial\mbox{\boldmath$U$}}"/></p>
+</div><p>は独立な実固有値(特性速度)を持つ <a class="footnote-reference brackets" href="#eignv" id="id3">1</a> 。したがって、理想MHD方程式は双曲型保存則系である。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="eignv"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p>ただし、固有値が縮退し得るため、厳密には固有値は完全独立ではない。</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id4">
+<h3>1次元理想MHD方程式<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>この後の議論のため、改めて1次元の理想MHD方程式を書き下す。</p>
+<div class="math" id="equation-1dmhd">
+<p><span class="eqno">(13)<a class="headerlink" href="#equation-1dmhd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9db7aa2fda0587d21773a2eb7e70546ecb5f58b6.png" alt="\frac{\partial\mbox{\boldmath$U$}}{\partial t} + \frac{\partial\mbox{\boldmath$F$}}{\partial x} = 0,"/></p>
+</div><div class="math" id="equation-1dmhd-u-f">
+<p><span class="eqno">(14)<a class="headerlink" href="#equation-1dmhd-u-f" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/861c3378d27f2389a5c3aabf86bbb2aae532d635.png" alt="\mbox{\boldmath$U$} = \left(
+\begin{array}{c}
+\rho \\
+\rho u \\
+\rho v \\
+\rho w \\
+B_y \\
+B_z \\
+e
+\end{array}
+\right) , \quad
+\mbox{\boldmath$F$} = \left(
+\begin{array}{c}
+\rho u \\
+\rho u^2 + p_T - B_x^2 \\
+\rho v u - B_x B_y \\
+\rho w u - B_x B_z \\
+B_y u - B_x v \\
+B_z u - B_x w \\
+\left( e + p_T \right) u - B_x \left( u B_x + v B_y + w B_z \right)
+\end{array}
+\right)."/></p>
+</div><p>ここで、 <img class="math" src="_images/math/8a8e38be2ca9a0cacdd156f7d4b5c7745eec9fc4.png" alt="\mbox{\boldmath$v$} = (u,v,w)"/> 、 <img class="math" src="_images/math/0ab11e1939909c020e916ba1e08b69ac978d3eb5.png" alt="\mbox{\boldmath$B$} = (B_x,B_y,B_z)"/> とした。また、</p>
+<div class="math" id="equation-1dpt">
+<p><span class="eqno">(15)<a class="headerlink" href="#equation-1dpt" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e6a729b882b372d7983e0d28210d7d58c9bb24b2.png" alt="p_T = p + \frac{1}{2} \left( B_x^2 + B_y^2 + B_z^2 \right)."/></p>
+</div><div class="math" id="equation-1dp">
+<p><span class="eqno">(16)<a class="headerlink" href="#equation-1dp" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/99bbe76e65d22e68b154e7e337221d29ce27d582.png" alt="p = \left( \gamma - 1 \right)
+\left[ e - \frac{1}{2} \rho \left( u^2 + v^2 + w^2 \right)
+- \frac{1}{2} \left( B_x^2 + B_y^2 + B_z^2 \right) \right]."/></p>
+</div><p>ただし、ガウスの法則 <a class="reference internal" href="#equation-gaus">(7)</a> から、1次元問題では、 <img class="math" src="_images/math/cd5d062e2be858bec2220457ce77618d45f193fd.png" alt="B_x"/> は <strong>時間・空間的に一定</strong> となる。</p>
+<p>ヤコビアン <img class="math" src="_images/math/aa637fb62d45bcc3ff8a7431dc781a947465cfba.png" alt="\mbox{\boldmath$A$}"/> の固有値 <img class="math" src="_images/math/f5e480dfd8f24cce3611ee3ac5c4c17818f3ae02.png" alt="\lambda_{j \ (j=1 \cdots 7)}"/> は、 <a class="reference internal" href="#equation-1dmhd-u-f">(14)</a> から、2つのアルヴェン波、2つの速進磁気音波、2つの遅進磁気音波、1つのエントロピー波として、</p>
+<div class="math" id="equation-eval">
+<p><span class="eqno">(17)<a class="headerlink" href="#equation-eval" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/13f00c64684fe4b635a2dab05b349ef519ff52ce.png" alt="\lambda_1 = u - c_f, \
+\lambda_2 = u - c_a, \
+\lambda_3 = u - c_s, \
+\lambda_4 = u, \
+\lambda_5 = u + c_s, \
+\lambda_6 = u + c_a, \
+\lambda_7 = u + c_f"/></p>
+</div><p>が得られる。ここで、</p>
+<div class="math" id="equation-eval-supl">
+<p><span class="eqno">(18)<a class="headerlink" href="#equation-eval-supl" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5b0927b0043485171c92590757b443b668d2e159.png" alt="\begin{array}{c}
+c_a = |b_x|, \
+c_{f/s} = \sqrt{ \frac{1}{2} \left[
+a^2 + b^2 \pm \sqrt{ \left( a^2 + b^2 \right)^2 - 4 a^2 b_x^2 } \right] }, \\
+a = \sqrt{\frac{\gamma p}{\rho}}, \
+b_x = \frac{B_x}{\sqrt{\rho}}, \
+b_y = \frac{B_y}{\sqrt{\rho}}, \
+b_z = \frac{B_z}{\sqrt{\rho}}, \
+b^2 = b_x^2+b_y^2+b_z^2.
+\end{array}"/></p>
+</div><p>これから、</p>
+<div class="math" id="equation-eval-ineq">
+<p><span class="eqno">(19)<a class="headerlink" href="#equation-eval-ineq" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0d9630a887404fa4d694d400c6bd80a747671023.png" alt="\lambda_1 \le
+\lambda_2 \le
+\lambda_3 \le
+\lambda_4 \le
+\lambda_5 \le
+\lambda_6 \le
+\lambda_7"/></p>
+</div><p>の不等式が成り立ち、磁場の向きや強さによって固有値が縮退し得ることがわかる。</p>
+<p>一般に双曲型保存則系は、弱解(積分形の保存則を満たす解)として衝撃波解や不連続解を持つことが知られている。特に理想MHD方程式では、磁場の強さや向きによって不連続解は全く異なる性質を持つ。衝撃波の後面で磁場が強められる速進衝撃波、磁場が弱められる遅進衝撃波、衝撃波面がアルヴェン速度で伝播するアルヴェン衝撃波が衝撃波解として存在する。ただし、アルヴェン衝撃波では、</p>
+<div class="math" id="equation-rd">
+<p><span class="eqno">(20)<a class="headerlink" href="#equation-rd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3265b6a3436c522e4c021d90ea01c68e487683a4.png" alt="\left[ \rho \right] = \left[ p \right] = \left[ B_y^2 + B_z^2 \right] = 0, \ \
+\pm \sqrt{\rho} \left[ v \right] = \left[ B_y \right], \ \
+\pm \sqrt{\rho} \left[ w \right] = \left[ B_z \right],"/></p>
+</div><p>の条件が成り立ち、衝撃波の前後で熱力学的量に変化がないので、回転不連続(rotational discontinuity)とも呼ばれる。ここで、 <img class="math" src="_images/math/9a59bad3f5800e33ffe592d9492929988a1932d5.png" alt="[ \cdot ]"/> は不連続前後の物理量の差を表す。</p>
+<p>また、エントロピー波と共に伝播する不連続解として、</p>
+<div class="math" id="equation-cd">
+<p><span class="eqno">(21)<a class="headerlink" href="#equation-cd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2d08c001a9677c4ddbe529c550955e597a1b15fa.png" alt="\left[ B_y \right] = \left[ B_z \right] =
+\left[ v \right] = \left[ w \right] = \left[ p \right] = 0, B_x \ne 0"/></p>
+</div><p>を満足する接触不連続(contact discontinuity)、</p>
+<div class="math" id="equation-td">
+<p><span class="eqno">(22)<a class="headerlink" href="#equation-td" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/59f851d1346b69576588d26b1f41506cb969cbe9.png" alt="\left[ p + \frac{B_y^2 + B_z^2}{2} \right] = 0, B_x =0"/></p>
+</div><p>を満足する接線不連続(tangential discontinuity)が存在する。この他にもMHD方程式では、複合波(compound wave)や過圧縮衝撃波(overcompressible shock)など普通の衝撃波でない衝撃波(非古典的衝撃波)の存在が指摘されている。</p>
+</div>
+</div>
+<div class="section" id="id5">
+<h2>近似リーマン解法<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>双曲型保存則系で生ずる不連続解を数値的に安定に解くため、特性の理論に基づく風上法が活発に開発研究され、大きな成功を収めてきた。このような衝撃波(不連続解)を鋭く捕らえることができる解法を衝撃波捕獲法と呼ぶ。特にオイラー方程式に対しては、近似リーマン解法や流束ベクトル分離法、さらにはAUSM(Advection Upstream Splitting Method)系スキームといった様々なタイプの衝撃波捕獲法が開発された。流束ベクトル分離法は、オイラー方程式の流束関数 <img class="math" src="_images/math/38452132d05319c06d2885d8ad73eacb192b3fb6.png" alt="\mbox{\boldmath$F$}"/> が保存変数 <img class="math" src="_images/math/3556377c92304722df740021672065422b26eff8.png" alt="\mbox{\boldmath$U$}"/> の一次同次関数 <img class="math" src="_images/math/fc744c89ac550f297df47f5c1a2cc64c5600e08c.png" alt="\mbox{\boldmath$F$} = \mbox{\boldmath$A$}\mbox{\boldmath$U$}"/> であることを利用して、 <img class="math" src="_images/math/38452132d05319c06d2885d8ad73eacb192b3fb6.png" alt="\mbox{\boldmath$F$}"/> を正負の固有値を持つ流束関数 <img class="math" src="_images/math/a1204ebc646bd41c2eee931b66164b17f8f0140d.png" alt="\mbox{\boldmath$F$}^\pm"/> に分離する方法である。一方、MHD方程式は <img class="math" src="_images/math/8f70fcd90512436cdbb041c495cb11f3246c4be8.png" alt="\mbox{\boldmath$F$} \ne \mbox{\boldmath$A$}\mbox{\boldmath$U$}"/> であり、 <img class="math" src="_images/math/a1204ebc646bd41c2eee931b66164b17f8f0140d.png" alt="\mbox{\boldmath$F$}^\pm"/> の構築は困難である。AUSM系スキームでは、流束関数を移流項と音波による擾乱項に分離し、それぞれを風上化する <a class="footnote-reference brackets" href="#fn2" id="id6">2</a> 。MHD方程式ではアルヴェン波が存在するため、既存のAUSM系スキームを素直に適用することはできない <a class="footnote-reference brackets" href="#fn3" id="id7">3</a> 。したがって、MHD方程式に対する実践的な衝撃波捕獲法としては、近似リーマン解法が用いられることがほとんどである。</p>
+<div class="figure align-center" id="id35">
+<span id="fig1"></span><a class="reference internal image-reference" href="_images/riemann1.png"><img alt="_images/riemann1.png" src="_images/riemann1.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">近似リーマン解法のアルゴリズム。Step 1. 物理量を区分的定数関数によって近似する。Step 2. 各セル境界でリーマン問題を近似的に解く。Step 3. 各セル内でリーマン問題の解を積分する。</span><a class="headerlink" href="#id35" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>流束ベクトル分離法がセル内の特性速度の符号により流束分離を行うのに対し、近似リーマン解法ではセル境界の特性速度の情報を用いて流束の風上化を行う。近似リーマン解法の手続きを <a class="reference internal" href="#fig1"><span class="std std-ref">近似リーマン解法のアルゴリズム図</span></a> に示す。初期条件として、物理量を各セル内で一定となるよう区分的定数関数で与える。このとき各セル境界において物理量が不連続になるため、初期値問題は各セル境界におけるリーマン問題(衝撃波管問題)に帰着する。最終的に、各セル内でリーマン問題の解を積分することによって、ある区分的定数関数として次の時刻の解が近似的に求められる。この手続きを繰り返すことにより、双曲型方程式を数値的に解くことができる。特に、各セル境界でリーマン問題を厳密に解く方法をGodunov法と呼ぶ。</p>
+<div class="figure align-center" id="id36">
+<span id="fig2"></span><a class="reference internal image-reference" href="_images/riemann2.png"><img alt="_images/riemann2.png" src="_images/riemann2.png" style="width: 40%;" /></a>
+<p class="caption"><span class="caption-text"><img class="math" src="_images/math/7cbd16dbea4c5a6099ae043fbc8d2d450f0d6996.png" alt="[x_{i-1/2},x_{i+1/2}] \times [t^n,t^{n+1}]"/> における双曲型保存則系のリーマン問題。</span><a class="headerlink" href="#id36" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>ここで、 <img class="math" src="_images/math/7cbd16dbea4c5a6099ae043fbc8d2d450f0d6996.png" alt="[x_{i-1/2},x_{i+1/2}] \times [t^n,t^{n+1}]"/> における双曲型保存則系の時空間保存、</p>
+<div class="math" id="equation-x-t-int">
+<p><span class="eqno">(23)<a class="headerlink" href="#equation-x-t-int" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/01eda867d5e4e2ca15ccc0a2d19b5aca5c40e64d.png" alt="\int_{x_{i-1/2}}^{x_{i+1/2}}\mbox{\boldmath$U$} (x,t^{n+1}) dx
+- \int_{x_{i-1/2}}^{x_{i+1/2}}\mbox{\boldmath$U$} (x,t^{n}) dx
++ \int_{t^n}^{t^{n+1}}\mbox{\boldmath$F$} \left(\mbox{\boldmath$U$} (x_{i+1/2},t) \right) dt
+- \int_{t^n}^{t^{n+1}}\mbox{\boldmath$F$} \left(\mbox{\boldmath$U$} (x_{i-1/2},t) \right) dt = 0"/></p>
+</div><p>を考える。リーマン問題の解を <img class="math" src="_images/math/8787cf5d313ae9d910982cb40513a0f26a580604.png" alt="\mbox{\boldmath$U$}(x/t;\mbox{\boldmath$U$}_i ,\mbox{\boldmath$U$}_{i+1})"/> とすると、 <a class="reference internal" href="#equation-x-t-int">(23)</a> は、</p>
+<div class="math" id="equation-cons">
+<p><span class="eqno">(24)<a class="headerlink" href="#equation-cons" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fe5c6c25d012ba47d8477e76efafdb667c6dd9fd.png" alt="\mbox{\boldmath$U$}_i^{n+1} -\mbox{\boldmath$U$}_i^n + \frac{\Delta t}{\Delta x}
+\left[\mbox{\boldmath$F$}_{i+1/2}^\ast -\mbox{\boldmath$F$}_{i-1/2}^\ast \right] = 0 ,"/></p>
+</div><p>ただし、</p>
+<div class="math" id="equation-flux">
+<p><span class="eqno">(25)<a class="headerlink" href="#equation-flux" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/647a691d8f088ff589ded838dea7ff113d88b67c.png" alt="\mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$} \left(\mbox{\boldmath$U$}(0;\mbox{\boldmath$U$}_i,\mbox{\boldmath $U$}_{i+1}) \right) ,"/></p>
+</div><p>となる（ <a class="reference internal" href="#fig2"><span class="std std-ref">リーマン問題の図</span></a> ）。ここで、 <img class="math" src="_images/math/77581f1f8d3912a26c07d4015ea6f314a2b4663d.png" alt="\Delta x = x_{i+1/2} - x_{i-1/2}"/> 、 <img class="math" src="_images/math/58ec3ed0f398a3cbc4ef296ddd9e0d85e1632642.png" alt="\Delta t = t^{n+1} - t^n"/> 。数値流束 <img class="math" src="_images/math/8af99777ddb086d28b0c31c4cb401b95f8a000cf.png" alt="\mbox{\boldmath$F$}_{i+1/2}^\ast"/> は、 <img class="math" src="_images/math/12b8bba54707a7ab0c65526b45b76356847b91e5.png" alt="[x_{i+1/2}+\lambda_1 \Delta t,x_{i+1/2}] \times [t^n , t^{n+1}]"/>
+の時空間保存から、</p>
+<div class="math" id="equation-rflux-left">
+<p><span class="eqno">(26)<a class="headerlink" href="#equation-rflux-left" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/768f8ea4b99d3ea2376655a1180c294ebbad1c0d.png" alt="\mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$}_i^n
+- \frac{1}{\Delta t} \int_{\lambda_1 \Delta t}^0
+\mbox{\boldmath$U$}(x/t^{n+1};\mbox{\boldmath$U$}_i^n ,\mbox{\boldmath$U$}_{i+1}^n) dx
+- \lambda_1\mbox{\boldmath$U$}_i^n"/></p>
+</div><p>と与えられる。ただし、 <img class="math" src="_images/math/8d68f7e7eaebe94bd63e2087b53662c0228b16f5.png" alt="\lambda_1"/> は最小固有値(最小の特性速度)で負とする。 <img class="math" src="_images/math/67a5e2230d3ea38fd59284ae6c19617508041590.png" alt="\lambda_1 &gt; 0"/> の場合、超音速問題となるため、 <img class="math" src="_images/math/1cd96a3ae7e17381eec5e9cd80d98322cbec8aee.png" alt="\mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$}_i^n"/> と風上側の流束で置き換えられる。保存則の対称性から、</p>
+<div class="math" id="equation-rflux-right">
+<p><span class="eqno">(27)<a class="headerlink" href="#equation-rflux-right" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f2ddf5b08a2265eef33797fba59c2ed453321cf9.png" alt="\mbox{\boldmath$F$}_{i+1/2}^\ast =\mbox{\boldmath$F$}_{i+1}^n
++ \frac{1}{\Delta t} \int_0^{\lambda_m \Delta t}
+\mbox{\boldmath$U$}(x/t^{n+1};\mbox{\boldmath$U$}_i^n ,\mbox{\boldmath$U$}_{i+1}^n) dx
+- \lambda_m\mbox{\boldmath$U$}_{i+1}^n"/></p>
+</div><p>も成立し、 <a class="reference internal" href="#equation-rflux-left">(26)</a> と一致する。ただし、 <img class="math" src="_images/math/80c322fe8926c5e99f54ddf65e9372eab47fca84.png" alt="\lambda_m"/> は最大固有値(最大の特性速度)で正とする。</p>
+<p>オイラー方程式やMHD方程式は極めて高度な非線形システム方程式であり、リーマン問題の厳密解を求めるためにはニュートン法などの反復計算が必要になる。一方、Godunov法では最終的に各セル内でリーマン問題の解を平均化するため、 解の詳細な情報は失われる。そこで、リーマン問題の厳密解の代替えとなる性質のよい近似解の探索が重要となる。一般に、リーマン問題の近似解を用いて数値流束を評価する解法を近似リーマン解法、またはGodunov型解法と呼ぶ。</p>
+<p>これ以降、セル境界左右の状態を示す添え字をそれぞれ <img class="math" src="_images/math/19eef1966f7c545af3ac8c0fa486974d873e3c65.png" alt="L"/> 、 <img class="math" src="_images/math/1ebe654cc7b8f2a0d8100aa5825cf2b9021adbbc.png" alt="R"/> とする。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn2"><span class="brackets"><a class="fn-backref" href="#id6">2</a></span></dt>
+<dd><p>発見的方法によって定式化される。</p>
+</dd>
+<dt class="label" id="fn3"><span class="brackets"><a class="fn-backref" href="#id7">3</a></span></dt>
+<dd><p>発見的方法によって定式化できる、かもしれない。パラメータ空間は無限である <img class="math" src="_images/math/6dde8b994dc46f9d03857e94399ef7fd7c1e2740.png" alt="\cdots"/> 。</p>
+</dd>
+</dl>
+<div class="section" id="id8">
+<h3>線形近似リーマン解法<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><img class="math" src="_images/math/b35f08bf6229a0859b19c7127b26c64758780be7.png" alt="[x_i,x_{i+1}] \times [t^n,t^{n+1}]"/> においてヤコビアン <img class="math" src="_images/math/aa637fb62d45bcc3ff8a7431dc781a947465cfba.png" alt="\mbox{\boldmath$A$}"/> を一定とする近似リーマン解法、つまり <strong>局所的に基礎方程式を線形化</strong> する近似法を線形近似リーマン解法と呼ぶ。</p>
+<p>ヤコビアン <img class="math" src="_images/math/422b9144c545202797921d129c59e4944eb49ae7.png" alt="\mbox{\boldmath$A$}_{i+1/2}"/> を、正または負の固有値のみを持つヤコビアン <img class="math" src="_images/math/1393b927c2ef6983a3b88ab725877e7898ca8d08.png" alt="\mbox{\boldmath$A$}_{i+1/2}^\pm"/> に分離する。ここで <img class="math" src="_images/math/1393b927c2ef6983a3b88ab725877e7898ca8d08.png" alt="\mbox{\boldmath$A$}_{i+1/2}^\pm"/> は、 <img class="math" src="_images/math/422b9144c545202797921d129c59e4944eb49ae7.png" alt="\mbox{\boldmath$A$}_{i+1/2}"/> に対する固有値行列 <img class="math" src="_images/math/f2b8a338747e5e5041e754d95b153761dbdb346d.png" alt="\mbox{\boldmath$\lambda$}_{i+1/2}"/> と右固有行列 <img class="math" src="_images/math/c75f3938fc7a2618d5b7f0441ca0a8a3ae488a6d.png" alt="\mbox{\boldmath$R_{i+1/2}$}"/> を利用して、</p>
+<div class="math" id="equation-apm">
+<p><span class="eqno">(28)<a class="headerlink" href="#equation-apm" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f5d222658caf049d4ec99d0db59224a6fabbab7f.png" alt="\mbox{\boldmath$A$}_{i+1/2}^\pm =
+\frac{\mbox{\boldmath$R_{i+1/2}$} \left( \mbox{\boldmath$\lambda$}_{i+1/2} \pm | \mbox{\boldmath$\lambda$}_{i+1/2} |   \right)
+\mbox{\boldmath$R_{i+1/2}$}^{-1}}{2}"/></p>
+</div><p>と与えられる。したがって、</p>
+<div class="math" id="equation-asol1">
+<p><span class="eqno">(29)<a class="headerlink" href="#equation-asol1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0e8f7a9f2d51f65f0e91be24e5091de7239e4109.png" alt="\mbox{\boldmath$A$}_{i+1/2} = \mbox{\boldmath$A$}_{i+1/2}^+ + \mbox{\boldmath$A$}_{i+1/2}^- , \
+| \mbox{\boldmath$A$}_{i+1/2} | = \mbox{\boldmath$A$}_{i+1/2}^+ - \mbox{\boldmath$A$}_{i+1/2}^- ,"/></p>
+</div><p>ただし、</p>
+<div class="math" id="equation-asol2">
+<p><span class="eqno">(30)<a class="headerlink" href="#equation-asol2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/547621e1b646de71c7d5a19315ba07f93f1cec53.png" alt="| \mbox{\boldmath$A$}_{i+1/2} | = \mbox{\boldmath$R_{i+1/2}$} | \mbox{\boldmath$\lambda$} | \mbox{\boldmath$R_{i+1/2}$} ^ {-1}"/></p>
+</div><p>である。右に進む波をまたぐジャンプ条件から、</p>
+<div class="math" id="equation-fr">
+<p><span class="eqno">(31)<a class="headerlink" href="#equation-fr" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6585252ea4dda5fb28280addae5ebc88de34b47a.png" alt="\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}^\ast = \mbox{\boldmath$A$}_{i+1/2}^+ (\mbox{\boldmath$U$}_R -\mbox{\boldmath $U$}_L),"/></p>
+</div><p>同様に左に進む波をまたぐジャンプ条件から、</p>
+<div class="math" id="equation-fl">
+<p><span class="eqno">(32)<a class="headerlink" href="#equation-fl" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a45f06934e0878ae06f6c644c768cb87b68455ba.png" alt="\mbox{\boldmath$F$}^\ast -\mbox{\boldmath$F$}_L = \mbox{\boldmath$A$}_{i+1/2}^- (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L),"/></p>
+</div><p>が得られる。最終的に数値流束を対称化して表すと、</p>
+<div class="math" id="equation-nflux">
+<p><span class="eqno">(33)<a class="headerlink" href="#equation-nflux" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/458583a6f0935265be000f425ce96de8a9b1816e.png" alt="\mbox{\boldmath$F$}^\ast = \frac{\mbox{\boldmath$F$}_R +\mbox{\boldmath$F$}_L}{2}
+- \frac{1}{2} | \mbox{\boldmath$A$}_{i+1/2} | (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L)"/></p>
+</div><p>となる。一般に、この解法は線形近似リーマン解法と呼ばれる。流束の差 <img class="math" src="_images/math/7bfd58bbc5d97457dc2f95fb982d68121481b20c.png" alt="\Delta\mbox{\boldmath$F$}"/> を <img class="math" src="_images/math/3e5e30bc3d709da56bdfa45cdf7e7e79cb796639.png" alt="\Delta\mbox{\boldmath$F$}^+ + \Delta\mbox{\boldmath$F$}^-P"/> と分離することから流束差分離法とも呼ばれる。特に、ジャンプ条件が正しく評価されるよう、</p>
+<div class="math" id="equation-roe">
+<p><span class="eqno">(34)<a class="headerlink" href="#equation-roe" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/6dea562773c586a31fe614688795281eabca4206.png" alt="\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = \mbox{\boldmath$A$}_{i+1/2} (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L )"/></p>
+</div><p>を満足する <img class="math" src="_images/math/422b9144c545202797921d129c59e4944eb49ae7.png" alt="\mbox{\boldmath$A$}_{i+1/2}"/> を与える解法はRoe法 <a class="footnote-reference brackets" href="#fn4" id="id9">4</a> と呼ばれ、最もスタンダードな近似リーマン解法としてよく知られている。</p>
+<p>ただし、実際にMHD方程式に線形近似リーマン解法を適用するには様々な工夫が必要となる。MHD方程式では固有値( <a class="reference internal" href="#equation-eval">(17)</a> )が縮退し得るため、固有ベクトルに特異性が出現する。そのため固有ベクトルの適切な再規格化が必要となる <a class="footnote-reference brackets" href="#fn5" id="id10">5</a> 。また、 <img class="math" src="_images/math/6736595dc7b2daa798adcd9daad355f1b57eaab5.png" alt="\gamma = 2"/> 以外の場合、Roe法に対するヤコビアン <img class="math" src="_images/math/4905ae7783df6eb519ed72649008737b0d220aeb.png" alt="\mbox{\boldmath$A$}_{1/2}"/> を求めることは容易ではない <a class="footnote-reference brackets" href="#fn6" id="id11">6</a> 。</p>
+<p>線形近似リーマン解法では全ての波が考慮されており、各種不連続解を正しく解像できる。一方で、膨張波(希薄波)が無視されているため、密度および圧力の正値性が破れることが証明されている。特にMHD方程式では、磁気エネルギーの寄与分のため、オイラー方程式に比べてさらに正値性の条件は非常に厳しく、計算困難な初期条件が広く存在する。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn4"><span class="brackets"><a class="fn-backref" href="#id9">4</a></span></dt>
+<dd><p><a class="reference internal" href="#equation-roe">(34)</a> に加えて、 <img class="math" src="_images/math/4905ae7783df6eb519ed72649008737b0d220aeb.png" alt="\mbox{\boldmath$A$}_{1/2}"/> が独立な実固有値を持ち、ヤコビアンの適合性 <img class="math" src="_images/math/b44d9d939aa1c4487ebbbb741bf655e1ef54500b.png" alt="\mbox{\boldmath$A$}_{1/2}(\mbox{\boldmath$U$},\mbox{\boldmath$U$}) = \mbox{\boldmath$A$}(\mbox{\boldmath$U$})"/> を満足する必要がある。これらの性質は合わせてProperty Uと呼ばれる。</p>
+</dd>
+<dt class="label" id="fn5"><span class="brackets"><a class="fn-backref" href="#id10">5</a></span></dt>
+<dd><p>ここでは参考文献をあげるにとどめる。 <a class="reference internal" href="reference.html#brio-wu88"><span class="std std-ref">Brio &amp; Wu, JCP (1988)</span></a></p>
+</dd>
+<dt class="label" id="fn6"><span class="brackets"><a class="fn-backref" href="#id11">6</a></span></dt>
+<dd><p>ここでは参考文献をあげるにとどめる。 <a class="reference internal" href="reference.html#cargo-gallice97"><span class="std std-ref">Cargo &amp; Gallice, JCP (1997)</span></a> , <a class="reference internal" href="reference.html#balsara98"><span class="std std-ref">Balsara, ApJS (1998)</span></a></p>
+</dd>
+</dl>
+</div>
+<div class="section" id="hll">
+<h3>HLL近似リーマン解法<a class="headerlink" href="#hll" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>HLL型の近似リーマン解法 <a class="footnote-reference brackets" href="#fn7" id="id12">7</a> では、膨張波も含めて最も速い特性速度 <img class="math" src="_images/math/25fd2bf630791768ec172f1c6943550c1ff6639d.png" alt="S_R(&gt;0)"/> と最も遅い速度 <img class="math" src="_images/math/9c4560e40d688593912d40036637e43bef0b3b6a.png" alt="S_L(&lt;0)"/> に囲まれた領域、 <img class="math" src="_images/math/a5c026e6e09b158df3551de133ea250c91cb07e0.png" alt="[S_L \Delta t , S_R \Delta t] \times [0 , \Delta t]"/> における時空間保存則、</p>
+<div class="math" id="equation-hlltype">
+<p><span class="eqno">(35)<a class="headerlink" href="#equation-hlltype" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/42f714e244ad4ce4a73e1af0219bbcc7095cd226.png" alt="\frac{1}{\Delta t}
+\int_{S_L \Delta t}^{S_R \Delta t}\mbox{\boldmath$U$}(x,t) dx
+- S_R\mbox{\boldmath$U$}_R + S_L\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = 0"/></p>
+</div><p>を満足するよう近似解が求められる。</p>
+<div class="figure align-center" id="id37">
+<span id="fig3"></span><a class="reference internal image-reference" href="_images/riemann3.png"><img alt="_images/riemann3.png" src="_images/riemann3.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">HLL近似リーマン解法における(a)近似解の模式図と(b)数値流束評価のための積分経路。</span><a class="headerlink" href="#id37" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>特にHLL法では、 <img class="math" src="_images/math/ea64fe8c505e74be7ef224ddf70d46e3aaff9da7.png" alt="\mbox{\boldmath$S_R$}"/> <strong>と</strong> <img class="math" src="_images/math/f2507b0d4f9b1a2bfd368a19d89ee8b06012bc96.png" alt="\mbox{\boldmath$S_L$}"/> <strong>に囲まれた領域(リーマンファン)においてリーマン問題の解が単一状態</strong> <img class="math" src="_images/math/eb72f5faaddd068634c62227d04bcdbd021f5d29.png" alt="\mbox{\boldmath$U$}^\ast"/> <strong>であると仮定</strong> する。 <a class="reference internal" href="#equation-hlltype">(35)</a> から、</p>
+<div class="math" id="equation-srl-hll">
+<p><span class="eqno">(36)<a class="headerlink" href="#equation-srl-hll" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/82a4891f1021f9e6041fc2f32dc4f3ec91056403.png" alt="(S_R - S_L)\mbox{\boldmath$U$}^\ast - S_R\mbox{\boldmath$U$}_R + S_L\mbox{\boldmath$U$}_L
++\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = 0,"/></p>
+</div><p>したがって、</p>
+<div class="math" id="equation-u-hll">
+<p><span class="eqno">(37)<a class="headerlink" href="#equation-u-hll" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/04179fcf296732925fc6c257d6a5ef19abd96654.png" alt="\mbox{\boldmath$U$}^\ast = \frac{S_R\mbox{\boldmath$U$}_R - S_L\mbox{\boldmath$U$}_L -\mbox{\boldmath$F$}_R +\mbox {\boldmath$F$}_L}{S_R - S_L}"/></p>
+</div><p>が得られる( <a class="reference internal" href="#fig3"><span class="std std-ref">HLL近似リーマン解法図(a)</span></a> )。続いて、 <img class="math" src="_images/math/9d9f4618fe394fca084ec01aa9e52ed1b2c648b5.png" alt="[0,S_R \Delta t] \times [0,\Delta t]"/> における時空間保存( <a class="reference internal" href="#fig3"><span class="std std-ref">HLL近似リーマン解法図(b)</span></a> )から、</p>
+<div class="math" id="equation-rhalf">
+<p><span class="eqno">(38)<a class="headerlink" href="#equation-rhalf" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4d6a753900e60f665765067f94d00e04b8d19331.png" alt="S_R\mbox{\boldmath$U$}^\ast - S_R\mbox{\boldmath$U$} +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}^\ast = 0"/></p>
+</div><p>となる。ただし、数値流束 <img class="math" src="_images/math/128904a33301581a565a14310668c03be7b1e850.png" alt="\mbox{\boldmath$F$}^\ast"/> は、</p>
+<div class="math" id="equation-f-hll0">
+<p><span class="eqno">(39)<a class="headerlink" href="#equation-f-hll0" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a178e4848ef49e19532c61741847324a89fb11e6.png" alt="\mbox{\boldmath$F$}^\ast = \frac{1}{\Delta t}\int_0^{\Delta t}\mbox{\boldmath$F$}(0,t) dt"/></p>
+</div><p>と定義される。 <a class="reference internal" href="#equation-u-hll">(37)</a> を <a class="reference internal" href="#equation-rhalf">(38)</a> に代入すると、 <img class="math" src="_images/math/128904a33301581a565a14310668c03be7b1e850.png" alt="\mbox{\boldmath$F$}^\ast"/> は最終的に、</p>
+<div class="math" id="equation-f-hll">
+<p><span class="eqno">(40)<a class="headerlink" href="#equation-f-hll" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2f4eb710b5ce1703bdeeb9a778206cfc63fc11f7.png" alt="\mbox{\boldmath$F$}^\ast =
+\frac{S_R\mbox{\boldmath$F$}_L - S_L\mbox{\boldmath$F$}_R + S_R S_L (\mbox{\boldmath$U$}_R -\mbox{\boldmath$U$}_L)}
+{S_R - S_L}"/></p>
+</div><p>となる。もちろん、 <img class="math" src="_images/math/e3731b5129f8a15f381a5e59279509c2557ddaf2.png" alt="[S_L \Delta t,0] \times [0,\Delta t]"/> の保存則からも <a class="reference internal" href="#equation-f-hll">(40)</a> は得られる。HLL法は非線形の近似解法であり、 <img class="math" src="_images/math/e6646bcd9df6cace31ca2030bee14bf36c99352e.png" alt="\mbox{\boldmath$F$}^\ast \ne\mbox{\boldmath$F$} (\mbox{\boldmath$U$}^\ast)"/> であることに注意する必要がある。</p>
+<p>HLL法の数値流束 <a class="reference internal" href="#equation-f-hll">(40)</a> を評価するためには、 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> と <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> の情報が必要である。MHD方程式の特性速度は形式的には <a class="reference internal" href="#equation-eval">(17)</a> と与えられる。しかし、厳密な <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> 、 <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> を得るためには、リーマン問題を厳密に解く必要がある。そこで、 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> 、 <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> を過小評価しないよう近似的に、</p>
+<div class="math" id="equation-sr-sl-1">
+<p><span class="eqno">(41)<a class="headerlink" href="#equation-sr-sl-1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/00ea1f10362fde67972445afeffe541802c39a29.png" alt="S_R = \max( u_R+{c_f}_R , u_L+{c_f}_L ) \ , \
+S_L = \min( u_R-{c_f}_R , u_L-{c_f}_L )"/></p>
+</div><p>または</p>
+<div class="math" id="equation-sr-sl-2">
+<p><span class="eqno">(42)<a class="headerlink" href="#equation-sr-sl-2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/90758538be6ebc1a65f0b1876a3a17f75417a8cd.png" alt="S_R = \max( u_R , u_L ) + \max( {c_f}_R , {c_f}_L ) \ , \
+S_L = \min( u_R , u_L ) - \max( {c_f}_R , {c_f}_L )"/></p>
+</div><p>のように与えられる。また、特にRoe平均値 <a class="reference internal" href="#equation-roe">(34)</a> を用いて、</p>
+<div class="math" id="equation-sr-sl-3">
+<p><span class="eqno">(43)<a class="headerlink" href="#equation-sr-sl-3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2fee415cd0a164c3118f7dc47caed7dbaae993bd.png" alt="S_R = \max( u^{Roe}+c_f^{Roe} , u_R+{c_f}_R ) \ , \
+S_L = \min( u_L-{c_f}_L , u^{Roe}-c_f^{Roe} )"/></p>
+</div><p>とも評価される。 <img class="math" src="_images/math/ad93e59e070b8cf6168c120239945118c9f18f78.png" alt="S_R &lt; 0"/> 、 <img class="math" src="_images/math/ca19d1f7d31f3f921db61a2f3f26aab6b6f2cf2e.png" alt="S_L &gt; 0"/> の場合についても、 <a class="reference internal" href="#equation-f-hll">(40)</a> が片側の流束 <img class="math" src="_images/math/4b8a5da802450204adb6af4a52ea7371b4f7d9bb.png" alt="\mbox{\boldmath$F$}_R:"/> 、 <img class="math" src="_images/math/c184132df4fbf4fa81efefd066305270ae1d4afe.png" alt="\mbox{\boldmath$F$}_L"/> に帰着できるよう、 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> 、 <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> は一般に、</p>
+<div class="math" id="equation-sr-sl-4">
+<p><span class="eqno">(44)<a class="headerlink" href="#equation-sr-sl-4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/56e12ae19669183dd04250819b288b63ec71c44c.png" alt="S_R = \max(S_R , 0) \ , \ S_L = \min(S_L , 0)"/></p>
+</div><p>と拡張される。</p>
+<p>HLL法は <img class="math" src="_images/math/3556377c92304722df740021672065422b26eff8.png" alt="\mbox{\boldmath$U$}"/> や <img class="math" src="_images/math/38452132d05319c06d2885d8ad73eacb192b3fb6.png" alt="\mbox{\boldmath$F$}"/> の詳細によらず非常にシンプルであり、固有ベクトルの計算も不要で計算効率が極めて高い。また、オイラー方程式およびMHD方程式に対して正値性が理論的に証明されており、極めてロバストである。しかし、リーマンファン内を単一状態と仮定しているため、接触不連続や回転不連続などを捕らえることができず、低解像度で数値的散逸が強い。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn7"><span class="brackets"><a class="fn-backref" href="#id12">7</a></span></dt>
+<dd><p>HLL法の提案者であるHarten(TVD/ENOの提案者)、Lax (双曲型保存則系業界の創始者)、van Leer(MUSCLの提案者)の頭文字。</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="hlld">
+<span id="id13"></span><h3>HLLD近似リーマン解法<a class="headerlink" href="#hlld" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>続いて、接触不連続や回転不連続を解像できる高解像度HLL型近似リーマン解法、HLLD法 <a class="footnote-reference brackets" href="#fn8" id="id14">8</a> （ <a class="reference internal" href="reference.html#miyoshi-kusano05"><span class="std std-ref">Miyoshi &amp; Kusano, 2005</span></a> ） を検討する。</p>
+<div class="figure align-center" id="id38">
+<span id="fig4"></span><a class="reference internal image-reference" href="_images/riemann4.png"><img alt="_images/riemann4.png" src="_images/riemann4.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">HLLD近似リーマン解法における近似解の模式図。</span><a class="headerlink" href="#id38" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>HLLD法では、 <strong>リーマンファンにおいて速度</strong> <img class="math" src="_images/math/7720d6ac8f0e57643f7cf01e9902a57fef06a075.png" alt="\mbox{\boldmath$u$}"/> <strong>が一定と仮定</strong> する。この仮定から、リーマンファン内で加速や減速が生じないよう、全圧力 <img class="math" src="_images/math/375144497db89b9107fee3e97cde70b8ea25f782.png" alt="p_T"/> が一定であることも要求される( <a class="reference internal" href="#fig4"><span class="std std-ref">HLLD近似リーマン解法図(b)</span></a> )。したがって、リーマンファン内は非圧縮状態となり、リーマン問題の解から遅進衝撃波は除外される。このことから、リーマン問題の近似解は、2つの速進衝撃波 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> 、 <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> 、 2つのアルヴェン波 <img class="math" src="_images/math/9d3e3b3adb36c4651d62da5d6238d4d3e26d11d4.png" alt="S_R^\ast"/> 、 <img class="math" src="_images/math/dbb8b45b6ba546be5fde1969c2baa1dd3b16cdb5.png" alt="S_L^\ast"/> 、1つのエントロピー波 <img class="math" src="_images/math/9ad3e66623b8e17a65677f8d9405f3e8d3982f09.png" alt="S_M"/> で分割された4つの状態(リーマンファンの左から <img class="math" src="_images/math/94516299883b02304334f65f5983301f539bf184.png" alt="\mbox{\boldmath$U$}_L^\ast"/> 、 <img class="math" src="_images/math/ae5db0a76cb55ef8e552cd7edad71a98b3ee0950.png" alt="\mbox{\boldmath$U$}_L^{\ast \ast}"/> 、 <img class="math" src="_images/math/b5239a06d9750112232cbc1ec09477ef263f03cb.png" alt="\mbox{\boldmath$U$}_R^{\ast \ast}"/> 、 <img class="math" src="_images/math/853714d9c48fca87570ef83b355399508ab92b20.png" alt="\mbox{\boldmath$U$}_R^\ast"/> と表記)となる(<a class="reference internal" href="#fig4"><span class="std std-ref">HLLD近似リーマン解法図(a)</span></a>)。</p>
+<p>リーマンファンにおける速度 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> はエントロピー波の速度 <img class="math" src="_images/math/9ad3e66623b8e17a65677f8d9405f3e8d3982f09.png" alt="S_M"/> と一致する。ここで <img class="math" src="_images/math/9ad3e66623b8e17a65677f8d9405f3e8d3982f09.png" alt="S_M"/> は、時空間保存則 <a class="reference internal" href="#equation-u-hll">(37)</a> を用いて、</p>
+<div class="math" id="equation-sassalld">
+<p><span class="eqno">(45)<a class="headerlink" href="#equation-sassalld" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a04473164a2a26493b4cdc3a40dda81bfecb65de.png" alt="S_M = \frac{(\rho u)^\ast}{\rho^\ast} = \frac{(S_R-u_R) \rho_R u_R - (S_L-u_L) \rho_L u_L - {p_T}_R + {p_T}_L}
+{(S_R-u_R) \rho_R - (S_L-u_L) \rho_L}"/></p>
+</div><p>と与える。速度 <img class="math" src="_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> はリーマンファン内で一定なので、</p>
+<div class="math" id="equation-ul-hlld">
+<p><span class="eqno">(46)<a class="headerlink" href="#equation-ul-hlld" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0251dfaa2b2ca5cc7d484a92539431b4ba77a3b1.png" alt="u_L^\ast = u_L^{\ast \ast} = u_R^{\ast \ast} = u_R^\ast = S_M"/></p>
+</div><p>となる。また全圧力 <img class="math" src="_images/math/375144497db89b9107fee3e97cde70b8ea25f782.png" alt="p_T"/> も、</p>
+<div class="math" id="equation-pt-hlld">
+<p><span class="eqno">(47)<a class="headerlink" href="#equation-pt-hlld" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/07ce69f2e41811a4c9a21ea72882033723585022.png" alt="{p_T}_L^\ast = {p_T}_L^{\ast \ast} = {p_T}_R^{\ast \ast} = {p_T}_R^\ast
+= p_T^\ast"/></p>
+</div><p>と一定である。</p>
+<p>まず、速進衝撃波 <img class="math" src="_images/math/b7b89807eceaa84e4d65c13d6a00cdd220ca65e6.png" alt="S_\alpha"/> ( <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> は <img class="math" src="_images/math/1ebe654cc7b8f2a0d8100aa5825cf2b9021adbbc.png" alt="R"/> または <img class="math" src="_images/math/19eef1966f7c545af3ac8c0fa486974d873e3c65.png" alt="L"/> )に対するジャンプ条件、</p>
+<div class="math" id="equation-rh-fast">
+<p><span class="eqno">(48)<a class="headerlink" href="#equation-rh-fast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/071318e6ff33646148ea79b3567b5877e4058cf7.png" alt="S_\alpha \left(
+\begin{array}{l}
+\rho_\alpha^\ast \\
+\rho_\alpha^\ast S_M \\
+\rho_\alpha^\ast v_\alpha^\ast \\
+\rho_\alpha^\ast w_\alpha^\ast \\
+{B_y}_\alpha^\ast \\
+{B_z}_\alpha^\ast \\
+e_\alpha^\ast
+\end{array}
+\right)
+- \left(
+\begin{array}{l}
+\rho_\alpha^\ast S_M \\
+\rho_\alpha^\ast S_M^2 + p_T^\ast - B_x^2 \\
+\rho_\alpha^\ast v_\alpha^\ast S_M - B_x {B_y}_\alpha^\ast \\
+\rho_\alpha^\ast w_\alpha^\ast S_M - B_x {B_z}_\alpha^\ast \\
+{B_y}_\alpha^\ast S_M - B_x v_\alpha^\ast \\
+{B_z}_\alpha^\ast S_M - B_x w_\alpha^\ast \\
+(e_\alpha^\ast + p_T^\ast) S_M
+- B_x (\mbox{\boldmath$v$}_\alpha^\ast \cdot \mbox{\boldmath$B$}_\alpha^\ast)
+\end{array}
+\right)
+= S_\alpha \left(
+\begin{array}{l}
+\rho_\alpha \\
+\rho_\alpha u_\alpha \\
+\rho_\alpha v_\alpha \\
+\rho_\alpha w_\alpha \\
+{B_y}_\alpha \\
+{B_z}_\alpha \\
+e_\alpha
+\end{array}
+\right)
+- \left(
+\begin{array}{l}
+\rho_\alpha u_\alpha \\
+\rho_\alpha u_\alpha^2 + {p_T}_\alpha - B_x^2 \\
+\rho_\alpha v_\alpha u_\alpha - B_x {B_y}_\alpha \\
+\rho_\alpha w_\alpha u_\alpha - B_x {B_z}_\alpha \\
+{B_y}_\alpha u_\alpha - B_x v_\alpha \\
+{B_z}_\alpha u_\alpha - B_x w_\alpha \\
+(e_\alpha + {p_T}_\alpha) u_\alpha
+- B_x (\mbox{\boldmath$v$}_\alpha \cdot \mbox{\boldmath$B$}_\alpha)
+\end{array}
+\right),"/></p>
+</div><p>を考えよう。第2式から、</p>
+<div class="math" id="equation-pt-hlld2">
+<p><span class="eqno">(49)<a class="headerlink" href="#equation-pt-hlld2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f194083a006d5bc92d871bf5aa7d12bd0a0b4444.png" alt="p_T^\ast
+&amp;= {p_T}_L + \rho_L (S_L-u_L)(S_M-u_L) \\
+&amp;= {p_T}_R + \rho_R (S_R-u_R)(S_M-u_R) \\
+&amp;=
+\frac{(S_R-u_R) \rho_R {p_T}_L - (S_L-u_L) \rho_L {p_T}_R
++ \rho_L \rho_R (S_R-u_R) (S_L-u_L) (u_R-u_L)}
+{(S_R-u_R) \rho_R - (S_L-u_L) \rho_L}"/></p>
+</div><p>が得られる。続いて第1式から、</p>
+<div class="math" id="equation-rho-ast">
+<p><span class="eqno">(50)<a class="headerlink" href="#equation-rho-ast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4e57aff03ffc8f84d132631bef6a863fc7555d58.png" alt="\rho_\alpha^\ast = \rho_\alpha \frac{S_\alpha-u_\alpha}{S_\alpha-S_M}"/></p>
+</div><p>となる。第3式と第5式を連立させて、</p>
+<div class="math" id="equation-va-ast">
+<p><span class="eqno">(51)<a class="headerlink" href="#equation-va-ast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ae6f40c55507bac6a572cab4b63a28a70f6b2ada.png" alt="v_\alpha^\ast = v_\alpha - B_x {B_y}_\alpha
+\frac{S_M-u_\alpha}{\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}"/></p>
+</div><div class="math" id="equation-by-ast">
+<p><span class="eqno">(52)<a class="headerlink" href="#equation-by-ast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d957cd38e017a12bdf1e3a6a19361d03a9240e75.png" alt="{B_y}_\alpha^\ast = {B_y}_\alpha
+\frac{\rho_\alpha (S_\alpha-u_\alpha)^2-B_x^2}
+{\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}"/></p>
+</div><p>が得られる。同様に、第4式と第6式から、</p>
+<div class="math" id="equation-w-ast">
+<p><span class="eqno">(53)<a class="headerlink" href="#equation-w-ast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/cdef97b3b286af86571bce5994378f3a9e8d5b5c.png" alt="w_\alpha^\ast = w_\alpha - B_x {B_z}_\alpha
+\frac{S_M-u_\alpha}{\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}"/></p>
+</div><div class="math" id="equation-bz-ast">
+<p><span class="eqno">(54)<a class="headerlink" href="#equation-bz-ast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/b69d5fbd4cd34165f9a44f5825e3d931d3956d75.png" alt="{B_z}_\alpha^\ast = {B_z}_\alpha
+\frac{\rho_\alpha (S_\alpha-u_\alpha)^2-B_x^2}
+{\rho_\alpha (S_\alpha-u_\alpha)(S_\alpha-S_M)-B_x^2}"/></p>
+</div><p>が得られる。最後に第7式から、</p>
+<div class="math" id="equation-ene-ast">
+<p><span class="eqno">(55)<a class="headerlink" href="#equation-ene-ast" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9c7b38ed775e1bab9c203f600f612ebef8245369.png" alt="e_\alpha^\ast =
+\frac{(S_\alpha-u_\alpha) e_\alpha - {p_T}_\alpha u_\alpha + p_T^\ast S_M
++ B_x ( \mbox{\boldmath$v$}_\alpha \cdot \mbox{\boldmath$B$}_\alpha - \mbox{\boldmath$v$}_\alpha^\ast \cdot \mbox{\boldmath$B$} _\alpha^\ast)}
+{S_\alpha-S_M}"/></p>
+</div><p>となる。</p>
+<p>続いて、アルヴェン波 <img class="math" src="_images/math/2a79d00d2a32ff536f133113baa4a4335a3181a0.png" alt="S_\alpha^\ast"/> に対するジャンプ条件を考える。 <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> のジャンプ条件、すなわち連続の式から明らかに、任意の <img class="math" src="_images/math/2a79d00d2a32ff536f133113baa4a4335a3181a0.png" alt="S_\alpha^\ast"/> に対し、</p>
+<div class="math" id="equation-rho-ast2">
+<p><span class="eqno">(56)<a class="headerlink" href="#equation-rho-ast2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/540310306679da67b5df198a07a987738e1721a4.png" alt="\rho_\alpha^{\ast \ast} = \rho_\alpha^\ast"/></p>
+</div><p>が成り立つ( <a class="reference internal" href="#fig4"><span class="std std-ref">HLLD近似リーマン解法図(c)</span></a> )。したがって、アルヴェン波の速度は、</p>
+<div class="math" id="equation-hlld-alfven">
+<p><span class="eqno">(57)<a class="headerlink" href="#equation-hlld-alfven" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0102ac1aaf7567e6cd46b0f0c38794222bdf501f.png" alt="S_R^\ast = S_M+\frac{|B_x|}{\sqrt{\rho_R^\ast}} \ , \
+S_L^\ast = S_M-\frac{|B_x|}{\sqrt{\rho_L^\ast}}"/></p>
+</div><p>と与えられる。ところが、 <a class="reference internal" href="#equation-hlld-alfven">(57)</a> を用いると、 <img class="math" src="_images/math/0da0b3d165252daa85131975f793a8d498cc407e.png" alt="\mbox{\boldmath$v$}_t = (0,v,w)"/> 、 <img class="math" src="_images/math/868261a0b1b0422cfa05ede336358701a55c62d8.png" alt="\mbox{\boldmath$B$}_t = (0,B_y,B_z)"/> のジャンプ条件、</p>
+<div class="math" id="equation-rh-aflven">
+<p><span class="eqno">(58)<a class="headerlink" href="#equation-rh-aflven" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/572639d18de8b62e828638d061fff0d2d7bc900f.png" alt="S_\alpha^\ast \left(
+\begin{array}{l}
+\rho_\alpha^\ast v_\alpha^{\ast \ast} \\
+\rho_\alpha^\ast w_\alpha^{\ast \ast} \\
+{B_y}_\alpha^{\ast \ast} \\
+{B_z}_\alpha^{\ast \ast} \\
+\end{array}
+\right)
+- \left(
+\begin{array}{l}
+\rho_\alpha^\ast v_\alpha^{\ast \ast} S_M - B_x {B_y}_\alpha^{\ast \ast} \\
+\rho_\alpha^\ast w_\alpha^{\ast \ast} S_M - B_x {B_z}_\alpha^{\ast \ast} \\
+{B_y}_\alpha^{\ast \ast} S_M - B_x v_\alpha^{\ast \ast} \\
+{B_z}_\alpha^{\ast \ast} S_M - B_x w_\alpha^{\ast \ast} \\
+\end{array}
+\right)
+= S_\alpha^\ast \left(
+\begin{array}{l}
+\rho_\alpha^\ast v_\alpha^\ast \\
+\rho_\alpha^\ast w_\alpha^\ast \\
+{B_y}_\alpha^\ast \\
+{B_z}_\alpha^\ast \\
+\end{array}
+\right)
+- \left(
+\begin{array}{l}
+\rho_\alpha^\ast v_\alpha^\ast S_M - B_x {B_y}_\alpha^\ast \\
+\rho_\alpha^\ast w_\alpha^\ast S_M - B_x {B_z}_\alpha^\ast \\
+{B_y}_\alpha^\ast S_M - B_x v_\alpha^\ast \\
+{B_z}_\alpha^\ast S_M - B_x w_\alpha^\ast \\
+\end{array}
+\right),"/></p>
+</div><p>から、 <img class="math" src="_images/math/936818b714366e66114484a943b68408b3e29080.png" alt="{\mbox{\boldmath$v$}_t}_\alpha^{\ast \ast}"/> 、 <img class="math" src="_images/math/96e88844f0c1cceb6e616f27d9d898ea91658a52.png" alt="{\mbox{\boldmath$B$}_t}_\alpha^{\ast \ast}"/> を解くことができない。一方、 <img class="math" src="_images/math/9ad3e66623b8e17a65677f8d9405f3e8d3982f09.png" alt="S_M"/> に対する <img class="math" src="_images/math/db6d1d38d0b2bbf0362b7bd8aa1edd96964a6e31.png" alt="\mbox{\boldmath$v$}_t"/> 、 <img class="math" src="_images/math/71713efa630b2d319816c87f553a2a1ae2c58ad2.png" alt="\mbox{\boldmath$B$}_t"/> のジャンプ条件、</p>
+<div class="math" id="equation-rh-entropy">
+<p><span class="eqno">(59)<a class="headerlink" href="#equation-rh-entropy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2595d6c4a6b717611a2475eea61b92eb7318da0e.png" alt="S_M \left(
+\begin{array}{l}
+\rho_L^\ast v_L^{\ast \ast} \\
+\rho_L^\ast w_L^{\ast \ast} \\
+{B_y}_L^{\ast \ast} \\
+{B_z}_L^{\ast \ast} \\
+\end{array}
+\right)
+- \left(
+\begin{array}{l}
+\rho_L^\ast v_L^{\ast \ast} S_M - B_x {B_y}_L^{\ast \ast} \\
+\rho_L^\ast w_L^{\ast \ast} S_M - B_x {B_z}_L^{\ast \ast} \\
+{B_y}_L^{\ast \ast} S_M - B_x v_L^{\ast \ast} \\
+{B_z}_L^{\ast \ast} S_M - B_x w_L^{\ast \ast} \\
+\end{array}
+\right)
+= S_M \left(
+\begin{array}{l}
+\rho_R^\ast v_R^{\ast \ast} \\
+\rho_R^\ast w_R^{\ast \ast} \\
+{B_y}_R^{\ast \ast} \\
+{B_z}_R^{\ast \ast} \\
+\end{array}
+\right)
+- \left(
+\begin{array}{l}
+\rho_R^\ast v_R^{\ast \ast} S_M - B_x {B_y}_R^{\ast \ast} \\
+\rho_L^\ast w_R^{\ast \ast} S_M - B_x {B_z}_R^{\ast \ast} \\
+{B_y}_R^{\ast \ast} S_M - B_x v_R^{\ast \ast} \\
+{B_z}_R^{\ast \ast} S_M - B_x w_R^{\ast \ast} \\
+\end{array}
+\right),"/></p>
+</div><p>から、</p>
+<div class="math" id="equation-vl-ast2">
+<p><span class="eqno">(60)<a class="headerlink" href="#equation-vl-ast2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e2e33e8838e4b4637a223bf9994fbf2f674e54a6.png" alt="v_L^{\ast \ast} = v_R^{\ast \ast} \equiv v^{\ast \ast}"/></p>
+</div><div class="math" id="equation-wl-ast2">
+<p><span class="eqno">(61)<a class="headerlink" href="#equation-wl-ast2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/091071ab0cf2eb4ea22862345f746de783ebdd2f.png" alt="w_L^{\ast \ast} = w_R^{\ast \ast} \equiv w^{\ast \ast}"/></p>
+</div><div class="math" id="equation-by-ast2">
+<p><span class="eqno">(62)<a class="headerlink" href="#equation-by-ast2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e8fc75ae2e7ab13616d6e67f031ee922e7af8dcc.png" alt="{B_y}_L^{\ast \ast} = {B_y}_R^{\ast \ast} \equiv {B_y}^{\ast \ast}"/></p>
+</div><div class="math" id="equation-bz-ast2">
+<p><span class="eqno">(63)<a class="headerlink" href="#equation-bz-ast2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/946735c4ae953c9aac3a5810228e5b157e50c0f9.png" alt="{B_z}_L^{\ast \ast} = {B_z}_R^{\ast \ast} \equiv {B_z}^{\ast \ast}"/></p>
+</div><p>となる( <a class="reference internal" href="#fig4"><span class="std std-ref">HLLD近似リーマン解法図(d)</span></a> )。そこで、リーマンファンの時空間保存則 <a class="reference internal" href="#equation-hlltype">(35)</a> 、</p>
+<div class="math" id="equation-srsmsl-hlld">
+<p><span class="eqno">(64)<a class="headerlink" href="#equation-srsmsl-hlld" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5915e252b668fb558975e1e2485bd1d2d4214628.png" alt="(S_R-S_R^\ast)\mbox{\boldmath$U$}_R^\ast
++ (S_R^\ast-S_M)\mbox{\boldmath$U$}_R^{\ast \ast}
++ (S_M-S_R^\ast)\mbox{\boldmath$U$}_L^{\ast \ast}
++ (S_L^\ast-S_L)\mbox{\boldmath$U$}_L^\ast
+- S_R\mbox{\boldmath$U$}_R + S_L\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}_R -\mbox{\boldmath$F$}_L = 0"/></p>
+</div><p>を利用すると、</p>
+<div class="math" id="equation-v-ast2-def">
+<p><span class="eqno">(65)<a class="headerlink" href="#equation-v-ast2-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/42d19fea83c487ff7810b37565a8dcf229fe4063.png" alt="v^{\ast \ast} =
+\frac{\sqrt{\rho_L^\ast} v_L^\ast + \sqrt{\rho_R^\ast} v_R^\ast
++ ( {B_y}_R^\ast - {B_y}_L^\ast ) {\rm sgn} (B_x)}
+{\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}"/></p>
+</div><div class="math" id="equation-w-ast2-def">
+<p><span class="eqno">(66)<a class="headerlink" href="#equation-w-ast2-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d257f10f02fa069d9075ce0a4ec49f2916b01f4e.png" alt="w^{\ast \ast} =
+\frac{\sqrt{\rho_L^\ast} w_L^\ast + \sqrt{\rho_R^\ast} w_R^\ast
++ ( {B_z}_R^\ast - {B_z}_L^\ast ) {\rm sgn} (B_x)}
+{\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}"/></p>
+</div><div class="math" id="equation-by-ast2-def">
+<p><span class="eqno">(67)<a class="headerlink" href="#equation-by-ast2-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9f95326bd4b25d6cbee62e9c843d7311e237954e.png" alt="{B_y}^{\ast \ast} =
+\frac{\sqrt{\rho_L^\ast} {B_y}_R^\ast + \sqrt{\rho_R^\ast} {B_y}_L^\ast
++ \sqrt{\rho_L^\ast \rho_R^\ast}( v_R^\ast - v_L^\ast ) {\rm sgn} (B_x)}
+{\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}"/></p>
+</div><div class="math" id="equation-bz-ast2-def">
+<p><span class="eqno">(68)<a class="headerlink" href="#equation-bz-ast2-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3d8e81b506ab39d427a3c93a9e6579ff71d76ba0.png" alt="{B_z}^{\ast \ast} =
+\frac{\sqrt{\rho_L^\ast} {B_z}_R^\ast + \sqrt{\rho_R^\ast} {B_z}_L^\ast
++ \sqrt{\rho_L^\ast \rho_R^\ast}( w_R^\ast - w_L^\ast ) {\rm sgn} (B_x)}
+{\sqrt{\rho_L^\ast}+\sqrt{\rho_R^\ast}}"/></p>
+</div><p>が得られる。ここで、 <img class="math" src="_images/math/c19dcb0b536f31f4b4a64f7afb378df353ffc01a.png" alt="{\rm sgn}"/> は符号関数である。最後に <img class="math" src="_images/math/2a79d00d2a32ff536f133113baa4a4335a3181a0.png" alt="S_\alpha^\ast"/> に対する <img class="math" src="_images/math/60f4822f02b44d931c5d0595da71dcf34e270437.png" alt="e"/> のジャンプ条件から、</p>
+<div class="math" id="equation-er-ast2-def">
+<p><span class="eqno">(69)<a class="headerlink" href="#equation-er-ast2-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/923a57b8dbcbcda82abfb7d1ba143567409983e8.png" alt="e_R^{\ast \ast} = e_R^\ast + \sqrt{\rho_R^\ast}
+( \mbox{\boldmath$v$}_R^\ast \cdot \mbox{\boldmath$B$}_R^\ast - \mbox{\boldmath$v$}^{\ast \ast} \cdot \mbox{\boldmath$B$}^{\ast  \ast} )
+{\rm sgn} (B_x)"/></p>
+</div><div class="math" id="equation-el-ast2-def">
+<p><span class="eqno">(70)<a class="headerlink" href="#equation-el-ast2-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a29cfaa78b60f83584fece993f2d46e135647c6e.png" alt="e_L^{\ast \ast} = e_L^\ast - \sqrt{\rho_L^\ast}
+( \mbox{\boldmath$v$}_L^\ast \cdot \mbox{\boldmath$B$}_L^\ast - \mbox{\boldmath$v$}^{\ast \ast} \cdot \mbox{\boldmath$B$}^{\ast  \ast} )
+{\rm sgn} (B_x)"/></p>
+</div><p>が得られる。ただし、 <img class="math" src="_images/math/27c44b499b71d4c660fa19f793d7c58c75ee5244.png" alt="\mbox{\boldmath$v$}^{\ast \ast} = (S_M,v^{\ast \ast},w^{\ast \ast})"/> 、 <img class="math" src="_images/math/ba121f7b5ffc998997ea4d0d2b889e9c79ec59ea.png" alt="\mbox{\boldmath$B$}^{\ast \ast} = (B_x,{B_y}^{\ast \ast},{B_z}^{\ast \ast})"/> 。</p>
+<p>以上、リーマンファンにおける4つの状態、 <img class="math" src="_images/math/94516299883b02304334f65f5983301f539bf184.png" alt="\mbox{\boldmath$U$}_L^\ast"/> 、 <img class="math" src="_images/math/ae5db0a76cb55ef8e552cd7edad71a98b3ee0950.png" alt="\mbox{\boldmath$U$}_L^{\ast \ast}"/> 、 <img class="math" src="_images/math/b5239a06d9750112232cbc1ec09477ef263f03cb.png" alt="\mbox{\boldmath$U$}_R^{\ast \ast}"/> 、 <img class="math" src="_images/math/94516299883b02304334f65f5983301f539bf184.png" alt="\mbox{\boldmath$U$}_L^\ast"/> が完全に代数的に得られた。</p>
+<p>数値流束 <img class="math" src="_images/math/128904a33301581a565a14310668c03be7b1e850.png" alt="\mbox{\boldmath$F$}^\ast"/> は、HLL法と同様に、 <img class="math" src="_images/math/9d9f4618fe394fca084ec01aa9e52ed1b2c648b5.png" alt="[0,S_R \Delta t] \times [0,\Delta t]"/> または <img class="math" src="_images/math/e3731b5129f8a15f381a5e59279509c2557ddaf2.png" alt="[S_L \Delta t,0] \times [0,\Delta t]"/> における時空間保存則から求められる。例えば、 <img class="math" src="_images/math/6eb85516c0b18b0da3fea589f237c0239eaa9b72.png" alt="S_L \leq 0 \leq S_L^\ast"/> の場合、</p>
+<div class="math" id="equation-f-hlld-sol1">
+<p><span class="eqno">(71)<a class="headerlink" href="#equation-f-hlld-sol1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7340b68be71113532f0ab9eaa550bbb3a6021652.png" alt="(0-S_L)\mbox{\boldmath$U$}_L^\ast - (0-S_L)\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}^\ast -\mbox{\boldmath$F$}_L = 0"/></p>
+</div><p>から、 <img class="math" src="_images/math/c65c48fd8caa20dbbb75c5704d7926f867b3c8e3.png" alt="S_L^\ast \leq 0 \leq S_M"/> の場合、</p>
+<div class="math" id="equation-f-hlld-sol2">
+<p><span class="eqno">(72)<a class="headerlink" href="#equation-f-hlld-sol2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4601d1e0d627ffd89647c0b7c7ede1c994f407c3.png" alt="(0-S_L^\ast)\mbox{\boldmath$U$}_L^{\ast \ast} + (S_L^\ast-S_L)\mbox{\boldmath$U$}_L^\ast
+- (0-S_L)\mbox{\boldmath$U$}_L +\mbox{\boldmath$F$}^\ast -\mbox{\boldmath$F$}_L = 0"/></p>
+</div><p>から <img class="math" src="_images/math/128904a33301581a565a14310668c03be7b1e850.png" alt="\mbox{\boldmath$F$}^\ast"/> が得られる。最終的に、</p>
+<div class="math" id="equation-f-hlld-sol3">
+<p><span class="eqno">(73)<a class="headerlink" href="#equation-f-hlld-sol3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/037f2f416530784e7ada20c8272c13372951779d.png" alt="\mbox{\boldmath$F$}^\ast = \left\{
+\begin{array}{ll}
+\mbox{\boldmath$F$}_L &amp; {\rm for} \ 0 \leq S_L \\
+\mbox{\boldmath$F$}_L^\ast &amp; {\rm for} \ S_L \leq 0 \leq S_L^\ast \\
+\mbox{\boldmath$F$}_L^{\ast \ast} &amp; {\rm for} \ S_L^\ast \leq 0 \leq S_M \\
+\mbox{\boldmath$F$}_R^{\ast \ast} &amp; {\rm for} \ S_M \leq 0 \leq S_R^\ast \\
+\mbox{\boldmath$F$}_R^\ast &amp; {\rm for} \ S_R^\ast \leq 0 \leq S_R \\
+\mbox{\boldmath$F$}_R &amp; {\rm for} \ S_R \leq 0 \\
+\end{array}
+\right."/></p>
+</div><p>となる <a class="footnote-reference brackets" href="#fn9" id="id15">9</a> 。ただし、</p>
+<div class="math" id="equation-frl-ast-def">
+<p><span class="eqno">(74)<a class="headerlink" href="#equation-frl-ast-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/970df89dadca31790ec2277013e7c10591d3a600.png" alt="\mbox{\boldmath$F$}_{R / L}^{\ast / \ast \ast} =
+\mbox{\boldmath$F$} \left(
+\rho_{R / L}^{\ast / \ast \ast},
+S_M,
+v_{R / L}^{\ast / \ast \ast},
+w_{R / L}^{\ast / \ast \ast},
+B_x,
+{B_y}_{R / L}^{\ast / \ast \ast},
+{B_z}_{R / L}^{\ast / \ast \ast},
+e_{R / L}^{\ast / \ast \ast},
+p_T^\ast
+\right)"/></p>
+</div><p>である。 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> と <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> は、HLL法と同様に、例えば、 <a class="reference internal" href="#equation-sr-sl-1">(41)</a> から <a class="reference internal" href="#equation-sr-sl-4">(44)</a> のように評価する。特に磁場がゼロのとき、この解法はオイラー方程式に対するHLLC法に帰着する。</p>
+<p>HLL法と異なり、HLLD法ではMHD方程式の接触不連続や回転不連続、接線不連続を正確に解像できる。また、密度および圧力の正値性の保存性も理論的に保証される( <a class="reference internal" href="#positivity"><span class="std std-ref">付録</span></a> ) <a class="footnote-reference brackets" href="#fn10" id="id16">10</a> 。様々な数値実験の結果から、線形近似リーマン解法と同等の解像度を持ちつつ、線形近似リーマン解法に比べ計算効率が高いことも示されている。したがって、HLLD法は、解像度、ロバストさ、計算効率の全てに優れたMHD解法といえる。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn8"><span class="brackets"><a class="fn-backref" href="#id14">8</a></span></dt>
+<dd><p>HLLD法の``D''は不連続(discontinuities)の頭文字を表す。HLLC法(接触不連続(contact discontinuity)を解像するHLL型の近似リーマン解法)の上位の解法である。</p>
+</dd>
+<dt class="label" id="fn9"><span class="brackets"><a class="fn-backref" href="#id15">9</a></span></dt>
+<dd><p>ジャンプ条件 <img class="math" src="_images/math/94bf315f9afe3b8430a643499b71df53da127efd.png" alt="S[\mbox{\boldmath$U$}]-[\mbox{\boldmath$F$}]=0"/> を満足するように近似解を求めたので当然である。</p>
+</dd>
+<dt class="label" id="fn10"><span class="brackets"><a class="fn-backref" href="#id16">10</a></span></dt>
+<dd><p>MHD方程式に対するHLL法の正値性保存性も合わせて証明できる。</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="section" id="id17">
+<h2>高次精度化<a class="headerlink" href="#id17" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>近似リーマン解を得るために必要な、あるセル境界 <img class="math" src="_images/math/7570b4cabd31d8f265c4f6a83b1274c212896151.png" alt="i+1/2"/> に対する左・右状態である <img class="math" src="_images/math/c108e9a2543538a446144d121dfef8571ec3b72b.png" alt="U_L"/> と <img class="math" src="_images/math/258a2d00ceec699d081df14c7cc6f3b3e09cc529.png" alt="U_R"/> は、単純には <img class="math" src="_images/math/ce987c3639ff955f54287095a89d0f71d844ce70.png" alt="U_L=U_i"/> 、 <img class="math" src="_images/math/155f255a87c451c239773f24d930c20e2bb4be1e.png" alt="U_R=U_{i+1}"/> より与えられる。この解は最も安定（上記よりスカラ変数の正値性が保証）である一方、数値粘性が過多に含まれていることになり、得られる構造は時間と共に急速に散逸する。また空間1次精度である。本節では、 近接するより多くのセルの情報を取り入れることにより、<img class="math" src="_images/math/c108e9a2543538a446144d121dfef8571ec3b72b.png" alt="U_L"/> 、 <img class="math" src="_images/math/258a2d00ceec699d081df14c7cc6f3b3e09cc529.png" alt="U_R"/> を高精度に求める方法を解説する。以下では、 <img class="math" src="_images/math/7570b4cabd31d8f265c4f6a83b1274c212896151.png" alt="i+1/2"/> における左・右状態をそれぞれ <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> <img class="math" src="_images/math/05fdfe060c0026e214c30c1d1d214c4a1604d176.png" alt="U_{R,i+1/2}"/> で表す。</p>
+<p>一般に、同じ解像度の結果を得るためには、多くのセル数を使って低次精度のスキームで解く場合に比べて、少ないセル数で高次精度スキームを用いたほうが必要な計算量は少なくてすむ。これは、セル幅（ <img class="math" src="_images/math/852b8ffc2553dfa818c2e131e468d82d26f1af1e.png" alt="\Delta h"/> ）に対して <img class="math" src="_images/math/1cbed16cdf4b7d71ea54522bd6d63001f2a32acd.png" alt="\Delta h^4"/> で計算量が増加する（3次元計算の場合）のに対して、高次精度化にともなう計算量の増加は、せいぜい数倍に留まるためである。また、近年のスカラ型スーパーコンピュータにおいては、セルあたりの演算量を増やした方がより効率的にCPUの能力を活用できることも、スキームの高次精度化に伴うメリットであると言える。</p>
+<p>高次精度化を図るためには多項式による数値補間が必要であるが、不連続面近傍において数値振動の元となる。2次以上の線形スキームでは解の単調性を維持できないことが知られている（Godunovの定理、 <a class="reference internal" href="sabun.html#godunov-theorem"><span class="std std-ref">前章「差分の基礎」</span></a> ）。従って、不連続面近傍において単調性を維持することができるような（1次精度に落とす）非線形スキームの開発が必要となる。以下では、代表的な2次精度の <a class="reference internal" href="#muscl"><span class="std std-ref">MUSCL法</span></a> 、5次精度の <a class="reference internal" href="#weno5"><span class="std std-ref">WENO法</span></a> 、 <strong>CANS+</strong> で採用されている5次精度の <a class="reference internal" href="#mp5"><span class="std std-ref">MP5法</span></a> について解説する。</p>
+<div class="section" id="muscl">
+<span id="id18"></span><h3>MUSCL補間<a class="headerlink" href="#muscl" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><a class="reference internal" href="reference.html#vanleer79"><span class="std std-ref">van Leer (1979)</span></a> が提唱した、MUSCL (Monotone Upstream-centered Schemes
+for Conservation Laws) 補間と呼ばれる。着目するセル内の物理量を関数 <img class="math" src="_images/math/9a35ad8c61a0f8b8a5e203dc864b08cf2c0f024a.png" alt="u(x)"/> で表し、</p>
+<div class="math" id="equation-muscl1">
+<p><span class="eqno">(75)<a class="headerlink" href="#equation-muscl1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7e993c33dd1a117e3524ebda5ffba7bea3b0cf5e.png" alt="u(x) = U_i + \frac{U_{i+1}-U_{i-1}}{2\Delta x}(x-x_i) + \frac{3\kappa}{2}\frac{U_{i+1}-2U_i+U_{i-1}}{\Delta x^2}\left[(x-x_i)^2-\frac{\Delta x^2}{12} \right],"/></p>
+</div><p>でセル内のプロファイルを構築する。ここで、</p>
+<div class="math" id="equation-muscl2">
+<p><span class="eqno">(76)<a class="headerlink" href="#equation-muscl2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/bf6f0f34652100f90ac8c8eceae82b50d4fbe8e3.png" alt="U_i = \frac{1}{\Delta x} \int_{x_{i-1/2}}^{x_{i+1/2}} u(x) dx"/></p>
+</div><p>である。 <img class="math" src="_images/math/d205fbea6b477e32afd482f02e2a0a661a6acba7.png" alt="\kappa=1/3"/> のとき、セル内を2次関数で表現（3次精度）することに相当する。</p>
+<p>式 <a class="reference internal" href="#equation-muscl1">(75)</a> より、 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> 、 <img class="math" src="_images/math/07abb75eb760bf9081504f07af4c047e8631a109.png" alt="U_{R,i-1/2}"/> は、</p>
+<div class="math" id="equation-muscl3">
+<p><span class="eqno">(77)<a class="headerlink" href="#equation-muscl3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/77110bd9a8d96adcd16aac47ecef585e33253f59.png" alt="U_{L,i+1/2} = u(x_{i+1/2}) = U_i + \frac{1-\kappa}{4}(U_i-U_{i-1})+\frac{1+\kappa}{4}(U_{i+1}-U_i),"/></p>
+</div><div class="math" id="equation-muscl4">
+<p><span class="eqno">(78)<a class="headerlink" href="#equation-muscl4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ff3ea6ce7e6ce84b364626f5242dbcf0ec7b5470.png" alt="U_{R,i-1/2} = u(x_{i-1/2}) = U_i - \frac{1-\kappa}{4}(U_{i+1}-U_i)-\frac{1+\kappa}{4}(U_i-U_{i-1})."/></p>
+</div><p>式 <a class="reference internal" href="#equation-muscl3">(77)</a> 、 <a class="reference internal" href="#equation-muscl4">(78)</a> をそのまま採用すると不連続面近傍で数値振動が発生する。数値振動を発生させないためには、全変化量TV（Total Variation）</p>
+<div class="math" id="equation-muscl5">
+<p><span class="eqno">(79)<a class="headerlink" href="#equation-muscl5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/62144420793942f62117aba5bdf6833ab469f0e0.png" alt="TV(U) = \sum_i |U_{i+1} - U_i|"/></p>
+</div><p>が時間と共に増加しない、TVD（Total Variation Diminishing）条件</p>
+<div class="math" id="equation-muscl6">
+<p><span class="eqno">(80)<a class="headerlink" href="#equation-muscl6" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c6d885d2eee1a6b0a497853780d90115385bbd86.png" alt="TV(U^{n+1}) \le TV(U^n)"/></p>
+</div><p>を満たす必要がある。そこで、TVD条件を満たすような流束制限関数 <img class="math" src="_images/math/d8ee85ac4d75924cdf4b18f5fb3b46550932fc26.png" alt="\Phi"/> を以下のように導入する。</p>
+<div class="math" id="equation-muscl7a">
+<p><span class="eqno">(81)<a class="headerlink" href="#equation-muscl7a" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2b694ce2eb00d730e2358abf56d2f559c7da2ea1.png" alt="U_{L,i+1/2} = u(x_{i+1/2}) = U_i + \frac{1-\kappa}{4}\Phi(r)(U_i-U_{i-1})+\frac{1+\kappa}{4}\Phi(1/r)(U_{i+1}-U_i)"/></p>
+</div><div class="math" id="equation-muscl7b">
+<p><span class="eqno">(82)<a class="headerlink" href="#equation-muscl7b" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/befaefe7a722fcadbc92be998b0565d72d26b7c7.png" alt="U_{R,i-1/2} = u(x_{i-1/2}) = U_i - \frac{1-\kappa}{4}\Phi(1/r)(U_{i+1}-U_i)-\frac{1+\kappa}{4}\Phi(r)(U_i-U_{i-1})"/></p>
+</div><p>ここで、流束制限関数 <img class="math" src="_images/math/10588a4289d9f0e349f9b4df736b47320a006e9a.png" alt="\Phi(r)"/> は <img class="math" src="_images/math/c5bee0806f0c5017679004072f372a09b88a5340.png" alt="r=(U_{i+1}-U_i)/(U_i-U_{i-1})"/> の関数である。以下では、数ある制限関数のうち代表的なminmod関数およびmonotonized centralを例に挙げる（ <strong>CANS+</strong> でも実装されている）。両制限関数は <img class="math" src="_images/math/5529a8916459584e2e291c14e35034b3703f258d.png" alt="\Phi(r) = r\Phi(1/r)"/> の関係があるので、その場合、</p>
+<div class="math" id="equation-muscl6c">
+<p><span class="eqno">(83)<a class="headerlink" href="#equation-muscl6c" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/19b4e69c9b6097aaaf4ec52160b848308bdd6ef6.png" alt="U_{L,i+1/2} = U_i + \frac{1}{2}\Phi(r)(U_i-U_{i-1})"/></p>
+</div><div class="math" id="equation-muscl7c">
+<p><span class="eqno">(84)<a class="headerlink" href="#equation-muscl7c" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/59dfdf0d3ba0d2ed0580d986c1530e62e0fbccc7.png" alt="U_{R,i-1/2} = U_i - \frac{1}{2}\Phi(1/r)(U_{i+1}-U_i)"/></p>
+</div><p>となる。</p>
+<div class="section" id="minmod-limiter">
+<h4>minmod limiter<a class="headerlink" href="#minmod-limiter" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>minmod 制限関数は</p>
+<div class="math" id="equation-minmod1">
+<p><span class="eqno">(85)<a class="headerlink" href="#equation-minmod1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7318a3dd95dd357730a7b43eadbf49311ff27268.png" alt="\Phi(r) = max[0,min(1,r)]"/></p>
+</div><p>で表される。実際の計算では、</p>
+<div class="math" id="equation-minmod2">
+<p><span class="eqno">(86)<a class="headerlink" href="#equation-minmod2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/295d62001ef1e26b1f0a8d0e753d5d4cfa6d74ce.png" alt="U_{L,i+1/2} = U_i + \frac{1}{2}minmod(U_{i+1}-U_i,U_i-U_{i-1})"/></p>
+</div><div class="math" id="equation-minmod3">
+<p><span class="eqno">(87)<a class="headerlink" href="#equation-minmod3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/49e6eb47e94e54987bedc80dc0b199fdc77c8f81.png" alt="U_{R,i-1/2} = U_i - \frac{1}{2}minmod(U_{i+1}-U_i,U_i-U_{i-1})"/></p>
+</div><p>のように、minmod関数</p>
+<div class="math" id="equation-minmod4">
+<p><span class="eqno">(88)<a class="headerlink" href="#equation-minmod4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/660b5997f8fa3648aed5a1f165cce1632cfb7350.png" alt="minmod(a,b) = sign(a)max(0,min(|a|,sign(a)b))"/></p>
+</div><p>を定義して、 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> 、 <img class="math" src="_images/math/07abb75eb760bf9081504f07af4c047e8631a109.png" alt="U_{R,i-1/2}"/> を一度に求める。ここで、 <img class="math" src="_images/math/0c654e7e0c5db7cd54ffbde26bf88b873133e9d6.png" alt="sign(a)"/> は引数 <img class="math" src="_images/math/b3e65e3b6408fcfa00452530b73f55d1755f9965.png" alt="a"/>
+の符号を返す関数である。</p>
+</div>
+<div class="section" id="monotonized-central">
+<h4>monotonized central<a class="headerlink" href="#monotonized-central" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>monotonized central 制限関数は</p>
+<div class="math" id="equation-mc1">
+<p><span class="eqno">(89)<a class="headerlink" href="#equation-mc1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3af77f1be03a386999ef920d6611f62b0f2aa73b.png" alt="\Phi(r) = max[0,min(2r,0.5(1+r),2)]"/></p>
+</div><p>で表される。実際の計算では、</p>
+<div class="math" id="equation-mc2">
+<p><span class="eqno">(90)<a class="headerlink" href="#equation-mc2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2f0ec8ae45b7f627c801156a4900cd97876df0df.png" alt="U_{L,i+1/2} = U_i + \frac{1}{2}MC(2(U_{i+1}-U_i),2(U_i-U_{i-1}),(U_{i+1}-U_{i-1})/2)"/></p>
+</div><div class="math" id="equation-mc3">
+<p><span class="eqno">(91)<a class="headerlink" href="#equation-mc3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7de3864c96534d75cd2c0358ddc5bdc4a9eebe7e.png" alt="U_{R,i-1/2} = U_i - \frac{1}{2}MC(2(U_{i+1}-U_i),2(U_i-U_{i-1}),(U_{i+1}-U_{i-1})/2)"/></p>
+</div><p>のように、MC関数</p>
+<div class="math" id="equation-mc4">
+<p><span class="eqno">(92)<a class="headerlink" href="#equation-mc4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/16adb11b47d5b469e6ccebe04b02840e498524de.png" alt="MC(a,b,c) &amp;= sign(a)max(0,min(|a|,sign(a)b,sign(a)c)) \\
+          &amp;= minmod(a,minmod(b,c))"/></p>
+</div><p>を定義して、 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> 、 <img class="math" src="_images/math/07abb75eb760bf9081504f07af4c047e8631a109.png" alt="U_{R,i-1/2}"/> を一度に求める。</p>
+</div>
+</div>
+<div class="section" id="weno">
+<span id="weno5"></span><h3>WENO法<a class="headerlink" href="#weno" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>Weighted Essentially Non-Oscillatory （WENO）法とは、Liuら（ <a class="reference internal" href="reference.html#liu94"><span class="std std-ref">Liu et al., 1994</span></a> ）によって開発され、その後Jiangら（ <a class="reference internal" href="reference.html#jiang-shu96"><span class="std std-ref">Jiang &amp; Shu, 1996</span></a> ）によって改良された、双曲型方程式を高精度かつ安定に解く数値手法であり、現在は特に圧縮性流体の高解像度シミュレーションに広く利用されている。WENO法では、物理量のセル平均値</p>
+<div class="math" id="equation-weno1">
+<p><span class="eqno">(93)<a class="headerlink" href="#equation-weno1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/dae7dae1f18fbaf236a1d21375d2f49033cce61a.png" alt="U_{i} = \frac{1}{\Delta} \int_{x_{i}-\Delta/2}^{x_{i}+\Delta/2} u(x)dx,"/></p>
+</div><p>を保持し、セル境界の物理量 <img class="math" src="_images/math/912091ce5af9fd41ec35a0ad92e8f785339e22e5.png" alt="U_{i+1/2}"/> を非線形補間で近似する。</p>
+<p>最もポピュラーな5次精度WENO法を例に挙げる。ステンシル <img class="math" src="_images/math/81a857e562256a7ce26690fcb602bb05b7d331cc.png" alt="[i-2,i+2]"/> において、左に偏りを持たせて、 <img class="math" src="_images/math/7570b4cabd31d8f265c4f6a83b1274c212896151.png" alt="i+1/2"/> の左状態 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> を求めよう（対称性から <img class="math" src="_images/math/b5adeb2cf822769f2a8b2fb85f0577bf729d0e22.png" alt="i-1/2"/> の右状態 <img class="math" src="_images/math/07abb75eb760bf9081504f07af4c047e8631a109.png" alt="U_{R,i-1/2}"/> も求めることが出来る）。ステンシルを次の3つのサブステンシル</p>
+<div class="math">
+<p><img src="_images/math/3ec4d33d54fe2c45dc919f3be6f63e71425237af.png" alt="&amp;S^0: [i-2,i], \\
+&amp;S^1: [i-1,i+1], \\
+&amp;S^2: [i,i+2],"/></p>
+</div><p>に分割し、各サブステンシルにおいて <img class="math" src="_images/math/912091ce5af9fd41ec35a0ad92e8f785339e22e5.png" alt="U_{i+1/2}"/> を線形ラグランジュ補間で近似する。</p>
+<div class="math" id="equation-weno2">
+<p><span class="eqno">(94)<a class="headerlink" href="#equation-weno2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/553105c2a112612b9e92e1b6fc369feeb34bfa43.png" alt="U_{i+1/2}^0 = \frac{2U_{i-2}-7U_{i-1}+11U_{i}}{6},"/></p>
+</div><div class="math" id="equation-weno3">
+<p><span class="eqno">(95)<a class="headerlink" href="#equation-weno3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4821deb95ea88a8b74ab80ac62b92b03679941cf.png" alt="U_{i+1/2}^1 = \frac{-U_{i-1}+5U_{i}+2U_{i+1}}{6},"/></p>
+</div><div class="math" id="equation-weno4">
+<p><span class="eqno">(96)<a class="headerlink" href="#equation-weno4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7b83dde3dc1638baf264df8a5692be9e22c7a9d8.png" alt="U_{i+1/2}^2 = \frac{2U_{i}+5U_{i+1}-U_{i+2}}{6}."/></p>
+</div><p>これらを用いて、 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> を重み付き平均で近似する。</p>
+<div class="math" id="equation-weno5">
+<p><span class="eqno">(97)<a class="headerlink" href="#equation-weno5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/444ce3ca9680403646974abbc5494f7d5a506865.png" alt="U_{L,i+1/2} = \sum_{k=0}^{2} w^k U_{i+1/2}^k,"/></p>
+</div><p>ここで重み <img class="math" src="_images/math/fa2216579855ac71d103e00c9de27c7fa61322f8.png" alt="w^s"/> は <img class="math" src="_images/math/b50ef45cb9b0fe2a62a9dee564b69e1df0f4c55a.png" alt="w^s &gt; 0, \sum_{k}w^k=1"/> を満たし（凸結合）、さらに以下のルールに基づいて決定される。</p>
+<ul class="simple">
+<li><p>滑らかなサブステンシルでは大きく、不連続を含むサブステンシルでは小さくする。</p></li>
+<li><p>全てのステンシルの滑らかさが同じならば、最大精度を達成する。これは5点を用いた線形ラグランジュ補間で与えられる。</p></li>
+</ul>
+<p>これらを満たす重み <img class="math" src="_images/math/fa2216579855ac71d103e00c9de27c7fa61322f8.png" alt="w^s"/> は様々あるが、ここでは標準的な例（ <a class="reference internal" href="reference.html#jiang-shu96"><span class="std std-ref">Jiang &amp; Shu, 1996</span></a> ）を紹介しよう。</p>
+<div class="math" id="equation-weno6">
+<p><span class="eqno">(98)<a class="headerlink" href="#equation-weno6" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4cabe2cf4df33bb2134ce360dc3f03cd1e064bb3.png" alt="&amp; w^s = \frac{a^s}{\sum_{k}a^k},"/></p>
+</div><div class="math" id="equation-weno7">
+<p><span class="eqno">(99)<a class="headerlink" href="#equation-weno7" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4cfd9fb2aa8860e21f838fb4713c26d465e38657.png" alt="&amp; a^0 = \frac{0.1}{\left(IS^0+\epsilon\right)^2}, \;\; a^1 = \frac{0.6}{\left(IS^1+\epsilon\right)^2}, \;\; a^2  = \frac{0.3}{\left(IS^2+\epsilon\right)^2},"/></p>
+</div><div class="math" id="equation-weno8">
+<p><span class="eqno">(100)<a class="headerlink" href="#equation-weno8" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1face0b0ae487ef3aa9db3024578b1630db55eca.png" alt="&amp; IS^0 = \frac{13}{12} \left(U_{i-2}-2U_{i-1}+U_{i}\right)^2 + \frac{1}{4}\left(U_{i-2}-4U_{i-1}+3U_{i} \right)^2,"/></p>
+</div><div class="math" id="equation-weno9">
+<p><span class="eqno">(101)<a class="headerlink" href="#equation-weno9" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3576386d7bf614f392ba8e09e9197577342a2bf8.png" alt="&amp; IS^1 = \frac{13}{12} \left(U_{i-1}-2U_{i}+U_{i+1}\right)^2 + \frac{1}{4}\left(U_{i-1}-U_{i+1}\right)^2,"/></p>
+</div><div class="math" id="equation-weno10">
+<p><span class="eqno">(102)<a class="headerlink" href="#equation-weno10" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/9bdfe7cdcc82924d1d73e9310227b1697ec47bee.png" alt="&amp; IS^2 = \frac{13}{12} \left(U_{i}-2U_{i+1}+U_{i+2}\right)^2 + \frac{1}{4}\left(3U_{i}-4U_{i+1}+U_{i+2} \right)^2,"/></p>
+</div><p>ここで <img class="math" src="_images/math/0ad7b30534898f253002222f998f38001e604648.png" alt="\epsilon"/> はゼロ除算防止のための小さな値（ <img class="math" src="_images/math/7e21945d9e6e712189e545e2144022340947d5fa.png" alt="10^{-6}"/> 程度）である。どうしてこのような表式が提案されたかについては、原論文をご覧頂きたい。</p>
+<p>重み <img class="math" src="_images/math/fa2216579855ac71d103e00c9de27c7fa61322f8.png" alt="w^s"/> が適切に与えられることで、不連続面近傍では振動が抑えられ（不連続面を含むサブステンシルの <img class="math" src="_images/math/bc20ca7988bb9f16ce64f3e17cc539151e9b3ad4.png" alt="w \ll"/> 他の <img class="math" src="_images/math/cc87ee665749db882f94e0d3707eb23e39638650.png" alt="w"/> ）、滑らかな領域（ <img class="math" src="_images/math/327e6029c12d7d07f126aaee1b835a7ceaa2b2be.png" alt="IS^0 \sim IS^1 \sim IS^2"/> ）では高精度が維持される。これまでの式からわかる通り、WENO法は全て代数計算のみを用いており、IF文などの論理計算を用いない。これはコンピュータにとって解読しやすく（ベクトル化されやすい）、計算効率に優れている。近年も改良が進められ、WENO-M（ <a class="reference internal" href="reference.html#henrick05"><span class="std std-ref">Henrick et al., 2005</span></a> ）やWENO-Z（ <a class="reference internal" href="reference.html#borges08"><span class="std std-ref">Borges et al., 2008</span></a> ）などの新しい手法が提案されている。</p>
+</div>
+<div class="section" id="mp5">
+<span id="id19"></span><h3>MP5法<a class="headerlink" href="#mp5" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>MP5法とは、5次精度のMonotonicity Preserving (MP) schemeで、SureshとHuynh（ <a class="reference internal" href="reference.html#suresh-huynh97"><span class="std std-ref">Suresh &amp; Huynh, 1997</span></a> ）によって開発された手法であり、 <strong>CANS+</strong> の高次精度補間スキームとして採用されている。 <a class="reference internal" href="#weno5"><span class="std std-ref">WENO法</span></a> と同様に、物理量のセル平均値</p>
+<div class="math" id="equation-mp1">
+<p><span class="eqno">(103)<a class="headerlink" href="#equation-mp1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/dae7dae1f18fbaf236a1d21375d2f49033cce61a.png" alt="U_{i} = \frac{1}{\Delta} \int_{x_{i}-\Delta/2}^{x_{i}+\Delta/2} u(x)dx,"/></p>
+</div><p>を保持し、セル境界の物理量 <img class="math" src="_images/math/912091ce5af9fd41ec35a0ad92e8f785339e22e5.png" alt="U_{i+1/2}"/> を非線形補間で求めることを考える。以下では、ステンシル <img class="math" src="_images/math/81a857e562256a7ce26690fcb602bb05b7d331cc.png" alt="[i-2,i+2]"/> において、 <img class="math" src="_images/math/7570b4cabd31d8f265c4f6a83b1274c212896151.png" alt="i+1/2"/> の左状態 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> を求めよう（対称性から <img class="math" src="_images/math/b5adeb2cf822769f2a8b2fb85f0577bf729d0e22.png" alt="i-1/2"/> の右状態 <img class="math" src="_images/math/07abb75eb760bf9081504f07af4c047e8631a109.png" alt="U_{R,i-1/2}"/> も求めることができる）。</p>
+<p>MP5法では、5点のステンシルを使って4次多項式 <img class="math" src="_images/math/9a35ad8c61a0f8b8a5e203dc864b08cf2c0f024a.png" alt="u(x)"/> を構築する。多項式の係数は、 <img class="math" src="_images/math/81a857e562256a7ce26690fcb602bb05b7d331cc.png" alt="[i-2,i+2]"/> それぞれにおける式 <a class="reference internal" href="#equation-mp1">(103)</a> の束縛条件より決定される。それより、 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> における補間値は</p>
+<div class="math" id="equation-mp2">
+<p><span class="eqno">(104)<a class="headerlink" href="#equation-mp2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/da27ecd776cde58813d4d8f48e6afea76bbd6945.png" alt="U_{L,i+1/2} = u(x_{i+1/2}) = \frac{2U_{i-2}-13U_{i-1}+47U_i+27U_{j+1}-3U_{j+2}}{60}"/></p>
+</div><p>で与えられる。得られた解は、スムーズな領域では5次の精度となるが、当然、不連続面では数値振動をもたらす。上記 <a class="reference internal" href="#muscl"><span class="std std-ref">MUSCL法</span></a> で議論したような、いわゆるTVDスキームを採用することで不連続面での数値振動は回避できるが、TVDスキームは波の伝搬を正確に解けないという弊害があることが知られている。これは、たかだか３点の情報では滑らかな関数の極値なのか、不連続面なのかの判定ができないからである（ <a class="reference internal" href="#mp5-exp"><span class="std std-ref">図参照</span></a> ）。</p>
+<div class="figure align-center" id="id39">
+<span id="mp5-exp"></span><a class="reference internal image-reference" href="_images/mp5_exp.png"><img alt="_images/mp5_exp.png" src="_images/mp5_exp.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">セル周辺のプロファイルの判定。着目するセル（ <img class="math" src="_images/math/e3fc28292267f066fee7718c64f4bbfece521f24.png" alt="j"/> ）を中心とした３点（●）では、左のプロファイル（実線）と右のプロファイルとの区別ができない。外側２点（○）を加えた５点で初めて形状の判定を行うことができる。</span><a class="headerlink" href="#id39" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>MP5法は、このように５つのセルの情報を使って周辺のプロファイルを判定し、 <a class="reference internal" href="#mp5-exp"><span class="std std-ref">図左</span></a> のような滑らかな曲線の場合は式 <a class="reference internal" href="#equation-mp2">(104)</a> で求められた値を採用し、 <a class="reference internal" href="#mp5-exp"><span class="std std-ref">図右</span></a> のような不連続形状であると判定された場合は、単調性が維持できるような値を補間値の代わりに使う、というものである。つまり、 <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> がある許容範囲内に収まるように <img class="math" src="_images/math/604a61e3748da888ff313e41d4537b2ff90812a3.png" alt="median"/> 関数を用いて <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> を更新する。</p>
+<div class="math" id="equation-mp3">
+<p><span class="eqno">(105)<a class="headerlink" href="#equation-mp3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f46dfffa4131e0f3c6be356df998188f86705b91.png" alt="U_{L,i+1/2} = median(U_{L,i+1/2},U_{min},U_{max})."/></p>
+</div><p>ここで、 <img class="math" src="_images/math/65073225047934a484be8e3efa266d1e3f4eba49.png" alt="median(a,b,c)"/> は3変数のうちの中央値を採択する関数で、上記 <img class="math" src="_images/math/6b49c04e04f669ee3156ac9c73fedd21c75b091d.png" alt="minmod"/> 関数を用いて</p>
+<div class="math" id="equation-mp4">
+<p><span class="eqno">(106)<a class="headerlink" href="#equation-mp4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8127c86f1ffe6b27489080c5df108aaad2fb27b5.png" alt="median(a,b,c) = a+minmod(b-a,c-a)"/></p>
+</div><p>によって実装される。式 <a class="reference internal" href="#equation-mp2">(104)</a> で補間した <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> が <img class="math" src="_images/math/6884591f6425bdb1ab87d34c70f2436ed43a6fa5.png" alt="U_{min} \le U_{L,i+1/2} \le U_{max}"/> の場合はそのまま <img class="math" src="_images/math/4ae9cd9a3f7fefb5bdc6db0e3e419b03d12b314a.png" alt="U_{L,i+1/2}"/> が採択され、例えば、<img class="math" src="_images/math/00057a26a6f97e6147064987f558de41cd39cae4.png" alt="U_{L,i+1/2} \le U_{min} \le U_{max}"/> の場合は <img class="math" src="_images/math/31df066a31a7d749f96e80f363966f21f381b366.png" alt="U_{min}"/> が採択される。 <img class="math" src="_images/math/31df066a31a7d749f96e80f363966f21f381b366.png" alt="U_{min}"/> , <img class="math" src="_images/math/fa6ed0f0f654ed54bfe7a57d10b6e23a5729bf7c.png" alt="U_{max}"/> の求め方については、 <a class="reference internal" href="reference.html#suresh-huynh97"><span class="std std-ref">原論文</span></a> を参照いただきたい。</p>
+</div>
+</div>
+<div class="section" id="id20">
+<h2>多次元化<a class="headerlink" href="#id20" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id21">
+<h3>時間更新手順<a class="headerlink" href="#id21" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>式 <a class="reference internal" href="#equation-mhd">(8)</a> を時空間で差分化した方程式に基づき、セル <img class="math" src="_images/math/2f4e83a9ff0d92895b347f4ccef0af63ca6c4a29.png" alt="(i,j,k)"/> における時間更新は、</p>
+<div class="math" id="equation-multidim-update">
+<p><span class="eqno">(107)<a class="headerlink" href="#equation-multidim-update" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/27c150260389aacc3d1c657f9c4bd3d2103b7922.png" alt="\frac{\mbox{\boldmath$U$}^{n+1}_{(i,j,k)}-\mbox{\boldmath$U$}^n_{(i,j,k)}}{\Delta t} = -\frac{\mbox{\boldmath$F$}_{x(i+1/2)}^{*}-\mbox{\boldmath$F$}_{x(i-1/2)}^{*}}{\Delta x}-\frac{\mbox{\boldmath$F$}_{y(j+1/2)}^{*}-\mbox{\boldmath$F$}_{y(j-1/2)}^{*}}{\Delta y}-\frac{\mbox{\boldmath$F$}_{z(k+1/2)}^{*}-\mbox{\boldmath$F$}_{z(k-1/2)}^{*}}{\Delta z}"/></p>
+</div><p>で行われる。（関連しない添字 <img class="math" src="_images/math/5ccdbe102a01813b6cb023eebbe77a5f17147159.png" alt="i,j,k"/> は省略した。以下同様。）ここで、 <img class="math" src="_images/math/890657fbdb66de0f6afe098da383877334a64f91.png" alt="\mbox{\boldmath$F$}_{x(i\pm1/2)}^{*}"/> 、 <img class="math" src="_images/math/920a6fe647ce10181025978a9bf2034f1de69409.png" alt="\mbox{\boldmath$F$}_{y(j\pm1/2)}^{*}"/> 、 <img class="math" src="_images/math/7c54582fedb723f685dcde8e5ffa83f32f3d1aee.png" alt="\mbox{\boldmath$F$}_{z(k\pm1/2)}^{*}"/> は各方向のセル境界における数値フラックスで、それぞれ</p>
+<div class="math" id="equation-multidim-fluxx">
+<p><span class="eqno">(108)<a class="headerlink" href="#equation-multidim-fluxx" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ba48c9dd4fa1e0210db194cc2fc8a78a9e22b9e1.png" alt="\mbox{\boldmath$F$}_{x(i\pm1/2)}^{*} = Riemann(\mbox{\boldmath$U$}_{xL,i\pm1/2},\mbox{\boldmath$U$}_{xR,i\pm1/2}),"/></p>
+</div><div class="math" id="equation-multidim-fluxy">
+<p><span class="eqno">(109)<a class="headerlink" href="#equation-multidim-fluxy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/fbf8e922a36dd1a9c4723fc5f0dda1e711a35def.png" alt="\mbox{\boldmath$F$}_{y(j\pm1/2)}^{*} = Riemann(\mbox{\boldmath$U$}_{yL,j\pm1/2},\mbox{\boldmath$U$}_{yR,j\pm1/2}),"/></p>
+</div><div class="math" id="equation-multidim-fluxz">
+<p><span class="eqno">(110)<a class="headerlink" href="#equation-multidim-fluxz" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7a2fb27870216f4708a2101cd2b71d9dfe1206b2.png" alt="\mbox{\boldmath$F$}_{z(k\pm1/2)}^{*} = Riemann(\mbox{\boldmath$U$}_{zL,k\pm1/2},\mbox{\boldmath$U$}_{zR,k\pm1/2}),"/></p>
+</div><p>で与えられ、また、 <img class="math" src="_images/math/90092f3e49116b57021b407778805937444d3388.png" alt="U_{xL}"/> , <img class="math" src="_images/math/c0bbf442ad596bb1ea8e70d95a6a696991d2cec7.png" alt="U_{xR}"/> , <img class="math" src="_images/math/9a30a9568854330b6b59b224f432679fdefcb453.png" alt="U_{yL}"/> , <img class="math" src="_images/math/6ab8ac0e76330a8c6f04c1f8ada95c7e7bf52099.png" alt="U_{yR}"/> , <img class="math" src="_images/math/07c27e93a56316fb143d066a3a579be4fb39c729.png" alt="U_{zL}"/> , <img class="math" src="_images/math/523565f5ae6a9795203098892269c8a874665d09.png" alt="U_{zR}"/> は各次元方向周辺のセルから求める。例えば、 <strong>CANS+</strong> で採用されている <a class="reference internal" href="#mp5"><span class="std std-ref">MP5法</span></a> では</p>
+<div class="math" id="equation-multidim-interpx">
+<p><span class="eqno">(111)<a class="headerlink" href="#equation-multidim-interpx" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/62f8cadac782bcae1e57c3a7ede2d46533fe18ea.png" alt="\mbox{\boldmath$U$}_{xL,i\pm1/2} = MP5(\mbox{\boldmath$U$}_{i\mp2},\mbox{\boldmath$U$}_{i\mp1},\mbox{\boldmath$U$}_{i},\mbox{\boldmath$U$}_{i\pm1},\mbox{\boldmath$U$}_{i\pm2})"/></p>
+</div><div class="math" id="equation-multidim-interpxy">
+<p><span class="eqno">(112)<a class="headerlink" href="#equation-multidim-interpxy" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4191aebebcdd1b28345e36e412b946c1a11ac142.png" alt="\mbox{\boldmath$U$}_{yL,j\pm1/2} = MP5(\mbox{\boldmath$U$}_{j\mp2},\mbox{\boldmath$U$}_{j\mp1},\mbox{\boldmath$U$}_{j},\mbox{\boldmath$U$}_{j\pm1},\mbox{\boldmath$U$}_{j\pm2})"/></p>
+</div><div class="math" id="equation-multidim-interpz">
+<p><span class="eqno">(113)<a class="headerlink" href="#equation-multidim-interpz" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7c5af733f08896e50d650fb85c32c428e885de6a.png" alt="\mbox{\boldmath$U$}_{zL,k\pm1/2} = MP5(\mbox{\boldmath$U$}_{k\mp2},\mbox{\boldmath$U$}_{k\mp1},\mbox{\boldmath$U$}_{k},\mbox{\boldmath$U$}_{k\pm1},\mbox{\boldmath$U$}_{k\pm2})"/></p>
+</div><p>のようにして求める。</p>
+</div>
+<div class="section" id="divb">
+<span id="id22"></span><h3>磁場の発散の数値的処理<a class="headerlink" href="#divb" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>マクスウェル方程式は磁場のソレノイダル性</p>
+<div class="math" id="equation-divb0">
+<p><span class="eqno">(114)<a class="headerlink" href="#equation-divb0" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ff6cf2310e47b8175c07483d353df5c10763621f.png" alt="\nabla \cdot \mbox{\boldmath$B$} = 0"/></p>
+</div><p>を保証しているが、多次元の数値計算においては必ずしも保証されていない（1次元（x方向）では <img class="math" src="_images/math/cd5d062e2be858bec2220457ce77618d45f193fd.png" alt="B_x"/> を一定とすることにより満たされる）。計算の途中に有限の値が一度生じてしまうと、それは時間とともに増加していくため、いずれ計算の破綻をきたす。特に保存系での解法では運動方程式のローレンツ力項、</p>
+<div class="math" id="equation-lorentz">
+<p><span class="eqno">(115)<a class="headerlink" href="#equation-lorentz" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f535826c484d93edbe75350bf5fdb98b0032b8bc.png" alt="-\nabla \cdot \left( \frac{|\mbox{\boldmath$B$}|^2}{2}\mbox{\boldmath$I$}-\mbox{\boldmath$BB$}\right) = \left(\nabla \times \mbox{\boldmath$B$}\right) \times \mbox{\boldmath$B$} + \mbox{\boldmath$B$}\left(\nabla \cdot \mbox{\boldmath$B$}\right)"/></p>
+</div><p>より磁力線に水平方向への数値的加速が生じるため、数値計算上大きな影響を受ける。</p>
+<div class="figure align-center" id="id40">
+<span id="divb-test"></span><a class="reference internal image-reference" href="_images/divb_test.png"><img alt="_images/divb_test.png" src="_images/divb_test.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">Orszag-Tang渦問題のシミュレーション結果。(a)プロジェクション法（後述）による磁場補正をした場合。(b)磁場補正なし。</span><a class="headerlink" href="#id40" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>例えば <a class="reference internal" href="#divb-test"><span class="std std-ref">Orszag-Tang渦問題の図</span></a> はOrszag-Tang渦問題を解いたもので、 <a class="reference internal" href="#divb-test"><span class="std std-ref">Orszag-Tang渦問題の図５(a)</span></a> はプロジェクション法（後述）による磁場補正をした場合、 <a class="reference internal" href="#divb-test"><span class="std std-ref">Orszag-Tang渦問題の図５(b)</span></a> は補正をしない場合である。補正しない場合は局所的に、特に、不連続面近傍で磁場のソレノイダル性が破れており、それが広範囲に影響を及ぼし補正した場合と違った結果を導くばかりか、それが原因となり計算が破綻する。したがって多次元のMHDシミュレーションにおいては、いかにして磁場のソレノイダル条件（ <img class="math" src="_images/math/3f0516dc85244dc7f7d044c4b24cce4abd2576e2.png" alt="\nabla \cdot \mbox{\boldmath$B$}=0"/> ）を満たしながら計算を行うことかが重要な課題となっている。本小節では磁場のソレノイダル性を（ある程度）保証する手法について4つ手法を例にとり、紹介していく。</p>
+<div class="section" id="id23">
+<h4>プロジェクション法<a class="headerlink" href="#id23" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>次の手法として <a class="reference internal" href="reference.html#brackbill-barnes80"><span class="std std-ref">Brackbill &amp; Barnes, 1980</span></a> らによって提唱されたプロジェクション法を挙げる。これは時間更新した磁場を補正することにより、ある精度で磁場のソレノイダル条件を満たす手法である。ある数値解法での時間更新後の磁場を <img class="math" src="_images/math/4708ac29676fbad9e68a6dd4f7ba2695885a42a8.png" alt="\mbox{\boldmath$B$}^{\ast(n+1)}"/> と表記すると、ソレノイダル条件を満たす磁場 <img class="math" src="_images/math/f5c5d250d502805ff9d22844e5afd2961783e8ee.png" alt="\mbox{\boldmath$B$}^{(n+1)}"/> を求めるには、スカラポテンシャル <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> を導入して</p>
+<div class="math" id="equation-b-crct">
+<p><span class="eqno">(116)<a class="headerlink" href="#equation-b-crct" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/a669c3a74b5fb6ff1ac945aae15270a53fa3030d.png" alt="\mbox{\boldmath$B$}^{(n+1)} = \mbox{\boldmath$B$}^{*(n+1)}-\nabla\psi"/></p>
+</div><p>のように磁場を補正し更新する。 <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> は</p>
+<div class="math" id="equation-prjct">
+<p><span class="eqno">(117)<a class="headerlink" href="#equation-prjct" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c65fb2d09c008a2a04df70877999aeb78fdafaf0.png" alt="\nabla\cdot\mbox{\boldmath$B$}^{(n+1)} = \nabla\cdot\mbox{\boldmath$B$}^{*(n+1)}-\nabla^2\psi =0"/></p>
+</div><p>のポアソン方程式より求めることができる。この修正方法は一様なデカルト座標系においては最も補正量の少ない修正法であることが数学的に証明されている（ <a class="reference internal" href="reference.html#toth00"><span class="std std-ref">Toth, 2000</span></a> ）。プロジェクション法は磁場自体を補正するため、どの数値計算手法とも相性がよい一方、ポアソン方程式を解く必要があるため、その分計算コストが増える。しかし必ずしも厳密に <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> を求める必要はなく、ある程度の精度で <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> が求まれば充分であることが多い。この場合SOR法や共役勾配法などの反復法が有効であり、さほど計算コストを増やすことなく磁場の補正が可能である。</p>
+</div>
+<div class="section" id="ct">
+<h4>CT法<a class="headerlink" href="#ct" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>プロジェクションでは磁場を補正したのに対して、以下に挙げるCT法では磁場の配置を工夫することにより磁場のソレノイダル条件が丸め誤差の範囲で満たされる（ <a class="reference internal" href="reference.html#evans-hawley88"><span class="std std-ref">Evans &amp; Hawley, 1988</span></a> ）。</p>
+<div class="figure align-center" id="id41">
+<span id="id24"></span><a class="reference internal image-reference" href="_images/CT_grid.png"><img alt="_images/CT_grid.png" src="_images/CT_grid.png" style="width: 30%;" /></a>
+<p class="caption"><span class="caption-text">CT法で使われる物理量のグリッド上への配置方法。</span><a class="headerlink" href="#id41" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#id24"><span class="std std-ref">CT法でのグリッド配置図</span></a> はCT法で使われている物理量の配置方法を表したものである。磁場はセル境界面の中心に面に垂直な磁場成分を配置する。磁場の時間発展には電場の情報が必要であるが、セルの角に定義した電場を使って磁場の誘導方程式を解く。例えば2次元の場合、</p>
+<div class="math" id="equation-faraday-x">
+<p><span class="eqno">(118)<a class="headerlink" href="#equation-faraday-x" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d4b85e3b3b74a1586a966c962b90404e7381df4a.png" alt="B^{(n+1)}_{x(i+1/2,j)} = B^{(n)}_{x(i+1/2,j)}-\Delta t \frac{E^{(n)}_{z(i+1/2,j+1/2)}-E^{(n)}_{z(i+1/2,j-1/2)}}{\Delta y}"/></p>
+</div><div class="math" id="equation-faraday-y">
+<p><span class="eqno">(119)<a class="headerlink" href="#equation-faraday-y" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/adde76016b5666e23d7acb7661553b6ba68905f9.png" alt="B^{(n+1)}_{y(i,j+1/2)} = B^{(n)}_{y(i,j+1/2)}+\Delta t \frac{E^{(n)}_{z(i+1/2,j+1/2)}-E^{(n)}_{z(i-1/2,j+1/2)}}{\Delta x}"/></p>
+</div><p>のように差分化した形で解く。その結果、差分化した <img class="math" src="_images/math/809bad0ed0912214a6bb79b96a99314df9fda775.png" alt="\nabla \cdot \mbox{\boldmath$B$}"/> 、つまり、</p>
+<div class="math" id="equation-divb">
+<p><span class="eqno">(120)<a class="headerlink" href="#equation-divb" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/87ac6a1b6a582b4d9248d82623e97ec96e13ee4b.png" alt="\nabla \cdot \mbox{\boldmath$B$} = &amp;+\frac{B_{x(i+1/2,j)}-B_{x(i-1/2,j)}}{\Delta x} \\
+&amp;+\frac{B_{y(i,j+1/2)}-B_{x(i,j-1/2)}}{\Delta y}"/></p>
+</div><p>は時間更新前後で維持される。これは、式 <a class="reference internal" href="#equation-faraday-x">(118)</a> 、 <a class="reference internal" href="#equation-faraday-y">(119)</a> の左辺を式 <a class="reference internal" href="#equation-divb">(120)</a> に代入すると明らかで、式 <a class="reference internal" href="#equation-faraday-x">(118)</a> 、 <a class="reference internal" href="#equation-faraday-y">(119)</a> の右辺の電場が相殺することにより</p>
+<div class="math" id="equation-divb-dt">
+<p><span class="eqno">(121)<a class="headerlink" href="#equation-divb-dt" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/da96c396d03b98a43ed8c400a2dbd108f2855b33.png" alt="\nabla \cdot \mbox{\boldmath$B$}^{(n+1)} = \nabla \cdot \mbox{\boldmath$B$}^n"/></p>
+</div><p>の関係が導かれる。CT法は磁場の離散化についてのみ規定しており、流体量（2次元の場合は面に垂直な磁場 <img class="math" src="_images/math/9f9e8c84ef093bd0c4de4e7f8dfcd0a820eb0618.png" alt="B_z"/> も）の離散化は任意である。そこでこれらを有限体積法に基づいてセル中心に定義した場合の、CT法との組み合わせ方について述べる。</p>
+<div class="section" id="id25">
+<h5>有限体積法への実装<a class="headerlink" href="#id25" title="このヘッドラインへのパーマリンク">¶</a></h5>
+<p>以下は簡単のため2次元の場合だが、3次元への拡張は容易である。</p>
+<ol class="arabic simple">
+<li><p>セル境界面の磁場 <img class="math" src="_images/math/fe4731dd9f0f6163ae355df2c9f2a4d752751b87.png" alt="B_{x(i-1/2,j)},B_{y(i,j-1/2)}"/> からセル中心の磁場を補間する。例えば線形補間では <img class="math" src="_images/math/f923f4dab2518a0548c68b16984c416d7a4478cd.png" alt="B_{x(i,j)} = \left(B_{x(i-1/2,j)}+B_{x(i+1/2,j)}\right)/2,\ B_{y(i,j)} = \left(B_{y(i,j-1/2)}+B_{y(i,j+1/2)}\right)/2."/></p></li>
+<li><p>全ての物理量がセル中心に配置されたので、任意の衝撃波捕捉法を用いて、セル境界面における数値流束 <img class="math" src="_images/math/5bcb3aaaa861808edd9190c858967387a460ca60.png" alt="\mbox{\boldmath$F$}_{i-1/2,j},\ \mbox{\boldmath$F$}_{i,j-1/2}"/> を求める。誘導方程式の <img class="math" src="_images/math/4ca581c43a5e285febcaf83f346e667aa7879988.png" alt="x,\ y"/> 成分の数値流束は電場の <img class="math" src="_images/math/8d051150f8669295ecdbe92367941012175a824d.png" alt="z"/> 成分なので、 <img class="math" src="_images/math/2079cab5e76c319d118f91231ae58d481f4f815e.png" alt="E_{z(i-1/2,j)},\ E_{z(i,j-1/2)}"/> が求められたことになる。</p></li>
+<li><p>セル境界面の電場を用いて、セルの角の電場 <img class="math" src="_images/math/d474e39e562b312ee0a8058a37969c1b9c53dd1c.png" alt="E_{z(i-1/2,j-1/2)}"/> を補間する。最も簡単なのは算術平均（ <a class="reference internal" href="reference.html#balsara-spicer99"><span class="std std-ref">Balsara &amp; Spicer, 1999</span></a> ）である。式 <a class="reference internal" href="#equation-ez-ave">(122)</a> は実装が容易だが、中心補間なので数値振動が発生する場合がある。これを抑制するために、例えば風上方向を考慮した補間方法（ <a class="reference internal" href="reference.html#gardiner-stone05"><span class="std std-ref">Gardiner &amp; Stone, 2005</span></a> ）や、セルの角で誘導方程式について再度衝撃波捕捉法を用いて電場を求める方法（ <a class="reference internal" href="reference.html#londrillo-delzanna04"><span class="std std-ref">Londrillo &amp; Del Zanna, 2004</span></a> , <a class="reference internal" href="reference.html#delzanna07"><span class="std std-ref">Del Zanna et al., 2007</span></a> ）など、様々な方法が提案されている。</p></li>
+</ol>
+<div class="math" id="equation-ez-ave">
+<p><span class="eqno">(122)<a class="headerlink" href="#equation-ez-ave" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4207d485bf4b9e5a44a5d0ed0a7c3373792ce412.png" alt="E_{z(i-1/2,j-1/2)} = \frac{\left(E_{z(i-1,j-1/2)}+E_{z(i,j-1/2)}+E_{z(i-1/2,j-1)}+E_{z(i-1/2,j)}\right)}{4}."/></p>
+</div><ol class="arabic simple" start="4">
+<li><p>面内磁場を式 <a class="reference internal" href="#equation-faraday-x">(118)</a> , <a class="reference internal" href="#equation-faraday-y">(119)</a> に従って更新する。他の物理量は通常の有限体積法に従って更新する。</p></li>
+</ol>
+<div class="figure align-center" id="id42">
+<span id="cttest"></span><a class="reference internal image-reference" href="_images/ct_temp_divb.png"><img alt="_images/ct_temp_divb.png" src="_images/ct_temp_divb.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">Orszag-Tang渦問題のシミュレーション結果。（左）温度。（右）磁場の発散。</span><a class="headerlink" href="#id42" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#cttest"><span class="std std-ref">CT法のOrszag-Tang渦問題テスト図</span></a> は式 <a class="reference internal" href="#equation-ez-ave">(122)</a> に基づいたCT法をOrszag-Tang渦問題に適用した結果である。右図より、磁場のソレノイダル条件が計算機精度の範囲で満たされていることがわかる。</p>
+</div>
+</div>
+<div class="section" id="dc-divb">
+<span id="id26"></span><h4>移流拡散法<a class="headerlink" href="#dc-divb" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>移流拡散法は <img class="math" src="_images/math/244181803a34d85c8f067f110699fb57671e029a.png" alt="\nabla\cdot \mbox{\boldmath$B$}"/> の存在を許容しつつも、その場に留まらないように移流（伝搬）・拡散させて計算の破綻を回避しようという発想の手法である。</p>
+<div class="section" id="wave">
+<span id="id27"></span><h5>8 wave法<a class="headerlink" href="#wave" title="このヘッドラインへのパーマリンク">¶</a></h5>
+<p>Powell ( <a class="reference internal" href="reference.html#powell99"><span class="std std-ref">cf. Powell et al., 1999</span></a> )が提唱した手法は、MHD方程式 <a class="reference internal" href="#equation-mhd">(8)</a> に <img class="math" src="_images/math/bba10d62f27e5b9ecd592535899c6486912a83c5.png" alt="\nabla\cdot\mbox{\boldmath$B$}"/> に比例したソース項を導入して解く方法である。</p>
+<div class="math" id="equation-mhd2">
+<p><span class="eqno">(123)<a class="headerlink" href="#equation-mhd2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5259138f4367eb22bc88efe0fb457e0b52b8b6e7.png" alt="\frac{\partial\mbox{\boldmath$U$}}{\partial t} + \nabla \cdot\mbox{\boldmath$F$} = \mbox{\boldmath$S$},"/></p>
+</div><div class="math" id="equation-divb-source">
+<p><span class="eqno">(124)<a class="headerlink" href="#equation-divb-source" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d52f89deebc4a088891b7601141dddbdaebd869a.png" alt="\mbox{\boldmath$S$} = -(\nabla \cdot \mbox{\boldmath$B$}) \left(
+\begin{array}{c}
+0 \\
+\mbox{\boldmath$B$}\\
+\mbox{\boldmath$v$} \\
+\mbox{\boldmath$B$}\cdot\mbox{\boldmath$v$}
+\end{array}
+\right)."/></p>
+</div><p>本形式では、 <img class="math" src="_images/math/bba10d62f27e5b9ecd592535899c6486912a83c5.png" alt="\nabla\cdot\mbox{\boldmath$B$}"/> の移流（拡散）を含んでいるため、8 wave formulationと呼ぶ。Powellの手法は <img class="math" src="_images/math/bba10d62f27e5b9ecd592535899c6486912a83c5.png" alt="\nabla\cdot\mbox{\boldmath$B$}"/> 誤差を数値的に拡散させながら流れに乗せて逃すことに相当する。しかし、流れの澱み点では数値拡散しか効かず、 <img class="math" src="_images/math/bba10d62f27e5b9ecd592535899c6486912a83c5.png" alt="\nabla\cdot\mbox{\boldmath$B$}"/> が溜まってしまうという欠点がある。また、保存形で書かれていないため、衝撃波のジャンプ条件を正しく満たさない。一方で、本形式はガリレイ不変の形をしているという特性がある（通常のMHD方程式はガリレイ不変でない <a class="reference internal" href="reference.html#powell99"><span class="std std-ref">Powell et al., 1999</span></a> ）。</p>
+</div>
+<div class="section" id="id28">
+<span id="id29"></span><h5>9 wave法<a class="headerlink" href="#id28" title="このヘッドラインへのパーマリンク">¶</a></h5>
+<p>Dedner ( <a class="reference internal" href="reference.html#dedner02"><span class="std std-ref">Dedner et al., 2002</span></a> )らが提案した方法は、</p>
+<div class="math" id="equation-glmmhd">
+<p><span class="eqno">(125)<a class="headerlink" href="#equation-glmmhd" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/5259138f4367eb22bc88efe0fb457e0b52b8b6e7.png" alt="\frac{\partial\mbox{\boldmath$U$}}{\partial t} + \nabla \cdot\mbox{\boldmath$F$} = \mbox{\boldmath$S$},"/></p>
+</div><div class="math" id="equation-glmmhd-ufs">
+<p><span class="eqno">(126)<a class="headerlink" href="#equation-glmmhd-ufs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/e3dbf45e8e1b5e54020b3d9001381fcc331ad0f4.png" alt="\mbox{\boldmath$U$} = \left(
+\begin{array}{c}
+\rho \\
+\rho \mbox{\boldmath$v$} \\
+\mbox{\boldmath$B$} \\
+e\\
+\psi\\
+\end{array}
+\right) , \quad
+\mbox{\boldmath$F$} = \left(
+\begin{array}{c}
+\rho \mbox{\boldmath$v$} \\
+\rho \mbox{\boldmath$v$} \mbox{\boldmath$v$} + p_T\mbox{\boldmath$I$} - \mbox{\boldmath$B$} \mbox{\boldmath$B$} \\
+\mbox{\boldmath$v$} \mbox{\boldmath$B$} - \mbox{\boldmath$B$} \mbox{\boldmath$v$} + \psi\mbox{\boldmath$I$}\\
+\left( e + p_T \right) \mbox{\boldmath$v$} - \mbox{\boldmath$B$} \left( \mbox{\boldmath$v$} \cdot \mbox{\boldmath$B$} \right) \\
+c_h^2 \mbox{\boldmath$B$}
+\end{array}
+\right), \quad
+\mbox{\boldmath$S$} = \left(
+\begin{array}{c}
+0 \\
+\mbox{\boldmath$0$} \\
+\mbox{\boldmath$0$} \\
+0\\
+-\frac{c_h^2}{c_p^2}\psi
+\end{array}
+\right)"/></p>
+</div><p>の形式で、新たにスカラポテンシャル <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> を導入して解く手法である。 <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> 、 <img class="math" src="_images/math/bba10d62f27e5b9ecd592535899c6486912a83c5.png" alt="\nabla\cdot\mbox{\boldmath$B$}"/> は共に電信方程式（telegraph equation）</p>
+<div class="math" id="equation-dedner1">
+<p><span class="eqno">(127)<a class="headerlink" href="#equation-dedner1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/4994c4c80fbfca7b9e48de82fb9250c124896d4d.png" alt="\frac{\partial^2 \psi}{\partial t^2} + \frac{c_h^2}{c_p^2}\frac{\partial \psi}{\partial t} - c_h^2 \nabla^2\psi=0"/></p>
+</div><div class="math" id="equation-dedner2">
+<p><span class="eqno">(128)<a class="headerlink" href="#equation-dedner2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8aa0cf6b612f383fcb97ed7b96df8e02ae693e42.png" alt="\frac{\partial^2 (\nabla\cdot\mbox{\boldmath$B$})}{\partial t^2} + \frac{c_h^2}{c_p^2}\frac{\partial (\nabla\cdot\mbox{\boldmath$B$})}{\partial t} - c_h^2 \nabla^2(\nabla\cdot\mbox{\boldmath$B$})=0 \\"/></p>
+</div><p>にしたがって時間発展することが導かれる。ここで <img class="math" src="_images/math/18d40743e88419e5d0ba416746dc33c1ed6b9afd.png" alt="c_h"/> 、 <img class="math" src="_images/math/0f12d006b176053c049ebd6c040dc59c8dbe5edc.png" alt="c_p"/> はそれぞれ任意の値を持つ伝搬速度、減衰係数を表す。</p>
+<p>ここで単純のため、１次元（ｘ方向）の場合のソース項がない（右辺が０）式 <a class="reference internal" href="#equation-glmmhd">(125)</a> 、 <a class="reference internal" href="#equation-glmmhd-ufs">(126)</a> を考えてみる。すると、</p>
+<div class="math" id="equation-dedner3">
+<p><span class="eqno">(129)<a class="headerlink" href="#equation-dedner3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f150d35ba3ff4f201e1e41530060be51416bcfc8.png" alt="\frac{\partial}{\partial t} \left(
+\begin{array}{c}
+B_x\\
+\psi\\
+\end{array}
+\right) +
+\left(
+\begin{array}{cc}
+0 &amp; 1 \\
+c_h^2 &amp; 0 \\
+\end{array}
+\right)
+\frac{\partial}{\partial x} \left(
+\begin{array}{c}
+B_x \\
+\psi \\
+\end{array}
+\right)
+= \left(
+\begin{array}{c}
+0\\
+0\\
+\end{array}
+\right)"/></p>
+</div><p>のように、 <img class="math" src="_images/math/cd5d062e2be858bec2220457ce77618d45f193fd.png" alt="B_x"/> と <img class="math" src="_images/math/b6c245d487949782a89cab9ee83504a62fdc2337.png" alt="\psi"/> は他の変数とは分離して考えることができる。この方程式の固有値、右固有ベクトルはそれぞれ <img class="math" src="_images/math/7c2584473928382a2a6777646c665135a062e940.png" alt="\pm c_h"/> 、 <img class="math" src="_images/math/d833feeb0c402e126f0e7f72f6162cb06473e52f.png" alt="(1, \pm c_h)^{\mathrm T}"/> で、通常のMHD方程式に固有値が２つ（ <img class="math" src="_images/math/7c2584473928382a2a6777646c665135a062e940.png" alt="\pm c_h"/> ）加わるため、9 wave法と呼ばれる。</p>
+<p>セル境界でのそれぞれの値 <img class="math" src="_images/math/91478b7dfa1e08a33f09349dc6685a34fb7c9b17.png" alt="(B_{x,m}, \psi_m)^{\mathrm T}"/> は、 <img class="math" src="_images/math/20965eb168c08bd9b13a014e7b762f91efa2330e.png" alt="(B_{x,l}, \psi_l)^{\mathrm T}"/> 、 <img class="math" src="_images/math/6d93153a002e53268aa701244908ea3e1c166037.png" alt="(B_{x,r}, \psi_r)^{\mathrm T}"/> をそれぞれ左・右状態とした近似リーマン問題の解から、</p>
+<div class="math" id="equation-dedner4">
+<p><span class="eqno">(130)<a class="headerlink" href="#equation-dedner4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ddfbfd1a7ddb7b43a38ebd35136a6eb07c0dd2cf.png" alt="\left(
+\begin{array}{c}
+B_{x,m}\\
+\psi_m\\
+\end{array}
+\right) =
+\left(
+\begin{array}{c}
+B_{x,l} \\
+\psi_l \\
+\end{array}
+\right)+
+\left(
+\begin{array}{c}
+\frac{1}{2}(B_{x,r}-B_{x,l})-\frac{1}{2c_h}(\psi_r-\psi_l) \\
+\frac{1}{2}(\psi_r-\psi_l)-\frac{c_h}{2}(B_{x,r}-B_{x,l}) \\
+\end{array}
+\right)"/></p>
+</div><p>のようにして求められる。これより、数値フラックス <img class="math" src="_images/math/e93d6dca73e747a6842d57a0e1cb239a1bc45657.png" alt="(\psi_m, c_h^2B_{x,m})^{\mathrm T}"/> を用いて、式 <a class="reference internal" href="#equation-dedner3">(129)</a> を有限体積法で解くことができる。式 <a class="reference internal" href="#equation-glmmhd">(125)</a> のソース項を含めた解は、有限体積法で解いた後の値を <img class="math" src="_images/math/8f61323367f17735779df5e4ba7724fbadc32cab.png" alt="\psi^{*}"/> とすると、</p>
+<div class="math" id="equation-dedner5">
+<p><span class="eqno">(131)<a class="headerlink" href="#equation-dedner5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/d347130eacdb1d38ba2d173141049a5defdc0b14.png" alt="\psi^{n+1} = \psi^{*}\exp\left(-\Delta t_n \frac{c_h^2}{c_p^2} \right)"/></p>
+</div><p>のように、演算子分離してソース項の寄与を解析的に求める。（ここで、 <img class="math" src="_images/math/30b1c0009bcfae9a3cebf844dee581a0233d92e3.png" alt="\Delta t_n"/> は時刻 <img class="math" src="_images/math/747fbed09deea417cb22a2956e68ea9d4f9f13a7.png" alt="t_n"/> における時間刻み幅、 <img class="math" src="_images/math/b31874b31a01453b84d15b02b8d83ab595984489.png" alt="\psi^{n+1}"/> は時刻 <img class="math" src="_images/math/91c381a0ff0c47ab49be6e4c5bf1f93e3955bd44.png" alt="t_{n+1}"/> の時間更新後の値。）</p>
+<p>実際の数値計算では、 <img class="math" src="_images/math/18d40743e88419e5d0ba416746dc33c1ed6b9afd.png" alt="c_h"/> 、 <img class="math" src="_images/math/0f12d006b176053c049ebd6c040dc59c8dbe5edc.png" alt="c_p"/> はフリーパラメタとして与える。 <img class="math" src="_images/math/18d40743e88419e5d0ba416746dc33c1ed6b9afd.png" alt="c_h"/> は <img class="math" src="_images/math/809bad0ed0912214a6bb79b96a99314df9fda775.png" alt="\nabla \cdot \mbox{\boldmath$B$}"/> 誤差の（物理的でない）伝搬速度を表す。したがって、数値計算上安定な範囲で任意に決めることができ、MHD方程式から決まるCFL条件となるような速度（ <img class="math" src="_images/math/163603eb8f69254f37c2bdb1a7ff7a56e07730aa.png" alt="c_h(t_n)=\mathrm{CFL}\times min(\Delta h)/\Delta t_n"/> ）で与える。 <img class="math" src="_images/math/0f12d006b176053c049ebd6c040dc59c8dbe5edc.png" alt="c_p"/> については、伝搬と拡散のスケールの比較から、 <img class="math" src="_images/math/78b1e7cd56ac98ee8ee88c00d192f447c4af0707.png" alt="c_r = c_p^2/c_h=const."/> となるように <img class="math" src="_images/math/0f12d006b176053c049ebd6c040dc59c8dbe5edc.png" alt="c_p"/> を決めている。数値実験による検証から、 <img class="math" src="_images/math/bd422a5242898a8798b7358f0e63551ae650d807.png" alt="c_r=0.18"/> が空間解像度によらず最適な値としてしばしば採用される（cf. <a class="reference internal" href="reference.html#dedner02"><span class="std std-ref">Dedner et al. 2002</span></a> ）。</p>
+<div class="figure align-center" id="id43">
+<span id="wavetest"></span><a class="reference internal image-reference" href="_images/9wave_temp_divb.png"><img alt="_images/9wave_temp_divb.png" src="_images/9wave_temp_divb.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">Orszag-Tang渦問題のシミュレーション結果。（左）温度。（右）磁場の発散。</span><a class="headerlink" href="#id43" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#wavetest"><span class="std std-ref">9 wave法のOrszag-Tang渦問題テスト図</span></a> は9 wave法を実装した場合のOrszag-Tang渦問題に適用した結果である。CT法（ <a class="reference internal" href="#cttest"><span class="std std-ref">上図</span></a> ）に比べて磁場のソレノイダル条件誤差は大きいものの、物理的構造は同様の結果を得られていることがわかる。</p>
+<p>以上のように、9 wave法は伝搬速度についても任意に設定することができるため、8 wave法で問題となる流れの澱み点での <img class="math" src="_images/math/bba10d62f27e5b9ecd592535899c6486912a83c5.png" alt="\nabla\cdot\mbox{\boldmath$B$}"/> の蓄積の問題は解消される。いずれにしても、移流拡散法は元の方程式系に対して少しの変更を加えることで容易に導入できることから、計算効率がよい。ただし、8 wave法は保存系ではないので衝撃波捕獲法と組み合わせた場合に、衝撃波のジャンプ条件を正確に満たさないという欠点がある。一方、9 wave法は保存系なのでその問題が回避されるが、解が拡散的になりやすいことが経験的に知られている。</p>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="id30">
+<h2>付録<a class="headerlink" href="#id30" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="positivity">
+<span id="id31"></span><h3>HLL型近似リーマン解法の正値性の証明<a class="headerlink" href="#positivity" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>MHD方程式の物理的な解の集合 <img class="math" src="_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> 、</p>
+<div class="math" id="equation-g-def">
+<p><span class="eqno">(132)<a class="headerlink" href="#equation-g-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/56fc730162baeaa25b21bbe5bac5e20a4b21d441.png" alt="G = \left\{\mbox{\boldmath$U$} \left| \ \rho &gt; 0 ,
+p = (\gamma-1) \left[
+e-\frac{\rho (u^2+v^2+w^2)}{2}-\frac{B_x^2+B_y^2+B_z^2}{2} \right. \right] &gt; 0
+\right\}"/></p>
+</div><p>を考える。 <img class="math" src="_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> に含まれる <img class="math" src="_images/math/afaadd2ca5787a23aad17b2d0cdfa3f202c3e97f.png" alt="\mbox{\boldmath$U$}_1"/> と <img class="math" src="_images/math/bc1a5486ee01d85876a826a1b13e679dd45f732a.png" alt="\mbox{\boldmath$U$}_2"/> の重み付き平均値 <img class="math" src="_images/math/3556377c92304722df740021672065422b26eff8.png" alt="\mbox{\boldmath$U$}"/> 、</p>
+<div class="math" id="equation-u-ave">
+<p><span class="eqno">(133)<a class="headerlink" href="#equation-u-ave" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c5aae82c9ea2dff8eb57cb555fce09a90e0d640d.png" alt="\mbox{\boldmath$U$} = (1-\theta)\mbox{\boldmath$U$}_1 + \theta\mbox{\boldmath$U$}_2 \ \ \
+(\ 0 \leq \theta \leq 1)"/></p>
+</div><p>に対して、密度 <img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/> と圧力 <img class="math" src="_images/math/141bbefb74014fc5e43499901bf78607ae335583.png" alt="p"/> は、</p>
+<div class="math" id="equation-rho-ave">
+<p><span class="eqno">(134)<a class="headerlink" href="#equation-rho-ave" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f48569c4026f3b1b81fe37eb2ed23662255b5653.png" alt="\rho = (1-\theta) \rho_1 + \theta \rho_2"/></p>
+</div><div class="math" id="equation-p-ave">
+<p><span class="eqno">(135)<a class="headerlink" href="#equation-p-ave" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1dec59300ca579e59abd6f56e770fbb447b9d27f.png" alt="p=(1-\theta) p_1 + \theta p_2 + \theta (1-\theta)(\gamma-1)
+\left( \frac{\rho_1 \rho_2 |\mbox{\boldmath$v$}_1-\mbox{\boldmath$v$}_2|^2}{2 \rho}+
+\frac{|\mbox{\boldmath$B$}_1-\mbox{\boldmath$B$}_2|^2}{2} \right)"/></p>
+</div><p>と表される。したがって、 <img class="math" src="_images/math/d25ede754bfcf0c543f8c30dc5e77015e39871b1.png" alt="\rho &gt; 0"/> 、 <img class="math" src="_images/math/59713bfb1d5a06b34246f887478a1cebeb32a713.png" alt="p &gt; 0"/> であり、 <img class="math" src="_images/math/3556377c92304722df740021672065422b26eff8.png" alt="\mbox{\boldmath$U$}"/> も <img class="math" src="_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> に含まれることがわかる。</p>
+<p>近似リーマン解法による数値解は、各セル境界におけるリーマン問題の近似解を各セル内で積分したものに等しい。一方、上で示されたとおり、 <img class="math" src="_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> に含まれる <img class="math" src="_images/math/3556377c92304722df740021672065422b26eff8.png" alt="\mbox{\boldmath$U$}"/> の重み付き平均値は <img class="math" src="_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> に含まれる。したがって、近似リーマン解法の正値性の保存性を証明するためには、リーマン問題の近似解の正値性を調べればよいことになる。</p>
+<p>HLLD近似リーマン解法における <img class="math" src="_images/math/853714d9c48fca87570ef83b355399508ab92b20.png" alt="\mbox{\boldmath$U$}_R^\ast"/> 、 <img class="math" src="_images/math/b5239a06d9750112232cbc1ec09477ef263f03cb.png" alt="\mbox{\boldmath$U$}_R^{\ast \ast}"/> の正値性の条件、</p>
+<div class="math" id="equation-rho-r">
+<p><span class="eqno">(136)<a class="headerlink" href="#equation-rho-r" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/7a5ef95ce7028a6a142f835a9e930d42a9328fd3.png" alt="\rho_R^\ast &gt; 0,"/></p>
+</div><div class="math" id="equation-rho-r2">
+<p><span class="eqno">(137)<a class="headerlink" href="#equation-rho-r2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/874afd28bd88ca72044db2f56ef49d580abb37c7.png" alt="\rho_R^{\ast \ast} &gt; 0,"/></p>
+</div><div class="math" id="equation-pre-r">
+<p><span class="eqno">(138)<a class="headerlink" href="#equation-pre-r" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/2772422e05bfa6a1d23f9d1911398d33b2313bdf.png" alt="e_R^\ast - \frac{1}{2} \rho_R^\ast | \mbox{\boldmath$v$}_R^\ast |^2
+- \frac{1}{2} | \mbox{\boldmath$B$}_R^\ast |^2 &gt; 0,"/></p>
+</div><div class="math" id="equation-pre-r2">
+<p><span class="eqno">(139)<a class="headerlink" href="#equation-pre-r2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ab85b43dc007650e04fc51c20ec9d2765cf34871.png" alt="e_R^{\ast \ast} - \frac{1}{2} \rho_R^{\ast \ast}  | \mbox{\boldmath$v$}_R^{\ast \ast} |^2
+- \frac{1}{2} | \mbox{\boldmath$B$}_R^{\ast \ast} |^2 &gt; 0,"/></p>
+</div><p>について議論しよう。</p>
+<p>ここで、次のような変数、</p>
+<div class="math" id="equation-var-defs">
+<p><span class="eqno">(140)<a class="headerlink" href="#equation-var-defs" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/83d80bf525a0ea3fc55a9549a2da9f53eece15d0.png" alt="\xi \equiv S_R-u_R , \ \eta \equiv S_R-S_M , \ \zeta \equiv S_M-u_R"/></p>
+</div><p>を導入する。 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> が、例えば <a class="reference internal" href="#equation-sr-sl-1">(41)</a> -- <a class="reference internal" href="#equation-sr-sl-3">(43)</a> のように、膨張波も含めた系最大の特性速度よりも小さくならないように与えられるので、 <img class="math" src="_images/math/4b0fcdf5bbee5b94367e76452870b31d7c74f348.png" alt="\xi"/> と <img class="math" src="_images/math/97db043c7cba573ac389b71add78b048077e8a13.png" alt="\eta"/> は常に正である。一方、 <img class="math" src="_images/math/3ef1157ea7221d7eda6098e1fd7a04a28a555e6d.png" alt="\zeta"/> は正と負のどちらも取り得る。また、変数の定義から <img class="math" src="_images/math/da3f2c51d23f0ac53b251203c3f6ed540bca4bd4.png" alt="\xi - \eta = \zeta"/> である。</p>
+<p>密度の正値性の条件 <a class="reference internal" href="#equation-rho-r">(136)</a> 、 <a class="reference internal" href="#equation-rho-r2">(137)</a> は、 <a class="reference internal" href="#equation-rho-ast">(50)</a> 、 <a class="reference internal" href="#equation-rho-ast2">(56)</a> から、</p>
+<div class="math" id="equation-rho-posi">
+<p><span class="eqno">(141)<a class="headerlink" href="#equation-rho-posi" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/631d2c312dccddefe6b4c61b7bab4605cfecd138.png" alt="\rho_R^\ast = \rho_R^{\ast \ast} = \frac{\xi}{\eta} \rho_R &gt; 0"/></p>
+</div><p>と常に満たされることがわかる。</p>
+<p><img class="math" src="_images/math/853714d9c48fca87570ef83b355399508ab92b20.png" alt="\mbox{\boldmath$U$}_R^\ast"/> における圧力の正値性の条件 <a class="reference internal" href="#equation-pre-r">(138)</a> を示すため、</p>
+<div class="math" id="equation-phi-def">
+<p><span class="eqno">(142)<a class="headerlink" href="#equation-phi-def" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/f01babc58081a14583138b9190c35ae15794e4d8.png" alt="\varphi \equiv \eta \left(
+e_R^\ast - \frac{1}{2} \rho_R^\ast | \mbox{\boldmath$v$}_R^\ast |^2
+- \frac{1}{2} | \mbox{\boldmath$B$}_R^\ast |^2 \right)"/></p>
+</div><p>の正値性を証明しよう。 <img class="math" src="_images/math/ed710ddac707fcbc540bfe7b354ca2d900f0faa0.png" alt="\varphi"/> を整理すると、</p>
+<div class="math" id="equation-phi">
+<p><span class="eqno">(143)<a class="headerlink" href="#equation-phi" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1a312900f2d7494735bbabb3fd2e88f06f1c4bd6.png" alt="\varphi &amp;=
+\xi e_R - {p_T}_R u_R + p_T^\ast S_M
++ B_x (\mbox{\boldmath$v$}_R \cdot \mbox{\boldmath$B$}_R - \mbox{\boldmath$v$}_R^\ast \cdot \mbox{\boldmath$B$}_R^\ast)
+-\eta \frac{\rho_R^\ast |\mbox{\boldmath$v$}_R^\ast|^2}{2}
+-\eta \frac{|\mbox{\boldmath$B$}_R^\ast|^2}{2}
+ \\
+&amp;=
+\xi
+\left( \frac{p_R}{\gamma-1}+\frac{\rho_R |\mbox{\boldmath$v$}_R|^2}{2}+ \frac{|\mbox{\boldmath$B$}_R|^2}{2} \right)
+- \left(p_R+\frac{|\mbox{\boldmath$B$}_R|^2}{2} \right) u_R
++ \left(p_R+\frac{|\mbox{\boldmath$B$}_R|^2}{2}+\rho_R \xi \zeta \right) S_M
+ \\
+&amp;\ \ \
++ B_x \left(
+- B_x \zeta
+- \frac{\rho_R \xi \zeta}{\rho_R \xi \eta - B_x^2} ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)
++ \frac{B_x \zeta}{\rho_R \xi \eta - B_x^2} |{\mbox{\boldmath$B$}_t}_R|^2
++ \frac{\rho_R B_x \xi \zeta^2}{(\rho_R \xi \eta - B_x^2)^2} |{\mbox{\boldmath$B$}_t}_R|^2 \right)
+ \\
+&amp;\ \ \
+- \xi \frac{\rho_R |\mbox{\boldmath$v$}_R^\ast|^2}{2}
+- (\xi-\zeta) \frac{|\mbox{\boldmath$B$}_R^\ast|^2}{2}
+ \\
+&amp;=
+\frac{p_R \xi}{\gamma-1} + p_R \zeta + \frac{|\mbox{\boldmath$B$}_R|^2}{2} \zeta
++ \rho_R S_M \xi \zeta
+ \\
+&amp;\ \ \
++ \frac{\rho_R (|\mbox{\boldmath$v$}_R|^2-|\mbox{\boldmath$v$}_R^\ast|^2)}{2} \xi
++ \frac{|\mbox{\boldmath$B$}_R|^2-|\mbox{\boldmath$B$}_R^\ast|^2}{2} \xi + \frac{|\mbox{\boldmath$B$}_R^\ast|^2}{2} \zeta
+ \\
+&amp;\ \ \
+- B_x^2 \zeta
+- \frac{\rho_R B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \xi \zeta
++ \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \zeta
++ \frac{\rho_R B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi \zeta^2
+ \\
+&amp;=
+\frac{p_R \xi}{\gamma-1} + p_R \zeta
++ \rho_R S_M \xi \zeta
++ \frac{\rho_R (u_R^2-S_M^2)}{2} \xi
+ \\
+&amp;\ \ \
++ \frac{\rho_R (|{\mbox{\boldmath$v$}_t}_R|^2-|{\mbox{\boldmath$v$}_t}_R^\ast|^2)}{2} \xi
++ \frac{|{\mbox{\boldmath$B$}_t}_R|^2-|{\mbox{\boldmath$B$}_t}_R^\ast|^2}{2} \xi
++ \frac{|{\mbox{\boldmath$B$}_t}_R|^2+|{\mbox{\boldmath$B$}_t}_R^\ast|^2}{2} \zeta
+ \\
+&amp;\ \ \
+- \frac{\rho_R B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \xi \zeta
++ \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \zeta
++ \frac{\rho_R B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi \zeta^2
+ \\
+&amp;=
+\frac{p_R \xi}{\gamma-1} + p_R \zeta
++ \frac{\rho_R \xi}{2} \zeta^2
+ \\
+&amp;\ \ \
++ \frac{\rho_R \xi}{2} \left(
+\frac{2 B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \zeta
+- \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \zeta^2 \right)
+ \\
+&amp;\ \ \
++ \frac{\xi}{2} \left(
+- \frac{2 \rho_R |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \xi \zeta
+- \frac{\rho_R^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi^2 \zeta^2 \right)
+ \\
+&amp;\ \ \
++ \frac{1}{2} \left(
+2 |{\mbox{\boldmath$B$}_t}_R|^2
++ \frac{2 \rho_R |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \xi \zeta
++ \frac{\rho_R^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi^2 \zeta^2 \right)
+\zeta
+ \\
+&amp;\ \ \
+- \frac{\rho_R B_x ({\mbox{\boldmath$v$}_t}_R \cdot {\mbox{\boldmath$B$}_t}_R)}{\rho_R \xi \eta - B_x^2} \xi \zeta
++ \frac{B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \zeta
++ \frac{\rho_R B_x^2 |{\mbox{\boldmath$B$}_t}_R|^2}{(\rho_R \xi \eta - B_x^2)^2} \xi \zeta^2
+ \\
+&amp;=
+\frac{p_R \xi}{\gamma-1} + p_R \zeta +
+\frac{\rho_R \xi}{2} \left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R \xi \eta - B_x^2} \right)
+\zeta^2"/></p>
+</div><p>となる。ただし、 <img class="math" src="_images/math/c782e9ed9052bf1762d807992d90b3f5b49e4534.png" alt="{\mbox{\boldmath$v$}_t}_R = (0,v_R,w_R)"/> 、 <img class="math" src="_images/math/dd31a54846c382467c82d66cb6a555df280e937d.png" alt="{\mbox{\boldmath$B$}_t}_R = (0,{B_y}_R,{B_z}_R)"/> 。途中、 <a class="reference internal" href="#equation-pt-hlld">(47)</a>-- <a class="reference internal" href="#equation-ene-ast">(55)</a> 、</p>
+<div class="math" id="equation-riemann-0">
+<p><span class="eqno">(144)<a class="headerlink" href="#equation-riemann-0" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/cccdb19db7f29ab81c4aba91f84872f59f75376d.png" alt="{p_T}_R^\ast = {p_T}_R+\rho_R \xi \zeta"/></p>
+</div><div class="math" id="equation-riemann-1">
+<p><span class="eqno">(145)<a class="headerlink" href="#equation-riemann-1" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/df70fafe430fe3e982a94812f70868935bcec0d1.png" alt="\rho_R^\ast = \frac{\xi}{\eta} \rho_R"/></p>
+</div><div class="math" id="equation-riemann-2">
+<p><span class="eqno">(146)<a class="headerlink" href="#equation-riemann-2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/0110251b87fbdae4dbed3b013755a8563b0f8bde.png" alt="{\mbox{\boldmath$v$}_t}_R^\ast = {\mbox{\boldmath$v$}_t}_R - \frac{B_x \zeta}{\rho_R \xi \eta - B_x^2} {\mbox{\boldmath$B$}_t}_R"/></p>
+</div><div class="math" id="equation-riemann-3">
+<p><span class="eqno">(147)<a class="headerlink" href="#equation-riemann-3" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/1b0ac84e8ebdfcb20d44d54e278a4291b1bfac0e.png" alt="{\mbox{\boldmath$B$}_t}_R^\ast = \frac{\rho_R \xi^2 -B_x^2}{\rho_R \xi \eta - B_x^2} {\mbox{\boldmath$B$}_t}_R
+= \left( 1+
+\frac{\rho_R \xi \zeta}{\rho_R \xi \eta - B_x^2} \right) {\mbox{\boldmath$B$}_t}_R"/></p>
+</div><div class="math" id="equation-riemann-4">
+<p><span class="eqno">(148)<a class="headerlink" href="#equation-riemann-4" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8de0ef88c76a35ac32f4bc04a32b3c9bc462c6e2.png" alt="e_R^\ast = \frac{\xi e_R - {p_T}_R u_R + {p_T}^\ast S_M +
+B_x (\mbox{\boldmath$v$}_R \cdot \mbox{\boldmath$B$}_R - \mbox{\boldmath$v$}_R^\ast \cdot \mbox{\boldmath$B$}_R^\ast)}
+{\eta}"/></p>
+</div><p>を利用した。ここで、 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> が系最大の特性速度であることから、 <img class="math" src="_images/math/a69a9d2db3fdeeec7a078c86f85060d17fac3187.png" alt="\xi \geq {c_f}_R"/> 、 <img class="math" src="_images/math/b415d3eb0322e37e0aaca2a0c93275f8b92e49b0.png" alt="\eta \geq {c_f}_R"/> となるので、</p>
+<div class="math" id="equation-phi-dash">
+<p><span class="eqno">(149)<a class="headerlink" href="#equation-phi-dash" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/c0f8b2af17f7cad620166323ecd96eb01d0cfd55.png" alt="\varphi' =
+\frac{p_R \xi}{\gamma-1} + p_R \zeta +
+\frac{\rho_R \xi}{2} \left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R {c_f}_R^2 - B_x^2} \right)
+\zeta^2
+\leq \varphi"/></p>
+</div><p>である。つまり、 <img class="math" src="_images/math/c4e922679ca9504486d35b9d10e97f7c5634b712.png" alt="\varphi'"/> が正であれば <img class="math" src="_images/math/ed710ddac707fcbc540bfe7b354ca2d900f0faa0.png" alt="\varphi"/> は必ず正である。 <img class="math" src="_images/math/c4e922679ca9504486d35b9d10e97f7c5634b712.png" alt="\varphi'"/> は <img class="math" src="_images/math/3ef1157ea7221d7eda6098e1fd7a04a28a555e6d.png" alt="\zeta"/> の二次方程式であり、2次の項の係数は、</p>
+<div class="math" id="equation-coef-posi">
+<p><span class="eqno">(150)<a class="headerlink" href="#equation-coef-posi" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3f95b3e3ac436313dee632c62118c9d861d67df9.png" alt="\rho c_f^2-|\mbox{\boldmath$B$}|^2 = \rho c_f^2-B_x^2-|\mbox{\boldmath$B$}_t|^2 &gt; 0"/></p>
+</div><p>から正である <a class="footnote-reference brackets" href="#fn11" id="id32">11</a> 。したがって、 <img class="math" src="_images/math/c4e922679ca9504486d35b9d10e97f7c5634b712.png" alt="\varphi'"/> の判別式 <img class="math" src="_images/math/0fcab9067b50b87e868c4fd70f213a086addb964.png" alt="D"/> が負のとき、任意の <img class="math" src="_images/math/3ef1157ea7221d7eda6098e1fd7a04a28a555e6d.png" alt="\zeta"/> に対して <img class="math" src="_images/math/c4e922679ca9504486d35b9d10e97f7c5634b712.png" alt="\varphi'"/> は正となる。つまり、</p>
+<div class="math" id="equation-d-cond">
+<p><span class="eqno">(151)<a class="headerlink" href="#equation-d-cond" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/dfd61189a6b195c751e4c885450eb0bc435e7e24.png" alt="D(\varphi') = p_R^2-\frac{2 \rho_R p_R}{\gamma-1}
+\left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R {c_f}_R^2 - B_x^2} \right) \xi^2 &lt; 0"/></p>
+</div><p>から、</p>
+<div class="math" id="equation-gzi-cond">
+<p><span class="eqno">(152)<a class="headerlink" href="#equation-gzi-cond" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/ea2a2edbde6c3badc6efab55c9fc15b41ee7b84d.png" alt="\xi^2 &gt; \frac{(\gamma-1) p_R}{2 \rho_R}
+\left( 1 - \frac{|{\mbox{\boldmath$B$}_t}_R|^2}{\rho_R {c_f}_R^2 - B_x^2} \right)^{-1}
+= \frac{\gamma-1}{2 \gamma} {c_f}_R^2"/></p>
+</div><p>のとき、正値性の条件 <a class="reference internal" href="#equation-pre-r">(138)</a> は満たされる。ただし、導出過程で、</p>
+<div class="math" id="equation-riemann-5">
+<p><span class="eqno">(153)<a class="headerlink" href="#equation-riemann-5" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/52e42a12224d1948b564cce7f3de045928d5d499.png" alt="\rho c_s^2 - B_x^2 = - \frac{B_x^2 |\mbox{\boldmath$B$}_t|^2}{\rho c_f^2 - B_x^2} , \
+c_f^2 c_s^2 = \frac{\gamma p B_x^2}{\rho^2}"/></p>
+</div><p>を利用した。最終的に正値性の条件は、</p>
+<div class="math" id="equation-posi-cond">
+<p><span class="eqno">(154)<a class="headerlink" href="#equation-posi-cond" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/89f26829c65ab6d6b6f7e14c8129c135216e4b09.png" alt="S_R &gt; u_R + \sqrt{\frac{\gamma-1}{2 \gamma}} {c_f}_R"/></p>
+</div><p>となり、 <img class="math" src="_images/math/18915f2ab437eb34e3e006855429b687ce51fd8c.png" alt="S_R"/> は明らかにこの条件を満たす。</p>
+<p>続いて、 <img class="math" src="_images/math/b5239a06d9750112232cbc1ec09477ef263f03cb.png" alt="\mbox{\boldmath$U$}_R^{\ast \ast}"/> における圧力の正値性の条件 <a class="reference internal" href="#equation-pre-r2">(139)</a> は、</p>
+<div class="math" id="equation-posi-cond2">
+<p><span class="eqno">(155)<a class="headerlink" href="#equation-posi-cond2" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/8d014aa39f1bcc8e544053d70696c1cb4ac4428c.png" alt="p_R^{\ast \ast}
+&amp;=
+(\gamma-1) \left(
+e_R^{\ast \ast}
+- \frac{\rho_R^\ast |\mbox{\boldmath$v$}^{\ast \ast}|^2}{2}
+- \frac{|\mbox{\boldmath$B$}^{\ast \ast}|^2}{2}
+\right)
+ \\
+&amp;= \mbox{}
+p_R^\ast + \frac{\gamma-1}{2}
+\left( \left| \sqrt{\rho_R^\ast} \mbox{\boldmath$v$}_R^\ast
++ \mbox{\boldmath$B$}_R^\ast {\rm sgn} (B_x) \right|^2
+- \left| \sqrt{\rho_R^\ast} \mbox{\boldmath$v$}^{\ast \ast}
++ \mbox{\boldmath$B$}^{\ast \ast} {\rm sgn} (B_x) \right|^2
+\right)
+ \\
+&amp;= \mbox{}
+p_R^\ast &gt; 0"/></p>
+</div><p>と示される。</p>
+<p><img class="math" src="_images/math/94516299883b02304334f65f5983301f539bf184.png" alt="\mbox{\boldmath$U$}_L^\ast"/> 、 <img class="math" src="_images/math/ae5db0a76cb55ef8e552cd7edad71a98b3ee0950.png" alt="\mbox{\boldmath$U$}_L^{\ast \ast}"/> の正値性の条件は、対称性から、</p>
+<div class="math" id="equation-sl-cond">
+<p><span class="eqno">(156)<a class="headerlink" href="#equation-sl-cond" title="この数式へのパーマリンク">¶</a></span><img src="_images/math/3914a77e81d4bd892661323e3f7b5004f157e3b1.png" alt="S_L &lt; u_L - \sqrt{\frac{\gamma-1}{2 \gamma}} {c_f}_L"/></p>
+</div><p>となり、 <img class="math" src="_images/math/b65de2ffb3a7531e67e5e585c495ab92ea6f9b71.png" alt="S_L"/> は容易にこの条件を満たす。</p>
+<p>以上、リーマン問題の近似解、 <img class="math" src="_images/math/94516299883b02304334f65f5983301f539bf184.png" alt="\mbox{\boldmath$U$}_L^\ast"/> 、 <img class="math" src="_images/math/ae5db0a76cb55ef8e552cd7edad71a98b3ee0950.png" alt="\mbox{\boldmath$U$}_L^{\ast \ast}"/> 、 <img class="math" src="_images/math/b5239a06d9750112232cbc1ec09477ef263f03cb.png" alt="\mbox{\boldmath$U$}_R^{\ast \ast}"/> 、 <img class="math" src="_images/math/853714d9c48fca87570ef83b355399508ab92b20.png" alt="\mbox{\boldmath$U$}_R^\ast"/> の正値性が示された。したがって、HLLD近似リーマン解法は正値性を保存する解法である。</p>
+<p>また、HLL近似リーマン解法における近似解は、HLLD近似リーマン解法における近似解の重み付き平均値として与えられる。したがって、HLL近似リーマン解法も正値性を保存する解法である。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn11"><span class="brackets"><a class="fn-backref" href="#id32">11</a></span></dt>
+<dd><p><img class="math" src="_images/math/836f5f3a526742b65a02244393eab5b4401c572d.png" alt="\mbox{\boldmath$B$}_t = 0"/> 、 <img class="math" src="_images/math/e43b7a8af078ab2af34a558df45e5cf32dbb3ad8.png" alt="B_x^2 \geq \gamma p"/> のとき、 <img class="math" src="_images/math/8ed79bd078fd9eac9da9cc368668bd34a6d9c33b.png" alt="|\mbox{\boldmath$B$}_t|^2/(\rho c_f^2-B_x^2)"/> は <img class="math" src="_images/math/80d2332cdcc92a48d65789f69aff83dc06886ec5.png" alt="0/0"/> となる。ただし、 <img class="math" src="_images/math/836f5f3a526742b65a02244393eab5b4401c572d.png" alt="\mbox{\boldmath$B$}_t = 0"/> では、 <a class="reference internal" href="#equation-phi">(143)</a> はオイラー方程式に対するHLLC近似リーマン解法の正値性条件に一致する。</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id33">
+<h3>HLLD近似リーマン解法のサンプルプログラム<a class="headerlink" href="#id33" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>HLLD近似リーマン解法のサンプルプログラムを示す。</p>
+<p>Fortran90:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>!-------------------------------------------------------------------------------
+subroutine calc_flux_hlld(rol,vnl,vtl,vul,btl,bul,prl, &amp;
+                          ror,vnr,vtr,vur,btr,bur,prr, &amp;
+                          bnc,                         &amp;
+                          fro,fmn,fmt,fmu,fbt,fbu,fen)
+!-------------------------------------------------------------------------------
+  real(DP), intent(IN)  :: rol,vnl,vtl,vul,btl,bul,prl
+  real(DP), intent(IN)  :: ror,vnr,vtr,vur,btr,bur,prr
+  real(DP), intent(IN)  :: bnc
+  real(DP), intent(OUT) :: fro,fmn,fmt,fmu,fbt,fbu,fen
+  real(DP), parameter   :: eps=1.D-40
+  real(DP)              :: bnc2,sgn
+  real(DP)              :: roli,pml,ptl,enl,vbl
+  real(DP)              :: rori,pmr,ptr,enr,vbr
+  real(DP)              :: cl2,cal2,cbl2,cfl2,cfl
+  real(DP)              :: cr2,car2,cbr2,cfr2,cfr
+  real(DP               :: sr,sl
+  real(DP)              :: slvl,srvr,rslvl,rsrvr,drsvi
+  real(DP)              :: vnc,ptc
+  real(DP)              :: slvc,rhdl,rhdli,rhnvl,rhnbl
+  real(DP)              :: srvc,rhdr,rhdri,rhnvr,rhnbr
+  real(DP)              :: ro2l,vt2l,vu2l,bt2l,bu2l,vb2l,en2l
+  real(DP)              :: ro2r,vt2r,vu2r,bt2r,bu2r,vb2r,en2r
+  real(DP)              :: rro2l,rro2r,rro2i
+  real(DP)              :: vt3m,vu3m,bt3m,bu3m,vb3m,en3l,en3r
+  real(DP)              :: rou,vtu,vuu,btu,buu,enu
+!...............................................................................
+! Bn at the interface
+!...............................................................................
+  bnc2 = bnc**2
+  sgn  = sign(1.0_DP,bnc)
+!...............................................................................
+! variables at the left-face
+!...............................................................................
+  roli = 1.0_DP/rol
+  pml  = 0.5_DP*(btl**2+bul**2)
+  ptl  = prl+pml
+  enl  = gammam1i*prl+pml+0.5_DP*rol*(vnl**2+vtl**2+vul**2)
+  vbl  = vtl*btl+vul*bul
+!...............................................................................
+! variables at the right-face
+!...............................................................................
+  rori = 1.0_DP/ror
+  pmr  = 0.5_DP*(btr**2+bur**2)
+  ptr  = prr+pmr
+  enr  = gammam1i*prr+pmr+0.5_DP*ror*(vnr**2+vtr**2+vur**2)
+  vbr  = vtr*btr+vur*bur
+!...............................................................................
+! maximum / minimum wave speeds
+!...............................................................................
+  cl2  = gamma*prl*roli
+  cr2  = gamma*prr*rori
+  cal2 = bnc2*roli
+  car2 = bnc2*rori
+  cbl2 = cl2+cal2+2.0_DP*pml*roli
+  cbr2 = cr2+car2+2.0_DP*pmr*rori
+  cfl2 = 0.5_DP*(cbl2+sqrt(abs(cbl2**2-4.0_DP*cl2*cal2)))
+  cfr2 = 0.5_DP*(cbr2+sqrt(abs(cbr2**2-4.0_DP*cr2*car2)))
+  cfl  = sqrt(cfl2)
+  cfr  = sqrt(cfr2)
+  sl   = min(0.0_DP,min(vnl,vnr)-max(cfl,cfr))
+  sr   = max(0.0_DP,max(vnl,vnr)+max(cfl,cfr))
+!...............................................................................
+! HLL average of the normal velocity and the total pressure
+!...............................................................................
+  slvl  = sl-vnl
+  srvr  = sr-vnr
+  rslvl = rol*slvl
+  rsrvr = ror*srvr
+  drsvi = 1.0_DP/(rsrvr-rslvl)
+  vnc   = (rsrvr*vnr-rslvl*vnl-ptr+ptl)*drsvi
+  ptc   = (rsrvr*ptl-rslvl*ptr+rsrvr*rslvl*(vnr-vnl))*drsvi
+!...............................................................................
+! variables of the outer sides in the Riemann fan
+!...............................................................................
+  slvc  = sl-vnc
+  srvc  = sr-vnc
+  ro2l  = rslvl/slvc
+  ro2r  = rsrvr/srvc
+  rhdl  = rslvl*slvc-bnc2
+  rhdr  = rsrvr*srvc-bnc2
+  if(abs(rhdl) &gt; eps) then
+    rhdli = 1.0_DP/rhdl
+    rhnvl = (vnl-vnc)*bnc
+    rhnbl = rslvl*slvl-bnc2
+    vt2l = vtl+rhnvl*rhdli*btl
+    vu2l = vul+rhnvl*rhdli*bul
+    bt2l =     rhnbl*rhdli*btl
+    bu2l =     rhnbl*rhdli*bul
+  else
+    vt2l = vtl
+    vu2l = vul
+    bt2l = btl
+    bu2l = bul
+  end if
+  if(abs(rhdr) &gt; eps) then
+    rhdri = 1.0_DP/rhdr
+    rhnvr = (vnr-vnc)*bnc
+    rhnbr = rsrvr*srvr-bnc2
+    vt2r = vtr+rhnvr*rhdri*btr
+    vu2r = vur+rhnvr*rhdri*bur
+    bt2r =     rhnbr*rhdri*btr
+    bu2r =     rhnbr*rhdri*bur
+  else
+    vt2r = vtr
+    vu2r = vur
+    bt2r = btr
+    bu2r = bur
+  end if
+  vb2l = vt2l*bt2l+vu2l*bu2l
+  vb2r = vt2r*bt2r+vu2r*bu2r
+  en2l = (slvl*enl-ptl*vnl+ptc*vnc+bnc*(vbl-vb2l))/slvc
+  en2r = (srvr*enr-ptr*vnr+ptc*vnc+bnc*(vbr-vb2r))/srvc
+!...............................................................................
+! variables of the inner sides in the Riemann fan
+!...............................................................................
+  rro2l = sqrt(ro2l)
+  rro2r = sqrt(ro2r)
+  rro2i = 1.0_DP/(rro2r+rro2l)
+  vt3m  = (rro2r*vt2r+rro2l*vt2l+            (bt2r-bt2l)*sgn)*rro2i
+  vu3m  = (rro2r*vu2r+rro2l*vu2l+            (bu2r-bu2l)*sgn)*rro2i
+  bt3m  = (rro2l*bt2r+rro2r*bt2l+rro2r*rro2l*(vt2r-vt2l)*sgn)*rro2i
+  bu3m  = (rro2l*bu2r+rro2r*bu2l+rro2r*rro2l*(vu2r-vu2l)*sgn)*rro2i
+  vb3m  = vt3m*bt3m+vu3m*bu3m
+  en3l  = en2l-rro2l*(vb2l-vb3m)*sgn
+  en3r  = en2r+rro2r*(vb2r-vb3m)*sgn
+!...............................................................................
+! variables at the interface
+!...............................................................................
+  if(vnc-abs(bnc)/rro2l &gt; 0.0_DP) then
+    rou = ro2l
+    vtu = vt2l
+    vuu = vu2l
+    btu = bt2l
+    buu = bu2l
+    enu = en2l
+  else if((vnc-abs(bnc)/rro2l &lt;= 0.0_DP).and.(vnc &gt;= 0.0_DP))then
+    rou = ro2l
+    vtu = vt3m
+    vuu = vu3m
+    btu = bt3m
+    buu = bu3m
+    enu = en3l
+  else if((vnc &lt; 0.0_DP).and.(vnc+abs(bnc)/rro2r &gt;= 0.0_DP))then
+    rou = ro2r
+    vtu = vt3m
+    vuu = vu3m
+    btu = bt3m
+    buu = bu3m
+    enu = en3r
+  else
+    rou = ro2r
+    vtu = vt2r
+    vuu = vu2r
+    btu = bt2r
+    buu = bu2r
+    enu = en2r
+  end if
+!...............................................................................
+! HLLD fluxes
+!...............................................................................
+  fro = rou*vnc
+  fmn = rou*vnc*vnc+ptc-bnc2*0.5_DP
+  fmt = rou*vtu*vnc-bnc*btu
+  fmu = rou*vuu*vnc-bnc*buu
+  fbt = btu*vnc-bnc*vtu
+  fbu = buu*vnc-bnc*vuu
+  fen = (enu+ptc)*vnc-bnc*(vtu*btu+vuu*buu)
+!-------------------------------------------------------------------------------
+end subroutine calc_flux_hlld
+!-------------------------------------------------------------------------------
+</pre></div>
+</div>
+<p>C:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span> <span class="cpf">&lt;math.h&gt;</span><span class="cp"></span>
+<span class="kr">inline</span> <span class="kt">double</span> <span class="nf">max</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span><span class="p">(</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">)</span><span class="o">?</span><span class="nl">a</span><span class="p">:</span><span class="n">b</span> <span class="p">);</span>
+<span class="p">}</span>
+<span class="kr">inline</span> <span class="kt">double</span> <span class="nf">min</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+<span class="p">{</span>
+  <span class="k">return</span><span class="p">(</span> <span class="p">(</span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">)</span><span class="o">?</span><span class="nl">b</span><span class="p">:</span><span class="n">a</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cp">#define EPS (1e-8)</span>
+
+<span class="kt">void</span> <span class="nf">calc_flux_hlld</span><span class="p">(</span><span class="kt">double</span> <span class="n">rol</span><span class="p">,</span> <span class="kt">double</span> <span class="n">vnl</span><span class="p">,</span> <span class="kt">double</span> <span class="n">vtl</span><span class="p">,</span> <span class="kt">double</span> <span class="n">vul</span><span class="p">,</span> <span class="kt">double</span> <span class="n">btl</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">bul</span><span class="p">,</span> <span class="kt">double</span> <span class="n">prl</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">ror</span><span class="p">,</span> <span class="kt">double</span> <span class="n">vnr</span><span class="p">,</span> <span class="kt">double</span> <span class="n">vtr</span><span class="p">,</span> <span class="kt">double</span> <span class="n">vur</span><span class="p">,</span> <span class="kt">double</span> <span class="n">btr</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">bur</span><span class="p">,</span> <span class="kt">double</span> <span class="n">prr</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="n">bnc</span><span class="p">,</span> <span class="kt">double</span> <span class="n">gamma</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="o">*</span><span class="n">fro</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">fmn</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">fmu</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">fbt</span><span class="p">,</span>
+                    <span class="kt">double</span> <span class="o">*</span><span class="n">fbu</span><span class="p">,</span> <span class="kt">double</span> <span class="o">*</span><span class="n">fen</span><span class="p">)</span>
+<span class="cm">/* Calculate HLLD fluxes */</span>
+<span class="cm">/* rol,vnl,vtl,vul,btl,bul,prl: input primitive variables at the left side */</span>
+<span class="cm">/* ror,vnr,vtr,vur,btr,bur,prr: input primitive variables at the right side */</span>
+<span class="cm">/* bnc: input normal magnetic field at the interface */</span>
+<span class="cm">/* gamma: specific heat ratio */</span>
+<span class="cm">/* fro,fmn,fmt,fmu,fbt,fbu,fen: output HLLD fluxes at the interface*/</span>
+<span class="p">{</span>
+  <span class="kt">double</span> <span class="n">gammam1i</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">gamma</span><span class="o">-</span><span class="mf">1.0</span><span class="p">);</span>
+  <span class="cm">/* Bn at the interface */</span>
+  <span class="kt">double</span> <span class="n">bnc2</span><span class="o">=</span><span class="n">bnc</span><span class="o">*</span><span class="n">bnc</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">sgn</span><span class="o">=</span><span class="p">(</span><span class="n">bnc</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">?</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">:</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+  <span class="cm">/* Variables at the left-face */</span>
+  <span class="kt">double</span> <span class="n">roli</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rol</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">pml</span><span class="o">=</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">btl</span><span class="o">*</span><span class="n">btl</span><span class="o">+</span><span class="n">bul</span><span class="o">*</span><span class="n">bul</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">ptl</span><span class="o">=</span><span class="n">prl</span><span class="o">+</span><span class="n">pml</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">enl</span><span class="o">=</span><span class="n">gammam1i</span><span class="o">*</span><span class="n">prl</span><span class="o">+</span><span class="n">pml</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">rol</span><span class="o">*</span><span class="p">(</span><span class="n">vnl</span><span class="o">*</span><span class="n">vnl</span><span class="o">+</span><span class="n">vtl</span><span class="o">*</span><span class="n">vtl</span><span class="o">+</span><span class="n">vul</span><span class="o">*</span><span class="n">vul</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">vbl</span><span class="o">=</span><span class="n">vtl</span><span class="o">*</span><span class="n">btl</span><span class="o">+</span><span class="n">vul</span><span class="o">*</span><span class="n">bul</span><span class="p">;</span>
+  <span class="cm">/* Variables at the right-face */</span>
+  <span class="kt">double</span> <span class="n">rori</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">ror</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">pmr</span><span class="o">=</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">btr</span><span class="o">*</span><span class="n">btr</span><span class="o">+</span><span class="n">bur</span><span class="o">*</span><span class="n">bur</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">ptr</span><span class="o">=</span><span class="n">prr</span><span class="o">+</span><span class="n">pmr</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">enr</span><span class="o">=</span><span class="n">gammam1i</span><span class="o">*</span><span class="n">prr</span><span class="o">+</span><span class="n">pmr</span><span class="o">+</span><span class="mf">0.5</span><span class="o">*</span><span class="n">ror</span><span class="o">*</span><span class="p">(</span><span class="n">vnr</span><span class="o">*</span><span class="n">vnr</span><span class="o">+</span><span class="n">vtr</span><span class="o">*</span><span class="n">vtr</span><span class="o">+</span><span class="n">vur</span><span class="o">*</span><span class="n">vur</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">vbr</span><span class="o">=</span><span class="n">vtr</span><span class="o">*</span><span class="n">btr</span><span class="o">+</span><span class="n">vur</span><span class="o">*</span><span class="n">bur</span><span class="p">;</span>
+  <span class="cm">/* Maximum/minimum wave speeds */</span>
+  <span class="kt">double</span> <span class="n">cl2</span><span class="o">=</span><span class="n">gamma</span><span class="o">*</span><span class="n">prl</span><span class="o">*</span><span class="n">roli</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">cr2</span><span class="o">=</span><span class="n">gamma</span><span class="o">*</span><span class="n">prr</span><span class="o">*</span><span class="n">rori</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">cal2</span><span class="o">=</span><span class="n">bnc2</span><span class="o">*</span><span class="n">roli</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">car2</span><span class="o">=</span><span class="n">bnc2</span><span class="o">*</span><span class="n">rori</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">cbl2</span><span class="o">=</span><span class="n">cl2</span><span class="o">+</span><span class="n">cal2</span><span class="o">+</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pml</span><span class="o">*</span><span class="n">roli</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">cbr2</span><span class="o">=</span><span class="n">cr2</span><span class="o">+</span><span class="n">car2</span><span class="o">+</span><span class="mf">2.0</span><span class="o">*</span><span class="n">pmr</span><span class="o">*</span><span class="n">rori</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">cfl2</span><span class="o">=</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">cbl2</span><span class="o">+</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">cbl2</span><span class="o">*</span><span class="n">cbl2</span><span class="o">-</span><span class="mf">4.0</span><span class="o">*</span><span class="n">cl2</span><span class="o">*</span><span class="n">cal2</span><span class="p">)));</span>
+  <span class="kt">double</span> <span class="n">cfr2</span><span class="o">=</span><span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">cbr2</span><span class="o">+</span><span class="n">sqrt</span><span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">cbr2</span><span class="o">*</span><span class="n">cbr2</span><span class="o">-</span><span class="mf">4.0</span><span class="o">*</span><span class="n">cr2</span><span class="o">*</span><span class="n">car2</span><span class="p">)));</span>
+  <span class="kt">double</span> <span class="n">cfl</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cfl2</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">cfr</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="n">cfr2</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">sl</span><span class="o">=</span><span class="n">min</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">min</span><span class="p">(</span><span class="n">vnl</span><span class="p">,</span><span class="n">vnr</span><span class="p">)</span><span class="o">-</span><span class="n">max</span><span class="p">(</span><span class="n">cfl</span><span class="p">,</span><span class="n">cfr</span><span class="p">));</span>
+  <span class="kt">double</span> <span class="n">sr</span><span class="o">=</span><span class="n">max</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="n">max</span><span class="p">(</span><span class="n">vnl</span><span class="p">,</span><span class="n">vnr</span><span class="p">)</span><span class="o">+</span><span class="n">max</span><span class="p">(</span><span class="n">cfl</span><span class="p">,</span><span class="n">cfr</span><span class="p">));</span>
+  <span class="cm">/* HLL average of the normal velocity and the total pressure */</span>
+  <span class="kt">double</span> <span class="n">slvl</span><span class="o">=</span><span class="n">sl</span><span class="o">-</span><span class="n">vnl</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">srvr</span><span class="o">=</span><span class="n">sr</span><span class="o">-</span><span class="n">vnr</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">rslvl</span><span class="o">=</span><span class="n">rol</span><span class="o">*</span><span class="n">slvl</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">rsrvr</span><span class="o">=</span><span class="n">ror</span><span class="o">*</span><span class="n">srvr</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">drsvi</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">rsrvr</span><span class="o">-</span><span class="n">rslvl</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">vnc</span><span class="o">=</span><span class="p">(</span><span class="n">rsrvr</span><span class="o">*</span><span class="n">vnr</span><span class="o">-</span><span class="n">rslvl</span><span class="o">*</span><span class="n">vnl</span><span class="o">-</span><span class="n">ptr</span><span class="o">+</span><span class="n">ptl</span><span class="p">)</span><span class="o">*</span><span class="n">drsvi</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">ptc</span><span class="o">=</span><span class="p">(</span><span class="n">rsrvr</span><span class="o">*</span><span class="n">ptl</span><span class="o">-</span><span class="n">rslvl</span><span class="o">*</span><span class="n">ptr</span><span class="o">+</span><span class="n">rsrvr</span><span class="o">*</span><span class="n">rslvl</span><span class="o">*</span><span class="p">(</span><span class="n">vnr</span><span class="o">-</span><span class="n">vnl</span><span class="p">))</span><span class="o">*</span><span class="n">drsvi</span><span class="p">;</span>
+  <span class="cm">/* Variables of the outer sides in the Riemann fan */</span>
+  <span class="kt">double</span> <span class="n">slvc</span><span class="o">=</span><span class="n">sl</span><span class="o">-</span><span class="n">vnc</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">srvc</span><span class="o">=</span><span class="n">sr</span><span class="o">-</span><span class="n">vnc</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">ro2l</span><span class="o">=</span><span class="n">rslvl</span><span class="o">/</span><span class="n">slvc</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">ro2r</span><span class="o">=</span><span class="n">rsrvr</span><span class="o">/</span><span class="n">srvc</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">rhdl</span><span class="o">=</span><span class="n">rslvl</span><span class="o">*</span><span class="n">slvc</span><span class="o">-</span><span class="n">bnc2</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">rhdr</span><span class="o">=</span><span class="n">rsrvr</span><span class="o">*</span><span class="n">srvc</span><span class="o">-</span><span class="n">bnc2</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">vt2l</span><span class="p">,</span><span class="n">vu2l</span><span class="p">,</span><span class="n">bt2l</span><span class="p">,</span><span class="n">bu2l</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">vt2r</span><span class="p">,</span><span class="n">vu2r</span><span class="p">,</span><span class="n">bt2r</span><span class="p">,</span><span class="n">bu2r</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">rhdl</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">EPS</span><span class="p">){</span>
+    <span class="kt">double</span> <span class="n">rhdli</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rhdl</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">rhnvl</span><span class="o">=</span><span class="p">(</span><span class="n">vnl</span><span class="o">-</span><span class="n">vnc</span><span class="p">)</span><span class="o">*</span><span class="n">bnc</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">rhnbl</span><span class="o">=</span><span class="n">rslvl</span><span class="o">*</span><span class="n">slvl</span><span class="o">-</span><span class="n">bnc2</span><span class="p">;</span>
+    <span class="n">vt2l</span><span class="o">=</span><span class="n">vtl</span><span class="o">+</span><span class="n">rhnvl</span><span class="o">*</span><span class="n">rhdli</span><span class="o">*</span><span class="n">btl</span><span class="p">;</span>
+    <span class="n">vu2l</span><span class="o">=</span><span class="n">vul</span><span class="o">+</span><span class="n">rhnvl</span><span class="o">*</span><span class="n">rhdli</span><span class="o">*</span><span class="n">bul</span><span class="p">;</span>
+    <span class="n">bt2l</span><span class="o">=</span><span class="n">rhnbl</span><span class="o">*</span><span class="n">rhdli</span><span class="o">*</span><span class="n">btl</span><span class="p">;</span>
+    <span class="n">bu2l</span><span class="o">=</span><span class="n">rhnbl</span><span class="o">*</span><span class="n">rhdli</span><span class="o">*</span><span class="n">bul</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span><span class="p">{</span>
+    <span class="n">vt2l</span><span class="o">=</span><span class="n">vtl</span><span class="p">;</span>
+    <span class="n">vu2l</span><span class="o">=</span><span class="n">vul</span><span class="p">;</span>
+    <span class="n">bt2l</span><span class="o">=</span><span class="n">btl</span><span class="p">;</span>
+    <span class="n">bu2l</span><span class="o">=</span><span class="n">bul</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">fabs</span><span class="p">(</span><span class="n">rhdr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">EPS</span><span class="p">){</span>
+    <span class="kt">double</span> <span class="n">rhdri</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="n">rhdr</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">rhnvr</span><span class="o">=</span><span class="p">(</span><span class="n">vnr</span><span class="o">-</span><span class="n">vnc</span><span class="p">)</span><span class="o">*</span><span class="n">bnc</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">rhnbr</span><span class="o">=</span><span class="n">rsrvr</span><span class="o">*</span><span class="n">srvr</span><span class="o">-</span><span class="n">bnc2</span><span class="p">;</span>
+    <span class="n">vt2r</span><span class="o">=</span><span class="n">vtr</span><span class="o">+</span><span class="n">rhnvr</span><span class="o">*</span><span class="n">rhdri</span><span class="o">*</span><span class="n">btr</span><span class="p">;</span>
+    <span class="n">vu2r</span><span class="o">=</span><span class="n">vur</span><span class="o">+</span><span class="n">rhnvr</span><span class="o">*</span><span class="n">rhdri</span><span class="o">*</span><span class="n">bur</span><span class="p">;</span>
+    <span class="n">bt2r</span><span class="o">=</span><span class="n">rhnbr</span><span class="o">*</span><span class="n">rhdri</span><span class="o">*</span><span class="n">btr</span><span class="p">;</span>
+    <span class="n">bu2r</span><span class="o">=</span><span class="n">rhnbr</span><span class="o">*</span><span class="n">rhdri</span><span class="o">*</span><span class="n">bur</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span><span class="p">{</span>
+    <span class="n">vt2r</span><span class="o">=</span><span class="n">vtr</span><span class="p">;</span>
+    <span class="n">vu2r</span><span class="o">=</span><span class="n">vur</span><span class="p">;</span>
+    <span class="n">bt2r</span><span class="o">=</span><span class="n">btr</span><span class="p">;</span>
+    <span class="n">bu2r</span><span class="o">=</span><span class="n">bur</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="kt">double</span> <span class="n">vb2l</span><span class="o">=</span><span class="n">vt2l</span><span class="o">*</span><span class="n">bt2l</span><span class="o">+</span><span class="n">vu2l</span><span class="o">*</span><span class="n">bu2l</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">vb2r</span><span class="o">=</span><span class="n">vt2r</span><span class="o">*</span><span class="n">bt2r</span><span class="o">+</span><span class="n">vu2r</span><span class="o">*</span><span class="n">bu2r</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">en2l</span><span class="o">=</span><span class="p">(</span><span class="n">slvl</span><span class="o">*</span><span class="n">enl</span><span class="o">-</span><span class="n">ptl</span><span class="o">*</span><span class="n">vnl</span><span class="o">+</span><span class="n">ptc</span><span class="o">*</span><span class="n">vnc</span><span class="o">+</span><span class="n">bnc</span><span class="o">*</span><span class="p">(</span><span class="n">vbl</span><span class="o">-</span><span class="n">vb2l</span><span class="p">))</span><span class="o">/</span><span class="n">slvc</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">en2r</span><span class="o">=</span><span class="p">(</span><span class="n">srvr</span><span class="o">*</span><span class="n">enr</span><span class="o">-</span><span class="n">ptr</span><span class="o">*</span><span class="n">vnr</span><span class="o">+</span><span class="n">ptc</span><span class="o">*</span><span class="n">vnc</span><span class="o">+</span><span class="n">bnc</span><span class="o">*</span><span class="p">(</span><span class="n">vbr</span><span class="o">-</span><span class="n">vb2r</span><span class="p">))</span><span class="o">/</span><span class="n">srvc</span><span class="p">;</span>
+  <span class="cm">/* Variables of the inner sides in the Riemann fan */</span>
+  <span class="kt">double</span> <span class="n">rro2l</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ro2l</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">rro2r</span><span class="o">=</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ro2r</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">rro2i</span><span class="o">=</span><span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">rro2r</span><span class="o">+</span><span class="n">rro2l</span><span class="p">);</span>
+  <span class="kt">double</span> <span class="n">vt3m</span><span class="o">=</span><span class="p">(</span><span class="n">rro2r</span><span class="o">*</span><span class="n">vt2r</span><span class="o">+</span><span class="n">rro2l</span><span class="o">*</span><span class="n">vt2l</span><span class="o">+</span><span class="p">(</span><span class="n">bt2r</span><span class="o">-</span><span class="n">bt2l</span><span class="p">)</span><span class="o">*</span><span class="n">sgn</span><span class="p">)</span><span class="o">*</span><span class="n">rro2i</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">vu3m</span><span class="o">=</span><span class="p">(</span><span class="n">rro2r</span><span class="o">*</span><span class="n">vu2r</span><span class="o">+</span><span class="n">rro2l</span><span class="o">*</span><span class="n">vu2l</span><span class="o">+</span><span class="p">(</span><span class="n">bu2r</span><span class="o">-</span><span class="n">bu2l</span><span class="p">)</span><span class="o">*</span><span class="n">sgn</span><span class="p">)</span><span class="o">*</span><span class="n">rro2i</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">bt3m</span><span class="o">=</span><span class="p">(</span><span class="n">rro2l</span><span class="o">*</span><span class="n">bt2r</span><span class="o">+</span><span class="n">rro2r</span><span class="o">*</span><span class="n">bt2l</span><span class="o">+</span><span class="n">rro2r</span><span class="o">*</span><span class="n">rro2l</span><span class="o">*</span><span class="p">(</span><span class="n">vt2r</span><span class="o">-</span><span class="n">vt2l</span><span class="p">)</span><span class="o">*</span><span class="n">sgn</span><span class="p">)</span><span class="o">*</span><span class="n">rro2i</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">bu3m</span><span class="o">=</span><span class="p">(</span><span class="n">rro2l</span><span class="o">*</span><span class="n">bu2r</span><span class="o">+</span><span class="n">rro2r</span><span class="o">*</span><span class="n">bu2l</span><span class="o">+</span><span class="n">rro2r</span><span class="o">*</span><span class="n">rro2l</span><span class="o">*</span><span class="p">(</span><span class="n">vu2r</span><span class="o">-</span><span class="n">vu2l</span><span class="p">)</span><span class="o">*</span><span class="n">sgn</span><span class="p">)</span><span class="o">*</span><span class="n">rro2i</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">vb3m</span><span class="o">=</span><span class="n">vt3m</span><span class="o">*</span><span class="n">bt3m</span><span class="o">+</span><span class="n">vu3m</span><span class="o">*</span><span class="n">bu3m</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">en3l</span><span class="o">=</span><span class="n">en2l</span><span class="o">-</span><span class="n">rro2l</span><span class="o">*</span><span class="p">(</span><span class="n">vb2l</span><span class="o">-</span><span class="n">vb3m</span><span class="p">)</span><span class="o">*</span><span class="n">sgn</span><span class="p">;</span>
+  <span class="kt">double</span> <span class="n">en3r</span><span class="o">=</span><span class="n">en2r</span><span class="o">+</span><span class="n">rro2r</span><span class="o">*</span><span class="p">(</span><span class="n">vb2r</span><span class="o">-</span><span class="n">vb3m</span><span class="p">)</span><span class="o">*</span><span class="n">sgn</span><span class="p">;</span>
+ <span class="cm">/* Variables at the interface */</span>
+  <span class="kt">double</span> <span class="n">rou</span><span class="p">,</span><span class="n">vtu</span><span class="p">,</span><span class="n">vuu</span><span class="p">,</span><span class="n">btu</span><span class="p">,</span><span class="n">buu</span><span class="p">,</span><span class="n">enu</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">vnc</span><span class="o">-</span><span class="n">fabs</span><span class="p">(</span><span class="n">bnc</span><span class="p">)</span><span class="o">/</span><span class="n">rro2l</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">){</span>
+    <span class="n">rou</span><span class="o">=</span><span class="n">ro2l</span><span class="p">;</span>
+    <span class="n">vtu</span><span class="o">=</span><span class="n">vt2l</span><span class="p">;</span>
+    <span class="n">vuu</span><span class="o">=</span><span class="n">vu2l</span><span class="p">;</span>
+    <span class="n">btu</span><span class="o">=</span><span class="n">bt2l</span><span class="p">;</span>
+    <span class="n">buu</span><span class="o">=</span><span class="n">bu2l</span><span class="p">;</span>
+    <span class="n">enu</span><span class="o">=</span><span class="n">en2l</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">else</span><span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">vnc</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">){</span>
+      <span class="n">rou</span><span class="o">=</span><span class="n">ro2l</span><span class="p">;</span>
+      <span class="n">vtu</span><span class="o">=</span><span class="n">vt3m</span><span class="p">;</span>
+      <span class="n">vuu</span><span class="o">=</span><span class="n">vu3m</span><span class="p">;</span>
+      <span class="n">btu</span><span class="o">=</span><span class="n">bt3m</span><span class="p">;</span>
+      <span class="n">buu</span><span class="o">=</span><span class="n">bu3m</span><span class="p">;</span>
+      <span class="n">enu</span><span class="o">=</span><span class="n">en3l</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span><span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">vnc</span><span class="o">+</span><span class="n">fabs</span><span class="p">(</span><span class="n">bnc</span><span class="p">)</span><span class="o">/</span><span class="n">rro2r</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">){</span>
+       <span class="n">rou</span><span class="o">=</span><span class="n">ro2r</span><span class="p">;</span>
+       <span class="n">vtu</span><span class="o">=</span><span class="n">vt3m</span><span class="p">;</span>
+       <span class="n">vuu</span><span class="o">=</span><span class="n">vu3m</span><span class="p">;</span>
+       <span class="n">btu</span><span class="o">=</span><span class="n">bt3m</span><span class="p">;</span>
+       <span class="n">buu</span><span class="o">=</span><span class="n">bu3m</span><span class="p">;</span>
+       <span class="n">enu</span><span class="o">=</span><span class="n">en3r</span><span class="p">;</span>
+      <span class="p">}</span> <span class="k">else</span><span class="p">{</span>
+       <span class="n">rou</span><span class="o">=</span><span class="n">ro2r</span><span class="p">;</span>
+       <span class="n">vtu</span><span class="o">=</span><span class="n">vt2r</span><span class="p">;</span>
+       <span class="n">vuu</span><span class="o">=</span><span class="n">vu2r</span><span class="p">;</span>
+       <span class="n">btu</span><span class="o">=</span><span class="n">bt2r</span><span class="p">;</span>
+       <span class="n">buu</span><span class="o">=</span><span class="n">bu2r</span><span class="p">;</span>
+       <span class="n">enu</span><span class="o">=</span><span class="n">en2r</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="cm">/* HLLD fluxes */</span>
+  <span class="o">*</span><span class="n">fro</span><span class="o">=</span><span class="n">rou</span><span class="o">*</span><span class="n">vnc</span><span class="p">;</span>
+  <span class="o">*</span><span class="n">fmn</span><span class="o">=</span><span class="n">rou</span><span class="o">*</span><span class="n">vnc</span><span class="o">*</span><span class="n">vnc</span><span class="o">+</span><span class="n">ptc</span><span class="o">-</span><span class="n">bnc2</span><span class="o">*</span><span class="mf">0.5</span><span class="p">;</span>
+  <span class="o">*</span><span class="n">fmt</span><span class="o">=</span><span class="n">rou</span><span class="o">*</span><span class="n">vtu</span><span class="o">*</span><span class="n">vnc</span><span class="o">-</span><span class="n">bnc</span><span class="o">*</span><span class="n">btu</span><span class="p">;</span>
+  <span class="o">*</span><span class="n">fmu</span><span class="o">=</span><span class="n">rou</span><span class="o">*</span><span class="n">vuu</span><span class="o">*</span><span class="n">vnc</span><span class="o">-</span><span class="n">bnc</span><span class="o">*</span><span class="n">buu</span><span class="p">;</span>
+  <span class="o">*</span><span class="n">fbt</span><span class="o">=</span><span class="n">btu</span><span class="o">*</span><span class="n">vnc</span><span class="o">-</span><span class="n">bnc</span><span class="o">*</span><span class="n">vtu</span><span class="p">;</span>
+  <span class="o">*</span><span class="n">fbu</span><span class="o">=</span><span class="n">buu</span><span class="o">*</span><span class="n">vnc</span><span class="o">-</span><span class="n">bnc</span><span class="o">*</span><span class="n">vuu</span><span class="p">;</span>
+  <span class="o">*</span><span class="n">fen</span><span class="o">=</span><span class="p">(</span><span class="n">enu</span><span class="o">+</span><span class="n">ptc</span><span class="p">)</span><span class="o">*</span><span class="n">vnc</span><span class="o">-</span><span class="n">bnc</span><span class="o">*</span><span class="p">(</span><span class="n">vtu</span><span class="o">*</span><span class="n">btu</span><span class="o">+</span><span class="n">vuu</span><span class="o">*</span><span class="n">buu</span><span class="p">);</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>数値計算量を削減するため、 <img class="math" src="_images/math/05a25058e889a02179ee8461c9e8c24b7cd2335a.png" alt="p_T \rightarrow (B_t^2+B_u^2)/2"/> 、 <img class="math" src="_images/math/c75b14a02a290beca19ac78bf81ea1a55c409cd7.png" alt="\mbox{\boldmath$v$} \cdot \mbox{\boldmath$B$} \rightarrow (v_t B_t + v_u B_u)"/> とするなど、できるだけ代数的に整理している。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>if文が計算が遅い場合は、sign関数を用いてプログラムを書き換えることができる。</p>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>rhdli = 1.0_DP/(rhdl+0.5_DP-sign(0.5_DP,abs(rhdl)-eps))
+rhdri = 1.0_DP/(rhdr+0.5_DP-sign(0.5_DP,abs(rhdr)-eps))
+
+hl  = 0.5_DP+sign(0.5_DP,vnc)
+hr  = 1.0_DP-hl
+h2l = 0.5_DP+sign(0.5_DP,vnc-dabs(bnc)/rro2l)
+h3l = (1.0_DP-h2l)*hl
+h2r = 0.5_DP-sign(0.5_DP,vnc+dabs(bnc)/rro2r)
+h3r = (1.0_DP-h2r)*hr
+rou = ro2l*hl+ro2r*hr
+vsu = vs2l*h2l+vs3m*h3l+vs3m*h3r+vs2r*h2r
+vtu = vt2l*h2l+vt3m*h3l+vt3m*h3r+vt2r*h2r
+bsu = bs2l*h2l+bs3m*h3l+bs3m*h3r+bs2r*h2r
+btu = bt2l*h2l+bt3m*h3l+bt3m*h3r+bt2r*h2r
+enu = en2l*h2l+en3l*h3l+en3r*h3r+en2r*h2r
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>MHD方程式の流束は回転対称なので、上の1次元数値流束サブルーチンをそのまま多次元計算に利用できる。有限体積的なアプローチであれば、非構造格子も含むカーテシアン座標以外でも利用できる。</p>
+</div>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>・・・
+vn = vy
+vt = vz
+vu = vx
+・・・
+call calc_flux_hlld(rol,vnl,vtl,vul,・・・
+・・・
+fmx_y = fmu
+fmy_y = fmn
+fmz_y = fmt
+・・・
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="id34">
+<h2>参考文献<a class="headerlink" href="#id34" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#balsara98"><span class="std std-ref">Balsara (1998)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#balsara-spicer99"><span class="std std-ref">Balsara &amp; Spicer (1999)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#borges08"><span class="std std-ref">Borges et al. (2008)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#brackbill-barnes80"><span class="std std-ref">Brackbill &amp; Barnes (1980)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#brio-wu88"><span class="std std-ref">Brio &amp; Wu (1988)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#cargo-gallice97"><span class="std std-ref">Cargo &amp; Gallice (1997)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#dedner02"><span class="std std-ref">Dedner et al., 2002</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#delzanna07"><span class="std std-ref">Del Zanna et al. (2007)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#evans-hawley88"><span class="std std-ref">Evans &amp; Hawley (1988)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#gardiner-stone05"><span class="std std-ref">Gardiner &amp; Stone (2005)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#henrick05"><span class="std std-ref">Henrick et al. (2005)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#jiang-shu96"><span class="std std-ref">Jiang &amp; Shu (1996)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#liu94"><span class="std std-ref">Liu et al. (1994)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#londrillo-delzanna04"><span class="std std-ref">Londrillo &amp; Del Zanna (2004)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#miyoshi-kusano05"><span class="std std-ref">Miyoshi &amp; Kusano (2005)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#powell99"><span class="std std-ref">Powell et al. (1999)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#suresh-huynh97"><span class="std std-ref">Suresh &amp; Huynh, 1997</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#toth00"><span class="std std-ref">Toth (2000)</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#vanleer79"><span class="std std-ref">van Leer (1979)</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">磁気流体力学方程式に対する近似リーマン解法</a><ul>
+<li><a class="reference internal" href="#id2">基礎方程式</a><ul>
+<li><a class="reference internal" href="#mhd">MHD方程式</a></li>
+<li><a class="reference internal" href="#id4">1次元理想MHD方程式</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id5">近似リーマン解法</a><ul>
+<li><a class="reference internal" href="#id8">線形近似リーマン解法</a></li>
+<li><a class="reference internal" href="#hll">HLL近似リーマン解法</a></li>
+<li><a class="reference internal" href="#hlld">HLLD近似リーマン解法</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id17">高次精度化</a><ul>
+<li><a class="reference internal" href="#muscl">MUSCL補間</a><ul>
+<li><a class="reference internal" href="#minmod-limiter">minmod limiter</a></li>
+<li><a class="reference internal" href="#monotonized-central">monotonized central</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#weno">WENO法</a></li>
+<li><a class="reference internal" href="#mp5">MP5法</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id20">多次元化</a><ul>
+<li><a class="reference internal" href="#id21">時間更新手順</a></li>
+<li><a class="reference internal" href="#divb">磁場の発散の数値的処理</a><ul>
+<li><a class="reference internal" href="#id23">プロジェクション法</a></li>
+<li><a class="reference internal" href="#ct">CT法</a><ul>
+<li><a class="reference internal" href="#id25">有限体積法への実装</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#dc-divb">移流拡散法</a><ul>
+<li><a class="reference internal" href="#wave">8 wave法</a></li>
+<li><a class="reference internal" href="#id28">9 wave法</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id30">付録</a><ul>
+<li><a class="reference internal" href="#positivity">HLL型近似リーマン解法の正値性の証明</a></li>
+<li><a class="reference internal" href="#id33">HLLD近似リーマン解法のサンプルプログラム</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id34">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="cansplus.html" title="CANS+ の使い方"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="sabun.html" title="差分法の基礎"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+ 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

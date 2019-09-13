@@ -1,0 +1,16 @@
+*******************
+CANS+ ドキュメント
+*******************
+
+.. toctree::
+   :maxdepth: 2
+
+   preface
+   introduction
+   mhdwave
+   sabun
+   riemann
+   cansplus
+   application
+   reference
+

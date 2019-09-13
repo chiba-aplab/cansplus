@@ -1,0 +1,963 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>matplotlib (python) による解析・可視化 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="物理課題" href="application.html" />
+    <link rel="prev" title="IDLによる解析・可視化" href="idl.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application.html" title="物理課題"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="idl.html" title="IDLによる解析・可視化"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="cansplus.html" accesskey="U"><strong>CANS+</strong> の使い方</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  
+<style>
+/* CSS for nbsphinx extension */
+
+/* remove conflicting styling from Sphinx themes */
+div.nbinput,
+div.nbinput div.prompt,
+div.nbinput div.input_area,
+div.nbinput div[class*=highlight],
+div.nbinput div[class*=highlight] pre,
+div.nboutput,
+div.nbinput div.prompt,
+div.nbinput div.output_area,
+div.nboutput div[class*=highlight],
+div.nboutput div[class*=highlight] pre {
+    background: none;
+    border: none;
+    padding: 0 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+/* avoid gaps between output lines */
+div.nboutput div[class*=highlight] pre {
+    line-height: normal;
+}
+
+/* input/output containers */
+div.nbinput,
+div.nboutput {
+    display: -webkit-flex;
+    display: flex;
+    align-items: flex-start;
+    margin: 0;
+    width: 100%;
+}
+@media (max-width: 540px) {
+    div.nbinput,
+    div.nboutput {
+        flex-direction: column;
+    }
+}
+
+/* input container */
+div.nbinput {
+    padding-top: 5px;
+}
+
+/* last container */
+div.nblast {
+    padding-bottom: 5px;
+}
+
+/* input prompt */
+div.nbinput div.prompt pre {
+    color: #307FC1;
+}
+
+/* output prompt */
+div.nboutput div.prompt pre {
+    color: #BF5B3D;
+}
+
+/* all prompts */
+div.nbinput div.prompt,
+div.nboutput div.prompt {
+    min-width: 7ex;
+    padding-top: 0.4em;
+    padding-right: 0.4em;
+    text-align: right;
+    flex: 0;
+}
+@media (max-width: 540px) {
+    div.nbinput div.prompt,
+    div.nboutput div.prompt {
+        text-align: left;
+        padding: 0.4em;
+    }
+    div.nboutput div.prompt.empty {
+        padding: 0;
+    }
+}
+
+/* disable scrollbars on prompts */
+div.nbinput div.prompt pre,
+div.nboutput div.prompt pre {
+    overflow: hidden;
+}
+
+/* input/output area */
+div.nbinput div.input_area,
+div.nboutput div.output_area {
+    padding: 0.4em;
+    -webkit-flex: 1;
+    flex: 1;
+    overflow: auto;
+}
+@media (max-width: 540px) {
+    div.nbinput div.input_area,
+    div.nboutput div.output_area {
+        width: 100%;
+    }
+}
+
+/* input area */
+div.nbinput div.input_area {
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    background: #f5f5f5;
+}
+
+/* override MathJax center alignment in output cells */
+div.nboutput div[class*=MathJax] {
+    text-align: left !important;
+}
+
+/* override sphinx.ext.imgmath center alignment in output cells */
+div.nboutput div.math p {
+    text-align: left;
+}
+
+/* standard error */
+div.nboutput div.output_area.stderr {
+    background: #fdd;
+}
+
+/* ANSI colors */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-default-inverse-fg { color: #FFFFFF; }
+.ansi-default-inverse-bg { background-color: #000000; }
+
+.ansi-bold { font-weight: bold; }
+.ansi-underline { text-decoration: underline; }
+
+/* Some additional styling taken form the Jupyter notebook CSS */
+div.rendered_html table {
+  border: none;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+div.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
+}
+div.rendered_html tr,
+div.rendered_html th,
+div.rendered_html td {
+  text-align: right;
+  vertical-align: middle;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
+}
+div.rendered_html th {
+  font-weight: bold;
+}
+div.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+div.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
+}
+</style>
+<div class="section" id="matplotlib-(python)-による解析・可視化">
+<h1>matplotlib (python) による解析・可視化<a class="headerlink" href="#matplotlib-(python)-による解析・可視化" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<p><strong>著者</strong> 松本洋介（千葉大学）</p>
+<div class="section" id="はじめに">
+<h2>はじめに<a class="headerlink" href="#はじめに" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>matplotlib（とnumpy）の基本的な使い方及びアニメーションの作り方を説明します。matplotlibはpythonプログラム言語をベースとした解析・可視化ライブラリで、IDLと比べてライセンスフリーで使えるため、手頃な解析環境として人気があります。</p>
+<p>jupyter notebookは、pythonプログラミング及びmatplotlibによる可視化などのチュートリアル／ハンズオンのための便利なツールとして知られています。本notebookはjupyter notebookのセットアップができている環境下で動作します。</p>
+<p>以下ではCANS+ のデータ読み込み、それらの可視化機能、解析手法の紹介をします。</p>
+<p>本解説は$CANSPLUS_DIR/notebook内にmatplotlib_hands-on.ipynbとして用意されています。jupyter notebookを使って読んで下さい。</p>
+<p>以下で使われるプロシージャの一部は$CANSPLUS_DIR/python内に用意されています。これらは各課題から共通して使えるものです。</p>
+</div>
+<div class="section" id="python環境の準備">
+<h2>python環境の準備<a class="headerlink" href="#python環境の準備" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="インストール">
+<h3>インストール<a class="headerlink" href="#インストール" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="line-block">
+<div class="line">anaconda3をインストールするのがお手軽です。</div>
+<div class="line"><a class="reference external" href="https://www.anaconda.com/download/">https://www.anaconda.com/download/</a> よりバイナリファイルをダウンロードして、圧縮ファイルをインストール先に展開してください。</div>
+<div class="line">本サマーセミナーでは、すでにanaconda3がインストールされています。</div>
+</div>
+</div>
+<div class="section" id="環境設定">
+<h3>環境設定<a class="headerlink" href="#環境設定" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>anaconda3をインストールした先を以下では ~/anaconda3 とします。</p>
+<p>bashの場合、</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">export</span> <span class="nv">PATH</span><span class="o">=</span>~/anaconda3:<span class="nv">$PATH</span>
+</pre></div>
+</div>
+<p>cshの場合、</p>
+<div class="highlight-csh notranslate"><div class="highlight"><pre><span></span><span class="nb">setenv </span>PATH ~/anaconda3:<span class="k">${</span><span class="nv">PATH</span><span class="k">}</span>
+</pre></div>
+</div>
+<p>とすることで、anaconda3内のpythonを優先的に使うように設定します。これにより、OSに別途インストールされているpython環境と分けて使用します。 以上の設定は.bashrcや.tcshrcに書いておくとよいです。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[1]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+3.6.6 |Anaconda custom (64-bit)| (default, Jun 28 2018, 17:14:51)
+[GCC 7.2.0]
+</pre></div></div>
+</div>
+<p>のように出力されたら、インストールは正常に完了しています。試しにnumpyをインポートして利用してみましょう。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[2]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1000</span><span class="p">,</span><span class="mf">100.0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[3]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[1000.  100.    1.]
+</pre></div></div>
+</div>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[4]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+float64
+</pre></div></div>
+</div>
+</div>
+<div class="section" id="jupyter-notebookの起動">
+<h3>jupyter notebookの起動<a class="headerlink" href="#jupyter-notebookの起動" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>matplotlibを使った可視化・解析方法の例は$CANS_PLUSDIR/notebook/内のmatplotlib_hands-on.ipynbにあります。本notebookの利用方法は、</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> jupyter-notebook <span class="nv">$CANSPLUS_DIR</span>/notebook/matplotlib_hanbs-on.ipynb
+</pre></div>
+</div>
+<p>で起動します。ブラウザが立ち上がり、ブラウザのページの中でコマンドをインタラクティブに実行していきます。</p>
+<p><strong>セル内の改行は Enter キー、セル内の命令の実行は Shift + Enter キーで行います。</strong></p>
+</div>
+</div>
+<div class="section" id="データの読み込み">
+<h2>データの読み込み<a class="headerlink" href="#データの読み込み" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="テキストファイルデータの読み込み">
+<h3>テキストファイルデータの読み込み<a class="headerlink" href="#テキストファイルデータの読み込み" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="nb">list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*_vyi.dat&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="nb">list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="IDLバイナリデータ（IDL-save-file）の読み込み">
+<h3>IDLバイナリデータ（IDL save file）の読み込み<a class="headerlink" href="#IDLバイナリデータ（IDL-save-file）の読み込み" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[6]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">sio</span>
+<span class="n">data_set</span><span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="s1">&#39;sample.dat&#39;</span><span class="p">)</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">data_set</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+<span class="n">xax</span> <span class="o">=</span> <span class="n">data_set</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+<span class="n">yax</span> <span class="o">=</span> <span class="n">data_set</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="DACバイナリデータの読み込み">
+<h3>DACバイナリデータの読み込み<a class="headerlink" href="#DACバイナリデータの読み込み" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="line-block">
+<div class="line">CANS+はCANSから使われる独自のDACバイナリ形式を採用しています。CANS+で出力したデータの読み込みルーチンの使い方を説明します。</div>
+<div class="line">bashの場合:</div>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ <span class="nb">export</span> <span class="nv">PYTHONPATH</span><span class="o">=</span><span class="nv">$CANSPLUS_DIR</span>/python
+</pre></div>
+</div>
+<p>cshの場合:</p>
+<div class="highlight-tcsh notranslate"><div class="highlight"><pre><span></span><span class="nv">$ </span><span class="nb">setenv </span>PYTHONPATH <span class="nv">$CANSPLUS_DIR</span>/python
+</pre></div>
+</div>
+<p>のように、pythonコマンドラインから読み込めるpathの設定を行います。その後</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python
+</pre></div>
+</div>
+<p>として、</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dac_read</span> <span class="kn">import</span> <span class="n">dac_read</span>
+<span class="c1">#./data/にデータがある場合</span>
+<span class="c1">#2D計算の場合。10スナップショット目の全ての物理変数を読み込む例</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">dac_read</span><span class="p">(</span><span class="s1">&#39;./data/0010_*_rank=*.dac&#39;</span><span class="p">,</span><span class="n">dimension</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1">#3D計算の場合。質量密度のみ全ての時間ステップを読み込む例</span>
+<span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">dac_read</span><span class="p">(</span><span class="s1">&#39;./data/0???_ro_rank=*.dac&#39;</span><span class="p">,</span><span class="n">dimension</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>の様にして計算結果を読み込むことができます。</p>
+</div>
+<div class="section" id="注意">
+<h3>注意<a class="headerlink" href="#注意" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>多次元配列の場合、pythonでは、行・列の順に格納されます。これは、それぞれの次元がY軸、X軸に相当していて、IDLやFotranと異なる（C言語と同じ）ことに注意が必要です。</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="matplotlibを使った可視化">
+<h2>matplotlibを使った可視化<a class="headerlink" href="#matplotlibを使った可視化" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="matplotlibの使い方参考サイト">
+<h3>matplotlibの使い方参考サイト<a class="headerlink" href="#matplotlibの使い方参考サイト" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>以下では、解析・可視化について基本的なところしか紹介しません。細かい調整等が必要な場合は下記のサイトが参考になると思いますので、適宜参照してください。</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://jakevdp.github.io/PythonDataScienceHandbook/index.html">https://jakevdp.github.io/PythonDataScienceHandbook/index.html</a></p></li>
+<li><p><a class="reference external" href="http://www.turbare.net/transl/scipy-lecture-notes/intro/matplotlib/matplotlib.html">http://www.turbare.net/transl/scipy-lecture-notes/intro/matplotlib/matplotlib.html</a></p></li>
+<li><p><a class="reference external" href="http://seesaawiki.jp/met-python/d/matplotlib">http://seesaawiki.jp/met-python/d/matplotlib</a></p></li>
+</ul>
+</div>
+<div class="section" id="モジュールのインポート">
+<h3>モジュールのインポート<a class="headerlink" href="#モジュールのインポート" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>まずはmatplotlibのモジュールをインポートします。おまじないだと思ってください。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="描画ウィンドウの表示方法">
+<h3>描画ウィンドウの表示方法<a class="headerlink" href="#描画ウィンドウの表示方法" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>notebook内では、描画内容はセル内に表示されていますが、pythonのコマンドライン上では、最後に</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>もしくは</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">pause</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>のようにして、新しく立ち上がるウィンドウ内に描画します。</p>
+<p>前者と後者の方法の違いは、前者はウィンドウにフォーカスされて、ウィンドウを閉じない限りコマンドラインに戻れないのに対して、後者ではウィンドウを立ち上げたままコマンドラインに戻ることができます。</p>
+<p>ipythonを使うとjupyter notebookと同じように使えて、</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ipython --pylab
+</pre></div>
+</div>
+<p>のように–pylabオプションをつけてipythonを起動すれば、描画時に自動的にウィンドウが立ち上がります。</p>
+</div>
+<div class="section" id="1次元プロット">
+<h3>1次元プロット<a class="headerlink" href="#1次元プロット" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>線プロットの作り方です。１次元plotの詳しい使い方は?plt.plotより確認できます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">xpos1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xax</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xax</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">yax</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,:,</span><span class="n">xpos1</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[8]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>[&lt;matplotlib.lines.Line2D at 0x7fcc364debe0&gt;]
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_17_1.png" src="_images/matplotlib_17_1.png" />
+</div>
+</div>
+<p>軸にタイトルを入れたりして見栄えを変えます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">#デフォルトフォントサイズの設定</span>
+<span class="c1">#個別に指定しない限りは以降この設定が反映される</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;font.size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">18</span>
+<span class="c1">#軸のタイトル、タイトルの追加</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">yax</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,:,</span><span class="n">xpos1</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$y$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$V_x$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;K-H instability&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[9]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>Text(0.5,1,&#39;K-H instability&#39;)
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_19_1.png" src="_images/matplotlib_19_1.png" />
+</div>
+</div>
+<p>別のデータのプロットを重ね描きして、レジェンドを追加します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">yax</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,:,</span><span class="n">xpos1</span><span class="p">],</span><span class="s1">&#39;ro-&#39;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$V_x$ at $x=L_x/2$&#39;</span><span class="p">)</span>
+<span class="n">xpos2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xax</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xax</span><span class="p">)</span><span class="o">/</span><span class="mf">8.</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">yax</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,:,</span><span class="n">xpos2</span><span class="p">],</span><span class="s1">&#39;b+-&#39;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;$V_x$ at $x=L_x/8$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;K-H instability&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$y$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$V_x$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[10]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.legend.Legend at 0x7fcc363565f8&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_21_1.png" src="_images/matplotlib_21_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="2次元マップ">
+<h3>2次元マップ<a class="headerlink" href="#2次元マップ" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="pcolormeshを使った方法">
+<h4>pcolormeshを使った方法<a class="headerlink" href="#pcolormeshを使った方法" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="c1">#x軸、y軸データから2次元データを作る</span>
+<span class="n">xax2d</span><span class="p">,</span> <span class="n">yax2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xax</span><span class="p">,</span><span class="n">yax</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.collections.QuadMesh at 0x7fcc362c8390&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_23_1.png" src="_images/matplotlib_23_1.png" />
+</div>
+</div>
+<p>軸タイトルやデータに基づくアスペクト比の変更、カラーバーを追加するなどして見栄えを整えます。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+<span class="c1">##図のアスペクト比を軸データを元に決める</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[12]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.colorbar.Colorbar at 0x7fcc36260668&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_25_1.png" src="_images/matplotlib_25_1.png" />
+</div>
+</div>
+<p>カラーマップは <a class="reference external" href="https://matplotlib.org/examples/color/colormaps_reference.html">https://matplotlib.org/examples/color/colormaps_reference.html</a> を参考に指定してください。</p>
+</div>
+</div>
+<div class="section" id="ベクトル場の表示">
+<h3>ベクトル場の表示<a class="headerlink" href="#ベクトル場の表示" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<div class="section" id="ベクトル矢印による表現-(quiver）">
+<h4>ベクトル矢印による表現 (quiver）<a class="headerlink" href="#ベクトル矢印による表現-(quiver）" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>上記で作成した2次元 カラー図 に速度場ベクトルを付け加える場合を例に示します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,:,:],</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">,:,:])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[13]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.quiver.Quiver at 0x7fcc361fb240&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_28_1.png" src="_images/matplotlib_28_1.png" />
+</div>
+</div>
+<p>しかし、そのままだと全ての情報を矢印で描くことになってしまうので、サンプリングして描画するように修正する。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="c1">#配列要素を5つ飛ばしで描画（::5）</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">xax2d</span><span class="p">[::</span><span class="mi">5</span><span class="p">,::</span><span class="mi">5</span><span class="p">],</span><span class="n">yax2d</span><span class="p">[::</span><span class="mi">5</span><span class="p">,::</span><span class="mi">5</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,::</span><span class="mi">5</span><span class="p">,::</span><span class="mi">5</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">,::</span><span class="mi">5</span><span class="p">,::</span><span class="mi">5</span><span class="p">],</span><span class="n">scale</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">xax</span><span class="p">),</span><span class="n">width</span><span class="o">=</span><span class="mf">0.0075</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[14]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.quiver.Quiver at 0x7fcc34da98d0&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_30_1.png" src="_images/matplotlib_30_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="流線による表現（streamplot）">
+<h4>流線による表現（streamplot）<a class="headerlink" href="#流線による表現（streamplot）" title="このヘッドラインへのパーマリンク">¶</a></h4>
+<p>矢印だとうまく表現できない場合もあるので、別の方法を紹介します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="c1">#配列要素を3つ飛ばしで描画（::3）</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">streamplot</span><span class="p">(</span><span class="n">xax2d</span><span class="p">[::</span><span class="mi">3</span><span class="p">,::</span><span class="mi">3</span><span class="p">],</span><span class="n">yax2d</span><span class="p">[::</span><span class="mi">3</span><span class="p">,::</span><span class="mi">3</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,::</span><span class="mi">3</span><span class="p">,::</span><span class="mi">3</span><span class="p">],</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">,::</span><span class="mi">3</span><span class="p">,::</span><span class="mi">3</span><span class="p">],</span><span class="n">color</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">7</span><span class="p">,::</span><span class="mi">3</span><span class="p">,::</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">data</span><span class="p">[</span><span class="mi">8</span><span class="p">,::</span><span class="mi">3</span><span class="p">,::</span><span class="mi">3</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">),</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;binary_r&#39;</span><span class="p">)</span>
+<span class="c1">#ベクトル場の大きさで流線の色をつける</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.colorbar.Colorbar at 0x7fcc34517278&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_32_1.png" src="_images/matplotlib_32_1.png" />
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="等高線">
+<h3>等高線<a class="headerlink" href="#等高線" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>磁力線を描く（ベクトルポテンシャルの等高線）ためには、等高線を図示するのが便利です。例えば、上記で作成した2次元 カラー図 に質量密度の等高線を描き加える（この例では圧力分布とほぼ同じ）場合を以下で示します。</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:])</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[16]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.contour.QuadContourSet at 0x7fcc344add68&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_34_1.png" src="_images/matplotlib_34_1.png" />
+</div>
+</div>
+<p>等高線の数を増やす場合は、</p>
+<div class="nbinput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="mi">15</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="nboutput docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[17]:
+</pre></div>
+</div>
+<div class="output_area highlight-none notranslate"><div class="highlight"><pre>
+<span></span>&lt;matplotlib.contour.QuadContourSet at 0x7fcc344631d0&gt;
+</pre></div>
+</div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<img alt="_images/matplotlib_36_1.png" src="_images/matplotlib_36_1.png" />
+</div>
+</div>
+</div>
+<div class="section" id="結果のファイルへの出力">
+<h3>結果のファイルへの出力<a class="headerlink" href="#結果のファイルへの出力" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>上記2次元マップで作成した図をファイルに保存するには、それぞれのクラスに共通したsaveメソッドを使ってファイルに保存します。ファイル名の拡張子からファイルフォーマットが自動的に決まります。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[18]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">,:,:],</span><span class="mi">15</span><span class="p">,</span><span class="n">colors</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+<span class="c1">#描画内容を保存 (解像度をDPI=150で指定)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;result_matplotlib.png&#39;</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;result_matplotlib.eps&#39;</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="アニメーションの作り方">
+<h2>アニメーションの作り方<a class="headerlink" href="#アニメーションの作り方" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下の様に、python上で結果をpngファイルとして保存します。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[19]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span><span class="n">data_set</span> <span class="o">=</span> <span class="n">sio</span><span class="o">.</span><span class="n">readsav</span><span class="p">(</span><span class="s1">&#39;sample_ro-time.dat&#39;</span><span class="p">)</span>
+<span class="n">ro</span> <span class="o">=</span> <span class="n">data_set</span><span class="p">[</span><span class="s1">&#39;ro&#39;</span><span class="p">]</span>
+<span class="n">nt</span> <span class="o">=</span> <span class="n">ro</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nt</span><span class="p">):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">pcolormesh</span><span class="p">(</span><span class="n">xax2d</span><span class="p">,</span><span class="n">yax2d</span><span class="p">,</span><span class="n">ro</span><span class="p">[</span><span class="n">l</span><span class="p">,:,:],</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;$X (\lambda)$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;$Y (\lambda)$&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">,</span> <span class="n">adjustable</span><span class="o">=</span><span class="s1">&#39;box&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;result_matplotlib&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">l</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;.png&#39;</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s1">&#39;tight&#39;</span><span class="p">,</span><span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>上記のようにすると、作業ディレクトリには”result_matplotlib005.png”のように連番でファイル名が付けられた画像ファイルが作成されます。</p>
+<p>結果をpngファイルに出力後、LinuxにインストールされているImagemagick (convert)やffmpegを使って、結果の図をアニメーション化します。まず、convertを使った方法を説明します。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> convert result???.png result.gif
+</pre></div>
+</div>
+<p>のようにすると、gifアニメーションが作成されます。convertの際の詳しいオプションは”man convert”に委ねます。</p>
+<p>次に、ffmpegを使ったアニメーション作成例を示します。</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span> ffmpeg -r <span class="m">10</span> -i result_matplotlib%03d.png -qscale <span class="m">0</span> -vcodec mpeg4 result.mp4
+</pre></div>
+</div>
+<p>のように、gifアニメーション以外のフォーマット（この例では、元の画像と同じ画質で、エンコードにmpeg4、格納形式としてmp4を指定している）の動画ファイルが作成可能です。更なるオプションは”man ffmpeg”に委ねます。</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre>
+<span></span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">matplotlib (python) による解析・可視化</a><ul>
+<li><a class="reference internal" href="#はじめに">はじめに</a></li>
+<li><a class="reference internal" href="#python環境の準備">python環境の準備</a><ul>
+<li><a class="reference internal" href="#インストール">インストール</a></li>
+<li><a class="reference internal" href="#環境設定">環境設定</a></li>
+<li><a class="reference internal" href="#jupyter-notebookの起動">jupyter notebookの起動</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#データの読み込み">データの読み込み</a><ul>
+<li><a class="reference internal" href="#テキストファイルデータの読み込み">テキストファイルデータの読み込み</a></li>
+<li><a class="reference internal" href="#IDLバイナリデータ（IDL-save-file）の読み込み">IDLバイナリデータ（IDL save file）の読み込み</a></li>
+<li><a class="reference internal" href="#DACバイナリデータの読み込み">DACバイナリデータの読み込み</a></li>
+<li><a class="reference internal" href="#注意">注意</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#matplotlibを使った可視化">matplotlibを使った可視化</a><ul>
+<li><a class="reference internal" href="#matplotlibの使い方参考サイト">matplotlibの使い方参考サイト</a></li>
+<li><a class="reference internal" href="#モジュールのインポート">モジュールのインポート</a></li>
+<li><a class="reference internal" href="#描画ウィンドウの表示方法">描画ウィンドウの表示方法</a></li>
+<li><a class="reference internal" href="#1次元プロット">1次元プロット</a></li>
+<li><a class="reference internal" href="#2次元マップ">2次元マップ</a><ul>
+<li><a class="reference internal" href="#pcolormeshを使った方法">pcolormeshを使った方法</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ベクトル場の表示">ベクトル場の表示</a><ul>
+<li><a class="reference internal" href="#ベクトル矢印による表現-(quiver）">ベクトル矢印による表現 (quiver）</a></li>
+<li><a class="reference internal" href="#流線による表現（streamplot）">流線による表現（streamplot）</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#等高線">等高線</a></li>
+<li><a class="reference internal" href="#結果のファイルへの出力">結果のファイルへの出力</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#アニメーションの作り方">アニメーションの作り方</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application.html" title="物理課題"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="idl.html" title="IDLによる解析・可視化"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="cansplus.html" ><strong>CANS+</strong> の使い方</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

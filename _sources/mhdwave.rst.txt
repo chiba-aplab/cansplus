@@ -1,0 +1,887 @@
+===============
+磁気流体力学波
+===============
+
+:著者: 花輪知幸（千葉大学）
+
+基礎方程式
+===========
+連続の式
+
+.. math::
+ :label: cont
+
+ \frac{\partial \rho}{\partial t} \; + \;\frac{\partial}{\partial x _i} \, \left( \rho v _i \right) \; = \; 0
+
+運動方程式
+
+.. math::
+ :label: motion
+
+ \rho \, \left( \frac{\partial v _i}{\partial t} \; + \;  v _k \frac{\partial v _i}{\partial x _k} \right)
+ \; + \; \frac{\partial \pi _{ik}}{\partial x _k} \; - \; \frac{\left( \mbox{\boldmath$j$}
+ \times \mbox{\boldmath$B$} \right) _i}{c} \; + \; \rho \, \frac{\partial \Phi}{\partial x _i} \; = \; 0
+
+.. math:: 
+ :label: viscos
+
+ \pi _{ik}  = \; P \, \delta _{ik} \; + \; \eta \,
+ \left( \frac{\partial v _i}{\partial x_k} \; + \; \frac{\partial v _k}{\partial x _i} \; - \;
+ \frac{2}{3} \, \delta _{ik} \, \frac{\partial v _\ell}{\partial x _\ell} \right)
+ \; +  \; \zeta \, \delta _{ik} \, \frac{\partial v _\ell}{\partial x_\ell}  
+
+エネルギー収支
+
+.. math::
+ :label: energy
+
+ T \, \left( \frac{\partial s}{\partial t} \, + \, v _k \frac{\partial s}{\partial x _k} \right) \; = \; \Gamma \, - \, \Lambda
+
+マックスウェル方程式
+
+.. math::
+ :label: faraday
+
+ \frac{1}{c} \, 
+ \frac{\partial \mbox{\boldmath$B$}}{\partial t} = - \, \mbox{\boldmath$\nabla$}
+ \times \mbox{\boldmath$E$} 
+
+.. math::
+ :label: ampere
+
+ \frac{1}{c} \, \left( \frac{\partial \mbox{\boldmath$E$}}{\partial t} \; + \; 4 \pi 
+ \mbox{\boldmath$j$} \right)
+ = \mbox{\boldmath$\nabla$} \times \mbox{\boldmath$B$}  
+
+オームの法則
+
+.. math::
+ :label: ohm
+
+ \mbox{\boldmath$j$} \; = \; \sigma \,
+ \left( \mbox{\boldmath$E$} \, + \, \frac{\mbox{\boldmath$v$}}{c} \, 
+ {\times} 
+ \mbox{\boldmath$B$} \right)
+
+ここではEinsteinの記法を採用して書いている。今回のサマースクールでは粘性が小さく ( :math:`\eta\sim\zeta\rightarrow 0` )、電気伝導度が無限大( :math:`\sigma \rightarrow \infty` ) である極限を考える。また変位電流を無視する。この近似は、平均自由行程が十分に短いと近似したことと同じである。また重力場や加熱・冷却も無視できると考える。この近似を行うと、運動方程式とマックスウェル方程式は
+
+.. math::
+ :label: motion2
+
+ \rho \, \left( \frac{\partial v _i}{\partial t} \, + \,  v _k \frac{\partial v _i}{\partial x _k} \right)
+ \; + \; \frac{\partial P}{\partial x _i} \; - \;
+ \frac{1}{4 \pi} \, \left[ \frac{\partial}{\partial x _k} \left(B _i B _k \right) \, - \, 
+ \frac{\partial}{\partial x_i} \, \left( \frac{B _\ell ^2}{2} \right) \right]
+ \; = \; 0 
+
+.. math::
+ :label: induction
+
+ \frac{\partial \mbox{\boldmath$B$}}{\partial t} \; = \;
+ \mbox{\boldmath$\nabla$} \times \left( \mbox{\boldmath$v$} \times
+ \mbox{\boldmath$B$} \right)
+
+と書き換えられる。本章ではこのように近似した理想磁気流体力学方程式を使って磁気流体波を論じる。使用する変数名をテーブルにまとめる。
+
+ ================================================== ======================================
+ :math:`t` 時刻                                      :math:`x _i` 座標
+ :math:`\rho` 密度                                   :math:`P` 圧力
+ :math:`T` 温度                                      :math:`s` 比エントロピー
+ :math:`\Gamma` 単位質量あたりの加熱率                  :math:`\Lambda` 単位質量あたりの冷却率
+ :math:`\bf{j}` 電流密度                              :math:`\bf{B}` 磁場
+ :math:`\bf{E}` 電場                                 :math:`\sigma` 電気伝導度
+ :math:`\Phi` 重力ポテンシャル                         :math:`c` 光速度
+ :math:`\eta` ずり粘性 (shear viscosity)              :math:`\zeta` 体積粘性 (bulk viscosity)
+ :math:`\varepsilon` 単位質量あたりの内部エネルギー       :math:`\bf{v}` 速度
+ :math:`E` 単位質量あたりのエネルギー                    :math:`H` 単位質量あたりのエンタルピー
+ :math:`T` 温度                                      :math:`R` 気体定数
+ :math:`C _V` 定積比熱                                :math:`C_P` 定圧比熱
+ ================================================== ======================================
+
+理想気体の状態方程式
+---------------------
+
+.. math::
+ :label: eos0
+
+ P = R \rho T \\
+
+.. math::
+ :label: eos1
+
+ \gamma =  \frac{ C  _P}{C _V} = \frac{C_V + R}{C_V}  \\
+
+.. math::
+ :label: eos2
+
+ s = \frac{R}{\gamma - 1} \left( \ln P - \gamma \ln \rho \right) = C_V \left( \ln P - \gamma \, \ln \rho \right) \\
+
+.. math::
+ :label: eos3
+
+ \varepsilon = \frac{1}{\gamma - 1} \frac{P}{\rho} \\
+
+.. math::
+ :label: eos4
+
+ P = e ^{s/C_V} \rho ^\gamma = K \rho ^\gamma
+
+エントロピーにはこの他に定数項が加わる。
+
+保存形式
+========
+
+粘性が無視でき(inviscid)、電気伝導度が無限大である場合について考える。このとき流体力学方程式は次のようにまとめられる。
+
+.. math::
+ :label: mass_cnsv
+
+ \frac{\partial \rho}{\partial t} + \frac{\partial}{\partial x _i} \left( \rho v_i \right) \; = \; 0 
+
+.. math::
+ :label: moment_cnsv
+
+ \frac{\partial}{\partial t} \left( \rho v _j \right) + 
+ \frac{\partial}{\partial x _i} \,
+ \left( \rho v _j v _i  \, - \, \frac{B _i B _j}{4 \pi} \right) \; + \;
+ \frac{\partial}{\partial x _j} \left( P \, + \, \frac{\mbox{\boldmath$B$} ^2}{8 \pi} 
+ \right) 
+ \; = \; \rho g _j 
+
+.. math::
+ :label: energy_cnsv
+
+ \frac{\partial}{\partial t} \left( \rho E \right) +
+ \frac{\partial}{\partial x _i} \left( \rho H v _i \, - \, 
+ \frac{B_i}{4\pi} \, \mbox{\boldmath$v$}\cdot \mbox{\boldmath$B$} 
+ \right) \; = \; \rho g _i v _i \; + \;
+ \Gamma \, - \, \Lambda
+
+.. math::
+ :label: induction2
+
+ \frac{\partial \mbox{\boldmath$B$}}{\partial t} = \mbox{\boldmath$\nabla$}
+ \times \left( \mbox{\boldmath$v$} \times \mbox{\boldmath$B$} \right) 
+
+.. math::
+ :label: total_e
+
+ E = \frac{|\mbox{\boldmath$v$}|^2}{2} \; + \; \varepsilon \; + \; \frac{|\mbox{\boldmath$B$}|^2}{8\pi \rho}
+
+.. math::
+ :label: entalpy
+
+ H = \frac{|\mbox{\boldmath$v$}|^2}{2} \, + \, \varepsilon \; + \; \frac{P}{\rho} \; + \; \frac{|\mbox{\boldmath$B$}|^2}{4\pi \rho}
+
+式 :eq:`energy_cnsv` を導出するにあたり、 熱力学の関係式
+
+.. math::
+ :label: thermodynamics
+
+ d\varepsilon \; = \; T ds \; - \; P d\left(\frac{1}{\rho} \right) = T ds + \frac{P}{\rho ^2} d\rho
+
+を用いた。
+
+ベクトルを用いると上記の流体力学方程式は
+
+.. math::
+ :label: system_eq
+
+ \frac{\partial \mbox{\boldmath$U$}}{\partial t} \; + \; 
+ \frac{\partial \mbox{\boldmath$F$} _x}{\partial x}  \; + \; 
+ \frac{\partial \mbox{\boldmath$F$} _y}{\partial y}  \; + \; 
+ \frac{\partial \mbox{\boldmath$F$} _y}{\partial z}  \; = \; \mbox{\boldmath$S$}
+
+.. math::
+ :nowrap:
+
+ \begin{equation}
+ \mbox{\boldmath$U$} \; = \;
+ \left(
+ \begin{array}{c}
+ \rho \\ \rho v _x \\ \rho v _y \\ \rho v _z \\ B _x \\ B _y \\ B _z \\ \rho E 
+ \end{array}
+ \right) \, , \hskip 0.5cm
+ \mbox{\boldmath$F _x $} \; = \;
+ \left(
+ \begin{array}{c}
+ \rho  v _x \\ \rho v _x ^2 \, + \, P \,  \displaystyle 
+ \, + \, \frac{\mbox{\boldmath$B$}^2}{8\pi} \, - \, \frac{B _x ^2}{4\pi} \\ 
+ \rho v _x v _y \, \displaystyle - \,\frac{B _x B _y}{4\pi} 
+ \\ \rho v _x v _z \, \displaystyle - \, \frac{B _x B _z}{4\pi} \\  0  \\ 
+ v _x B _y \, - \, v _y B _x  \\  v _x B _z \, - \, v _z B _x  \\ \rho H v _x  \, - \,
+ \displaystyle \frac{B _x}{4\pi} 
+ (\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$})
+ \end{array}
+ \right)  \, , \hskip 0.5cm
+ \mbox{\boldmath$F _y $} \; = \;
+ \left(
+ \begin{array}{c}
+ \rho  v _y \\ \rho v _y v _x \, \displaystyle - \, \frac{B _y B _x}{4 \pi}
+ \\ \rho v _y ^2 \, + \, P \,\displaystyle 
+ + \, \frac{\mbox{\boldmath$B$}^2}{8\pi} \, - \, \frac{B _y ^2}{4\pi}
+ \\ \rho v _y v _z  \displaystyle - \, \frac{B _y B _z}{4 \pi}
+ \\  v _y B _x \, - \, v _x B _y \\ 
+ 0 \\  v _y B _z \, - \, v _y B _z  \\ \rho H v _y  \, - \, \displaystyle
+ \frac{B_y}{4\pi} \,  (\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$})
+ \end{array}
+ \right) \, , \nonumber 
+ \end{equation}
+ \begin{equation}
+ \mbox{\boldmath$F _z $} \; = \;
+ \left(
+ \begin{array}{c}
+ \rho  v _{z} \\ \rho v _{z} v _x \, \displaystyle
+ - \, \frac{B _z B _x}{4 \pi} \\
+ \rho v _z v _y \, - \, \displaystyle \frac{B _z B _y}{4\pi}
+ \\ \rho v _z ^2 \, + \, P \, + \, \displaystyle
+ \frac{\mbox{\boldmath$B$} ^2}{8\pi}
+ \, - \, \frac{B _z ^2}{4\pi} 
+ \\ \rho v _y v _z \\  v _z B _x \, - \, v _x B _z \\ 
+ v _z B _y \, - \, v _y B _z  \\ 0 \\ \rho H v _z \, - \, \displaystyle \frac{B _z}{4\pi}  \, 
+ (\mbox{\boldmath$v$}\cdot\mbox{\boldmath$B$})
+ \end{array}
+ \right) \, ,  \hskip 0.5cm
+ \mbox{\boldmath$S$}  \; = \; 
+ \left( \begin{array}{c}
+ 0 \\ \rho g _x \\ \rho g _y \\ \rho g _z \\ 0 \\ 0 \\ 0 \\ \rho \mbox{\boldmath$v$} 
+ \cdot \mbox{\boldmath$g$} 
+ \end{array} \right) \nonumber
+ \end{equation}
+
+と表せる。ここで :math:`\mbox{\boldmath$U$}` は状態ベクトル、 :math:`\mbox{\boldmath$F$} _x` , :math:`\mbox{\boldmath$F$} _y` , :math:`\mbox{\boldmath$F$} _z` は流束、 :math:`\mbox{\boldmath$S$}` は源泉項と呼ばれる。
+
+線形波
+========
+
+流体力学波
+------------
+すべての物理量は :math:`x` や :math:`y` に依らず、 :math:`(z,~t)` だけの関数とする。この状況では波は平面波に限られる。また最初は簡単のため磁場や重力場は存在しないとする。このとき運動方程式は
+
+.. math::
+ :label: eq_cont_1d
+
+ \frac{\partial \rho}{\partial t} + \frac{\partial}{\partial  z} \left( \rho  v _z \right) \; = \; 0
+
+.. math::
+ :label: vx_1d
+
+ \frac{\partial v _x}{\partial t} + v _z \frac{\partial  v_x}{\partial z} \; = \; 0
+
+.. math::
+ :label: vy_1d
+
+ \frac{\partial v _y}{\partial t} + v_z \frac{\partial  v_y}{\partial z} \;  = \; 0
+
+.. math::
+ :label:  vz_1d
+
+ \frac{\partial v _z}{\partial t} + v _z \frac{\partial v _z}{\partial z} \; + 
+ \frac{1}{\rho} \frac{\partial P}{\partial z} \; = \; 0 \\
+
+.. math::
+ :label: entropy_1d
+
+ \frac{d s}{\partial t} + v _z\frac{\partial s}{\partial z} \; = \; 0
+
+このとき全ての変化は平面波と考えられる。
+
+もし時間変化がない定常状態では、 :math:`\rho` , :math:`s` , :math:`v _x` , :math:`v _y` , :math:`v _z` , :math:`P` はすべて一定。この状態に対して摂動を考える。
+
+.. math::
+ :label: drho
+
+ \rho = \rho _0 \, + \, \rho _1
+
+.. math::
+ :label: ds
+
+ s = s _0 \, + \, s _1
+
+.. math::
+ :label: dvx
+
+ v _x  = v _{x0} \, + \, v _{x1} \\
+
+.. math::
+ :label: dvy
+
+ v _y  = v _{y0} \, + \, v _{y1} \\
+
+.. math::
+ :label: dvz
+
+ v _z  = v _{z0} \, + \, v _{z1} \\
+
+.. math::
+ :label: dp
+
+ P  = P _0 \, + \, P _1
+
+ただし状態方程式を解くと :math:`\rho~=~\rho(P,~s)` が得られるので、
+
+.. math::
+ :label: drho_ds
+
+ \rho _1 = \left( \frac{\partial \rho}{\partial P} \right)_s P _1 \; + \; 
+ \left( \frac{\partial \rho}{\partial s}  \right)_P s _1 \\ 
+ = c _s ^{-2}  P _1 \; + \;  \left( \frac{\partial \rho}{\partial s}  \right)_P s _1 
+
+ここで :math:`c _s` は音速を表す。
+
+.. math::
+ :label: cont_drho
+ 
+ \frac{\partial \rho _1}{\partial t} +  v _{z0} \frac{\partial \rho _1}{\partial  z} 
+ \; + \; \rho _0 \frac{\partial v _{z1}}{\partial z} \; = \; 0
+
+.. math::
+ :label: shearx
+ 
+ \frac{\partial v _{x1}}{\partial t} + v _{z0} \frac{\partial  v_{x1}}{\partial z} \; = \; 0 
+
+.. math::
+ :label: sheary
+
+ \frac{\partial v _{y1}}{\partial t} + v_{z0} \frac{\partial  v_{y1}}{\partial z} \;  = \; 0 
+
+.. math::
+ :label: shearz
+
+ \frac{\partial v _{z1}}{\partial t} + v _{z0} \frac{\partial v _{z1} }{\partial z} \; + 
+ \frac{1}{\rho _0} \frac{\partial P _1}{\partial z} \; = \; 0 
+
+.. math::
+ :label: entropy_prtb
+
+ \frac{d s _1}{\partial t} + v _{z0} \frac{\partial s _1}{\partial z} \; = \; 0
+
+方程式 :eq:`shearx` ,  :eq:`sheary` ,  :eq:`entropy_prtb` は波が :math:`v _{z0}` で進行することを表している。
+
+.. math::
+ :label: dvx_sol
+
+ v _{x1} (x,~t) = v _{x1} (x \, - \, v _{z0} \Delta t,~t \, - \, \Delta t) \\
+
+.. math::
+ :label: dvy_sol
+
+ v _{y1} (x,~t) = v _{y1} (x \, - \, v _{z0} \Delta t,~t \, - \, \Delta t) \\
+
+.. math::
+ :label: dvz_sol
+
+ s _{1} (x,~t) = s _{1} (x \, - \, v _{z0} \Delta t,~t \, - \, \Delta t) 
+
+ここで :math:`\Delta t` は任意の時間差。
+
+密度の変化は2成分に分け、式 :eq:`entropy_prtb` を代入すると
+
+.. math::
+ :label: pressure_prtb
+
+ c _s ^{-2} \frac{\partial P_1}{\partial t} \; + \;  \frac{v _{z0}}{c _s ^2} \, \frac{\partial P _1}{\partial z} \; + \; \rho _0 \frac{\partial v _{z1}}{\partial z} \; = \; 0
+
+が得られる。式 :eq:`pressure_prtb` に :math:`c _s \rho _0` を掛けてから式 :eq:`shearz` との和をとると、
+
+.. math::
+ :label: pressure_prtb2
+
+ \frac{\partial}{\partial t} \left( v _{1x} \, + \, \frac{P _1}{\rho _0 c _s} \right) \; + 
+ \; \left( v _{z0} \, + \, c _s \right) 
+ \frac{\partial}{\partial z} \left( v _{1x} \, + \, \frac{P _1}{\rho _0 c _s} \right) \; = \; 0
+
+が得られる。同様な操作で差をとると
+
+.. math::
+ :label: pressure_prtb3
+ 
+ \frac{\partial}{\partial t} \left( v _{1x} \, - \, \frac{P _1}{\rho _0 c _s} \right) \; + 
+ \; \left( v _{z0} \, - \, c _s \right) 
+ \frac{\partial}{\partial z} \left( v _{1x} \, - \, \frac{P _1}{\rho _0 c _s} \right) \; = \; 0
+
+が得られる。従って
+
+.. math::
+ :label: Jpm
+
+ J _+ =  v _{1x} \, + \, \frac{P _1}{\rho _0 c _s} \\
+ J _- =  v _{1x} \, - \, \frac{P _1}{\rho _0 c _s}
+
+により定義される :math:`J_\pm` は :math:`v _{z0}` , :math:`\pm \, c _s` で伝播する。
+
+磁気流体力学波
+--------------
+
+磁場を考慮した平面波を考える。再び全ての物理量は :math:`(z,~t)` だけに依存する場合、 :math:`\mbox{\boldmath$\nabla$} \cdot \mbox{\boldmath$B$}~=~0` より、 :math:`B _z` は一定でなければならない。このことに注意して磁気流体方程式を書き直すと、
+
+.. math::
+ :label: eq_cont_mhd1d
+
+ \frac{\partial \rho}{\partial t} + \frac{\partial}{\partial  z} \left( \rho  v _z \right) \; = \; 0
+
+.. math::
+ :label: vx_mhd1d
+
+ \frac{\partial v _x}{\partial t} + v _z \frac{\partial  v_x}{\partial z} \;  - \;
+ \frac{B _z}{4\pi \rho} \frac{\partial B _x}{\partial z} = \; 0 \\
+
+.. math::
+ :label: vy_mhd1d
+
+ \frac{\partial v _y}{\partial t} +  v_z \frac{\partial  v_y}{\partial z} \;  - \; 
+ \frac{B _z}{4\pi \rho} \frac{\partial B _y}{\partial z} \; = \; 0 \\
+
+.. math::
+ :label: vz_mhd1d
+
+ \frac{\partial v _z}{\partial t} +  v _z \frac{\partial v _z}{\partial z} \; + 
+ \frac{1}{\rho} \frac{\partial P}{\partial z} \; + \; 
+ \frac{1}{8 \pi \rho} \frac{\partial}{\partial z} \, \left( B _x ^2 \, + \, B _y ^2 \right) 
+ \; = \; 0 \\
+
+.. math::
+ :label: bx_mhd1d
+
+ \frac{\partial B _x}{\partial t} = \frac{\partial}{\partial z}
+ \left( v _x B _z \, - \, v _z  B _x \right) \\
+
+.. math::
+ :label: by_mhd1d
+
+ \frac{\partial B _y}{\partial t} =  \frac{\partial}{\partial z}
+ \left( v _y B _z \, - \, v _z B _y \right) \\
+
+.. math::
+ :label: entropy_mhd1d
+
+ \frac{d s}{\partial t} + v _z\frac{\partial s}{\partial z} \; = \; 0
+
+が得られる。
+
+定常状態では :math:`\rho` , :math:`P` , :math:`v _x` , :math:`v _y` , :math:`v _z` , :math:`B _x` , :math:`B _y` は全て一定。ここでは平衡状態として :math:`v _x~=~v _y~=~0` で、 :math:`B _y~=~0` :math:`B _z \, \ge \, 0` である場合を考える。この状態の周りの摂動を考える。
+
+.. math::
+ :label: drho_mhd1d
+
+ \rho = \rho _0 \, + \, \rho _1 \\
+
+.. math::
+ :label: ds_mhd1d
+
+ s = s _0 \, + \, s _1 \\
+
+.. math::
+ :label: dvx_mhd1d
+
+ v _x  =  v _{x1} \\
+
+.. math::
+ :label: dvy_mhd1d
+
+ v _y  =  v _{y1} \\
+
+.. math::
+ :label: dvz_mhd1
+
+ v _z  = v _{z0} \, + \, v _{z1} \\
+
+.. math::
+ :label: dbx_mhd1d
+
+ B _x = B _{x0} \, + \, B _{x1} \\
+
+.. math::
+ :label: dby_mhd1d
+
+ B _y = B _{y1} \\
+
+.. math::
+ :label: dbz_mhd1d
+
+ B _z = B _{z0} \\
+
+.. math::
+ :label: dp_mhdp1d
+
+ P  = P _0 \, + \, P _1
+
+摂動方程式は
+
+.. math::
+ :label: eq_drho_mhd1d
+
+ \frac{\partial \rho _1}{\partial t} +  v _{z0} \frac{\partial \rho _1}{\partial  z} 
+ \; + \; \rho _0 \frac{\partial v _{z1}}{\partial z} \; = \; 0 \\
+
+.. math::
+ :label: eq_dvx_mhd1d
+
+ \frac{\partial v _{x1}}{\partial t} + v _{z0} \frac{\partial  v_{x1}}{\partial z} 
+ \; - \; \frac{B _{z0}}{4 \pi \rho _0} \frac{\partial B _{x1}}{\partial z} \; = \; 0 
+
+.. math::
+ :label: eq_dvy_mhd1d
+
+ \frac{\partial v _{y1}}{\partial t} +  v_{z0} \frac{\partial  v_{y1}}{\partial z} \; 
+ \; - \; \frac{B _{z0}}{4 \pi \rho _0} \frac{\partial B _{y1}}{\partial z} \;  = \; 0 
+
+.. math::
+ :label: eq_dvz_mhd1d
+
+ \frac{\partial v _{z1}}{\partial t} +  v _{z0} \frac{\partial v _{z1} }{\partial z} \; + 
+ \frac{1}{\rho _0} \frac{\partial P _1}{\partial z} \; + \;
+ \frac{B _{x0}}{4 \pi \rho _0} \frac{\partial B _{x1}}{\partial z} \; = \; 0 
+
+.. math::
+ :label: eq_dbx_mhd1d
+
+ \frac{\partial B _{x1}}{\partial t} + v _{z0} \frac{\partial B _{x1}}{\partial z} \;  + \;
+ B _{x0} \frac{\partial v _{z1}}{\partial z} \;  = \;
+ B _{z0} \frac{\partial v _{x1}}{\partial z} \\
+
+.. math::
+ :label: eq_dby_mhd1d
+
+ \frac{\partial B _{y1}}{\partial t} + v _{z0} \frac{\partial B _{y1}}{\partial z}
+ \; = \; B _{z0} \frac{\partial v _{y1}}{\partial z} \\
+
+.. math::
+ :label: entropy_prtb2
+
+ \frac{d s _1}{\partial t} + v _{z0} \frac{\partial s _1}{\partial z} \; = \;  0
+
+と書き表される。
+
+エントロピー波
+~~~~~~~~~~~~~~
+
+式 :eq:`entropy_prtb2` は式 :eq:`entropy_prtb` と同一で、 :math:`s _1` が :math:`v _{z0}` で移流伝播することを表している。
+
+アルフヴェン波
+~~~~~~~~~~~~~~
+
+運動方程式と誘導方程式の :math:`y` 成分の線形結合をとると
+
+.. math::
+ :label: elsasser_p
+
+ \frac{\partial}{\partial t} \left( v _y \, + \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right )
+ + \left( v _{z0} \, - \, \frac{B _{z0}}{\sqrt{4 \pi \rho _0}} \right) 
+ \frac{\partial}{\partial z} \left( v _y \, + \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right ) 
+ \; = \; 0 \\
+
+.. math::
+ :label: elsasser_m
+
+ \frac{\partial}{\partial t} \left( v _y \, - \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right )
+ + \left( v _{z0} \, + \, \frac{B _{z0}}{\sqrt{4 \pi \rho _0}} \right) 
+ \frac{\partial}{\partial z} \left( v _y \, - \, \frac{B _{1y}}{\sqrt{4 \pi \rho _0}}  \right ) 
+ \; = \; 0
+
+ここで :math:`v _y \, \pm \, B_{y1} /\sqrt{4 \pi \rho _0}` は Elsassaer variableである。平衡状態で磁場は :math:`xz` 平面内にあるとしたので、 :math:`y` 方向は平均磁場と波数のどちらにも垂直となっている。従ってこの方程式は、横波を表している。伝播速度はアルフヴェン速度と呼ばれ、波数ベクトル :math:`\mbox{\boldmath$k$}` を用いて次のように評価できる。
+
+.. math:: 
+ :label: alfven_speed
+
+ v _{Az} \; \equiv \; \frac{| B _{z0}|}{\sqrt{4 \pi \rho _0}} \; = \;
+ \frac{| \mbox{\boldmath$k$} \cdot \mbox{\boldmath$B$} _0|}{k \, \sqrt{4 \pi \rho _0}} 
+
+磁気音波
+~~~~~~~~~~
+
+残りの4本の微分方程式は
+
+.. math:: 
+ :label: ms1
+
+ c _s ^{-2} \frac{\partial P _1}{\partial t} + \frac{v _{z0}}{c _s ^2} 
+ \frac{\partial P _1}{\partial z}\; + \; \rho _0 \, \frac{\partial v _{z1}}{\partial z} \; = \; 0 
+
+.. math:: 
+ :label: ms2
+
+ \frac{\partial v _{x1}}{\partial t} + v _{z0} \frac{\partial v _{x1}}{\partial z}  
+ \; - \; \frac{B _{z0} }{4 \pi \rho _0} \frac{\partial B _{x1}}{\partial z} \; = \; 0 \\
+
+.. math:: 
+ :label: ms3
+
+ \frac{\partial v _{z1}}{\partial t} + v _{z0} \frac{\partial v _{z1}}{\partial z} 
+ \; + \; \frac{1}{\rho _0} \frac{\partial P _1}{\partial z} \; + 
+ \; \frac{B _{x0}}{4 \pi \rho _0}  \frac{\partial B _{x1}}{\partial z} \; = \; 0  \\
+
+.. math:: 
+ :label: ms4
+
+ \frac{\partial B _{x1}}{\partial t} + v _{z0} \frac{\partial B _{x1}}{\partial z} \;  + \;
+ B _{x0} \frac{\partial v _{z1}}{\partial z} \; = \; 
+ B _{z0} \frac{\partial v _{x1}}{\partial z}
+
+.. math::
+ :label: ms_syseq
+
+ \frac{\partial \mbox{\boldmath$q$}}{\partial t} \; + \; v _{z0} 
+ \frac{\partial \mbox{\boldmath$q$}}{\partial z} \; + \;
+ \left(
+ \begin{array}{cccc}
+ 0 & 0 & c _s  & 0 \\
+ 0 & 0 & 0 & - v _{Az} \\
+ c _s &  0 & 0 &  v _{Ax} \\
+ 0 & - v _{Az} & v _{Ax} & 0 \\
+ \end{array}
+ \right) \, \frac{\partial \mbox{\boldmath$q$}}{\partial z} \; = \; 0
+
+.. math::
+ :label: qdef
+
+ \mbox{\boldmath$q$} \; = \;
+ \left( \begin{array}{c}
+ \displaystyle \frac{P _1}{c _s \rho _0} \\
+ v _{x1} \\
+ \displaystyle v _{z1} \\
+ \displaystyle \frac{B _{x1}}{\sqrt{4 \pi \rho _0}} 
+ \end{array}
+ \right) 
+
+分散関係
+
+.. math::
+ :label: disp1
+
+ \frac{\partial}{\partial t} \rightarrow - i \omega \, , \hskip 1.0cm
+ \frac{\partial}{\partial z} \rightarrow i k \, , \hskip1.0cm \lambda \; = \; \frac{\omega}{k}
+
+.. math::
+ :label: disp2
+
+ \left( \lambda \, - \, v _{z0} \right) ^4 \, - \,
+ \left( c _s ^2 \, + \, v _{Ax}^2 \, + \,  v _{Az} ^2 \right) \left( \lambda \, - \, v _{z0} \right) ^2
+ \, + \, c _s ^2 v _{Az} ^2 
+
+.. math::
+ :label: disp3
+
+ \lambda \; = \; v _{z0} \, \pm \, v _{f} \, , \hskip 0.2cm v _{z0} \, \pm \, v _s
+
+.. math::
+ :label: disp4
+
+ v _f  ^2 = \frac{c _s ^2 \, + \, v _{Ax} ^2 \, + \, v _{Az} ^2 \, + \,
+ \sqrt{ (c _s ^2 \, + \, v _{Ax} ^2 \, - \, v _{Az} ^2) ^2 \, + \, 4 v _{Ax} ^2 V _{Az} ^2}}{2}
+
+.. math::
+ :label: disp5
+
+ v _s  ^2 = \frac{c _s ^2 \, + \, v _{Ax} ^2 \, + \, v _{Az} ^2 \, - \,
+ \sqrt{ (c _s ^2 \, + \, v _{Ax} ^2 \, - \, v _{Az} ^2) ^2 \, + \, 4 v _{Ax} ^2 V _{Az} ^2}}{2}
+
+非線形効果
+===========
+伝播速度は位相により異なる。最も簡単な例は磁場がない等エントロピーの流れ。
+
+.. math::
+ :label: entropy_mode1
+
+ \frac{\partial \rho}{\partial t} \; + \; \frac{\partial}{\partial z} ( \rho v _z) = 0
+
+.. math::
+ :label: entropy_mode2
+
+ \frac{\partial v _z}{\partial t} \; + \;
+ v _z \frac{\partial v _z}{\partial z} \, + \, \frac{1}{\rho} \frac{\partial P}{\partial z} 
+  = 0 
+
+密度は圧力だけの関数であることに注意すると、連続の式は
+
+.. math::
+ :label: cont_variant
+
+ \frac{1}{c _s \rho} \left( \frac{\partial P}{\partial t} \, + \, \frac{\partial P}{\partial z} \right)
+ \; + \;  c _s \, \frac{\partial v _z}{\partial z} \; = \; 0
+
+と書き改められる。新しい変数として
+
+.. math:: 
+ :label: w_def
+
+ w \; \equiv \; \int \frac{1}{c _s \rho} \, dP
+
+と置くと流体力学方程式は
+
+.. math::
+ :label: hd_sys1
+
+ \frac{\partial w}{\partial t} + v _z \, \frac{\partial w}{\partial z} \; + \; c _s
+ \frac{\partial v _z}{\partial z} \; = \; 0 \\
+
+.. math::
+ :label: hd_sys2
+
+ \frac{\partial v _z}{\partial t} + v _z \frac{\partial v _z}{\partial z} \; + \; c _s
+ \frac{\partial w}{\partial z} \; = \; 0
+
+.. math::
+ :label: hd_sys3
+
+ \frac{\partial J _\pm}{\partial t} \; + \; \left( v _z \, \pm \,  c _s \right) 
+ \frac{\partial J _\pm}{\partial z} \; = \; 0
+
+.. math::
+ :label: Jpm_def
+
+ J _\pm \; = \; v _z \, \pm \, w
+
+ここで波の振幅を表す変数 :math:`J _\pm` を Riemann 不変量と呼ぶ。エントロピーや Elsasser variable も Riemann 不変量である。
+
+.. figure:: t_hanawa_f1.png
+ :width: 40%
+ :align: center
+
+ 波の伝播による波頭の先鋭化
+ 
+初期に :math:`J _-  ~=~0` であれば、つねに :math:`J _-~=~0` なので :math:`J~=~2 v _z \; = \; 2 w` 。伝播速度 :math:`v _z \, + \, w` は、 :math:`J` が大きいほど大きい。従って初期の波形が正弦波も次第に切り立った波形に変わる。ついには衝撃波へと変化する。
+
+比熱比 :math:`\gamma` が一定の理想気体の場合、
+
+.. math::
+ :label: w_ideal
+
+ w \; = \; \frac{2 c _s}{\gamma \, - \, 1} \; \propto \; \rho ^{(\gamma \, - \, 1)/2} 
+
+波の固有ベクトル
+==================
+
+磁場のない場合
+---------------
+
+.. math::
+ :label: u_hd
+
+ \mbox{\boldmath$U$} \; = \;
+ \left( \begin{array}{c}
+ \rho \\ \rho v _x \\ \rho v _y \\ \rho v _z \\ \rho E
+ \end{array}
+ \right)
+
+.. math::
+ :label: du_hd
+
+ \Delta \mbox{\boldmath$U$} =
+ \left( \frac{\partial \rho}{\partial s} \right) _P s _1 \,
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v_y \\ v _z \\ H \, - \, C _p  T
+ \end{array}
+ \right) \; + \; v _{x1} \,
+ \left( \begin{array}{c}
+ 0 \\ \rho \\ 0 \\ 0 \\ \rho v _x  
+ \end{array} \right)
+ \; + \; v _{y1} \,
+ \left( \begin{array}{c}
+ 0 \\ 0  \\ \rho  \\ 0 \\ \rho v _y \end{array} \right)  \\
+ \; + \;  v _{z1} \,
+ \left( \begin{array}{c}
+ 0 \\ 0 \\ 0 \\ \rho \\ \rho v _z  
+ \end{array} \right) \; + \;
+ c _s ^{-2} P _1 \, 
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v _y \\ v _z \\ H  
+ \end{array}
+ \right) \\
+ =
+ \left( \rho _1 \, - \, \frac{P _1}{c _s ^2} \right)  \,
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v_y \\ v _z \\ H \, - \, C _p  T
+ \end{array}
+ \right) \; + \; v _{x1} \,
+ \left( \begin{array}{c}
+ 0 \\ \rho \\ 0 \\ 0 \\ \rho v _x  
+ \end{array} \right)
+ \; + \; v _{y1} \,
+ \left( \begin{array}{c}
+ 0 \\ 0  \\ \rho  \\ 0 \\ \rho v _y \end{array} \right)  \\
+ \; + \;  \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  + \, \frac{\rho v _{z1}}{c _s} \right)
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v _y \\ v _z  + c _s \\ H \, + \, c _s v _z 
+ \end{array}
+ \right) \;  + \;  \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  - \, \frac{\rho v _{z1}}{c _s} \right)
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v _y \\ v _z  -  c _s \\ H \, - \, c _s v _z 
+ \end{array}
+ \right) 
+
+磁場のある場合
+--------------
+
+.. math::
+ :label: du_mhd
+
+ \Delta \mbox{\boldmath$U$} =
+ \left( \frac{\partial \rho}{\partial s} \right) _P s _1 \,
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v_y \\ v _z \\ 0 \\ 0 \\ 0 \\ H \, - \, C _p  T
+ \end{array}
+ \right) \; + \; v _{x1} \,
+ \left( \begin{array}{c}
+ 0 \\ \rho \\ 0 \\ 0 \\ 0 \\ 0 \\ 0 \\ \rho v _x  
+ \end{array} \right)
+ \; + \; v _{y1} \,
+ \left( \begin{array}{c}
+ 0 \\ 0  \\ \rho  \\ 0 \\ 0 \\ 0 \\ 0 \\ \rho v _y \end{array} \right)  \\
+ + 
+ \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  + \, \frac{\rho v _{z1}}{c _s} \right)
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v _y \\ v _z  + c _s \\ 0 \\ 0 \\ 0 \\ H \, + \, c _s v _z 
+ \end{array}
+ \right) \;  + \;  \frac{1}{2} \, \left( \frac{P _1}{c _s ^2} \,  - \, \frac{\rho v _{z1}}{c _s} \right)
+ \left( \begin{array}{c}
+ 1 \\ v _x \\ v _y \\ v _z  -  c _s \\ 0 \\ 0 \\ 0 \\ H \, - \, c _s v _z 
+ \end{array} \right) \\
+ + B _{1x} \left( \begin{array}{c}
+ 0 \\  0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ \displaystyle \frac{B_{0x}}{4\pi} 
+ \end{array} \right) \; + \; 
+ B _{1y} \left( \begin{array}{c}
+ 0 \\  0 \\ 0 \\ 0 \\ 0 \\ 1 \\ 0 \\ 0 
+ \end{array} \right)
+
+エントロピー波は流体のときと同じ。
+
+アルフヴェン波による変化は
+
+.. math::
+ :label: du_alfven
+
+ \Delta \mbox{\boldmath$U$} _{\rm Alfven} \; = \;
+ \left( v _{y1} \, + \, \frac{B _{y1}}{\sqrt{4 \pi \rho _0}} \right)
+ \, \left( \begin{array}{c}
+ 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ \sqrt{4\pi \rho _0} \\ 0 \\ 0  
+ \end{array} \right) \; + \;
+ \left( v _{y1} \, - \, \frac{B _{y1}}{\sqrt{4 \pi \rho _0}} \right)
+ \, \left( \begin{array}{c}
+ 0 \\ 0 \\ 1 \\ 0 \\ 0 \\ - \sqrt{4\pi \rho _0} \\ 0 \\ 0  
+ \end{array} \right)
+
+と表される。
+
+:math:`\lambda ~=~v _{z0} \, + \, v _*` で伝播する磁気音波による変化 (固有ベクトル)
+
+.. math::
+ :label: eignv_ms
+
+ d\mbox{\boldmath$q$} \; = \; 
+ \left( \begin{array}{c}
+ c _s c _{Ax} v _*  \\  \left(c _s ^2 \, - \, v _*^2 \right) v _{Az} \\
+ v _*^2  c _{Ax}  \\ (c _s ^2 \, - \, v _*^2)  v _* 
+ \end{array} \right)
+
+と表される。
+
+伝播速度の大小
+
+.. math::
+ :label: eign_order
+
+ - v _f \, \le \, - v _{\rm Az} \, \le \, - v _s \, \le \, 0 \, \le \, v _s \, \le \, v _{Az} \, \le v _f
+
+
+

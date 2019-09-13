@@ -1,0 +1,202 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>衝撃波管問題 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="Orszag-Tang 渦問題" href="application_OTvortex.html" />
+    <link rel="prev" title="物理課題" href="application.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application_OTvortex.html" title="Orszag-Tang 渦問題"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application.html" title="物理課題"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="shktb">
+<span id="id1"></span><h1>衝撃波管問題<a class="headerlink" href="#shktb" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>松本洋介（千葉大学）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>背景<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>MHDシミュレーションコードをテストする標準問題として、衝撃波管問題が知られている。これは、シミュレーションの系（ <img class="math" src="_images/math/564ebd1a589bcfc61ecbb737f6ed9a55af40a1f8.png" alt="0 \le X \le L_x"/> ）の左側（ <img class="math" src="_images/math/25215ae4f093a7cb2454b984bf9786ef35e2fe79.png" alt="X &lt; L_x/2"/> ）と右側（ <img class="math" src="_images/math/ed14542579acf873cfb9c48dc02b1b10e6433bfc.png" alt="X \ge L_x/2"/> ）を異なる状態で初期に設定し、その後の系の発展を見るものである。これはちょうど、近似リーマン解を求める際のセル境界における左・右状態を設定するのと同じである（ <a class="reference internal" href="riemann.html#riemann"><span class="std std-ref">近似リーマン解法参照</span></a> ）。結果として現れる、接触不連続、接線不連続、回転不連続、速・遅衝撃波、膨張波などが正しい速度で伝搬するか、を検証することができる。また、不連続近傍における数値振動、解像度（何セルで表現できるか）を計算スキームによって比較するためにもしばしば採用される。本課題では、 <a class="reference internal" href="reference.html#brio-wu88"><span class="std std-ref">Brio &amp; Wu (1988)</span></a> の衝撃波管問題を例に取って、計算結果例を紹介する。</p>
+</div>
+<div class="section" id="id3">
+<h2>課題設定<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>以下にシミュレーションの初期設定をまとめる。設定は''model.f90''で行っている。なお、オリジナルの設定と違い、比熱比 <img class="math" src="_images/math/63b8350f663a62d8335d5526d55a30f618b9731c.png" alt="\gamma=5/3"/> である（ <a class="reference internal" href="reference.html#ryu-jones95"><span class="std std-ref">Ryu &amp; Jones, 1995</span></a> 参照）。</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 38%" />
+<col style="width: 44%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>物理量</p></th>
+<th class="head"><p>左状態（ <img class="math" src="_images/math/25215ae4f093a7cb2454b984bf9786ef35e2fe79.png" alt="X &lt; L_x/2"/> ）</p></th>
+<th class="head"><p>右状態（ <img class="math" src="_images/math/ed14542579acf873cfb9c48dc02b1b10e6433bfc.png" alt="X \ge L_x/2"/> ）</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><img class="math" src="_images/math/27dc86f9f1b1c3435b2403a869b5870c582facea.png" alt="\rho"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+<td><p><img class="math" src="_images/math/71792f308359e992b001203c5c2c711ce0a677f3.png" alt="0.125"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/c2aa3dff9bffb099e9dff196fd36aed56ec16baf.png" alt="P"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+<td><p><img class="math" src="_images/math/6397cde98974e668fc523acb04124d669745cade.png" alt="0.1"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/8c3c24e0c9227fdcd5b230d3c2f12d16b5f28750.png" alt="V_x"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/8635e2c57bfea61699be1718c8cd71617d7126dd.png" alt="V_y"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/4ea45e8421394fc40edad05fcdca7fb60b00d6d0.png" alt="V_z"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/cd5d062e2be858bec2220457ce77618d45f193fd.png" alt="B_x"/></p></td>
+<td><p><img class="math" src="_images/math/900565a2087f32aadb8adab1ae2fc01bbfddf1b3.png" alt="0.75"/></p></td>
+<td><p><img class="math" src="_images/math/900565a2087f32aadb8adab1ae2fc01bbfddf1b3.png" alt="0.75"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/883076a910e65fbaa31f6d4e5a2dfb2963f708d7.png" alt="B_y"/></p></td>
+<td><p><img class="math" src="_images/math/e7475d28f8578ee4f176064e0c6e31ecd80a6564.png" alt="1.0"/></p></td>
+<td><p><img class="math" src="_images/math/26f3fc3c1a88f417dfecaccadb181c5941ec0f10.png" alt="-1.0"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/9f9e8c84ef093bd0c4de4e7f8dfcd0a820eb0618.png" alt="B_z"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+<td><p><img class="math" src="_images/math/1eb0514994edf71549d3baf4fbfa79d643bca95e.png" alt="0.0"/></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h2>結果<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="figure align-center" id="id7">
+<span id="shktb-result"></span><a class="reference internal image-reference" href="_images/shktb.png"><img alt="_images/shktb.png" src="_images/shktb.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text"><img class="math" src="_images/math/9a14fe8f8832f753c5e4d892b34c3b6aa1be46ad.png" alt="T=0.1"/> における結果。左上→右上→左下→右下の順に、圧力、質量密度、速度ｘ成分、速度ｙ成分を表す。</span><a class="headerlink" href="#id7" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><img class="math" src="_images/math/9a14fe8f8832f753c5e4d892b34c3b6aa1be46ad.png" alt="T=0.1"/> における結果を <a class="reference internal" href="#shktb-result"><span class="std std-ref">図</span></a> に示す。右上の質量密度から、左から順に、速い膨張波、slow compound波（ <img class="math" src="_images/math/68076dc4091dec242b392563b2983f88cf9b5774.png" alt="X\sim 0.47"/> ）、接触不連続（ <img class="math" src="_images/math/4750862fffe1b12d2297d097bfaf89f189d6a98f.png" alt="X \sim 0.55"/> ）、遅衝撃波（ <img class="math" src="_images/math/f92c8028b86983dfc423e562cad7ceba99b33b82.png" alt="X \sim 0.63"/> ）、速い膨張波が形成される。これら不連続周辺で若干の数値振動が残るものの、 <strong>CANS+</strong> の特徴である高次精度化により、数点で解像できていることがわかる。</p>
+</div>
+<div class="section" id="id5">
+<h2>まとめ<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>本課題では <a class="reference internal" href="reference.html#brio-wu88"><span class="std std-ref">Brio &amp; Wu (1988)</span></a> を例にとったが、様々な設定例が <a class="reference internal" href="reference.html#ryu-jones95"><span class="std std-ref">Ryu &amp; Jones (1995)</span></a> に掲載されているので、参考にしてテストを行ってみるとよい。</p>
+</div>
+<div class="section" id="id6">
+<h2>参考文献<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#brio-wu88"><span class="std std-ref">Brio &amp; Wu, 1988</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#ryu-jones95"><span class="std std-ref">Ryu &amp; Jones, 1995</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">衝撃波管問題</a><ul>
+<li><a class="reference internal" href="#id2">背景</a></li>
+<li><a class="reference internal" href="#id3">課題設定</a></li>
+<li><a class="reference internal" href="#id4">結果</a></li>
+<li><a class="reference internal" href="#id5">まとめ</a></li>
+<li><a class="reference internal" href="#id6">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application_OTvortex.html" title="Orszag-Tang 渦問題"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application.html" title="物理課題"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

@@ -1,0 +1,1098 @@
+===============
+差分法の基礎
+===============
+
+:著者: 松元亮治（千葉大学）
+
+流体・磁気流体方程式を差分法を用いて数値的に解く際に必要になる基礎的事項について解説する。波の伝播をあらわす線形移流方程式や非線形のBurgers方程式をとりあげ、差分解法の数値的な安定性や数値振動について論じる。特に、数値的な安定性に優れ、非物理的な数値振動を起こさない差分法として風上差分法を紹介する。
+
+
+差分近似
+========
+ 
+変数 :math:`u` が空間座標 :math:`x,y` に依存するという2次元問題を考える。 
+ 
+.. figure:: mesh.png
+ :width: 40%
+ :align: center
+
+ 2次元メッシュの図
+ 
+2次元空間を図のような格子に区切り、各格子点の座標を :math:`(x_i, y_j)` とする。格子間隔は :math:`x` 方向が :math:`\Delta x` 、 :math:`y` 方向が :math:`\Delta y` とする。 :math:`x_{i \pm 1} = x_i \pm \Delta x` 、 :math:`y_{j \pm 1} = y_j \pm \Delta y` である。以下、格子点番号 :math:`(i,j)` を用いて :math:`u_{i,j} = u(x_i, y_j)` のように略記する。 
+ 
+着目している点 :math:`(x_i, y_j)` のまわりでテイラー展開すると、 
+ 
+.. math::
+ :label: taylor1
+
+ u_{i+1,j} = u(x_i+\Delta x, y_j) = u_{i,j} 
+ +\Delta x \left (\displaystyle{{\partial u} \over {\partial x}} \right)_i 
+ +\displaystyle{{{\Delta x}^2} \over {2!}} 
+ \left (\displaystyle{{\partial^2 u} \over {\partial x^2}} \right)_i 
+ +\displaystyle{{{\Delta x}^3} \over {3!}} 
+ \left (\displaystyle{{\partial^3 u} \over {\partial x^3}} \right)_i 
+ + ...
+
+.. math:: 
+ :label: taylor2
+
+ u_{i-1,j} = u(x_i-\Delta x, y_j) = u_{i,j} 
+ -\Delta x \left (\displaystyle{{\partial u} \over {\partial x}} \right)_i 
+ +\displaystyle{{{\Delta x}^2} \over {2!}} 
+ \left (\displaystyle{{\partial^2 u} \over {\partial x^2}} \right)_i 
+ -\displaystyle{{{\Delta x}^3} \over {3!}} 
+ \left (\displaystyle{{\partial^3 u} \over {\partial x^3}} \right)_i 
+ + ... 
+ 
+式 :eq:`taylor1` から式 :eq:`taylor2` を引くと 
+
+.. math::
+ :label: taylor3
+
+ u_{i+1,j} - u_{i-1,j} = 2\Delta x 
+ \left (\displaystyle{{\partial u} \over {\partial x}}\right )_i + O(\Delta x^3) 
+ 
+したがって、 
+
+.. math::
+ :label: taylor4
+ 
+ \left (\displaystyle{{\partial u} \over {\partial x}} \right )_i  
+ = \displaystyle{{u_{i+1,j} - u_{i-1,j}} \over {2\Delta x}} 
+ + O(\Delta x^2) 
+ 
+すなわち、 :math:`(i,j)` 点における :math:`u` の :math:`x` 方向の微分係数 :math:`(\partial u/\partial x)_i` が :math:`\Delta x^2` の誤差を含む近似のもとで( :math:`\Delta x` について2次の精度で)以下のように求まる。
+
+.. math::
+ :label: central
+ 
+ \left (\displaystyle{{\partial u} \over {\partial x}} \right)_i  
+ = \displaystyle{{u_{i+1,j} - u_{i-1,j}} \over {2\Delta x}}  
+ 
+これを中心差分の式と言う。 
+ 
+同様にして、 :math:`\Delta x` について1次の精度で以下の差分近似式が得られる。 
+
+前進差分：
+
+.. math::
+ :label: fsabun
+
+ \left (\displaystyle{{\partial u} \over {\partial x}}\right)_i  
+ = \displaystyle{{u_{i+1,j} - u_{i,j}} \over {\Delta x}}  
+
+後退差分：
+
+.. math::
+ :label: bsabun
+
+ \left(\displaystyle{{\partial u} \over {\partial x}}\right)_i  
+ = \displaystyle{{u_{i,j} - u_{i-1,j}} \over {\Delta x}}
+ 
+式 :eq:`taylor1` と式 :eq:`taylor2` を加えると 
+ 
+.. math::
+ :label: fb_sabun
+
+ u_{i+1,j} + u_{i-1,j} = 2u_{i,j} + \Delta x^2  
+ \left(\displaystyle{{\partial^2 u} \over {\partial x^2}}\right)_i  
+ + O(\Delta x^4) 
+ 
+したがって、 
+ 
+.. math::
+ :label: taylor5
+
+ \left(\displaystyle{{\partial^2 u} \over {\partial x^2}}\right)_i  
+ = \displaystyle{{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}} \over {\Delta x^2}} 
+ + O(\Delta x^2) 
+ 
+これより、 :math:`u` の :math:`x` に関する2階微分の係数 :math:`(\partial^2 u/\partial x^2)_i` を :math:`\Delta x` について2次の精度で以下のように近似することができる。
+ 
+.. math::
+ :label: central2_x
+
+ \left(\displaystyle{{\partial^2 u} \over {\partial x^2}}\right)_i  
+ = \displaystyle{{u_{i+1,j} - 2u_{i,j} + u_{i-1,j}} \over {\Delta x^2}} 
+ 
+同様に、 
+ 
+.. math::
+ :label:  central2_y
+
+ \left(\displaystyle{{\partial^2 u} \over {\partial y^2}}\right)_j 
+ = \displaystyle{{u_{i,j+1} - 2u_{i,j} + u_{i,j-1}} \over {\Delta y^2}}. 
+
+ 
+線形スカラー移流方程式の差分解法
+=================================
+ 
+１次元線形スカラー移流方程式
+-------------------------------
+ 
+流体・磁気流体方程式の本質は波の伝播にある。この部分だけを取り出して次のような方程式を考える。 
+ 
+.. math::
+ :label: scalaradv
+
+ \displaystyle{{\partial u} \over {\partial t}} + 
+ c \displaystyle{{\partial u} \over {\partial x}} = 0 
+
+ただし、 :math:`c` は定数で :math:`c > 0` とする。この方程式は、スカラー量 :math:`u` の空間分布が、一定の速度 :math:`c` で伝播することをあらわす波動方程式である。
+
+方程式 :eq:`scalaradv` の厳密解は 
+ 
+.. math::
+ :label: adv_sol
+
+ u(x,t) = u(x-ct,0) 
+
+である。これは、時刻 :math:`t > 0` におけるスカラー量 :math:`u` のプロフィールは :math:`t=0` のスカラー量 :math:`u` のプロフィールが形を保って :math:`ct` だけ平行移動した形になることをあらわす。
+ 
+.. _figscalaradv:
+.. figure:: scalaradvection.png
+ :align: center
+ :width: 60%
+
+ 1次元スカラー移流問題の初期条件と時間発展
+
+いま、図 :ref:`figscalaradv` のように初期に :math:`x \ge 0` で :math:`u=u_1` 、 :math:`x < 0` で :math:`u=u_2` のように :math:`x=0` で不連続な分布を考えてみると :math:`t > 0` での厳密解は右図のような形になる。
+ 
+FTCSスキーム
+------------
+ 
+1次元線形スカラー移流方程式 :eq:`scalaradv` を時間について現在の時刻 :math:`t_n` と :math:`\Delta t` 後の時刻 :math:`t_{n+1}=t_n+\Delta t` の間で前進差分、空間については中心差分をとって差分化すると次式を得る。ここで、 :math:`u_j^n = u(x_j,t_n)` である。 
+ 
+.. math::
+ :label: ftcs1
+
+ \displaystyle{{u_{j}^{n+1}-u_{j}^{n}} \over {\Delta t}} + 
+ c \displaystyle{{u_{j+1}^{n}-u_{j-1}^n} \over {2\Delta x}} = 0 
+ 
+このような差分のとり方をFTCSスキーム(Forward in Time and Centered Difference in Space)と言う。これを整理すると、 
+ 
+.. math::
+ :label: advftcs
+
+ u_j^{n+1} = u_j^n - \displaystyle{1 \over 2} \nu (u_{j+1}^n - 
+ u_{j-1}^n) 
+
+ここで、 :math:`\nu` は次式で定義される数であり、 **クーラン数** と呼ばれる。
+
+.. math::
+ :label: cfl_def
+
+ \nu \equiv c \displaystyle{{\Delta t} \over {\Delta x}} 
+ 
+式 :eq:`advftcs` の右辺は時刻 :math:`t_n` での値、左辺は時刻 :math:`t_{n+1}=t_n+\Delta t` での値だけで書けている。したがって、時刻 :math:`t_n` での各格子点での値がわかっていれば直ちに1タイムステップ後( :math:`t_{n+1}` )の各格子点での値を計算することができる。このような解法のことを **陽解法** と言う。
+ 
+.. _figftcs1:
+.. figure:: ftcs.png
+ :align: center
+ :width: 60%
+ 
+ FTCSスキームにおける変数の依存関係
+ 
+FTCSスキームにおける変数の依存関係を図示すると図 :ref:`figftcs1` のようになる。矢印は時刻 :math:`t_{n+1}` の白丸の点の値を計算するのに時刻 :math:`t_n` の黒丸の格子点の値を使うことを示す。
+
+1次元波動伝播のシミュレーションを行うアルゴリズムは一般に次のようになる。 
+ 
+1. 各メッシュ点の座標値 :math:`x_j` をセットする(メッシュ生成) 
+2. 各メッシュ点の初期値 :math:`u_j(t=0)` をセットする(初期条件) 
+3. 時刻 :math:`t` が、あらかじめ決められた終了時刻 :math:`t_{\rm end}` に達するまで、あるいは決められた回数だけ、以下を繰り返す 
+
+ (a) 左右の境界を除く各格子点について :math:`\Delta t` 後の値を差分式にもとづいて計算する(時間積分)。たとえばFTCSスキームの場合には計算式 :eq:`advftcs` を用いる。
+ (b) 左右の境界の値を境界条件から決める。たとえば隣接点と同じ値を入れる (境界条件の適用) 
+ (c) 時刻を :math:`\Delta t` だけ進める 
+
+.. _figFTCSresult:
+.. figure:: ftcsi.png
+ :align: center
+ :width: 80% 
+
+ 左図：FTCSスキームで、初期値として、 :math:`j=1,...,50` に対して :math:`u=1` 、 :math:`j=51,...,100` に対して :math:`u=0` とし、クーラン数 :math:`\nu=c\Delta t/\Delta x=0.25` で1ステップ、2ステップ、3ステップ計算したときの :math:`u` をプロットした図。右図：50ステップ、100ステップ計算したときの :math:`u` をプロットした図。
+ 
+FTCSスキームを用いて１次元線形スカラー移流方程式を解いた結果を :ref:`上図<figFTCSresult>` に示す。波は形を保って伝わらずに振動が発生してしまっている。この振動は物理的な理由で発生しているのではなく、数値的不安定性によるものである。なぜこのような数値振動が発生してしまうのか、次節で説明する。 
+ 
+FTCSスキームの数値的安定性
+-------------------------------
+ 
+Von Neumannの安定性解析
+~~~~~~~~~~~~~~~~~~~~~~~~~
+ 
+前節のFTCSスキームによって1次元波動伝播のシミュレーションを行ってみると解が激しく振動して数値的に不安定になってしまうことがわかった（ :ref:`FTCSの結果の図<figFTCSresult>` ）。この不安定性の原因を調べるために
+
+.. math:: 
+ :label: coswave
+
+ u_j^n={\rm{cos}}(j\theta)
+
+を差分式 :eq:`advftcs` に代入してみる。ここで :math:`\theta` は、波の波数を :math:`k` として :math:`\theta=k\Delta x` であらわされる量である。たとえば :math:`\theta=\pi` のとき :math:`u_j^n` は :ref:`安定性解析結果<vonneuman>` 左図のように2メッシュで1波長の波、 :math:`\theta=\pi/3` のときは右図のように6メッシュで1波長の波をあらわす。
+
+.. _vonneuman:
+.. figure:: vonneumann.png
+ :align: center
+ :width: 60%
+ 
+ 安定性解析結果。メッシュ番号を :math:`j` としたときの :math:`u_j^n={\rm cos}(j\theta)` のプロフィール。左図: :math:`\theta=\pi` の場合。右図： :math:`\theta=\pi/3` の場合。
+
+その結果は
+
+.. math::
+ :label: coswav_ftcs
+
+ u_j^{n+1}={\rm cos}(j\theta)+\nu {\rm sin}\theta {\rm sin}(j\theta)
+ =Re \left[(1-i\nu{\rm sim}\theta) e^{ij\theta}\right]
+
+これをもう一度差分式に代入すると
+
+.. math::
+ :label: coswav_ftcs2
+ 
+ u_j^{n+2}=(1-\nu^2{\rm sin}^2\theta){\rm cos}(j\theta)+2\nu {\rm sin}\theta {\rm sin}(j\theta)\\
+ = Re \left[(1-i\nu{\rm sin}\theta)^2 e^{ij\theta}\right]
+
+である。ここで、 :math:`i` は虚数単位、 :math:`Re` は実部をとることをあらわす。以上からわかるように、
+
+.. math::
+ :label: coswav_ftcs3
+ 
+ u_j^{n+k}=Re \left[(1-i\nu{\rm sin}\theta)^k e^{ij\theta}\right]
+
+が成り立つ。
+
+以上と同様に、式 :eq:`coswave` を複素数に拡張した :math:`u_j^{n}=e^{ij\theta}` を差分式 :eq:`advftcs` に代入すると
+
+.. math::
+ :label: uj_rel
+
+ u_j^{n+k}=(1-i\nu{\rm sin}\theta)^k u_j^{n}
+ 
+が成り立つ。
+
+差分法(差分スキーム)の数値的安定性を導くひとつの方法として、
+
+.. math::
+ :label: vn_ana
+
+ u_j^{n} = g^n e^{ij\theta}
+
+を差分式に代入して複素増幅率 :math:`g` を求め、1タイムステップ間の振幅の増幅率 :math:`|g| \le 1` となる条件を求める方法がある。これを Von Neumann の安定性解析と言う。
+ 
+:math:`u_j^n = g^n {\rm exp} (i j \theta)` をFTCS差分式に代入すると
+
+.. math::
+ :label: g_ftcs
+ 
+ g = 1 - \displaystyle{1 \over 2} \nu (e^{i \theta} - e^{-i \theta})\\
+ = 1 - i \nu {\rm sin} \theta 
+
+したがって 
+ 
+.. math::
+ :label: gnor2_ftcs
+ 
+ |g|^2 = 1 + \nu^2 {\rm sin}^2 \theta \ge 1 
+ 
+以上の結果より、 :math:`\theta=0` の場合を除いてFTCSスキームは常に不安定になる。
+
+テイラー展開による方法
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+差分化した式にテイラー展開を適用して差分式が満たす偏微分方程式を導くことによってもFTCSスキームが数値的に不安定であることを示すことができる。 :math:`t_{n+1} = t_n + \Delta t` 、 :math:`x_{j \pm 1} = x_j \pm \Delta x` を用いると、 
+ 
+.. math::
+ :label: advtaylor1
+ 
+ u_j^{n+1} = u_j^n + \displaystyle{{\partial u} \over {\partial t}} 
+ \Delta t + \displaystyle{1 \over 2} 
+ \displaystyle{{\partial^2 u} \over {\partial t^2}} \Delta t^2 + ... 
+
+.. math::
+ :label: advtaylor2
+
+ u_{j+1}^n = u_j^n + \displaystyle{{\partial u} \over {\partial x}} 
+ \Delta x + \displaystyle{1 \over 2} 
+ \displaystyle{{\partial^2 u} \over {\partial x^2}} \Delta x^2 
+ + \displaystyle{1 \over 6} \displaystyle{{\partial^3 u} 
+ \over {\partial x^3}}\Delta x^3 + ... 
+
+.. math::
+ :label: advtaylor3
+
+ u_{j-1}^n = u_j^n - \displaystyle{{\partial u} \over {\partial x}} 
+ \Delta x + \displaystyle{1 \over 2} 
+ \displaystyle{{\partial^2 u} \over {\partial x^2}} \Delta x^2 
+ - \displaystyle{1 \over 6} \displaystyle{{\partial^3 u} 
+ \over {\partial x^3}}\Delta x^3 + ... 
+ 
+FTCSスキームの差分式 
+
+.. math::
+ :label: ftcs_sabun
+
+ u_j^{n+1} - u_j^n = -\displaystyle{1 \over 2} \nu 
+ (u_{j+1}^n - u_{j-1}^n) 
+
+の左辺に :eq:`advtaylor1` 、右辺に :eq:`advtaylor2` 、 :eq:`advtaylor3` を代入すると、
+ 
+.. math::
+ :label: ftcs_sabun2
+
+ \displaystyle{{\partial u} \over {\partial t}}\Delta t 
+ + \displaystyle{1 \over 2} {{\partial ^2 u} \over {\partial t}^2} 
+ \Delta t^2  =  -\nu \left (\displaystyle{{\partial u} \over {\partial 
+ x}}\Delta x + \displaystyle{1 \over 6} \displaystyle{{\partial^3 u} 
+ \over {\partial x^3}}\Delta x^3 + ... \right) 
+
+これを整理すると 
+
+.. math::
+ :label: ftcs_sabun3
+
+ \displaystyle{{\partial u} \over {\partial t}} 
+ + c \displaystyle{{\partial u} \over {\partial x}} 
+ = -\displaystyle{1 \over 2} \displaystyle{ 
+ {\partial^2 u} \over {\partial t^2}}\Delta t 
+ - \displaystyle{c \over 6} 
+ {{\partial^3 u} \over {\partial x^3}} \Delta x^2 + ... 
+
+ここで、解くべき偏微分方程式 
+
+.. math::
+ :label: beq
+
+ \displaystyle{{\partial u} \over {\partial t}} 
+ = -c \displaystyle{{\partial u} \over {\partial x}} 
+
+より 
+
+.. math::
+ :label: beq2
+
+ \displaystyle{{\partial^2 u} \over {\partial t^2}} 
+ = c^2 \displaystyle{{\partial^2 u} \over {\partial x^2}} 
+
+であることを用いると 
+
+.. math::
+ :label: beq3
+
+ \displaystyle{{\partial u} \over {\partial t}} 
+ + c \displaystyle{{\partial u} \over {\partial x}} 
+ = -\displaystyle{{c^2} \over 2} \displaystyle{ 
+ {\partial^2 u} \over {\partial x^2}}\Delta t 
+ - \displaystyle{c \over 6} 
+ {{\partial^3 u} \over {\partial x^3}} \Delta x^2 + ... 
+
+右辺が差分化によって新たに加わった項である。右辺第1項は負の拡散係数を持つ拡散項になっている。「正の拡散」は物理量の値のピークをなまらせる働きがあるが、「負の拡散」では物理量が周囲よりもわずかに高い値を持つ部分があるとこのピークがどんどん大きくなるという不安定性を生ずる。
+ 
+よって、テイラー展開法からもスカラー移流方程式のFTCSスキームは数値的に不安定であることがわかる。 
+ 
+Lax-Friedrich のスキーム
+--------------------------
+ 
+この方法ではFTCSスキームの右辺の :math:`u_j^n` を :math:`(u_{j+1}^n+u_{j-1}^n)/2` で置き換え、以下のように差分化する。 
+
+.. math::
+ :label: laxfriedrich
+
+ u_j^{n+1}=\displaystyle{1 \over 2}(u_{j+1}^n+u_{j-1}^n) 
+ -\displaystyle{\nu \over 2}(u_{j+1}^n-u_{j-1}^n)
+
+:math:`u_j^n=g^n {\rm exp}(i j \theta)` を代入して増幅率 :math:`g` を求めると
+
+.. math::
+ :label: g_lf
+
+ g = \displaystyle{1 \over 2}(e^{i\theta}+e^{-i\theta})- 
+ \displaystyle{1 \over 2}(e^{i\theta}-e^{-i\theta})\\ 
+ = {\rm cos} \theta - i \nu {\rm sin} \theta 
+
+したがって 
+
+.. math::
+ :label: gnor2_lf
+
+ |g|^2={\rm cos}^2{\theta}+\nu^2 {\rm sin}^2 \theta 
+ 
+.. _figLFphase:
+.. figure:: LFphase2.png
+ :align: center
+ :width: 40%
+
+ Lax-Friedrichスキームの場合の増幅率
+
+:ref:`figLFphase` に増幅率 :math:`|g|` を :math:`\theta` の関数として極座標 :math:`(g,\theta)` で示す。Lax-Friedrich のスキームでは、クーラン数 :math:`\nu=c\Delta t/\Delta x` が :math:`|\nu| \le 1` を満たす場合、安定に計算を進めることができる。この条件のことを Courant, Friedrich, Lewy 条件 ( **CFL条件** あるいはクーラン条件)と言う。 
+
+.. _figlaxf:
+.. figure:: laxf.png
+ :align: center
+ :width: 40%
+
+ Lax-Friedrichスキームにおける依存関係。破線と点線はそれぞれ :math:`\nu < 1` 、 :math:`\nu > 1` の場合の波の伝播を示す。
+
+クーラン条件の意味を考えてみよう。差分式 :eq:`laxfriedrich` を書き換えると以下の式を得る。
+
+.. math::
+ :label: uj_n1
+
+ u_j^{n+1}={{1-\nu} \over 2}u_{j+1}^n+{{1+\nu} \over 2}u_{j-1}^n
+
+クーラン条件 :math:`|\nu|\le 1` が満たされている場合、時刻 :math:`t=t_{n+1}` の値 :math:`u_j^{n+1}` は :math:`t=t_n` の :math:`j-1` 点の値 :math:`u_{j-1}^n` と :math:`j+1` 点の値 :math:`u_{j+1}^n` の内挿値になっている。 :ref:`上図<figlaxf>` にLax-Friedrichスキームにおける変数の依存関係を示す。実線は時刻 :math:`t=t_{n+1}` の白丸の格子点の値を計算する際に用いられる時刻 :math:`t=t_n` の格子点、破線は :math:`\nu=c\Delta t/\Delta x < 1` の場合、点線は :math:`\nu > 1` の場合の波の伝播を示す。クーラン条件は :math:`|c|\Delta t < \Delta x` 、すなわち時間間隔 :math:`\Delta t` の間に波が１メッシュ以上伝わってはいけないことを意味する。 :math:`u_j^{n+1}` は :math:`u_{j-1}^n` と :math:`u_{j+1}^n` だけから計算されるが、時間間隔が :math:`\Delta t > \Delta x/|c|` となると :math:`x_{j-1} \le x \le x_{j+1}` より外側からも情報が伝わってくるため計算を安定に進めることができなくなるのである。
+
+.. _figLFresult:
+.. figure:: lax.png
+ :align: center
+ :width: 40%
+
+ Lax-Friedrichスキームを用いた１次元線形スカラー移流問題のシミュレーション結果。クーラン数 :math:`\nu=0.25` で50ステップ、100ステップ計算した結果を示す。 
+
+:ref:`上図<figLFresult>` にLax-Friedrichスキームを用いて１次元線形スカラー移流方程式の解を求めた結果を示す。数値振動のない解が得られている。Lax-Friedrichスキームの欠点は数値散逸が大きく、不連続面が時間とともになまってしまうことである。 
+ 
+1次精度風上差分法
+-------------------
+ 
+:ref:`図<figupwindif>` のように波が正の方向に伝わっている場合を考える。このとき、 :math:`j` 点での空間微分を、 :math:`j` 点と風上にあたる :math:`j-1` 点の間の差分で近似する方法が風上差分である。
+
+.. _figupwindif:
+.. figure:: upwind1.png
+ :align: center
+ :width: 60%
+
+ 左図：右方向に伝わる波、右図：1次精度風上差分における依存関係。破線は波による情報の伝達を示す。
+
+1次元スカラー移流方程式を時間については前進差分、空間については風上差分として差分化すると、 :math:`c > 0` の場合、以下の差分式を得る。
+
+.. math::
+ :label: upw_sabun
+ 
+ \displaystyle{{u_j^{n+1}-u_j^n} \over {\Delta t}} 
+ + c \displaystyle{{u_j^n-u_{j-1}^n} \over \Delta x} = 0 
+
+したがって 
+
+.. math::
+ :label: upwind
+
+ u_j^{n+1} = u_j^n - c \displaystyle{{\Delta t} \over {\Delta x}} 
+ (u_j^n - u_{j-1}^n) 
+ 
+:ref:`右図 <figupwindif>` に1次精度風上差分における変数の依存関係を示す。黒丸は時刻 :math:`t_{n+1}` の白丸の格子点の値を計算する際に用いられる時刻 :math:`t_n` の格子点、破線は時刻 :math:`t_{n+1}` に白丸の格子点に到達する波の伝播を示す。
+
+増幅率は 
+
+.. math::
+ :label: g_upw
+
+ g = 1 - \nu (1-e^{-i\theta})\\ 
+ =(1-\nu+\nu {\rm cos} \theta)-i\nu {\rm sin} \theta 
+
+したがって 
+
+.. math::
+ :label: gnor2_upw
+
+ |g|^2 = (1-\nu+\nu {\rm cos} \theta)^2+\nu^2 {\rm sin}^2 \theta\\ 
+  = 1-2\nu(1-\nu)(1-{\rm cos} \theta) 
+
+これより、 :math:`0 \le \nu \le 1` の場合、任意の :math:`\theta` について :math:`|g| \le 1` であり、安定であることがわかる。
+
+風上差分の差分式 :eq:`upwind` は次のようにも書ける。
+
+.. math::
+ :label: uj_n1_upw
+
+ u_j^{n+1}=(1-\nu)u_j^n+\nu u_{j-1}^n .
+
+クーラン条件 :math:`0 \le \nu \le 1` が満たされている場合、 :math:`u_j^{n+1}` は時刻 :math:`t=t_{n+1}` に :math:`j` 番目の格子点に到達する波の :math:`t=t_n` での位置（ :ref:`右図<figupwindif>` の破線矢印の出発点）における値 :math:`u(x_j-c\Delta t,t_n)` を :math:`u_{j-1}^n` と :math:`u_j^n` から線形内挿した値になっている。
+
+.. _figupwind:
+.. figure:: upwind25-80.png
+ :align: center
+ :width: 60%
+ 
+ 1次精度風上差分法を用いた１次元線形スカラー移流問題のシミュレーション結果。左：クーラン数 :math:`\nu=0.25` で50ステップ、100ステップ計算した結果。右： :math:`\nu=0.80` で16ステップ、32ステップ計算した結果。
+ 
+:ref:`上図<figupwind>` に１次精度風上差分法を用いたシミュレーション結果を示す。
+ 
+練習問題
+~~~~~~~~~~~~
+* クーラン数 :math:`\nu` が1,0.75,0.5 の場合について1次精度風上差分の増幅率 :math:`|g|` を位相 :math:`\theta` の関数として求め、極座標 :math:`(|g|,\theta)` でプロットせよ。 
+
+* 1次精度風上差分法の差分式 :eq:`upwind` にテイラー展開を適用することによって、以下の偏微分方程式が得られることを示せ。右辺第1項が拡散項であることに注意して、クーラン条件を導け。 
+
+.. math:: 
+
+ \displaystyle{{\partial u} \over {\partial t}} 
+ +c\displaystyle{{\partial u} \over {\partial x}} 
+ = \displaystyle{1 \over 2} c\Delta x (1-\nu)  
+ \displaystyle{{\partial^2 u} \over {\partial x^2}} 
+ -\displaystyle{1 \over 6} c (\Delta x)^2(2\nu^2-3\nu+1) 
+ \displaystyle{{\partial^3 u} \over {\partial x^3}} + ... 
+
+Lax-Wendroffのスキーム
+---------------------------
+ 
+Lax-Wendroffスキームはテイラー展開にもとづく差分法であり、以下のようにして導かれる。 
+ 
+.. math::
+ :label: sabun_lw
+
+ u_j^{n+1} = u_j^n+\Delta t \displaystyle{{\partial u} \over {\partial 
+ t}} + \displaystyle{1 \over 2}\Delta t^2 \displaystyle 
+ {{\partial^2 u} \over {\partial t^2}} + O(\Delta t^3) 
+
+右辺第2項、第3項に :math:`\partial u/\partial t = -c \partial u/\partial x` 、 :math:`\partial^2 u/\partial t^2=c^2 \partial^2 u/\partial x^2` を代入すると 
+
+.. math::
+ :label: sabun2_lw
+
+ u_j^{n+1}=u_j^n-c\Delta t \displaystyle{{\partial u} \over {\partial 
+ x}}+\displaystyle{1 \over 2}c^2 \Delta t^2 
+ \displaystyle{{\partial^2 u} \over {\partial x^2}} + O(\Delta t^3) 
+
+空間微分 :math:`\partial u/\partial x` 、 :math:`\partial^2 u/\partial x^2` をそれぞれ中心差分で近似すると
+
+.. math::
+ :label: uj_n1_lw
+
+ u_j^{n+1} = u_j^n - \displaystyle{1 \over 2}c\Delta t 
+ \displaystyle{{u_{j+1}^n-u_{j-1}^n} \over {\Delta x}} 
+ + \displaystyle{1 \over 2}c^2 \left(\displaystyle{{\Delta t} \over  
+ {\Delta x}} \right )^2 (u_{j+1}^n-2u_j^n+u_{j-1}^n) 
+
+これがLax-Wendroffスキームである。以上の導出過程からわかるように、Lax-Wendroffスキームは空間、時間についていずれも2次精度の解法になっている。 
+ 
+Lax-Wendroffスキームの安定性をvon Neumannの方法で調べてみる。増幅率は 
+
+.. math::
+ :label: g_lw
+
+ g = 1 - \displaystyle{\nu \over 2}(e^{i\theta}-e^{-i\theta}) 
+ +\displaystyle{\nu^2 \over 2}(e^{i\theta}-2+e^{-i\theta})\\ 
+ = 1 -i\nu {\rm sin} \theta + \nu^2 {\rm cos} \theta -\nu^2 
+
+したがって、 
+
+.. math::
+ :label: gnor2_lw
+
+ |g|^2 = [1-\nu^2(1-{\rm cos}\theta)]^2 + \nu^2 {\rm sin}^2 \theta\\ 
+ = 1 - 2\nu^2(1-\nu^2)(1-{\rm cos}\theta) 
+
+これより、 :math:`|\nu| \le 1` であれば任意の :math:`\theta` について :math:`|g| \le 1` であり、安定であることがわかる。 
+ 
+.. _figLW2:
+.. figure:: figLW.png
+ :align: center
+ :width: 40%
+ 
+ 2段階Lax-Wendroffスキームにおける依存関係。第一段階で時刻 :math:`t_n` における格子点 :math:`j-1` 、 :math:`j` 、 :math:`j+1` の値から時刻 :math:`t_{n+1/2}` における格子点 :math:`j-1/2` 、 :math:`j+1/2` の値が計算される。第二段階ではこれらの点の値を用いて時刻 :math:`t_{n+1}` の白丸の格子点の値が求まる。 
+ 
+1次元スカラー方程式の場合、Lax-Wendroffスキームは以下のように2段階に分けたスキームと同等である。この方法を **2段階Lax-Wendroff法** と呼ぶ。 
+ 
+.. math::
+ :label: lw2
+
+ u_{j+1/2}^{n+1/2} = \displaystyle{{u_{j+1}^n+u_j^n} \over 2} 
+ - {1 \over 2} c \displaystyle{{\Delta t} \over {\Delta x}} 
+ (u_{j+1}^n - u_j^n) 
+
+.. math::
+ :label: uj_n1_lw2
+
+ u_j^{n+1} = u_j^n - c \displaystyle{{\Delta t} \over {\Delta x}} 
+ (u_{j+1/2}^{n+1/2}-u_{j-1/2}^{n+1/2}) 
+ 
+これを図示すると :ref:`上図<figLW2>` のようになる。 
+
+.. _figLWresult:
+.. figure:: figLWresult.png
+ :align: center
+ :width: 60%
+
+ 2段階Lax-Wendroff法による１次元線形スカラー移流方程式のシミュレーション結果。左図：クーラン数 :math:`\nu=0.25` で50ステップ、100ステップ計算した結果。右図：クーラン数 :math:`\nu=0.80` で16ステップ、32ステップ計算した結果。
+
+:ref:`図 <figLWresult>` にLax-Wendroff法を用いて1次元線形スカラー移流方程式の数値解を求めた結果を示す。Lax-Wendroff法は空間、時間についていずれも2次精度の方法であるが、不連続面近傍で数値振動を生じるという欠点を持つ。これに関して、以下の定理が知られている。 
+
+.. _godunov_theorem:
+
+
+Godunov の定理
+~~~~~~~~~~~~~~~~~~
+1次元スカラー移流方程式 :math:`\partial u/\partial t + c \partial u /\partial x = 0` に対して、
+
+.. math::
+ :label: gd_theorem
+
+ u_j^{n+1} = \sum_k a_k u_{j+k}^n
+
+の形の2次精度以上の精度を持つどのようなスキームも解の単調性を維持することはできない。 
+ 
+ここで、「解の単調性を維持する」とは、時刻 :math:`t_n` におけるプロフィール :math:`u(x,t_n)` が :math:`x` に関して単調増加または単調減少する関数であるならば時刻 :math:`t_{n+1}` における関数 :math:`u(x,t_{n+1})` も単調増加または単調減少関数でなければならないことを意味する。たとえば１次精度風上差分の場合、 :math:`0 \le \nu \le 1` なら :math:`u_j^{n+1}` は必ず :math:`u_{j-1}^n` と :math:`u_j^n` の間の値をとるため、もしも :math:`u_{j-1}^n \le u_j^n \le u_{j+1}^n` なら :math:`u_j^{n+1} \le u_{j+1}^{n+1}` となり、単調性が維持される。Godunovの定理の証明については、たとえば :ref:`藤井 (1994) <Fujii94>` を参照されたい。
+
+数値振動を抑える方法には以下のものがある。 
+ 
+* 人工粘性を加える
+ 
+ 粘性係数を :math:`\kappa` として、
+ 
+.. math:: 
+ :label: aviscos
+
+ \tilde{u}_j^{n+1}  = u_j^{n+1} +  \kappa \displaystyle 
+ {{\Delta t} \over {{\Delta x}^2}} (u_{j+1}^n - 2u_j^n + u_{j-1}^n) 
+
+.. math::
+ :label: kappa_def
+ 
+ \kappa_{j+1/2}= Q_v \Delta x |u_{j+1}^n-u_j^n|  
+
+とする。拡散係数 :math:`\kappa` は、たとえば以下のように不連続面付近で大きな値をとるように決める。 :math:`Q_v` はパラメータである。
+
+ 
+* 流束制限関数を用いる
+ 
+ これについては後述する。
+
+
+保存形表示と数値流束
+===========================
+ 
+1次元スカラー移流方程式 
+
+.. math::
+ :label: scalar_adv
+
+ \displaystyle{{\partial u} \over {\partial t}} + 
+ c \displaystyle{{\partial u} \over {\partial x}} =0  
+
+を以下の形に変形する。
+
+.. math::
+ :label: conserv
+
+ \displaystyle{{\partial u} \over {\partial t}} + 
+ \displaystyle{{\partial f} \over {\partial x}} = 0 
+
+ここで、 
+
+.. math::
+ :label: flux_def
+
+ f = cu 
+
+は流束をあらわす。式 :eq:`conserv` の形を保存形と呼ぶ。
+
+.. _figflux:
+.. figure:: conserv.png
+ :align: center
+ :width: 40%
+ 
+ メッシュ点とメッシュ境界を通って出入りする流束の関係
+
+保存形式の物理的意味を考えるために、 :ref:`図<figflux>` に四角で囲って示した領域 ( :math:`x_{j-1/2} < x < x_{j+1/2}` )における保存量 :math:`u` の時間変化を求めてみよう。方程式 :eq:`conserv` を :math:`x=x_{j-1/2}` から :math:`x=x_{j+1/2}` まで積分すると次式を得る。
+
+.. math::
+ :label: int_form
+
+ \displaystyle{\partial \over {\partial t}}
+ \int_{x_{j-1/2}}^{x_{j+1/2}}
+ u dx + f(x_{j+1/2})-f(x_{j-1/2}) = 0 .
+
+したがって、保存量 :math:`u` の積分量
+
+.. math::
+ :label: u_int
+
+ u_j^n = \int_{x_{j-1/2}}^{x_{j+1/2}} u(x,t_n) dx
+
+の時間変化は、この時間の間に左右の境界 :math:`x_{j \pm 1/2}` を通って出入りする流束 :math:`f_{j \pm 1/2}` の差に等しい。これより次式を得る。
+
+.. math::
+ :label: conservdif
+
+ u_j^{n+1} = u_j^n - \displaystyle{{\Delta t} \over {\Delta x}} 
+ (f_{j+1/2}^n - f_{j-1/2}^n) 
+
+差分式 :eq:`conservdif` は保存則を厳密に満たす。これが保存形式を用いる利点である。
+
+メッシュ境界の流束 :math:`f_{j \pm 1/2}^n` は各メッシュ点での流束から近似的に計算することができる。これを **数値流束** と言い、 :math:`\tilde{f}_{j \pm 1/2}^n` であらわす。各種差分スキームの差分式から数値流束を求めると以下のようになる。 
+ 
+* FTCS  
+  
+.. math::
+ :label: nflux_ftcs
+
+ \tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2}(f_{j+1}^n+f_j^n) 
+ 
+* Lax-Friedrich 
+ 
+.. math::
+ :label: nflux_lf
+
+ \tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2} 
+ \left [(1-\displaystyle{1 \over \nu})f_{j+1}^n+(1+\displaystyle{1 \over \nu}) 
+ f_j^n \right ] 
+ 
+* Upwind (風上差分) 
+ 
+.. math::
+ :label: nflux_upw
+
+ \tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2} 
+ \left [(f_{j+1}^n + f_j^n)-|c|(u_{j+1}^n-u_j^n) \right ] 
+
+\
+ この式は、 :math:`c > 0` の場合は :math:`\tilde{f}_{j+1/2}^n= f_j^n` 、 :math:`c < 0` の場合は :math:`\tilde{f}_{j+1/2}=f_{j+1}^n` と一致する。
+ 
+* Lax-Wendroff 
+
+.. math::
+ :label: nflux_lw
+ 
+ \tilde{f}_{j+1/2}^n = \displaystyle{1 \over 2} 
+ \left [ (1-\nu)f_{j+1}^n+(1+\nu)f_j^n \right ] 
+
+ 
+Burgers方程式の数値解法
+==========================
+ 
+ここまでは、移流の速さ :math:`c` が一定の場合の１次元線形スカラー移流方程式を扱ってきた。本節では、以下のような **非線形** 波動方程式を差分近似によって解くことを考える。これは、非粘性の場合のBurgers方程式である。
+
+.. math::
+ :label: burgs_eq
+ 
+ \displaystyle{{\partial u} \over {\partial t}} 
+ + u \displaystyle{{\partial u} \over {\partial x}} = 0 
+ 
+この方程式は流線に沿うラグランジュ微分 :math:`d/dt=\partial /\partial t+ u \partial /\partial x` を用いると次のように表現できる。 
+
+.. math::
+ :label: lag_form
+ 
+ \displaystyle{{du} \over {dt}} = 0 
+
+.. _figparticle:
+.. figure:: burgers_particle.png
+ :align: center
+ :width: 40%
+
+ Burgers方程式の解の様子。ある有限の時刻で後ろからきた粒子が前の粒子に追いつく。
+
+粒子的な描像に立てば、この方程式は力を受けていない粒子の運動を記述しており、その解はもちろん :math:`u=const.` である。初期速度分布が正弦波的な場合、 :ref:`上図<figparticle>` に示すように、振幅が正の領域は :math:`+x` 方向に、負の領域は :math:`-x` 方向に移動してしだいに波が突っ立ち、有限の時刻で後からきた粒子が前の粒子に追いついてしまう。連続系では空間の１点で速度が多価になることはできないため、このような場合に解に不連続が生じる。 
+
+.. _figburgers:
+.. figure:: burgers1-2.png
+ :align: center
+ :width: 60%
+
+ Burgers方程式を１次精度風上差分法で解いた結果の例。左：初期に :math:`u>0` の場合。右：初期に :math:`u<0` の場合。図中の数字は時間ステップ数。時間きざみは :math:`\Delta t/\Delta x=0.8` とした。 
+
+Burgers方程式を差分法によって解くため、方程式をまず、以下のような保存系に変形する。 
+ 
+.. math::
+ :label: burgs_cnsv
+
+ \displaystyle{{\partial u} \over {\partial t}} 
+ + \displaystyle{{\partial} \over {\partial x}} \left(\displaystyle 
+ {{u^2} \over 2} \right)=0 
+ 
+これは、流束 :math:`f(x)` が :math:`f(x)=u^2/2` の場合に相当し、各種差分スキームを適用することができる。たとえば１次精度の風上差分法を適用する場合、線形スカラー方程式で移流の速さ :math:`c` が一定である場合には :math:`c > 0` のとき :math:`f_{j+1/2}^n=f_j^n` であったことに注意し、メッシュ境界の :math:`j+1/2` 点での速さを :math:`(u_j(t)+u_{j+1}(t))/2` で近似すると、
+
+* :math:`u_{j+1}(t)+u_j(t) > 0` のとき、 :math:`f_{j+1/2}^n = f_j^n=|u_j(t)|^2/2`  
+* :math:`u_{j+1}(t)+u_j(t) \le 0` のとき、 :math:`f_{j+1/2}^n = f_{j+1}^n=|u_{j+1}(t)|^2/2` 
+
+:ref:`図<figburgers>` に初期に :math:`u(x)=1+\epsilon {\rm sin}(kx)` ( :math:`\epsilon=0.01` , :math:`0 \le kx \le 2\pi` ) のような速度分布を与えた場合のBurgers方程式の解を1次精度の風上差分法で計算した結果を示す。 :ref:`左図<figburgers>` の場合、初期に :math:`u \sim 1` であることから予想できるように非線形効果が小さい間の解は波の速さが :math:`c=1` の場合の線形スカラー移流方程式の解とほぼ一致し、波はほぼその形を保ちながら右側に伝わっていく。 :ref:`右図<figburgers>` では初期に :math:`u \sim -1` であり、波は左に伝わる。 
+
+.. _figburgers2:
+.. figure:: burgers3.png
+ :align: center
+ :width: 40%
+
+ 初期に :math:`u(x)=1+0.1 {\rm sin}(kx)` の速度分布から始めた場合のBurgers方程式の数値解。図中の数字は時間ステップ数。１次精度風上差分法で時間きざみは :math:`\Delta t/\Delta x=0.8` とした。 
+
+非線形性が強くなる場合のBurgers方程式の数値解の例を :ref:`図<figburgers2>` に示す。この例では初期に :math:`u(x)=1+0.1 {\rm sin}(kx)` のような速度分布を与え、その後の時間発展を１次精度の風上差分法によって解いた。Burgers方程式の非線形項 :math:`u\partial u/\partial x` の効果により波がしだいに突っ立ち、不連続（衝撃波）が形成されることがわかる。 
+
+ 
+流束制限関数
+=============================
+以上、線形スカラー移流方程式とBurgers方程式を例にして差分解法について解説してきた。１次精度の風上差分法を用いるとこれらの方程式の解にあらわれる不連続面を数値振動を起こすことなくとらえることができる。しかしながら、Godunovの定理が示すように、空間２次精度以上の解法では数値振動があらわれてしまうことがわかった。
+ 
+Lax-Wendroff法の数値流束を補正することによって、不連続面近傍での振動を抑えることができないかどうか考えてみよう。Lax-Wendroff法の
+数値流束は次のようにも書ける。 
+
+.. math::
+ :label: nflux_lw2
+
+ \tilde{f}_{j+1/2}^n = c[u_j^n + \displaystyle{1 \over 2} 
+ (1-\nu)(u_{j+1}^n - u_j^n)] 
+
+数値振動が生じない1次精度の風上差分の数値流束は :math:`c > 0` のとき :math:`\tilde{f}_{j+1/2}^n=cu_j` であり、Lax-Wendroff法の数値流束の右辺第1項と一致している。そこで、Lax-Wendroff法の数値流束の右辺第2項を次のように補正してみる。
+
+.. math::
+ :label: correctflux
+
+ \tilde{f}_{j+1/2}^n = c[u_j^n + \displaystyle{1 \over 2} 
+ (1-\nu)B_{j+1/2}(u_{j+1}^n - u_j^n)] 
+ 
+ここで導入した :math:`B_{j+1/2}` のことを **流束制限関数** と呼ぶ。数値流束 :eq:`correctflux` を差分式 :eq:`conservdif` に代入して変形すると次式を得る。
+
+.. math::
+ :label: limiter
+
+ \displaystyle{{u_j^{n+1}-u_j^n} \over {u_{j-1}^n-u_j^n}} 
+ = \nu [1-\displaystyle{1 \over 2}(1-\nu)B_{j-1/2}] 
+ +\displaystyle{1 \over 2}\nu(1-\nu) \displaystyle 
+ {{B_{j+1/2} \over r_j}} 
+
+ここで、 
+
+.. math::
+ :label: rf_def
+
+ r_j \equiv \displaystyle{{u_j^n-u_{j-1}^n} \over {u_{j+1}^n-u_j^n}} 
+
+である。 
+
+.. _figlimiter:
+.. figure:: seigen.png
+ :align: center
+ :width: 30%
+
+ 数値振動が生じないようにするために :math:`u_j^{n+1}` の値を制限する範囲
+ 
+数値振動が生じないようにするために、 :ref:`図<figlimiter>` に示したように :math:`u_{j}^{n+1}` が :math:`u_j^n` と :math:`u_{j-1}^{n}` の間の値をとるように制限を加えることにしよう。これには、式 :eq:`limiter` の左辺の値を以下のように制限すればよい。
+
+.. math::
+ :label: uj_range
+
+ 0 \le \displaystyle{{u_j^{n+1}-u_j^n} \over {u_{j-1}^n-u_j^n}} \le 1 
+
+式 :eq:`limiter` の右辺を代入すると以下の条件を得る。
+
+.. math::
+ :label: uj_range2
+
+ -\displaystyle{2 \over \nu} \le B_{j-1/2} - \displaystyle 
+ {{B_{j+1/2}} \over {r_j}} \le \displaystyle{2 \over {1-\nu}} 
+
+CFL条件が満たされている場合 :math:`0 \le \nu \le 1` なので、 
+
+.. math::
+ :label: uj_range3
+
+ -2 \le B_{j-1/2}-\displaystyle{{B_{j+1/2}} \over {r_j}} \le 2 
+
+この関係式は、以下のふたつの条件がともに満たされれば成立する。 
+ 
+.. math::
+ :label: uj_range4
+
+ 0 \le B_{j+1/2} \le 2 
+
+かつ 
+
+.. math::
+ :label: uj_range5
+
+ 0 \le \displaystyle{{B_{j+1/2}} \over {r_j}} \le 2 
+
+この範囲を図示すると :ref:`流束制限関数の許容範囲図<figlimitarea>` の斜線のない領域になる。
+ 
+.. _figlimitarea:
+.. figure:: limitarea.png
+ :align: center
+ :width: 40%
+
+ 流束制限関数 :math:`B_{j+1/2}(r)` の許容範囲。LWはLax-Wendroffスキームの数値流束に対応する制限関数。minmodは minmod関数。 
+ 
+:math:`r < 0` の場合は :math:`B_{j+1/2}=0` のみが許される。Lax-Wendroff法の数値流束では :math:`B_{j+1/2}=1` (図のLW)であるため、 :math:`r < 1/2` の領域で許容範囲外となり、数値振動が生じる。図の許容範囲内にある流束制限関数を用いることにより、数値振動が起こらないようにすることができる。その一例は以下のminmod関数(図のminmod)である。 
+ 
+.. math::
+ :label: minmod_def
+
+ {\rm minmod}(r) = \left\{ \begin{array}{ll}
+ 0 & (r < 0)\\
+ r & (0 \le r \le 1)\\ 
+ 1 & (r > 1)
+ \end{array}
+ \right. 
+
+ 
+TVDスキーム
+================
+
+前節では、数値振動をおさえる方法として流束制限関数を導入した。ここでは、数値振動の発生を定量化する方法について考える。
+
+このために、1次元線形スカラー移流方程式において以下の量を定義する。
+
+.. math::
+ :label: u_def_tvd
+
+ U = \int \left |\displaystyle{{du} \over {dx}}\right | dx .
+
+この量は波の振幅の総和に等しく、移流方程式の厳密解では波のプロフィールが保たれるため、 :math:`dU/dt = 0` である。
+ 
+以上との類推により、メッシュ点ごとの物理量の変化量の総和を次式のように定義し、これをTotal Variation (TV)と言う。 
+
+.. math::
+ :label: tv_def
+
+ TV(u^n) \equiv \sum_j |u_{j+1}^n-u_j^n| 
+
+Total Variation が時間とともに増大しないという条件 
+
+.. math::
+ :label: tvd_cond
+
+ TV(u^{n+1}) \le TV(u^n) 
+
+のことをTotal Variation Diminishing (TVD)条件と呼ぶ。 
+ 
+流束制限関数を導入することによって、差分スキームがTVD条件を満たすようにすることができる。 
+ 
+
+放物型方程式の差分解法
+=========================
+ 
+天体シミュレーションにあらわれる放物型方程式
+--------------------------------------------------
+ 
+* 熱伝導方程式 
+ 
+ :math:`\centerline{$\displaystyle{{\partial T} \over {\partial t}}= \kappa {\bf \nabla}^2 T$}`
+ 
+* 磁気拡散方程式 
+ 
+ :math:`\centerline{$\displaystyle{{\partial \boldmath{B}} \over {\partial t}}= \eta {\bf \nabla}^2 \boldmath{B}$}` 
+ 
+以下のような1次元拡散方程式を差分近似によって初期値問題として解くことを考えてみよう。すなわち、時刻 :math:`t=0` における :math:`u(x,t)` の値 :math:`u(x,0)` を与えて、任意の時刻 :math:`t` ( :math:`> 0` )における :math:`u(x,t)` を求める。 
+ 
+.. math::
+ :label: diffusion
+
+ \displaystyle{{\partial u} \over {\partial t}} 
+ = \kappa \displaystyle{{\partial^2 u} \over {\partial x^2}} 
+
+拡散係数 :math:`\kappa` は `x` に依らないとする。よく知られているように、この方程式の解は初期条件をフーリエ変換することによって解析的に求めることができる。
+
+.. figure:: diffusion.png
+ :align: center
+ :width: 30% 
+
+ 拡散方程式の解の時間発展の様子
+ 
+解のおおまかな様子を図に示す。 
+
+拡散方程式の陽解法 (explicit法)
+--------------------------------------------------
+
+1次元拡散方程式 :eq:`diffusion` を時間について現在の時刻 :math:`t_n` と :math:`\Delta t` 後の時刻 :math:`t_{n+1}=t_n+\Delta t` の間で前進差分、空間については中心差分（FTCS差分）をとって差分化すると次式を得る。ここで、 :math:`u_j^n = u(x_j,t_n)` である。 
+
+.. math::
+ :label: ftcs_diffusion
+ 
+ \displaystyle{{u_{j}^{n+1}-u_{j}^{n}} \over {\Delta t}} 
+ = \kappa \displaystyle{{u_{j+1}^{n}-2u_j^n+u_{j-1}^n} \over {\Delta x^2}} 
+ 
+式 :eq:`ftcs_diffusion` を変形して次式を得る 
+
+.. math::
+ :label: ftcs_diffusion2
+
+ u_j^{n+1} = u_j^n + \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} 
+ (u_{j+1}^n - 2u_j^n + u_{j-1}^n) 
+
+右辺は時刻 :math:`t_n` での値、左辺は時刻 :math:`t_{n+1}=t_n+\Delta t` での値だけで書けている。したがって、時刻 :math:`t_n` での各格子点での値がわかっていれば直ちに1タイムステップ後( :math:`t_{n+1}` )の各格子点での値を計算することができる（陽解法）。 
+ 
+Von Neumannの安定性解析
+--------------------------------------------------
+ 
+FTCSスキームの数値的安定性を調べるために :math:`u_j^n = g^n {\rm exp} (i j \theta)` をFTCS差分式に代入すると
+
+.. math::
+ :label: vn_diff_ftcs
+ 
+ g^{n+1}e^{i j \theta} = g^n e^{i j \theta} +  
+ \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} g^n 
+ [e^{i (j+1) \theta} - 2 e^{i j \theta} + e^{i (j-1) \theta}]. 
+
+よって、 
+
+.. math::
+ :label: g_diff_ftcs
+
+ g = 1 - 2 \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} (1-{\rm cos} \theta). 
+ 
+増幅率が :math:`|g| \le 1` であるためには
+
+.. math::
+ :label: st_cond_diff_ftcs1
+ 
+ -1 \le 1 - 2 \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} 
+ (1-{\rm cos} \theta) \le 1 . 
+ 
+したがって、 
+
+.. math::
+ :label: st_cond_diff_ftcs2
+
+ 0 \le \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} (1-{\rm cos} 
+ \theta) = \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} 
+ 2{\rm sin}^2 {\theta \over 2} \le 1 . 
+ 
+任意の :math:`\theta` (任意の波長の波)について安定であるためには
+
+.. math::
+ :label: st_cond_diff_ftcs3
+
+ 0 \le \displaystyle{{\kappa \Delta t} \over {\Delta x^2}} \le 
+ \displaystyle{1 \over 2} . 
+ 
+以上により、FTCSスキームにより1次元拡散方程式のシミュレーションを行う場合、時間ステップ :math:`\Delta t` が上式を満たすようにコントロールする必要があることがわかる。たとえばメッシュサイズを半分にした場合、 :math:`\Delta t` は1/4にしなければならない。
+ 
+拡散方程式の陰解法 (implicit法)
+-----------------------------------
+ 
+拡散方程式を差分化する際に右辺の空間差分の部分に、求めるべき :math:`t_{n+1}` での :math:`u` の値を含めて差分化する方法がある。このような方法を **陰解法（implicit法）** と呼び、explicit法とは安定性条件が異ってくる。代表的な陰解法である Crank-Nicolson 法では、パラメータ :math:`\lambda` を導入して、以下のように差分化する。 
+ 
+.. math::
+ :label: c-n
+
+ \displaystyle{{u_{j}^{n+1}-u_{j}^{n}} \over {\Delta t}} 
+ = \kappa \left [ \lambda \displaystyle{{u_{j+1}^{n+1}-2u_j^{n+1}+ 
+ u_{j-1}^{n+1}} \over {\Delta x^2}} 
+ + (1-\lambda) \displaystyle{{u_{j+1}^{n}-2u_j^{n}+ 
+ u_{j-1}^{n}} \over {\Delta x^2}} \right ] 
+ 
+これを整理すると次のような行列を含む式になる。
+
+.. math::
+ :label: c-n2
+ 
+ \boldmath{A} \boldmath{u}^{n+1} = \boldmath{b}(\boldmath{u}^n) . 
+ 
+これを解いて :math:`\boldmath{u}^{n+1}` を求めればよい。
+ 
+練習問題 
+~~~~~~~~~~~~~~ 
+1. 行列 :math:`\boldmath{A}` とベクトル :math:`\boldmath{b}` の各要素を求めなさい。
+2. Von Neumann の安定性解析により、 :math:`\lambda > 1/2` ならば :math:`\kappa \Delta t/\Delta x^2 > 0` を満たす任意の :math:`\Delta t` についてCrank-Nicolsonスキームは数値的に安定であることを示しなさい。 
+
+
+参考文献
+===========
+
+1. :ref:`流体力学の数値計算法 (1994) 東京大学出版会、藤井孝蔵著 <Fujii94>`
+2. :ref:`Numerical Computation of Internal and External Flows, 
+   C. Hirsch, John Wiley \& Sons, 1990 <Hirsch90>`
+
+[1]は、数値流体力学全般についてまとめられたテキストであり、必読文献である。
+
+
+ 
+
+
+

@@ -1,0 +1,195 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>ジェット伝搬 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="大局的なブラックホール降着円盤での磁気回転不安定性とジェット形成" href="application_gMRI.html" />
+    <link rel="prev" title="パーカー不安定" href="application_parker.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="application_gMRI.html" title="大局的なブラックホール降着円盤での磁気回転不安定性とジェット形成"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_parker.html" title="パーカー不安定"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>ジェット伝搬<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>朝比奈雄太（千葉大学）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>背景<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>X線連星やブラックホール候補天体、活動銀河核等は宇宙ジェットと呼ばれる細く絞られた超音速アウトフローを噴出する時期がある。ジェットは中心天体近傍で解放された重力エネルギーを遠方まで伝え、周辺環境に大きな影響を及ぼす。またジェットはインターナルショックやジェットターミナルショックなどの衝撃波をもち、粒子加速の場としても注目されている。さらに、銀河中心核から噴出したジェットが銀河の構造や進化に影響を与えるといったフィードバック機構によって活動銀河核と銀河の共進化を論じる上でも重要である。</p>
+<p>ジェットと周辺環境との相互作用を調べるために多くのジェット伝播シミュレーションが実施されてきた。 <a class="reference internal" href="reference.html#norman82"><span class="std std-ref">Norman et al. (1982)</span></a> は2次元円等座標系流体シミュレーションを実施し、銀河間ガス中を伝播する超音速ジェットの基本構造とその安定性を研究した。その後磁気流体シミュレーションや3次元シミュレーションへの拡張が行われ、トロイダル磁場によってジェットが屈曲するキンク不安定性等、磁場がジェットに与える影響についても研究された（ <a class="reference internal" href="reference.html#todo92"><span class="std std-ref">Todo et al., 1992</span></a> , <a class="reference internal" href="reference.html#todo93"><span class="std std-ref">1993</span></a> ; <a class="reference internal" href="reference.html#mizuno11"><span class="std std-ref">Mizuno et al., 2011</span></a> ）。さらに光速に近いジェットを扱うために相対論を考慮したシミュレーションも行われており、その形状や安定性が議論されている <a class="reference internal" href="reference.html#marti97"><span class="std std-ref">Marti et al., 1997</span></a> ; <a class="reference internal" href="reference.html#rosen99"><span class="std std-ref">Rosen et al., 1999</span></a> ; <a class="reference internal" href="reference.html#aloy00"><span class="std std-ref">Aloy et al., 2000</span></a> ; <a class="reference internal" href="reference.html#zhang03"><span class="std std-ref">Zhang et al., 2003</span></a> ; <a class="reference internal" href="reference.html#mizuno07"><span class="std std-ref">Mizuno et al., 2007</span></a> ）。</p>
+</div>
+<div class="section" id="id3">
+<h2>シミュレーションモデル<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ジェットの形成については計算せず、収束したジェットが噴出することを仮定し、境界条件としてジェットを計算領域に注入する( <a class="reference internal" href="#jet-model"><span class="std std-ref">モデル図</span></a> )。</p>
+<div class="figure align-center" id="id6">
+<span id="jet-model"></span><a class="reference internal image-reference" href="_images/jet_model.png"><img alt="_images/jet_model.png" src="_images/jet_model.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">ジェット伝播シミュレーションモデル</span><a class="headerlink" href="#id6" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>外部ガスとジェットのパラメーターを表に示す。磁場はジェット内にトロイダル磁場 <img class="math" src="_images/math/4077025b0e842393e6da9f749ff4b0e644c24c72.png" alt="B_{\phi} \propto \mathrm{sin}^{4}(r\pi)"/> , <img class="math" src="_images/math/13fe9ee4b89fd233fed894d62a093a2a1620e9fd.png" alt="r=\sqrt{x^2+y^2}"/> を考え、その強さは <img class="math" src="_images/math/ab49c15ebf57b2773a701c9b5becf1a14b6eb8a3.png" alt="r=0.5"/> でプラズマ <img class="math" src="_images/math/e86673dc8d83bec6b7d9766d0bf91d3f875e5a6e.png" alt="\beta=p/(B^2/2)=100"/> を仮定した。</p>
+<blockquote>
+<div><table class="docutils align-default">
+<colgroup>
+<col style="width: 52%" />
+<col style="width: 48%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>パラメーター</p></td>
+<td><p>値</p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/b839dbea4952856690d13ce4b4711fa6055f7171.png" alt="\rho_{\mathrm{am}}"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/ce274cb5be44f550bea1d31a891dddae6cc54a85.png" alt="p_{\mathrm{am}}"/></p></td>
+<td><p><img class="math" src="_images/math/34a20996bbe507860c13b82d8cf7d8482be13a78.png" alt="1/\gamma"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/8f31ef4374fd519a3db1819225f5cd1336cc1b93.png" alt="c_{\mathrm{s,am}}"/></p></td>
+<td><p><img class="math" src="_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/529850a060aa215ce99426923b1a8bbb46cab905.png" alt="\rho_{\mathrm{jet}}"/></p></td>
+<td><p><img class="math" src="_images/math/6397cde98974e668fc523acb04124d669745cade.png" alt="0.1"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/bebcd6cbf1c697ba7a7a3a694c5a156268fcf8a2.png" alt="p_{\mathrm{jet}}"/></p></td>
+<td><p><img class="math" src="_images/math/34a20996bbe507860c13b82d8cf7d8482be13a78.png" alt="1/\gamma"/></p></td>
+</tr>
+<tr class="row-odd"><td><p><img class="math" src="_images/math/c58bcb230b37a148a4778010fb3054bf8a1ad877.png" alt="c_{\mathrm{s,jet}}"/></p></td>
+<td><p><img class="math" src="_images/math/862dc56b2384b5f2e136bacdc4071e7cde4c0d23.png" alt="\sqrt{10}"/></p></td>
+</tr>
+<tr class="row-even"><td><p><img class="math" src="_images/math/6e40071cea398a6e4939240da8d004edbd602a08.png" alt="v_{z\mathrm{,jet}}"/></p></td>
+<td><p><img class="math" src="_images/math/54fc093d0820904c48f0914fc829a48389a8a168.png" alt="6c_{\mathrm{s,jet}}"/></p></td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</div>
+<div class="section" id="id4">
+<h2>結果<a class="headerlink" href="#id4" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="figure align-center" id="id7">
+<span id="jet-result"></span><a class="reference internal image-reference" href="_images/jet_result.png"><img alt="_images/jet_result.png" src="_images/jet_result.png" style="width: 60%;" /></a>
+<p class="caption"><span class="caption-text">ジェット伝播シミュレーション結果の密度分布(t=3.5)</span><a class="headerlink" href="#id7" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p><a class="reference internal" href="#jet-result"><span class="std std-ref">図</span></a> に計算結果の密度分布を示す。ジェットの前方にはバウショックと呼ばれる円弧状の衝撃波が形成され、外部ガスが加熱・圧縮されている。ジェット先端に形成されたジェットターミナルショックと呼ばれる強い衝撃波によってジェットガスは減速され、ジェットを包み込む高温低密度なバックフロー(コクーン)が形成される。</p>
+</div>
+<div class="section" id="id5">
+<h2>参考文献<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#aloy00"><span class="std std-ref">Aloy et al., 2000</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#marti97"><span class="std std-ref">Marti et al., 1997</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#mizuno07"><span class="std std-ref">Mizuno et al., 2007</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#mizuno11"><span class="std std-ref">Mizuno et al., 2011</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#norman82"><span class="std std-ref">Norman et al., 1982</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#rosen99"><span class="std std-ref">Rosen et al., 1999</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#todo92"><span class="std std-ref">Todo et al., 1992</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#todo93"><span class="std std-ref">Todo et al., 1993</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#zhang03"><span class="std std-ref">Zhang et al., 2003</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">ジェット伝搬</a><ul>
+<li><a class="reference internal" href="#id2">背景</a></li>
+<li><a class="reference internal" href="#id3">シミュレーションモデル</a></li>
+<li><a class="reference internal" href="#id4">結果</a></li>
+<li><a class="reference internal" href="#id5">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="application_gMRI.html" title="大局的なブラックホール降着円盤での磁気回転不安定性とジェット形成"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_parker.html" title="パーカー不安定"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>

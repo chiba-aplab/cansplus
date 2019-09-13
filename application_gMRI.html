@@ -1,0 +1,216 @@
+
+
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>大局的なブラックホール降着円盤での磁気回転不安定性とジェット形成 &#8212; CANS+ 1.4 ドキュメント</title>
+    <link rel="stylesheet" href="_static/p_sphinx_theme.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/local_fonts.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/translations.js"></script>
+    <script type="text/javascript" src="_static/jquery.cookie.js"></script>
+    <script type="text/javascript" src="_static/p_sphinx_theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="参考文献" href="reference.html" />
+    <link rel="prev" title="ジェット伝搬" href="application_jet.html" /> 
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head><body>
+      <div class="relbar-top">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             accesskey="I">索引</a></li>
+        <li class="right" >
+          <a href="reference.html" title="参考文献"
+             accesskey="N">次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_jet.html" title="ジェット伝搬"
+             accesskey="P">前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" accesskey="U">物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="id1">
+<h1>大局的なブラックホール降着円盤での磁気回転不安定性とジェット形成<a class="headerlink" href="#id1" title="このヘッドラインへのパーマリンク">¶</a></h1>
+<dl class="field-list simple">
+<dt class="field-odd">著者</dt>
+<dd class="field-odd"><p>川島朋尚（国立天文台）、 町田真美（九州大学）</p>
+</dd>
+</dl>
+<div class="section" id="id2">
+<h2>背景<a class="headerlink" href="#id2" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ブラックホール候補天体からは、高光度の様々な波長の輻射に加え、しばしばアウトフローやジェットの様な高速のプラズマ噴出流が観測されている。これらの輻射やプラズマ噴出は、ブラックホール周りに形成される回転プラズマ（降着円盤）による重力エネルギーの解放により可能になる。</p>
+<p>ブラックホール候補天体では様々な輻射スペクトル状態が観測されており（例：明るく輻射スペクトルが柔らかいHigh/Soft状態や、暗くスペクトルが硬い
+Low/Hard状態）、それに対応し様々なタイプの降着円盤が考案されてきた。例えば、標準円盤と呼ばれる幾何学的に薄く光学的に厚い円盤（ <a class="reference internal" href="reference.html#shakura-sunyaev73"><span class="std std-ref">Shakura &amp; Sunyaev, 1973</span></a> ）は、High/Soft状態の輻射スペクトルを良く説明できるが、Low/Hard状態のスペクトルは再現できない。Low/Hard状態は <a class="reference internal" href="reference.html#ichimaru77"><span class="std std-ref">Ichimaru (1977)</span></a> により考案され <a class="reference internal" href="reference.html#narayan-yi94"><span class="std std-ref">Narayan and Yi (1994,</span></a> <a class="reference internal" href="reference.html#narayan-yi95"><span class="std std-ref">1995)</span></a> により再発見されたれた放射不良降着流(Radiatively Inefficient Accretion Flow, 以下RIAF)により説明できる。輻射スペクトル状態の違いはジェットの噴出にも関連がある。Low/Hard状態ではジェットの噴出が観測されているが、High/Soft状態ではジェットの噴出は検出されていない（ <a class="reference internal" href="reference.html#fender04"><span class="std std-ref">Fender et al., 2004</span></a> ）。</p>
+<p>この演習では、RIAFのシミュレーションを実施する。</p>
+</div>
+<div class="section" id="id3">
+<h2>磁場の役割<a class="headerlink" href="#id3" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>降着円盤においては、磁場は角運動量輸送やジェットの形成といった非常に重要な役割を持つ。以下に、その役割について見ていく。</p>
+<p>まず、回転プラズマの流体素片を考える。ブラックホールへと降着していく過程で流体素片の角運動量 <img class="math" src="_images/math/470aa65888a2971c9346e573f12b37ea406b8ec9.png" alt="l"/> が保存しているとすると、遠心力の大きさは <img class="math" src="_images/math/d100e41c1e0070a302097c982a7957095e437f4e.png" alt="l^{2}/r^{3}"/> で重力の大きさは <img class="math" src="_images/math/1fc273a0d56b985018db60db3f4024c22ad7355c.png" alt="{GM/r^{2}}"/> であるため( <img class="math" src="_images/math/79a3d439d28652c547386f39b555d90d3aaf102d.png" alt="r"/> は中心天体からの距離、<img class="math" src="_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> は重力定数、 <img class="math" src="_images/math/4abba779877abb276b98ccb2b4ba9bf2e41947ab.png" alt="M"/> は中心天体の質量)、やがて遠心力は重力と釣り合うまで大きくなり、ある半径でケプラー回転となる。この半径よりも内側へとガスが降着するためには、角運動量を外側へと輸送する必要がある。この輸送過程は長いあいだ謎であり現象論的な粘性モデルである <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> 粘性が用いられてきたが、1990年代になると磁気回転不安定性(Magneto-Rotational Instability, 以下MRI)によって生じる磁気乱流のマクスウェル応力によって角運動量輸送が起きることが <a class="reference internal" href="reference.html#balbus-hawley91"><span class="std std-ref">Balbus &amp; Hawley (1991)</span></a> ; <a class="reference internal" href="reference.html#hawley-balbus91"><span class="std std-ref">Hawley &amp; Balbus (1992)</span></a> によって再発見された <a class="footnote-reference brackets" href="#fn1" id="id4">1</a> 。</p>
+<p>MRIとは、回転プラズマ中に現れるslow MHD modeの不安定性である。鉛直方向の磁場に貫かれた回転円盤を理想MHD近似を仮定して考える。ある流体素片を内側へ微小距離だけ移動させると、角運動量の保存により回転角速度は微小移動の前に比べ速くなる。いま磁力線の凍結によりこの流体素片は元の半径で回転している流体素片と磁場によりつながれている。この流体素片同士をつなぐ磁場のマクスウェル応力によって、内側へ微小移動した流体素片は元の半径の流体素片へ角運動量を受け渡し、さらに内側へと移動する。この内側への移動に伴い角速度は再び大きくなり、同様のメカニズムを繰り返すことさらに外側へと移動していく。これがMRIの概要である。MRIの軸対称モードの最大成長波長での成長率は <img class="math" src="_images/math/c9b50810d560f2e74c910cd286a7edc49385255a.png" alt="(1/2)|d{\Omega}/d({\rm ln} ~r)|"/> であり、これは円盤の約1回転の時間スケールに相当する。</p>
+<div class="figure align-center" id="id10">
+<span id="mri-exp"></span><a class="reference internal image-reference" href="_images/mri_exp.png"><img alt="_images/mri_exp.png" src="_images/mri_exp.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">降着円盤でのMRIの概念図</span><a class="headerlink" href="#id10" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>降着円盤でのMRIによる磁気乱流の成長はshearing boxを用いた局所的なシミュレーションで確認され（ <a class="reference internal" href="reference.html#hawley-balbus91"><span class="std std-ref">Hawley &amp; Balbus, 1991</span></a> ; <a class="reference internal" href="reference.html#hawley95"><span class="std std-ref">Hawley, 1995</span></a> ）、その後、大局的シミュレーションでも確認されており（ <a class="reference internal" href="reference.html#matsumoto99"><span class="std std-ref">Matsumoto, 1999</span></a> ; <a class="reference internal" href="reference.html#hawley00"><span class="std std-ref">Hawley, 2000</span></a> ; <a class="reference internal" href="reference.html#machida00"><span class="std std-ref">Machida et al., 2000</span></a> ; <a class="reference internal" href="reference.html#stone-pringle01"><span class="std std-ref">Stone &amp; Pringle, 2001</span></a> ）、長いあいだ謎であった降着円盤の角運動量量輸送メカニズムは現在ではMRIにより発生する磁気乱流のマクスウェル応力であると考えられている。</p>
+<p>また、RIAFからはジェットが噴出されることが観測から示唆されている。ジェットを噴出するにはプラズマの加速が必要である。輻射が弱いRIAFでのジェットの加速機構は磁気遠心力加速（ <a class="reference internal" href="reference.html#blandford-payne82"><span class="std std-ref">Blandford &amp; Payne, 1982</span></a> ）や、磁気タワーによる磁気圧加速（ <a class="reference internal" href="reference.html#lynden-bell96"><span class="std std-ref">Lynden-Bell, 1996</span></a> ; <a class="reference internal" href="reference.html#kato04a"><span class="std std-ref">Kato et al., 2004a</span></a> , <a class="reference internal" href="reference.html#kato04b"><span class="std std-ref">b</span></a> ）、また一般相対論的効果としてKerrブラックホールからのスピンの引き抜き（ <a class="reference internal" href="reference.html#blandford-znajek77"><span class="std std-ref">Blandford &amp; Znajek, 1977</span></a> ）が提案されておりそれぞれジェットの加速が確認されているが、まだ加速機構の統一的な理解には至っていない。</p>
+<p class="rubric">Footnotes</p>
+<dl class="footnote brackets">
+<dt class="label" id="fn1"><span class="brackets"><a class="fn-backref" href="#id4">1</a></span></dt>
+<dd><p>MRIは1959年にVelikhovが鉛直方向磁場に貫かれたクエット流の問題で発見され、<a class="reference internal" href="reference.html#chandrasekhar60"><span class="std std-ref">Chandrasekhar (1960)</span></a> が一般的な回転則の場合に拡張した。</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="id5">
+<h2>初期条件<a class="headerlink" href="#id5" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>初期条件として、トーラスのpressure maximumの半径 <img class="math" src="_images/math/02c849aad7960bc828467cc5933f8fe020201c4b.png" alt="r_0"/> を40 <img class="math" src="_images/math/c2f4215371894e09702342d6048b7110cb592ed0.png" alt="r_{\rm s}"/> に設置する( <img class="math" src="_images/math/c2f4215371894e09702342d6048b7110cb592ed0.png" alt="r_{\rm s}"/> はシュバルツシルト半径)。トーラス内部での角運動量は一定とする。磁場はトーラスの内部にポロイダル磁場を設定する。具体的にはベクトルポテンシャルが密度に比例するように設置する。ここでpressure maximumでのプラズマ <img class="math" src="_images/math/7138dad9ac96835665b17f5817eacfcaa9b834c9.png" alt="\beta"/> ( = ガス圧/磁気圧)を100とする。</p>
+<p>外側境界は自由境界を内側( <img class="math" src="_images/math/0c8ae85cecdb2d77971eefd378b39906f71697f7.png" alt="8r_{\rm s}"/> )では吸収境界を設置する。</p>
+</div>
+<div class="section" id="id6">
+<h2>結果<a class="headerlink" href="#id6" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<div class="section" id="id7">
+<h3>降着流とジェットの形成<a class="headerlink" href="#id7" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p>まず、トーラスのpressure maximum <img class="math" src="_images/math/02c849aad7960bc828467cc5933f8fe020201c4b.png" alt="r_0"/> でおよそ1回転時間スケール(MRIの線形成長の時間スケール)でchannel flowが形成される。マクスウェル応力による角運動量の引き抜きが起こり、急激な質量降着が起こる。また、それに伴い、磁気流体ジェットの噴出が起こる( <a class="reference internal" href="#mri-result1"><span class="std std-ref">質量密度の図</span></a> )。</p>
+<p>およそ5回転ほど経過すると準定常な降着状態になり、磁気乱流の構造もはっきりと現れる。</p>
+<div class="figure align-center" id="id11">
+<span id="mri-result1"></span><a class="reference internal image-reference" href="_images/mri_result1.png"><img alt="_images/mri_result1.png" src="_images/mri_result1.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">MRIの成長により角運動量が再分配され形成された降着流。 回転軸まわりにジェットが形成されている。</span><a class="headerlink" href="#id11" title="この画像へのパーマリンク">¶</a></p>
+</div>
+<p>また、回転軸付近に磁気流体ジェットの形成も確認できる。円盤差動回転によって増幅されたトロイダル磁場でジェットはコリメートされる。また回転軸付近はポロイダル磁場が優勢になる（ <a class="reference internal" href="#mri-result2"><span class="std std-ref">磁場の図</span></a> ）。</p>
+<div class="figure align-center" id="id12">
+<span id="mri-result2"></span><a class="reference internal image-reference" href="_images/mri_result2.png"><img alt="_images/mri_result2.png" src="_images/mri_result2.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">ポロイダル磁場とトロイダル磁場の大きさの比</span><a class="headerlink" href="#id12" title="この画像へのパーマリンク">¶</a></p>
+</div>
+</div>
+<div class="section" id="alpha">
+<h3>磁気乱流による <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> の値<a class="headerlink" href="#alpha" title="このヘッドラインへのパーマリンク">¶</a></h3>
+<p><a class="reference internal" href="#mri-result3"><span class="std std-ref">図</span></a> はMRI乱流による <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> の値である。 <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> は <img class="math" src="_images/math/af6d01821642a10101d3333883fe84a904b79427.png" alt="\alpha \equiv (&lt;B_{\rm r}B_{\varphi}&gt;/&lt;P_{\rm g}&gt;)"/> と定義した。ここで <img class="math" src="_images/math/c388d12a95785a76ee408edb9fbd565cec992239.png" alt="B_r"/> , <img class="math" src="_images/math/2f861e59aa36dc29e031884dba042c543ddd2b78.png" alt="B_{\varphi}"/> , <img class="math" src="_images/math/4b719bdc2ba9acee3722b718b8560f647a7c1396.png" alt="P_{\rm g}"/> はそれぞれ動径方向磁場、方位角方向磁場、ガス圧であり、'' <img class="math" src="_images/math/cd3aa31f4611569c0dc20ca3237ff65fef9323fc.png" alt="&lt; &gt;"/> ''は空間平均を表す。今回は <img class="math" src="_images/math/51ebbd3b414d0931bc4b5c86441100ba702d45a5.png" alt="r \le 0.5r_0 (= 20r_{\rm s})"/> , <img class="math" src="_images/math/ee915f9ac8ed44b025f47168cba4e17805ae112d.png" alt="z^2 \le 0.3r_0"/> の範囲内で体積重みをつけて平均をとった。約1秒で不安定性によりchannel flowが形成され、 <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> の値が急増しているのがわかる。その後、磁気乱流による角運動量輸送が支配的になり、 <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> の値は0.01-0.1となる。</p>
+<div class="figure align-center" id="id13">
+<span id="mri-result3"></span><a class="reference internal image-reference" href="_images/mri_result3.png"><img alt="_images/mri_result3.png" src="_images/mri_result3.png" style="width: 50%;" /></a>
+<p class="caption"><span class="caption-text">マクスウェル応力とガス圧の空間平均により得られたαの値の時間発展</span><a class="headerlink" href="#id13" title="この画像へのパーマリンク">¶</a></p>
+</div>
+</div>
+</div>
+<div class="section" id="id8">
+<h2>まとめ<a class="headerlink" href="#id8" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<p>ここでは2次元のシミュレーションを実施し、MRIによって成長する磁気乱流のマクスウェル応力で降着流が形成されることおよび降着流からの磁気流体ジェットの噴出を確認した。しかし2次元シミュレーションでは降着流やジェットのおおまかな構造は議論できるが、非軸対称な構造を議論することはできない。また、このことは長時間計算が不可能であることにも繋がる。軸対称2次元の場合、方位角方向のパーカー不安定性を計算できないために、いちど差動回転によりポロイダル磁場がトロイダル成分に変換されると再びポロイダル成分に変換することは難しい。そのため、やがてMRI乱流は減衰してしまう。3次元に拡張するとパーカー不安定性により磁場が浮上することでポロイダル成分が作られ、軸対称モードのMRIの成長が再び可能となる。降着流の進化を正しく理解するためにはこの様なダイナモ機構をフルに扱うことが必要不可欠であり、3次元シミュレーションを実施する必要がある。</p>
+<p>また、今回は初期トーラスの中に単一の方向のポロイダル磁場を仮定したが、ある半径ごとに磁場の方向を反転させるような初期条件でもシミュレーションが
+実施されており、降着流やジェットのダイナミクスが変わることが示唆されている（ <a class="reference internal" href="reference.html#narayan12"><span class="std std-ref">Narayan et al., 2012</span></a> ）。初期磁場形状に関する問題は現在のところ未解決であり、初期磁場形状が結果に与える影響を定性的・定量的に明らかにすることが必要である。また長時間のシミュレーションの実施により結果の収束性を明らかにすることも重要である。これらの問題は降着円盤の磁気流体シミュレーション研究の今後の課題である。</p>
+</div>
+<div class="section" id="id9">
+<h2>参考文献<a class="headerlink" href="#id9" title="このヘッドラインへのパーマリンク">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="reference.html#balbus-hawley91"><span class="std std-ref">Balbus &amp; Hawley, 1991</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#blandford-payne82"><span class="std std-ref">Blandford &amp; Payne, 1982</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#blandford-znajek77"><span class="std std-ref">Blandford &amp; Znajek, 1977</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#chandrasekhar60"><span class="std std-ref">Chandrasekhar, 1960</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#fender04"><span class="std std-ref">Fender et al., 2004</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#hawley-balbus91"><span class="std std-ref">Hawley &amp; Balbus, 1991</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#hawley95"><span class="std std-ref">Hawley et al., 1995</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#hawley00"><span class="std std-ref">Hawley, 2000</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#ichimaru77"><span class="std std-ref">Ichibmaru, 1977</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#kato04a"><span class="std std-ref">Kato et al., 2004a</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#kato04b"><span class="std std-ref">Kato et al., 2004b</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#lynden-bell96"><span class="std std-ref">Lynden-Bell, 1996</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#machida00"><span class="std std-ref">Machida et al., 2000</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#matsumoto99"><span class="std std-ref">Matsumoto, 1999</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#narayan-yi94"><span class="std std-ref">Narayan &amp; Yi, 1994</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#narayan-yi95"><span class="std std-ref">Narayan &amp; Yi, 1995</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#narayan12"><span class="std std-ref">Narayan et al., 2012</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#shakura-sunyaev73"><span class="std std-ref">Shakura &amp; Sunyaev, 1973</span></a></p></li>
+<li><p><a class="reference internal" href="reference.html#stone-pringle01"><span class="std std-ref">Stone &amp; Pringle, 2001</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="sphinxlocaltoc">
+    <h3><a href="index.html">Page contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">大局的なブラックホール降着円盤での磁気回転不安定性とジェット形成</a><ul>
+<li><a class="reference internal" href="#id2">背景</a></li>
+<li><a class="reference internal" href="#id3">磁場の役割</a></li>
+<li><a class="reference internal" href="#id5">初期条件</a></li>
+<li><a class="reference internal" href="#id6">結果</a><ul>
+<li><a class="reference internal" href="#id7">降着流とジェットの形成</a></li>
+<li><a class="reference internal" href="#alpha">磁気乱流による <img class="math" src="_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> の値</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id8">まとめ</a></li>
+<li><a class="reference internal" href="#id9">参考文献</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+
+
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+      <div class="relbar-bottom">
+            
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>ナビゲーション</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="総合索引"
+             >索引</a></li>
+        <li class="right" >
+          <a href="reference.html" title="参考文献"
+             >次へ</a> &nbsp; &nbsp;</li>
+        <li class="right" >
+          <a href="application_jet.html" title="ジェット伝搬"
+             >前へ</a> &nbsp; &nbsp;</li>
+      <li><a href="index.html">CANS+ 1.4 ドキュメント</a> &#187;</li>
+
+          <li class="nav-item nav-item-1"><a href="application.html" >物理課題</a> &#187;</li> 
+      </ul>
+    </div>
+      </div>
+
+    <div class="footer" role="contentinfo">
+        &#169; Copyright CANS+ developers.
+      最終更新: 8月 30, 2019
+      このドキュメントは <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0 で生成しました。
+    </div>
+      <!-- PSphinxTheme -->
+  </body>
+</html>
