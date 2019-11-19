@@ -159,8 +159,6 @@ contains
                 +dtodx*(fphix(i-1,j,k)-fphix(i,j,k))   &
                 +dtody*(fphiy(i,j-1,k)-fphiy(i,j,k))   &
                 )*exp(-dt*ch**2/cp**2)
-           eta(i,j,k) = ( (fphix(i-1,j,k)-fphix(i,j,k))/dx(i)   &
-                         +(fphiy(i,j-1,k)-fphiy(i,j,k))/dy(j))/ch**2
         enddo
      enddo
   enddo
