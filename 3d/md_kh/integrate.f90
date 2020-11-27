@@ -14,7 +14,7 @@ contains
                               ,eta0,vc,eta,ccx,ccy,ccz)
 
   use convert
-  use lr_state, only : lr_state__MP5, lr_state__MSCL2, lr_state__1st
+  use lr_state, only : lr_state__MP5, lr_state__MSCL2
   use flux_calc
   use bnd
   use getEta
@@ -98,9 +98,6 @@ contains
 !  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
 !       ,vx,vy,vz,bx,by,bz,phi &
 !       ,ch,gm,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw,dx,dy,dz)
-!  call lr_state__1st(mdir,ix,jx,kx &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,bxw,phiw &
        ,bx_m,phi_m,ch)
@@ -128,9 +125,6 @@ contains
 !  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
 !       ,vy,vz,vx,by,bz,bx,phi &
 !       ,ch,gm,row,prw,vyw,vzw,vxw,byw,bzw,bxw,phiw,dx,dy,dz)
-!  call lr_state__1st(mdir,ix,jx,kx &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,byw,phiw &
        ,by_m,phi_m,ch)
@@ -158,9 +152,6 @@ contains
 !  call lr_state__MSCL2(mdir,ix,jx,kx,ro,pr &
 !       ,vz,vx,vy,bz,bx,by,phi &
 !       ,ch,gm,row,prw,vzw,vxw,vyw,bzw,bxw,byw,phiw,dx,dy,dz)
-!  call lr_state__1st(mdir,ix,jx,kx &
-!       ,ro,pr,vx,vy,vz,bx,by,bz,phi &
-!       ,row,prw,vxw,vyw,vzw,bxw,byw,bzw,phiw)
 
   call flux_calc__bp(ix,jx,kx,bzw,phiw &
        ,bz_m,phi_m,ch)
