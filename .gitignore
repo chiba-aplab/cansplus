@@ -6,3 +6,4 @@
 *.png
 *.eps
 *.a
+__pycache__

@@ -123,13 +123,14 @@ case n_params() of
      para1 = fltarr(n_elements(para6)*2,n_elements(para6)*2,n_elements(para8))
      para4 = fltarr(n_elements(para8))
 
-     ntask = min([!cpu.tpool_nthreads-1,n_elements(para8)])
+     ntask = min([!cpu.tpool_nthreads-1,n_elements(para8),8])
      if(float(!version.release) lt 8.6)then ntask=min([ntask,16])
      bridges = objarr(ntask)
      for l=0,ntask-1 do begin
        bridges[l] = obj_new('idl_idlbridge')
      endfor
 
+     cd,current=pwd
      for l=0,ntask-1 do begin
        para_range,nzs,nze,0,n_elements(para8)-1,ntask,l
        bridges[l].execute,"@"+pref_get('IDL_STARTUP')
@@ -139,7 +140,7 @@ case n_params() of
        bridges[l].setvar,"x_cyl",para6
        bridges[l].setvar,"y_cyl",para7
        bridges[l].setvar,"z_cyl",para8
-       bridges[l].execute,"pushd, '"+getenv('PWD')+"'"
+       bridges[l].execute,"pushd, '"+pwd+"'"
        bridges[l].execute,".compile cyl2cart"
        bridges[l].execute,"cyl2cart_3d,dat_car,x_car,y_car,z_car,dat_cyl,x_cyl,y_cyl,z_cyl,nzs,nze",/nowait
      endfor
